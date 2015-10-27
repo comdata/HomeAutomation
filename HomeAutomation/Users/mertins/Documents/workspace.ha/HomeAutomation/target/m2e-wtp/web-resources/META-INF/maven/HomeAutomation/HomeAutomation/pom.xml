@@ -1,0 +1,99 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>HomeAutomation</groupId>
+	<artifactId>HomeAutomation</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
+
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<sapui5.version>1.30.10</sapui5.version>
+		 <version.jersey>2.22.1</version.jersey>
+        <version.servlet.api>3.1.0</version.servlet.api>
+	</properties>
+
+	<dependencies>
+		<!-- <dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
+			<scope>provided</scope>
+		</dependency> -->
+
+
+
+		<!-- <dependency> <groupId>com.sap.ui5</groupId> <artifactId>com.sap.ui5.core</artifactId> 
+			<version>${sapui5.version}</version> <scope>compile</scope> </dependency> 
+			<dependency> <groupId>com.sap.ui5</groupId> <artifactId>com.sap.ui5.resource</artifactId> 
+			<version>${sapui5.version}</version> <scope>compile</scope> </dependency> 
+			<dependency> <groupId>com.sap.ui5</groupId> <artifactId>com.sap.ui5.commons</artifactId> 
+			<version>${sapui5.version}</version> <scope>compile</scope> </dependency> 
+			<dependency> <groupId>com.sap.ui5</groupId> <artifactId>com.sap.ui5.mobile</artifactId> 
+			<version>${sapui5.version}</version> <scope>compile</scope> </dependency> 
+			<dependency> <groupId>com.sap.ui5</groupId> <artifactId>com.sap.ui5.mobile-ext</artifactId> 
+			<version>${sapui5.version}</version> <scope>compile</scope> </dependency> 
+			<dependency> <groupId>com.sap.ui5</groupId> <artifactId>com.sap.ui5.layout</artifactId> 
+			<version>${sapui5.version}</version> <scope>compile</scope> </dependency> 
+			<dependency> <groupId>com.sap.ui5</groupId> <artifactId>com.sap.ui5.ux3</artifactId> 
+			<version>${sapui5.version}</version> <scope>compile</scope> </dependency> -->
+
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${version.servlet.api}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-servlet-core</artifactId>
+			<version>${version.jersey}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<version>${version.jersey}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-processing</artifactId>
+			<version>${version.jersey}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-multipart</artifactId>
+			<version>${version.jersey}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-sse</artifactId>
+			<version>${version.jersey}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<warSourceDirectory>WebContent</warSourceDirectory>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

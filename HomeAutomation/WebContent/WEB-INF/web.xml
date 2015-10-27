@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	version="3.1">
+	<display-name>HomeAutomation</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
+
+	<servlet>
+		<servlet-name>jersey</servlet-name>
+		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<param-name>jersey.config.server.provider.packages</param-name>
+			<param-value>cm.homeautomation</param-value>
+		</init-param>
+ <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>cm.homeautomation.services.base.JerseyApplication</param-value>
+        </init-param>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>jersey</servlet-name>
+		<url-pattern>/services/*</url-pattern>
+	</servlet-mapping>
+	
+<!-- 	<filter>
+		<filter-name>CacheControlFilter</filter-name>
+		<filter-class>com.sap.openui5.CacheControlFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>CacheControlFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<filter>
+		<filter-name>CORSFilter</filter-name>
+		<filter-class>com.sap.openui5.CORSFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>CORSFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<filter>
+		<filter-name>ConcatFilter</filter-name>
+		<filter-class>com.sap.openui5.ConcatFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>ConcatFilter</filter-name>
+		<url-pattern>/resources/*</url-pattern>
+	</filter-mapping>
+	
+	<filter>
+		<filter-name>LessFilter</filter-name>
+		<filter-class>com.sap.openui5.LessFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>LessFilter</filter-name>
+		<url-pattern>/resources/*</url-pattern>
+	</filter-mapping>
+	
+	<servlet>
+		<servlet-name>ResourceServlet</servlet-name>
+		<servlet-class>com.sap.openui5.ResourceServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ResourceServlet</servlet-name>
+		<url-pattern>/resources/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ResourceServlet</servlet-name>
+		<url-pattern>/test-resources/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>DiscoveryServlet</servlet-name>
+		<servlet-class>com.sap.openui5.DiscoveryServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DiscoveryServlet</servlet-name>
+		<url-pattern>/discovery/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ProxyServlet</servlet-name>
+		<servlet-class>com.sap.openui5.SimpleProxyServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ProxyServlet</servlet-name>
+		<url-pattern>/proxy/*</url-pattern>
+	</servlet-mapping>-->
+</web-app>
