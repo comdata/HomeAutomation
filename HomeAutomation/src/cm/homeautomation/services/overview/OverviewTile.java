@@ -2,6 +2,7 @@ package cm.homeautomation.services.overview;
 
 public class OverviewTile {
 
+	private String roomId;
 	private String icon;
 	private String number;
 	private String numberUnit;
@@ -48,5 +49,11 @@ public class OverviewTile {
 	}
 	public void setInfoState(String infoState) {
 		this.infoState = infoState;
+	}
+	public String getRoomId() {
+		return roomId;
+	}
+	public void setRoomId(String roomId) {
+		this.roomId = roomId;
 	}
 }

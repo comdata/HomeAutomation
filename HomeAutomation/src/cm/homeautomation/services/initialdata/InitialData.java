@@ -1,30 +1,20 @@
-package cm.homeautomation.services.base;
-
-import java.util.HashSet;
-import java.util.Set;
+package cm.homeautomation.services.initialdata;
 
 import javax.persistence.EntityManager;
-import javax.ws.rs.core.Application;
-
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.Sensor;
+import cm.homeautomation.services.base.BaseService;
 
-public class JerseyApplication extends Application {
-	
-	public JerseyApplication() {
-		super();
-		
-		//setupTestData();
-		
-		
-	}
-	
-	private void setupTestData() {
-		// TODO Auto-generated method stub
+@Path("initialdata")
+public class InitialData extends BaseService{
+
+	@GET
+	@Path("load")
+	public void createData() {
 		EntityManager em = EntityManagerService.getManager();
 
 		em.getTransaction().begin();
@@ -63,16 +53,5 @@ public class JerseyApplication extends Application {
 		em.persist(room);
 		em.getTransaction().commit();
 	}
-
-	@Override
-	public Set<Class<?>> getClasses() {
-		final Set<Class<?>> classes = new HashSet<Class<?>>();
-		// register resources and features
-		classes.add(MultiPartFeature.class);
-		classes.add(JacksonFeature.class);
-		
-		// classes.add(MultiPartResource.class);
-		// classes.add(LoggingFilter.class);
-		return classes;
-	}
+	
 }
