@@ -48,6 +48,12 @@
 			<version>${sapui5.version}</version> <scope>compile</scope> </dependency> 
 			<dependency> <groupId>com.sap.ui5</groupId> <artifactId>com.sap.ui5.ux3</artifactId> 
 			<version>${sapui5.version}</version> <scope>compile</scope> </dependency> -->
+
+		<dependency>
+			<groupId>it.sauronsoftware.cron4j</groupId>
+			<artifactId>cron4j</artifactId>
+			<version>2.2.5</version>
+		</dependency>
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>eclipselink</artifactId>
@@ -123,11 +129,11 @@
 			<version>1.0</version>
 		</dependency>
 
-<dependency>
-    <groupId>io.netty</groupId>
-    <artifactId>netty-all</artifactId>
-    <version>4.0.32.Final</version>
-</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.0.32.Final</version>
+		</dependency>
 	</dependencies>
 
 	<build>

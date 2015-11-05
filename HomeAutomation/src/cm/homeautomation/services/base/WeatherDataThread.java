@@ -1,7 +1,7 @@
 package cm.homeautomation.services.base;
 
-import java.util.List;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
@@ -13,7 +13,6 @@ import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.sensors.weather.WeatherService;
 import cm.homeautomation.services.overview.WeatherData;
 import cm.homeautomation.services.sensors.Sensors;
-import jersey.repackaged.com.google.common.base.Stopwatch;
 
 public class WeatherDataThread extends Thread {
 
