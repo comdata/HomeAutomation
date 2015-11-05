@@ -44,6 +44,13 @@ public class ActorService extends BaseService {
 		return switchStatuses;
 	}
 
+	public static void cronPressSwitch(String[] args) {
+		String switchId=args[0];
+		String status=args[0];
+		
+		new ActorService().pressSwitch(switchId, status);
+	}
+	
 	@GET
 	@Path("press/{switch}/{status}")
 	public SwitchPressResponse pressSwitch(@PathParam("switch") String switchId, @PathParam("status") String targetStatus) {

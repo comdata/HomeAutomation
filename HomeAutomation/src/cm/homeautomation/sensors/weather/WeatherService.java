@@ -10,7 +10,6 @@ import com.amphibian.weather.response.WeatherResponse;
 
 import cm.homeautomation.services.overview.WeatherData;
 
-// http://api.wunderground.com/api/16c6adf56e5e3b93/forecast/lang:DL/q/Germany/Schwerin.json
 public class WeatherService {
 
 	public static WeatherData getWeather() {

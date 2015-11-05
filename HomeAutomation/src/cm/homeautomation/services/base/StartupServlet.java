@@ -16,20 +16,21 @@ public class StartupServlet extends HttpServlet {
 	private static final long serialVersionUID = 131323703998785803L;
 	private SensorDataThread sensorDataThread;
 	private WeatherDataThread weatherDataThread;
-	private Scheduler s;
+	private SchedulerThread schedulerThread;
+
 
 	public void init(ServletConfig config) throws ServletException {
 		sensorDataThread = new SensorDataThread();
 
 		weatherDataThread = new WeatherDataThread();
+		schedulerThread = new SchedulerThread();
 
 		weatherDataThread.start();
 		sensorDataThread.start();
+		schedulerThread.start();
 
 		
-		s = new Scheduler();
-		s.scheduleFile(new File("schedule.cron"));
-		s.start();
+	
 	}
 
 	public void destroy() {
@@ -45,7 +46,7 @@ public class StartupServlet extends HttpServlet {
 		}
 		
 		try {
-			s.stop();
+			schedulerThread.stopThread();
 		} catch (Exception e) {
 
 		}
