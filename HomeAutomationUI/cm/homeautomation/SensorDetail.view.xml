@@ -1,0 +1,61 @@
+<mvc:View
+        controllerName="cm.homeautomation.Main"
+        xmlns="sap.m" width="100%" height="100%"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:l="sap.ui.layout"
+        xmlns:u="sap.ui.unified"
+        >
+
+                    <!--	<u:Shell
+                                id="myShell"
+                                icon="{/logo}">
+                            <u:headItems>
+                                <u:ShellHeadItem
+                                        tooltip="Configuration"
+                                        icon="sap-icon://menu2"
+                                        press="handlePressConfiguration" />
+                                <u:ShellHeadItem
+                                        tooltip="Home"
+                                        icon="sap-icon://home"
+                                        visible="false"
+                                        press="handlePressHome" />
+                            </u:headItems>
+                            <u:headEndItems>
+                                <u:ShellHeadItem
+                                        icon="sap-icon://log"
+                                        tooltip="Logoff"
+                                        press="handleLogoffPress" />
+                            </u:headEndItems>
+                            <u:user>
+                                <u:ShellHeadUserItem
+                                        image="sap-icon://person-placeholder"
+                                        username="Karl Mustermann"
+                                        press="handleUserItemPressed" />
+                            </u:user>
+                            <u:search>
+                                <SearchField
+                                        search="handleSearchPressed"/>
+                            </u:search>
+                            <u:paneContent>
+                                <Text text="Lorem ipsum" />
+                            </u:paneContent>
+                        </u:Shell>-->
+
+                    <TileContainer
+                            id="container"
+
+                            tileDelete="handleTileDelete"
+                            tiles="{/overviewTiles}" width="100%" height="100%">
+                        <StandardTile
+                                press="handleSelect"
+                                type="{type}"
+                                number="{number}"
+                                numberUnit="{numberUnit}"
+                                title="{title}"
+                                info="{info}"
+                                infoState="{infoState}"/>
+                    </TileContainer>
+
+
+
+</mvc:View>

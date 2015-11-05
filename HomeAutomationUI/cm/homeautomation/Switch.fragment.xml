@@ -1,0 +1,29 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+    <Dialog title="Raumdetails" afterClose="afterDialogClose" stretch="true">
+        <content>
+            <List visible="false" id="switchList"
+
+                    items="{
+			path: 'switches>/switchStatuses'
+		}">
+                <InputListItem
+                        label="{switches>name}"
+                        description="{switches>name}"
+                        icon="sap-icon://lightbulb"
+                        iconDensityAware="false"
+                        iconInset="false"
+                        >
+                    <Switch state="{switches>switchState}" change="handleSwitchChange"/>
+                </InputListItem>
+            </List>
+            <core:HTML content="&lt;div id='chart'&gt;
+    &lt;svg style='height:300px; width:100%;'&gt;&lt;/svg&gt;
+&lt;/div&gt;"></core:HTML>
+        </content>
+        <beginButton>
+            <Button text="Schliessen" press="dialogClose"/>
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>

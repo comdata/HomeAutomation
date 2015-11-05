@@ -1,0 +1,32 @@
+{
+  "_version": "1.1.0",
+  "sap.app": {
+    "_version": "1.1.0",
+    "id": "sap.ui.core",
+    "type": "library",
+    "embeds": [],
+    "applicationVersion": {
+      "version": "1.30.10"
+    },
+    "title": "The SAPUI5 Core Runtime.",
+    "description": "The SAPUI5 Core Runtime. \n  \n  Contains the UI5 jQuery plugins (jQuery.sap.*), the Core and all its components, \n  base classes for Controls, Components and the Model View Controller classes.",
+    "ach": "CA-UI5-COR",
+    "resources": "resources.json",
+    "offline": true
+  },
+  "sap.ui": {
+    "_version": "1.1.0",
+    "technology": "UI5",
+    "supportedThemes": [
+      "base",
+      "sap_hcb"
+    ]
+  },
+  "sap.ui5": {
+    "_version": "1.1.0",
+    "dependencies": {
+      "minUI5Version": "1.30",
+      "libs": {}
+    }
+  }
+}
