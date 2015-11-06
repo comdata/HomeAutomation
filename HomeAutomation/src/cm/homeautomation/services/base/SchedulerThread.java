@@ -18,17 +18,18 @@ public class SchedulerThread extends Thread {
 	public void run() {
 		super.run();
 		
-		setScheduler(new Scheduler());
-		File scheduleFile = new File("schedule.cron");
-		getScheduler().scheduleFile(scheduleFile);
-		getScheduler().start();
+		
 		
 		while (run) {
-			
-			getScheduler().descheduleFile(scheduleFile);
+			setScheduler(new Scheduler());
+			File scheduleFile = new File("schedule.cron");
 			getScheduler().scheduleFile(scheduleFile);
+			getScheduler().start();
+			
+		
 			try {
-				Thread.sleep(60*1000);
+				Thread.sleep(5*60*1000);
+				getScheduler().stop();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

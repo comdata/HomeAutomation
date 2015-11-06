@@ -22,11 +22,24 @@ import cm.homeautomation.entities.Switch;
 import cm.homeautomation.sensors.ActorMessage;
 import cm.homeautomation.services.base.BaseService;
 
+/**
+ * everything necessary for handling actors and 
+ * reading the statuses
+ * 
+ * @author mertins
+ *
+ */
 @Path("actor")
 public class ActorService extends BaseService {
 
 	private int port = 5000;
 
+	/**
+	 * get switch status for a room
+	 * 
+	 * @param room
+	 * @return
+	 */
 	@GET
 	@Path("forroom/{room}")
 	public SwitchStatuses getSwitchStatusesForRoom(@PathParam("room") String room) {
@@ -44,6 +57,11 @@ public class ActorService extends BaseService {
 		return switchStatuses;
 	}
 
+	/**
+	 * press a switch via cron
+	 * 
+	 * @param args
+	 */
 	public static void cronPressSwitch(String[] args) {
 		String switchId=args[0];
 		String status=args[0];
@@ -51,6 +69,13 @@ public class ActorService extends BaseService {
 		new ActorService().pressSwitch(switchId, status);
 	}
 	
+	/**
+	 * press a switch 
+	 * 
+	 * @param switchId id of the swtich
+	 * @param targetStatus status ON or OFF
+	 * @return
+	 */
 	@GET
 	@Path("press/{switch}/{status}")
 	public SwitchPressResponse pressSwitch(@PathParam("switch") String switchId, @PathParam("status") String targetStatus) {
@@ -79,6 +104,13 @@ public class ActorService extends BaseService {
 		return switchPressResponse;
 	}
 
+	/**
+	 * send multicast message with JSON data to the Client
+	 * 
+	 * uses multicast group 239.1.1.1 port 5000
+	 * 
+	 * @param message
+	 */
 	private void sendMulticastUDP(Object message) {
 		try {
 			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
@@ -92,10 +124,10 @@ public class ActorService extends BaseService {
 			InetAddress group = InetAddress.getByName("239.1.1.1");
 			DatagramPacket packet;
 			packet = new DatagramPacket(buf, buf.length, group, 5000);
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < 20; i++) {
 				socket.send(packet);
 				System.out.println("Send message:" + json);
-				Thread.sleep(200);
+				Thread.sleep(100);
 			}
 
 			socket.close();
