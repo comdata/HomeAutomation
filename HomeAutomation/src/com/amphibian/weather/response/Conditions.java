@@ -40,7 +40,7 @@ public class Conditions {
 	@XmlTransient private String dewpointString;
 	@XmlTransient private String visibilityMi;
 	@XmlTransient private String visibilityKm;
-	@XmlTransient private int uv;
+	@XmlTransient private String uv;
 	private String image;
 	private Object estimated;
 	
@@ -408,14 +408,14 @@ public class Conditions {
 	 * @return the uv
 	 */
 	@XmlElement(name="UV")
-	public int getUv() {
+	public String getUv() {
 		return uv;
 	}
 
 	/**
 	 * @param uv the uv to set
 	 */
-	public void setUv(int uv) {
+	public void setUv(String uv) {
 		this.uv = uv;
 	}
 

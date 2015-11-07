@@ -88,6 +88,7 @@ public class OverviewService extends BaseService {
 				roomTile.setNumber(number);
 				roomTile.setNumberUnit("°C / %");
 				roomTile.setTitle(room.getRoomName());
+				roomTile.setRoomName(room.getRoomName());
 				roomTile.setInfo((!"".equals(number)) ? "Temperatur / Luftfeuchtigkeit" : "");
 				roomTile.setInfoState("Success");
 				roomTile.setRoomId(Long.toString(room.getId()));

@@ -64,7 +64,7 @@ public class ActorService extends BaseService {
 	 */
 	public static void cronPressSwitch(String[] args) {
 		String switchId=args[0];
-		String status=args[0];
+		String status=args[1];
 		
 		new ActorService().pressSwitch(switchId, status);
 	}
@@ -127,7 +127,7 @@ public class ActorService extends BaseService {
 			for (int i = 0; i < 20; i++) {
 				socket.send(packet);
 				System.out.println("Send message:" + json);
-				Thread.sleep(100);
+				Thread.sleep(300);
 			}
 
 			socket.close();

@@ -10,6 +10,12 @@ import com.amphibian.weather.response.WeatherResponse;
 
 import cm.homeautomation.services.overview.WeatherData;
 
+/**
+ * read wether data from the service
+ * 
+ * @author mertins
+ *
+ */
 public class WeatherService {
 
 	public static WeatherData getWeather() {

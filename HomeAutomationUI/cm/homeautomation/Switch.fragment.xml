@@ -1,7 +1,7 @@
 <core:FragmentDefinition
         xmlns="sap.m"
         xmlns:core="sap.ui.core">
-    <Dialog title="Raumdetails" afterClose="afterDialogClose" stretch="true">
+    <Dialog title="Raumdetails -  {currentRoom>roomName}" afterClose="afterDialogClose" stretch="true">
         <content>
             <List visible="false" id="switchList"
 

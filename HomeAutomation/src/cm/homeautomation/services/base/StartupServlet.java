@@ -23,7 +23,7 @@ public class StartupServlet extends HttpServlet {
 		sensorDataThread = new SensorDataThread();
 
 		weatherDataThread = new WeatherDataThread();
-		schedulerThread = new SchedulerThread();
+		schedulerThread = SchedulerThread.getInstance();
 
 		weatherDataThread.start();
 		sensorDataThread.start();

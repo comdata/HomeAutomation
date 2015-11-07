@@ -9,6 +9,7 @@ public class OverviewTile {
 	private String title;
 	private String info;
 	private String infoState;
+	private String roomName;
    /* "icon" : "inbox",
     "number" : "89",
     "title" : "Approve Leave Requests",
@@ -55,5 +56,12 @@ public class OverviewTile {
 	}
 	public void setRoomId(String roomId) {
 		this.roomId = roomId;
+	}
+	public void setRoomName(String roomName) {
+		this.roomName = roomName;
+	}
+	
+	public String getRoomName() {
+		return roomName;
 	}
 }

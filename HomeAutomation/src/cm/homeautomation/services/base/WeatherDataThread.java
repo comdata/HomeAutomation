@@ -71,14 +71,15 @@ public class WeatherDataThread extends Thread {
 					sensorService.saveSensorData(weatherSaveRequest);
 				}
 
-				try {
-					Thread.sleep(30 * 60 * 1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					// e.printStackTrace();
-				}
+				
 			} catch (Exception e) {
 				e.printStackTrace();
+			}
+			try {
+				Thread.sleep(30 * 60 * 1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				// e.printStackTrace();
 			}
 		}
 
