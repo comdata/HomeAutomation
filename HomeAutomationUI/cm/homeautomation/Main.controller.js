@@ -129,8 +129,10 @@ sap.ui.define([
          */
         _loadDataFailed: function (event) {
         	var subject=this;
-            window.setInterval(function () {
-                subject.loadData.apply(subject)
+            window.Timeout(function () {
+            	if (subject!=null) {
+            		subject.loadData.apply(subject);
+            	}
             }, 5000);
         },
 

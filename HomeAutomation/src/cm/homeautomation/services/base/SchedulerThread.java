@@ -55,6 +55,7 @@ public class SchedulerThread extends Thread {
 		
 		newScheduler.start();
 		setScheduler(newScheduler);
+		System.out.println("Reloaded scheduler");
 	}
 	
 	public void stopThread() {

@@ -52,11 +52,11 @@
 			<artifactId>jersey-media-multipart</artifactId>
 			<version>${version.jersey}</version>
 		</dependency>
-		<!-- <dependency>
+		<dependency>
 			<groupId>com.pi4j</groupId>
 			<artifactId>pi4j-core</artifactId>
 			<version>1.0</version>
-		</dependency>-->
+		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-sse</artifactId>

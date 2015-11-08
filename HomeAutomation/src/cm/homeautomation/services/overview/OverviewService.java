@@ -1,5 +1,6 @@
 package cm.homeautomation.services.overview;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -39,6 +40,8 @@ public class OverviewService extends BaseService {
 				String humidity = "";
 				String icon = "";
 
+				Date sensorDate=null;
+				
 				List<Sensor> sensors = room.getSensors();
 				for (Sensor sensor : sensors) {
 
@@ -53,12 +56,16 @@ public class OverviewService extends BaseService {
 						if (latestData != null) {
 							if (latestData instanceof SensorData) {
 								SensorData data = (SensorData) latestData;
+								
+								
 
 								if ("TEMPERATURE".equals(sensor.getSensorType())) {
 									temperature = data.getValue();
+									sensorDate=data.getValidThru();
 								}
 								if ("HUMIDITY".equals(sensor.getSensorType())) {
 									humidity = data.getValue();
+									sensorDate=data.getValidThru();
 								}
 
 							}
@@ -80,6 +87,13 @@ public class OverviewService extends BaseService {
 							}
 
 						}
+						
+						if ("SPEAKER".equals(singleSwitch.getSwitchType())) {
+							if ("ON".equals(singleSwitch.getLatestStatus())) {
+								icon = "sap-icon://marketing-campaign";
+							}
+
+						}
 					}
 
 				}
@@ -89,7 +103,7 @@ public class OverviewService extends BaseService {
 				roomTile.setNumberUnit("°C / %");
 				roomTile.setTitle(room.getRoomName());
 				roomTile.setRoomName(room.getRoomName());
-				roomTile.setInfo((!"".equals(number)) ? "Temperatur / Luftfeuchtigkeit" : "");
+				roomTile.setInfo((sensorDate!=null) ? sensorDate.toLocaleString(): "");
 				roomTile.setInfoState("Success");
 				roomTile.setRoomId(Long.toString(room.getId()));
 				roomTile.setIcon(icon);

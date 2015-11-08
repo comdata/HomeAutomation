@@ -36,7 +36,15 @@ public class StandAloneActor extends Thread {
 					
 					Runtime rt = Runtime.getRuntime();
 					
-					Process proc = rt.exec("send "+message.getHouseCode()+" "+message.getSwitchNo()+" "+message.getStatus());
+					String houseCode = message.getHouseCode();
+					Process proc;
+					
+					if ("CODESEND".equals(houseCode)) {
+						proc=rt.exec("codesend "+message.getStatus());
+					} else {
+						proc=rt.exec("send "+houseCode+" "+message.getSwitchNo()+" "+message.getStatus());
+					}
+					
 					proc.waitFor();
 				}
 
