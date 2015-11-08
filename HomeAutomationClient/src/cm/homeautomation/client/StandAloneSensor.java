@@ -73,6 +73,9 @@ public class StandAloneSensor extends Thread {
 			case "HUMIDITY":
 				sensorList.put(id, new HumiditySensor(technicalType, pin));
 				break;
+			case "PRESSURE":
+				sensorList.put(id, new PressureSensor(technicalType, pin));
+				break;
 			}
 		}
 
@@ -91,22 +94,22 @@ public class StandAloneSensor extends Thread {
 					SensorData sensorData = new SensorData();
 
 					String value = "";
-					
+
 					// repeat sensor aquisition
 					for (int i = 0; i < 10; i++) {
 						value = technicalSensor.getValue();
-						System.out.println("Read: "+value);
-						if (Float.parseFloat(value)>2) {
+						System.out.println("Read: " + value);
+						if (Float.parseFloat(value) > 2) {
 							break;
 						} else {
 							Thread.sleep(500);
 						}
 					}
-					
-					if (Float.parseFloat(value)<0) {
+
+					if (Float.parseFloat(value) < 0) {
 						continue;
 					}
-					
+
 					sensorData.setValue(value);
 
 					saveRequest.setSensorData(sensorData);
@@ -137,8 +140,12 @@ public class StandAloneSensor extends Thread {
 		standAloneActor.start();
 		StandAloneSensor standAloneSensor = new StandAloneSensor(args[0], args[1]);
 		standAloneSensor.start();
-		StandAloneRFSniffer standAloneRFSniffer = new StandAloneRFSniffer(args[2]);
-		standAloneRFSniffer.start();
+
+		if (args.length > 2) {
+
+			StandAloneRFSniffer standAloneRFSniffer = new StandAloneRFSniffer(args[2]);
+			standAloneRFSniffer.start();
+		}
 
 	}
 }

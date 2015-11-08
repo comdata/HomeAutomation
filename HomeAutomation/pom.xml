@@ -183,4 +183,9 @@
 		</plugins>
 	</build>
 	<inceptionYear>2015</inceptionYear>
+	<parent>
+		<groupId>cm.homeautomation</groupId>
+		<artifactId>homeautomation-parent</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	</parent>
 </project>

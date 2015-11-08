@@ -27,87 +27,95 @@ public class Sensors extends BaseService {
 	@Path("rfsniffer")
 	public void registerRFEvent(RFEvent event) {
 		String code = Integer.toString(event.getCode());
-		System.out.println("RF Event: "+code);
+		System.out.println("RF Event: " + code);
 		EntityManager em = EntityManagerService.getNewManager();
-		
-		Switch sw=(Switch)em.createQuery("select sw from Switch sw where sw.onCode=:code or sw.offCode=:code").setParameter("code", code).getSingleResult();
-		
+
+		Switch sw = (Switch) em.createQuery("select sw from Switch sw where sw.onCode=:code or sw.offCode=:code")
+				.setParameter("code", code).getSingleResult();
+
 		if (sw != null) {
 			em.getTransaction().begin();
-			
-			String status="";
-			
+
+			String status = "";
+
 			if (sw.getOnCode().equals(code)) {
-				status="ON";
+				status = "ON";
 			} else if (sw.getOffCode().equals(code)) {
-				status="OFF";
+				status = "OFF";
 			} else {
-				status="UNKNOWN "+code;
+				status = "UNKNOWN " + code;
 			}
-			
-			
-			
-				
+
 			sw.setLatestStatus(status);
 			sw.setLatestStatusFrom(new Date());
-			
+
 			em.persist(sw);
 			em.getTransaction().commit();
-			
+
 			// save switch changes
 			Sensor sensor = sw.getSensor();
-			if (sensor!=null) {
-				
-				SensorDataSaveRequest sensorSaveRequest=new SensorDataSaveRequest();
-				
+			if (sensor != null) {
+
+				SensorDataSaveRequest sensorSaveRequest = new SensorDataSaveRequest();
+
 				sensorSaveRequest.setSensorId(sensor.getId());
-				SensorData sensorData=new SensorData();
-				sensorData.setValue((("ON".equals(status))?"1":"0"));
+				SensorData sensorData = new SensorData();
+				sensorData.setValue((("ON".equals(status)) ? "1" : "0"));
 				sensorSaveRequest.setSensorData(sensorData);
-				
+
 				this.saveSensorData(sensorSaveRequest);
 			}
-			
-			
+
 		}
-		
+
 	}
-	
+
 	@POST
 	@Path("forroom/save")
 	public void saveSensorData(SensorDataSaveRequest request) {
 		EntityManager em = EntityManagerService.getNewManager();
-		
-		Object singleResult = em.createQuery("select s from Sensor s where s.id=:sensorId" ).setParameter("sensorId", request.getSensorId()).getSingleResult();
 
-		
-		if(singleResult instanceof Sensor) {
+		Object singleResult = em.createQuery("select s from Sensor s where s.id=:sensorId")
+				.setParameter("sensorId", request.getSensorId()).getSingleResult();
+
+		if (singleResult instanceof Sensor) {
 			em.getTransaction().begin();
-			Sensor sensor=(Sensor)singleResult;
-			
+			Sensor sensor = (Sensor) singleResult;
+
 			SensorData sensorData;
-			
-			SensorData existingSensorData = (SensorData)em.createQuery("select sd from SensorData sd where sd.sensor IN (select s from Sensor s where s.id=:sensorId) order by sd.dateTime desc" ).setMaxResults(1).setParameter("sensorId", request.getSensorId()).getSingleResult();
-			
-			if (existingSensorData!=null && existingSensorData.getValue().equals(request.getSensorData().getValue())) {
+
+			List existingSensorDataList = em
+					.createQuery(
+							"select sd from SensorData sd where sd.sensor IN (select s from Sensor s where s.id=:sensorId) order by sd.dateTime desc")
+					.setMaxResults(1).setParameter("sensorId", request.getSensorId()).getResultList();
+
+			SensorData existingSensorData = null;
+			if (!existingSensorDataList.isEmpty()) {
+				existingSensorData = (SensorData) existingSensorDataList.get(0);
+			}
+
+			SensorData requestSensorData = request.getSensorData();
+			if (existingSensorData != null && existingSensorData.getValue().equals(requestSensorData.getValue())) {
 				existingSensorData.setValidThru(new Date());
 				em.merge(existingSensorData);
 			} else {
-				existingSensorData.setValidThru(new Date(request.getSensorData().getDateTime().getTime()-1000));
-				em.merge(existingSensorData);
+				if (existingSensorData!=null && requestSensorData != null && requestSensorData.getDateTime() != null) {
+					existingSensorData.setValidThru(new Date(requestSensorData.getDateTime().getTime() - 1000));
+					em.merge(existingSensorData);
+				}
 				
-				sensorData = request.getSensorData();
+
+				sensorData = requestSensorData;
 				sensorData.setSensor(sensor);
 				em.persist(sensorData);
 			}
-			
-			
+
 			em.getTransaction().commit();
-		} else  {
-			 System.err.println("Not a sensor");
+		} else {
+			System.err.println("Not a sensor");
 		}
 	}
-	
+
 	@Path("forroom/{room}")
 	@GET
 	public SensorDatas getDataForRoom(@PathParam("room") String room) {
@@ -115,10 +123,11 @@ public class Sensors extends BaseService {
 
 		EntityManager em = EntityManagerService.getNewManager();
 		@SuppressWarnings("unchecked")
-		List<Object> sensors = em.createQuery("select s FROM Sensor s where s.room=(select r from Room r where r.id=:room)")
+		List<Object> sensors = em
+				.createQuery("select s FROM Sensor s where s.room=(select r from Room r where r.id=:room)")
 				.setParameter("room", Long.parseLong(room)).getResultList();
-		
-		Date now=new Date();
+
+		Date now = new Date();
 
 		for (Object object : sensors) {
 			if (object instanceof Sensor) {
@@ -130,39 +139,39 @@ public class Sensors extends BaseService {
 
 				Date twoDaysAgo = new Date((new Date()).getTime() - (86400 * 1000));
 				@SuppressWarnings("unchecked")
-				List<Object> data = em.createQuery("select sd from SensorData sd where sd.sensor=:sensor and sd.dateTime>=:timeframe")
-						.setParameter("sensor", sensor)
-						.setParameter("timeframe", twoDaysAgo).getResultList();
+				List<Object> data = em
+						.createQuery("select sd from SensorData sd where sd.sensor=:sensor and sd.dateTime>=:timeframe")
+						.setParameter("sensor", sensor).setParameter("timeframe", twoDaysAgo).getResultList();
 
-				String latestValue="";
-				SensorValue lastSensorValue=null;
+				String latestValue = "";
+				SensorValue lastSensorValue = null;
 				for (Object dataObject : data) {
-					if (dataObject instanceof SensorData){
-						SensorData sData=(SensorData)dataObject;
-						
-						if (lastSensorValue!=null) {
+					if (dataObject instanceof SensorData) {
+						SensorData sData = (SensorData) dataObject;
+
+						if (lastSensorValue != null) {
 							SensorValue tempSensorValue = new SensorValue();
 							tempSensorValue.setValue(lastSensorValue.getValue());
-							tempSensorValue.setDateTime(new Date(sData.getDateTime().getTime()-1000));
+							tempSensorValue.setDateTime(new Date(sData.getDateTime().getTime() - 1000));
 							sensorData.getValues().add(tempSensorValue);
 						}
-						
+
 						SensorValue sensorValue = new SensorValue();
 						sensorValue.setDateTime(sData.getDateTime());
 						sensorValue.setValue(sData.getValue());
-						
-						latestValue=sData.getValue();
-						lastSensorValue=sensorValue;
+
+						latestValue = sData.getValue();
+						lastSensorValue = sensorValue;
 						sensorData.getValues().add(sensorValue);
 					}
 				}
-				
+
 				// add a last value for the charts
-				SensorValue latestInterpolatedValue=new SensorValue(); 
+				SensorValue latestInterpolatedValue = new SensorValue();
 				latestInterpolatedValue.setDateTime(now);
 				latestInterpolatedValue.setValue(latestValue);
 				sensorData.getValues().add(latestInterpolatedValue);
-					
+
 				sensorDatas.getSensorData().add(sensorData);
 			}
 
