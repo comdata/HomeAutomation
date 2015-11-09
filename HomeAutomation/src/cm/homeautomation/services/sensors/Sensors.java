@@ -2,6 +2,7 @@ package cm.homeautomation.services.sensors;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
@@ -99,11 +100,11 @@ public class Sensors extends BaseService {
 				existingSensorData.setValidThru(new Date());
 				em.merge(existingSensorData);
 			} else {
-				if (existingSensorData!=null && requestSensorData != null && requestSensorData.getDateTime() != null) {
+				if (existingSensorData != null && requestSensorData != null
+						&& requestSensorData.getDateTime() != null) {
 					existingSensorData.setValidThru(new Date(requestSensorData.getDateTime().getTime() - 1000));
 					em.merge(existingSensorData);
 				}
-				
 
 				sensorData = requestSensorData;
 				sensorData.setSensor(sensor);
@@ -129,54 +130,89 @@ public class Sensors extends BaseService {
 
 		Date now = new Date();
 
+		final CountDownLatch latch = new CountDownLatch(sensors.size());
+
 		for (Object object : sensors) {
-			if (object instanceof Sensor) {
-				Sensor sensor = (Sensor) object;
+			DataLoadThread dataLoadThread = new DataLoadThread(sensorDatas, em, now, object, latch);
+			dataLoadThread.start();
+		}
 
-				SensorValues sensorData = new SensorValues();
-
-				sensorData.setSensorName(sensor.getSensorName());
-
-				Date twoDaysAgo = new Date((new Date()).getTime() - (86400 * 1000));
-				@SuppressWarnings("unchecked")
-				List<Object> data = em
-						.createQuery("select sd from SensorData sd where sd.sensor=:sensor and sd.dateTime>=:timeframe")
-						.setParameter("sensor", sensor).setParameter("timeframe", twoDaysAgo).getResultList();
-
-				String latestValue = "";
-				SensorValue lastSensorValue = null;
-				for (Object dataObject : data) {
-					if (dataObject instanceof SensorData) {
-						SensorData sData = (SensorData) dataObject;
-
-						if (lastSensorValue != null) {
-							SensorValue tempSensorValue = new SensorValue();
-							tempSensorValue.setValue(lastSensorValue.getValue());
-							tempSensorValue.setDateTime(new Date(sData.getDateTime().getTime() - 1000));
-							sensorData.getValues().add(tempSensorValue);
-						}
-
-						SensorValue sensorValue = new SensorValue();
-						sensorValue.setDateTime(sData.getDateTime());
-						sensorValue.setValue(sData.getValue());
-
-						latestValue = sData.getValue();
-						lastSensorValue = sensorValue;
-						sensorData.getValues().add(sensorValue);
-					}
-				}
-
-				// add a last value for the charts
-				SensorValue latestInterpolatedValue = new SensorValue();
-				latestInterpolatedValue.setDateTime(now);
-				latestInterpolatedValue.setValue(latestValue);
-				sensorData.getValues().add(latestInterpolatedValue);
-
-				sensorDatas.getSensorData().add(sensorData);
-			}
-
+		try {
+			latch.await();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		return sensorDatas;
+	}
+
+	public void loadSensorData(SensorDatas sensorDatas, EntityManager em, Date now, Object object) {
+		if (object instanceof Sensor) {
+			Sensor sensor = (Sensor) object;
+
+			SensorValues sensorData = new SensorValues();
+
+			sensorData.setSensorName(sensor.getSensorName());
+
+			Date twoDaysAgo = new Date((new Date()).getTime() - (86400 * 1000));
+			@SuppressWarnings("unchecked")
+			List<Object> data = em
+					.createQuery("select sd from SensorData sd where sd.sensor=:sensor and sd.dateTime>=:timeframe")
+					.setParameter("sensor", sensor).setParameter("timeframe", twoDaysAgo).getResultList();
+
+			String latestValue = "";
+			SensorValue lastSensorValue = null;
+			for (Object dataObject : data) {
+				if (dataObject instanceof SensorData) {
+					SensorData sData = (SensorData) dataObject;
+
+					if (lastSensorValue != null && !("PRESSURE".equals(sensor.getSensorType()))) {
+						SensorValue tempSensorValue = new SensorValue();
+						tempSensorValue.setValue(lastSensorValue.getValue());
+						tempSensorValue.setDateTime(new Date(sData.getDateTime().getTime() - 1000));
+						sensorData.getValues().add(tempSensorValue);
+					}
+
+					SensorValue sensorValue = new SensorValue();
+					sensorValue.setDateTime(sData.getDateTime());
+					sensorValue.setValue(sData.getValue());
+
+					latestValue = sData.getValue();
+					lastSensorValue = sensorValue;
+					sensorData.getValues().add(sensorValue);
+				}
+			}
+
+			// add a last value for the charts
+			SensorValue latestInterpolatedValue = new SensorValue();
+			latestInterpolatedValue.setDateTime(now);
+			latestInterpolatedValue.setValue(latestValue);
+			sensorData.getValues().add(latestInterpolatedValue);
+
+			sensorDatas.getSensorData().add(sensorData);
+		}
+	}
+
+	class DataLoadThread extends Thread {
+		private SensorDatas sensorDatas;
+		private EntityManager em;
+		private Date now;
+		private Object object;
+		private CountDownLatch latch;
+
+		public DataLoadThread(SensorDatas sensorDatas, EntityManager em, Date now, Object object, CountDownLatch latch) {
+			this.sensorDatas = sensorDatas;
+			this.em = em;
+			this.now = now;
+			this.object = object;
+			this.latch = latch;
+
+		}
+
+		public void run() {
+			loadSensorData(sensorDatas, em, now, object);
+			this.latch.countDown();
+		}
 	}
 }

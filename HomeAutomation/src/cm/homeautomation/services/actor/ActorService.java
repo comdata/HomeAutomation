@@ -33,6 +33,7 @@ import cm.homeautomation.services.base.BaseService;
 public class ActorService extends BaseService {
 
 	private int port = 5000;
+	private int source_port=5001;
 
 	/**
 	 * get switch status for a room
@@ -116,14 +117,14 @@ public class ActorService extends BaseService {
 			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 			String json = ow.writeValueAsString(message);
 
-			DatagramSocket socket = new DatagramSocket(port);
+			DatagramSocket socket = new DatagramSocket(source_port);
 
 			byte[] buf = new byte[4096];
 			buf = json.getBytes();
 
 			InetAddress group = InetAddress.getByName("239.1.1.1");
 			DatagramPacket packet;
-			packet = new DatagramPacket(buf, buf.length, group, 5000);
+			packet = new DatagramPacket(buf, buf.length, group, port);
 			for (int i = 0; i < 20; i++) {
 				socket.send(packet);
 				System.out.println("Send message:" + json);
