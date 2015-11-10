@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <faceted-project>
-  <fixed facet="wst.web"/>
   <fixed facet="wst.jsdt.web"/>
-  <installed facet="wst.web" version="1.0"/>
+  <fixed facet="jst.web"/>
+  <fixed facet="java"/>
   <installed facet="wst.jsdt.web" version="1.0"/>
+  <installed facet="java" version="1.7"/>
+  <installed facet="jst.web" version="3.1"/>
+  <installed facet="com.sap.ide.ui5.app.facet" version="latest"/>
 </faceted-project>

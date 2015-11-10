@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -117,9 +118,23 @@ public class StandAloneSensor extends Thread {
 
 					System.out.println(sensorData.getValue());
 					try {
-						Response response = r.request(MediaType.APPLICATION_JSON)
-								.post(Entity.entity(saveRequest, MediaType.APPLICATION_JSON));
-						System.out.println("Status: " + response.getStatus());
+						
+						r.request(MediaType.APPLICATION_JSON).async()
+						.post( Entity.entity(saveRequest, MediaType.APPLICATION_JSON), new InvocationCallback<Response>() {
+
+							@Override
+							public void completed(Response response) {
+								// TODO Auto-generated method stub
+
+								System.out.println("Status: " + response.getStatus());
+							}
+
+							@Override
+							public void failed(Throwable throwable) {
+								// TODO Auto-generated method stub
+								System.out.println("Error message: " + throwable.getMessage());
+							}});
+						
 					} catch (Exception e) {
 
 					}

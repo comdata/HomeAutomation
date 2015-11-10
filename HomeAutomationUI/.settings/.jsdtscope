@@ -8,5 +8,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.baseBrowserLibrary"/>
+	<classpathentry kind="con" path="com.sap.ide.ui5.jsdt.SAPUI5Libraries"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
