@@ -10,60 +10,46 @@ import it.sauronsoftware.cron4j.Scheduler;
  * @author mertins
  *
  */
-public class SchedulerThread extends Thread {
-	private static SchedulerThread instance=null;
+public class SchedulerThread {
+	private static SchedulerThread instance = null;
 	private Scheduler scheduler;
-	private boolean run=true;
-	
+	private boolean run = true;
+	private File scheduleFile;
+
 	public static SchedulerThread getInstance() {
-		if (instance==null) {
-			instance=new SchedulerThread();
+		if (instance == null) {
+			instance = new SchedulerThread();
+			instance.reloadScheduler();
 		}
-		
+
 		return instance;
-	}
-	
-	@Override
-	public void run() {
-		super.run();
-		
-		reloadScheduler();
-		
-		while (run) {
-			
-			
-		
-			try {
-				Thread.sleep(5*60*1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 	}
 
 	public void reloadScheduler() {
-		Scheduler newScheduler = new Scheduler();
-		File scheduleFile = new File("schedule.cron");
-		newScheduler.scheduleFile(scheduleFile);
-		
-		// minimize downtime
 		Scheduler scheduler = getScheduler();
-		if (scheduler != null) {
-			scheduler.stop();
+		if (scheduler != null && scheduleFile != null) {
+			scheduler.descheduleFile(scheduleFile);
+
 		}
-		
-		newScheduler.start();
-		setScheduler(newScheduler);
+
+		scheduleFile = new File("/var/lib/tomcat8/webapps/HomeAutomation/schedule.cron");
+		scheduler.scheduleFile(scheduleFile);
+
+		if (!scheduler.isStarted()) {
+			scheduler.start();
+		}
+
 		System.out.println("Reloaded scheduler");
 	}
 	
-	public void stopThread() {
-		run=false;
+	public void stopScheduler() {
 		getScheduler().stop();
 	}
 
 	public Scheduler getScheduler() {
+		if (scheduler == null) {
+			scheduler = new Scheduler();
+		}
 		return scheduler;
 	}
 

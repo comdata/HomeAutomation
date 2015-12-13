@@ -1,5 +1,8 @@
 package cm.homeautomation.services.overview;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class OverviewTile {
 
 	private String roomId;

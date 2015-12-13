@@ -29,26 +29,34 @@
 
 
 	<dependencies>
-		<!-- <dependency> <groupId>javax.servlet</groupId> <artifactId>javax.servlet-api</artifactId> 
-			<version>3.0.1</version> <scope>provided</scope> </dependency> -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.0.13</version>
+		</dependency>
+			<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.9</version>
+		</dependency>
+		<dependency>
+			<groupId>com.beowulfe.hap</groupId>
+			<artifactId>hap</artifactId>
+			<version>1.1.0</version>
+		</dependency>
 
+		<dependency>
+			<groupId>javax.websocket</groupId>
+			<artifactId>javax.websocket-api</artifactId>
+			<version>1.0</version>
+			<scope>provided</scope>
+		</dependency>
 
-
-		<!-- <dependency> <groupId>com.sap.ui5</groupId> <artifactId>com.sap.ui5.core</artifactId> 
-			<version>${sapui5.version}</version> <scope>compile</scope> </dependency> 
-			<dependency> <groupId>com.sap.ui5</groupId> <artifactId>com.sap.ui5.resource</artifactId> 
-			<version>${sapui5.version}</version> <scope>compile</scope> </dependency> 
-			<dependency> <groupId>com.sap.ui5</groupId> <artifactId>com.sap.ui5.commons</artifactId> 
-			<version>${sapui5.version}</version> <scope>compile</scope> </dependency> 
-			<dependency> <groupId>com.sap.ui5</groupId> <artifactId>com.sap.ui5.mobile</artifactId> 
-			<version>${sapui5.version}</version> <scope>compile</scope> </dependency> 
-			<dependency> <groupId>com.sap.ui5</groupId> <artifactId>com.sap.ui5.mobile-ext</artifactId> 
-			<version>${sapui5.version}</version> <scope>compile</scope> </dependency> 
-			<dependency> <groupId>com.sap.ui5</groupId> <artifactId>com.sap.ui5.layout</artifactId> 
-			<version>${sapui5.version}</version> <scope>compile</scope> </dependency> 
-			<dependency> <groupId>com.sap.ui5</groupId> <artifactId>com.sap.ui5.ux3</artifactId> 
-			<version>${sapui5.version}</version> <scope>compile</scope> </dependency> -->
-
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+		</dependency>
 		<dependency>
 			<groupId>it.sauronsoftware.cron4j</groupId>
 			<artifactId>cron4j</artifactId>
@@ -124,15 +132,15 @@
 		</dependency>
 
 		<dependency>
-			<groupId>javax.websocket</groupId>
-			<artifactId>javax.websocket-api</artifactId>
-			<version>1.0</version>
-		</dependency>
-
-		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId>
 			<version>4.0.32.Final</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.3.6</version>
 		</dependency>
 	</dependencies>
 
@@ -148,7 +156,7 @@
 
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
-		<plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
 				<version>2.7</version>
@@ -191,6 +199,6 @@
 	<parent>
 		<groupId>cm.homeautomation</groupId>
 		<artifactId>homeautomation-parent</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 </project>

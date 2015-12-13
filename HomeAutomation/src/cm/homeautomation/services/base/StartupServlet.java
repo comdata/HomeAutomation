@@ -1,12 +1,10 @@
 package cm.homeautomation.services.base;
 
-import java.io.File;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
-import it.sauronsoftware.cron4j.Scheduler;
+import cm.homeautomation.hap.HAPService;
 
 public class StartupServlet extends HttpServlet {
 
@@ -14,42 +12,32 @@ public class StartupServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 131323703998785803L;
-	private SensorDataThread sensorDataThread;
-	private WeatherDataThread weatherDataThread;
 	private SchedulerThread schedulerThread;
-
+	//private Server webSocketServer;
 
 	public void init(ServletConfig config) throws ServletException {
-		sensorDataThread = new SensorDataThread();
-
-		weatherDataThread = new WeatherDataThread();
+		System.out.println("Starting scheduler");
 		schedulerThread = SchedulerThread.getInstance();
-
-		weatherDataThread.start();
-		sensorDataThread.start();
-		schedulerThread.start();
-
 		
-	
+		System.out.println("Starting HAP");
+		HAPService hapService=HAPService.getInstance();
+
+
 	}
 
 	public void destroy() {
 		try {
-			weatherDataThread.stopThread();
+			SchedulerThread.getInstance().stopScheduler();
 		} catch (Exception e) {
 
 		}
-		try {
-			sensorDataThread.stopThread();
-		} catch (Exception e) {
 
-		}
 		
 		try {
-			schedulerThread.stopThread();
+			HAPService.getInstance().stop();
 		} catch (Exception e) {
 
 		}
-
 	}
+	
 }
