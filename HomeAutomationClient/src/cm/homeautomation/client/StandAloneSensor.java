@@ -14,9 +14,11 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 import cm.homeautomation.entities.SensorData;
+import cm.homeautomation.planes.PlaneSensor;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.sensors.base.HumiditySensor;
 import cm.homeautomation.sensors.base.TechnicalSensor;
@@ -26,6 +28,7 @@ public class StandAloneSensor extends Thread {
 	Map<String, TechnicalSensor> sensorList = new HashMap<String, TechnicalSensor>();
 	private String roomId;
 	private String url;
+	private int timeout=60;
 
 	public StandAloneSensor(String roomId, String url) {
 		this.roomId = roomId;
@@ -34,7 +37,6 @@ public class StandAloneSensor extends Thread {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		super.run();
 
 		Properties props = new Properties();
@@ -77,11 +79,17 @@ public class StandAloneSensor extends Thread {
 			case "PRESSURE":
 				sensorList.put(id, new PressureSensor(technicalType, pin));
 				break;
+			case "PLANE":
+				sensorList.put(id, new PlaneSensor(technicalType, pin));
+				break;
 			}
 		}
 
-		Client c = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
-		WebTarget r = c.target(url);
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		client.property(ClientProperties.CONNECT_TIMEOUT, 60000);
+		client.property(ClientProperties.READ_TIMEOUT, 60000);
+
+		WebTarget r = client.target(url);
 
 		while (true) {
 
@@ -96,11 +104,12 @@ public class StandAloneSensor extends Thread {
 
 					String value = "";
 
+					// TODO fix
 					// repeat sensor aquisition
 					for (int i = 0; i < 10; i++) {
 						value = technicalSensor.getValue();
 						System.out.println("Read: " + value);
-						if (Float.parseFloat(value) > 2) {
+						if (Float.parseFloat(value) > 2 || ("PLANE".equals(technicalSensor.getType())) ) {
 							break;
 						} else {
 							Thread.sleep(500);
@@ -141,7 +150,7 @@ public class StandAloneSensor extends Thread {
 
 				}
 
-				Thread.sleep(60 * 1000);
+				Thread.sleep(this.timeout * 1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -154,6 +163,11 @@ public class StandAloneSensor extends Thread {
 		StandAloneActor standAloneActor = new StandAloneActor();
 		standAloneActor.start();
 		StandAloneSensor standAloneSensor = new StandAloneSensor(args[0], args[1]);
+		
+		if (args.length>3) {
+			standAloneSensor.setTimeout(args[3]);
+		}
+		
 		standAloneSensor.start();
 
 		if (args.length > 2) {
@@ -162,5 +176,10 @@ public class StandAloneSensor extends Thread {
 			standAloneRFSniffer.start();
 		}
 
+	}
+
+	private void setTimeout(String timeout) {
+		this.timeout=Integer.parseInt(timeout);
+		
 	}
 }

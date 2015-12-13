@@ -16,7 +16,7 @@ public class PressureSensor implements TechnicalSensor {
 	@Override
 	public String getValue() {
 		try {
-			return Float.toString(bmp180.readPressure()/100);
+			return Float.toString(bmp180.readPressure()/100).replace(",",".");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

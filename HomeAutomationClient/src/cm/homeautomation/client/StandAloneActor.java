@@ -14,7 +14,6 @@ public class StandAloneActor extends Thread {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		super.run();
 		run = true;
 		while (run) {
@@ -35,7 +34,7 @@ public class StandAloneActor extends Thread {
 					ActorMessage message = new ObjectMapper().readValue(received, ActorMessage.class);
 
 					ProcessRunner processRunner = new ProcessRunner(message);
-					processRunner.start();
+					processRunner.run();
 				}
 
 				socket.leaveGroup(group);
@@ -49,7 +48,7 @@ public class StandAloneActor extends Thread {
 
 	}
 	
-	class ProcessRunner extends Thread {
+	class ProcessRunner {
 		private ActorMessage message;
 		
 		public ProcessRunner(ActorMessage message) {
