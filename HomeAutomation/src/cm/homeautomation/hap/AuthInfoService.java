@@ -32,7 +32,7 @@ import com.beowulfe.hap.HomekitServer;
  */
 public class AuthInfoService implements HomekitAuthInfo {
 
-	private static final String PIN = "033-45-154";
+	private static final String PIN = "032-45-154";
 
 	private final String mac;
 	private final BigInteger salt;
@@ -68,7 +68,7 @@ public class AuthInfoService implements HomekitAuthInfo {
 
 		} else {
 			System.out.println("generating new config");
-			mac = HomekitServer.generateMac();
+			mac = "04:a1:51:69:94:55";//HomekitServer.generateMac();
 			salt = HomekitServer.generateSalt();
 			privateKey = HomekitServer.generateKey();
 			System.out.println("SALT: " + salt);
@@ -83,7 +83,7 @@ public class AuthInfoService implements HomekitAuthInfo {
 		System.out.println("The PIN for pairing is " + PIN);
 	}
 
-	private byte[] readKey(String string) {
+	public byte[] readKey(String string) {
 		try {
 			File f = new File("/home/hap/" + string);
 			FileInputStream fis = new FileInputStream(f);
@@ -103,7 +103,7 @@ public class AuthInfoService implements HomekitAuthInfo {
 		return null;
 	}
 
-	private void saveKey(String name, byte[] privateKey2) {
+	public void saveKey(String name, byte[] privateKey2) {
 		// TODO Auto-generated method stub
 		DataOutputStream keyfos;
 		try {

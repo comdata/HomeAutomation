@@ -34,7 +34,8 @@ public class HAPService {
 
 	private HomekitRoot bridge;
 	private Map<Long, HAPTemperatureSensor> temperatureSensors=new HashMap<Long, HAPTemperatureSensor>();
-
+	private Map<Long, HAPHumiditySensor> humiditySensors=new HashMap<Long, HAPHumiditySensor>();
+	
 	public HAPService() {
 		Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
@@ -57,7 +58,7 @@ public class HAPService {
 
 
 	public void addTemperatureSensor(HomekitRoot bridge) {
-		System.out.println("Loading Switches");
+		System.out.println("Loading Temperature");
 		List<Sensor> sensorList = em.createQuery("select s from Sensor s where s.sensorType='TEMPERATURE'").getResultList();
 
 		if (sensorList != null) {
@@ -74,6 +75,29 @@ public class HAPService {
 				hapTemperature.setTemperature(new Double(sensorData.getValue().replace(",", ".")));
 				getTemperatureSensors().put(singleSensor.getId(), hapTemperature);
 				bridge.addAccessory(hapTemperature);
+			}
+
+		}
+	}
+	
+	public void addHumiditySensor(HomekitRoot bridge) {
+		System.out.println("Loading Humidity");
+		List<Sensor> sensorList = em.createQuery("select s from Sensor s where s.sensorType='HUMIDITY'").getResultList();
+
+		if (sensorList != null) {
+			for (Sensor singleSensor : sensorList) {
+				List<SensorData> latestDataList = em
+						.createQuery("select sd from SensorData sd where sd.sensor=:sensor order by sd.dateTime desc")
+						.setParameter("sensor", singleSensor).setMaxResults(1).getResultList();
+
+				SensorData sensorData = latestDataList.get(0);
+				
+				System.out.println("Adding Sensor: " + singleSensor.getSensorName());
+
+				HAPHumiditySensor hapHumiditySensor = new HAPHumiditySensor(singleSensor.getSensorName(), singleSensor.getId());
+				hapHumiditySensor.setHumidity(new Double(sensorData.getValue().replace(",", ".")));
+				getHumiditySensors().put(singleSensor.getId(), hapHumiditySensor);
+				bridge.addAccessory(hapHumiditySensor);
 			}
 
 		}
@@ -137,6 +161,7 @@ public class HAPService {
 			//bridge.allowUnauthenticatedRequests(true);
 			addSwitchesToBridge(bridge);
 			addTemperatureSensor(bridge);
+			addHumiditySensor(bridge);
 
 			System.out.println("Starting bridge");
 			bridge.start();
@@ -147,7 +172,7 @@ public class HAPService {
 	}
 
 	public void stop() {
-		JmdnsHomekitAdvertiser.getJmdns().unregisterAllServices();
+		bridge.getAdvertiser().getJmdns().unregisterAllServices();
 		bridge.stop();
 	}
 
@@ -184,5 +209,15 @@ public class HAPService {
 	 */
 	public void setTemperatureSensors(Map<Long, HAPTemperatureSensor> temperatureSensors) {
 		this.temperatureSensors = temperatureSensors;
+	}
+
+
+	public Map<Long, HAPHumiditySensor> getHumiditySensors() {
+		return humiditySensors;
+	}
+
+
+	public void setHumiditySensors(Map<Long, HAPHumiditySensor> humiditySensors) {
+		this.humiditySensors = humiditySensors;
 	}
 }

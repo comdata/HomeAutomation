@@ -83,7 +83,7 @@ public class MockAuthInfoService implements HomekitAuthInfo {
 		System.out.println("The PIN for pairing is " + PIN);
 	}
 
-	private byte[] readKey(String string) {
+	public byte[] readKey(String string) {
 		try {
 			File f = new File(HOME_HAP+string);
 			FileInputStream fis = new FileInputStream(f);
@@ -103,7 +103,7 @@ public class MockAuthInfoService implements HomekitAuthInfo {
 		return null;
 	}
 
-	private void saveKey(String name, byte[] privateKey2) {
+	public void saveKey(String name, byte[] privateKey2) {
 		// TODO Auto-generated method stub
 		DataOutputStream keyfos;
 		try {

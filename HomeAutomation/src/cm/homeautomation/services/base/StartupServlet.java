@@ -5,6 +5,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
 import cm.homeautomation.hap.HAPService;
+import cm.homeautomation.jeromq.server.JeroMQServer;
 
 public class StartupServlet extends HttpServlet {
 
@@ -14,6 +15,7 @@ public class StartupServlet extends HttpServlet {
 	private static final long serialVersionUID = 131323703998785803L;
 	private SchedulerThread schedulerThread;
 	//private Server webSocketServer;
+	private JeroMQServer jeroMQServer;
 
 	public void init(ServletConfig config) throws ServletException {
 		System.out.println("Starting scheduler");
@@ -22,7 +24,7 @@ public class StartupServlet extends HttpServlet {
 		System.out.println("Starting HAP");
 		HAPService hapService=HAPService.getInstance();
 
-
+		jeroMQServer = new JeroMQServer();
 	}
 
 	public void destroy() {
@@ -35,6 +37,12 @@ public class StartupServlet extends HttpServlet {
 		
 		try {
 			HAPService.getInstance().stop();
+		} catch (Exception e) {
+
+		}
+		
+		try {
+			jeroMQServer.stop();
 		} catch (Exception e) {
 
 		}

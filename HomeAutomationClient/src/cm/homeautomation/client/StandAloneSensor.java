@@ -16,6 +16,10 @@ import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.zeromq.ZMQ;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.planes.PlaneSensor;
@@ -23,6 +27,7 @@ import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.sensors.base.HumiditySensor;
 import cm.homeautomation.sensors.base.TechnicalSensor;
 import cm.homeautomation.sensors.base.TemperatureSensor;
+import cm.homeautomation.tv.PanasonicTVSensor;
 
 public class StandAloneSensor extends Thread {
 	Map<String, TechnicalSensor> sensorList = new HashMap<String, TechnicalSensor>();
@@ -82,6 +87,9 @@ public class StandAloneSensor extends Thread {
 			case "PLANE":
 				sensorList.put(id, new PlaneSensor(technicalType, pin));
 				break;
+			case "PANASONIC-TV":
+				sensorList.put(id, new PanasonicTVSensor(technicalType,pin));
+				break;
 			}
 		}
 
@@ -109,7 +117,7 @@ public class StandAloneSensor extends Thread {
 					for (int i = 0; i < 10; i++) {
 						value = technicalSensor.getValue();
 						System.out.println("Read: " + value);
-						if (Float.parseFloat(value) > 2 || ("PLANE".equals(technicalSensor.getType())) ) {
+						if (Float.parseFloat(value) > 2 || ("PLANE".equals(technicalSensor.getType())) || ("PANASONIC-TV".equals(technicalSensor.getType())) ) {
 							break;
 						} else {
 							Thread.sleep(500);
@@ -126,28 +134,12 @@ public class StandAloneSensor extends Thread {
 					saveRequest.setSensorId(Long.parseLong(sensor));
 
 					System.out.println(sensorData.getValue());
-					try {
-						
-						r.request(MediaType.APPLICATION_JSON).async()
-						.post( Entity.entity(saveRequest, MediaType.APPLICATION_JSON), new InvocationCallback<Response>() {
-
-							@Override
-							public void completed(Response response) {
-								// TODO Auto-generated method stub
-
-								System.out.println("Status: " + response.getStatus());
-							}
-
-							@Override
-							public void failed(Throwable throwable) {
-								// TODO Auto-generated method stub
-								System.out.println("Error message: " + throwable.getMessage());
-							}});
-						
-					} catch (Exception e) {
-
-					}
-
+					
+					
+					//	RESTDeliveryMethod(r, saveRequest);
+					
+					callJeroMQDeliveryMethod(saveRequest);
+					
 				}
 
 				Thread.sleep(this.timeout * 1000);
@@ -157,6 +149,56 @@ public class StandAloneSensor extends Thread {
 			}
 		}
 
+	}
+
+	private void callJeroMQDeliveryMethod(SensorDataSaveRequest saveRequest) {
+		
+
+
+		//Object to JSON in String
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			
+			String jsonInString = mapper.writeValueAsString(saveRequest);
+			
+			ZMQ.Context context = ZMQ.context(1);
+	        ZMQ.Socket socket = context.socket(ZMQ.REQ);
+	        socket.connect("tcp://192.168.1.57:5570");
+
+	        socket.send(jsonInString.getBytes(), 0);
+	        //String result = new String(socket.recv(0));
+
+	        socket.close();
+	        context.term();
+			
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void RESTDeliveryMethod(WebTarget r, SensorDataSaveRequest saveRequest) {
+		try {
+			
+			r.request(MediaType.APPLICATION_JSON).async()
+			.post( Entity.entity(saveRequest, MediaType.APPLICATION_JSON), new InvocationCallback<Response>() {
+
+				@Override
+				public void completed(Response response) {
+					// TODO Auto-generated method stub
+
+					System.out.println("Status: " + response.getStatus());
+				}
+
+				@Override
+				public void failed(Throwable throwable) {
+					// TODO Auto-generated method stub
+					System.out.println("Error message: " + throwable.getMessage());
+				}});
+			
+		} catch (Exception e) {
+
+		}
 	}
 
 	public static void main(String[] args) {
