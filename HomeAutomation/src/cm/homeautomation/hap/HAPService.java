@@ -24,6 +24,9 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.Switch;
+import cm.homeautomation.entities.WindowBlind;
+import cm.homeautomation.windowblind.WindowBlindService;
+import cm.homeautomation.windowblind.WindowBlindsList;
 
 public class HAPService {
 	private static final int PORT = 9123;
@@ -57,6 +60,20 @@ public class HAPService {
 	}
 
 
+	public void addWindowCovering(HomekitRoot bridge) {
+		WindowBlindService windowBlindService = new WindowBlindService();
+		WindowBlindsList allWindowBlinds = windowBlindService.getAll();
+	
+		List<WindowBlind> windowBlindsList = allWindowBlinds.getWindowBlinds();
+	
+		for (WindowBlind windowBlind : windowBlindsList) {
+			HAPWindowBlind hapWindowBlind = new HAPWindowBlind(windowBlind, 3000+new Long(windowBlind.getId()).intValue(), windowBlind.getName());
+			System.out.println("Adding Windowblind: "+hapWindowBlind.getLabel());
+			
+			bridge.addAccessory(hapWindowBlind);
+		}
+	}
+	
 	public void addTemperatureSensor(HomekitRoot bridge) {
 		System.out.println("Loading Temperature");
 		List<Sensor> sensorList = em.createQuery("select s from Sensor s where s.sensorType='TEMPERATURE'").getResultList();
@@ -161,7 +178,8 @@ public class HAPService {
 			//bridge.allowUnauthenticatedRequests(true);
 			addSwitchesToBridge(bridge);
 			addTemperatureSensor(bridge);
-			addHumiditySensor(bridge);
+			//addHumiditySensor(bridge);
+			addWindowCovering(bridge);
 
 			System.out.println("Starting bridge");
 			bridge.start();

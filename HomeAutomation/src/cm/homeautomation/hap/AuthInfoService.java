@@ -32,12 +32,12 @@ import com.beowulfe.hap.HomekitServer;
  */
 public class AuthInfoService implements HomekitAuthInfo {
 
-	private static final String PIN = "032-45-154";
+	private static String PIN = "032-45-154";
 
-	private final String mac;
-	private final BigInteger salt;
-	private final byte[] privateKey;
-	private final ConcurrentMap<String, byte[]> userKeyMap = new ConcurrentHashMap<>();
+	private static String mac;
+	private static BigInteger salt;
+	private static byte[] privateKey;
+	private static ConcurrentMap<String, byte[]> userKeyMap = new ConcurrentHashMap<>();
 
 	public AuthInfoService() throws InvalidAlgorithmParameterException {
 
@@ -68,7 +68,7 @@ public class AuthInfoService implements HomekitAuthInfo {
 
 		} else {
 			System.out.println("generating new config");
-			mac = "04:a1:51:69:94:55";//HomekitServer.generateMac();
+			mac = "04:a1:51:69:94:55";// HomekitServer.generateMac();
 			salt = HomekitServer.generateSalt();
 			privateKey = HomekitServer.generateKey();
 			System.out.println("SALT: " + salt);
@@ -139,7 +139,7 @@ public class AuthInfoService implements HomekitAuthInfo {
 					byte[] publicKey = readKey(key);
 					if (publicKey != null) {
 						System.out.println("Loading " + key + " " + new String(publicKey));
-						userKeyMap.putIfAbsent(key, publicKey);
+						//userKeyMap.putIfAbsent(key, publicKey);
 					}
 				}
 			} else {
@@ -208,7 +208,15 @@ public class AuthInfoService implements HomekitAuthInfo {
 
 	@Override
 	public void createUser(String username, byte[] publicKey) {
-		userKeyMap.putIfAbsent(username, publicKey);
+
+		if (userKeyMap.containsKey(username)) {
+			System.out.println("Performing key update");
+			userKeyMap.replace(username, publicKey);
+		} else {
+			System.out.println("Adding initial key");
+			userKeyMap.putIfAbsent(username, publicKey);
+		}
+
 		saveUserMap();
 		System.out.println("Added pairing for " + username + " " + new String(publicKey));
 	}
@@ -227,6 +235,12 @@ public class AuthInfoService implements HomekitAuthInfo {
 		System.out.println("Requesting User:" + username + " " + new String(bs));
 
 		return bs;
+	}
+	
+	@Override
+	public boolean hasUser() {
+		
+		return false; // userKeyMap.size()>0;
 	}
 
 }

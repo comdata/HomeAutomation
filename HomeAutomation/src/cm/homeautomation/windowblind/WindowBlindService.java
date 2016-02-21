@@ -1,0 +1,116 @@
+package cm.homeautomation.windowblind;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.URI;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.methods.GetMethod;
+
+import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.entities.WindowBlind;
+import cm.homeautomation.services.base.BaseService;
+
+@Path("windowBlinds")
+public class WindowBlindService extends BaseService {
+
+	
+	public WindowBlindsList getAll() {
+		WindowBlindsList windowBlindsList = new WindowBlindsList();
+
+		EntityManager em = EntityManagerService.getNewManager();
+		em.getTransaction().begin();
+
+		@SuppressWarnings("unchecked")
+		List<WindowBlind> windowBlinds = em
+				.createQuery("select w FROM WindowBlind w ")
+				.getResultList();
+
+		if (windowBlinds != null) {
+			for (WindowBlind windowBlind : windowBlinds) {
+//				windowBlind.setDimUrl(null);
+//				windowBlind.setStatusUrl(null);
+				windowBlindsList.getWindowBlinds().add(windowBlind);
+			}
+		}
+
+		em.getTransaction().commit();
+		return windowBlindsList;
+	}
+	
+	@GET
+	@Path("forRoom/{roomId}")
+	public WindowBlindsList getAllForRoom(@PathParam("roomId") Long roomId) {
+		WindowBlindsList windowBlindsList = new WindowBlindsList();
+
+		EntityManager em = EntityManagerService.getNewManager();
+		em.getTransaction().begin();
+
+		@SuppressWarnings("unchecked")
+		List<WindowBlind> windowBlinds = em
+				.createQuery("select w FROM WindowBlind w where w.room=(select r from Room r where r.id=:roomId)")
+				.setParameter("roomId", roomId).getResultList();
+
+		if (windowBlinds != null) {
+			for (WindowBlind windowBlind : windowBlinds) {
+//				windowBlind.setDimUrl(null);
+//				windowBlind.setStatusUrl(null);
+				windowBlindsList.getWindowBlinds().add(windowBlind);
+			}
+		}
+
+		em.getTransaction().commit();
+		return windowBlindsList;
+	}
+
+	@GET
+	@Path("setDim/{windowBlind}/{value}")
+	public void setDim(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value) {
+		EntityManager em = EntityManagerService.getNewManager();
+
+		WindowBlind singleWindowBlind = (WindowBlind) em.createQuery("select w from WindowBlind w where w.id=:id")
+				.setParameter("id", windowBlindId).getSingleResult();
+		String dimUrl = singleWindowBlind.getDimUrl().replace("{DIMVALUE}", value);
+
+		GetMethod getMethod = new GetMethod(dimUrl);
+		try {
+			HttpClient httpClient = new HttpClient();
+
+			String[] userPassword=dimUrl.split("@")[0].replace("http://", "").split(":");
+			
+			
+			
+			Credentials defaultcreds = new UsernamePasswordCredentials(userPassword[0], userPassword[1]);
+			
+			System.out.println(getMethod.getURI().getUserinfo());
+			httpClient.getState().setCredentials(new AuthScope(getMethod.getURI().getHost(), getMethod.getURI().getPort(), AuthScope.ANY_REALM),
+					defaultcreds);
+
+			httpClient.executeMethod(getMethod);
+			
+			singleWindowBlind.setCurrentValue(new Long(value));
+			em.getTransaction().begin();
+			em.merge(singleWindowBlind);
+			em.getTransaction().commit();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public synchronized static void cronSetDim(String[] args) {
+		String windowBlindId = args[0];
+		String dimValue = args[1];
+
+		new WindowBlindService().setDim(new Long(windowBlindId), dimValue);
+	}
+
+}

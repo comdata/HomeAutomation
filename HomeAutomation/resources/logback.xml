@@ -23,7 +23,7 @@
 	
 	<logger name="com.beowulfe.hap" level="TRACE" />
 
-	<root level="info">
+	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE" />
 	</root>

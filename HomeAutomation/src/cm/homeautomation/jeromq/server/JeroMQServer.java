@@ -3,14 +3,17 @@ package cm.homeautomation.jeromq.server;
 public class JeroMQServer {
 
 	private Thread jeroMQServerThread;
+	private JeroMQServerThread jeroMQServerRunnable;
 
 	public JeroMQServer() {
-		jeroMQServerThread = new Thread(new JeroMQServerThread());
+		jeroMQServerRunnable = new JeroMQServerThread();
+		jeroMQServerThread = new Thread(jeroMQServerRunnable);
 		jeroMQServerThread.start();
 	}
 	
 	public void stop() {
-		jeroMQServerThread.stop();;
+		jeroMQServerRunnable.stop();
+		jeroMQServerThread.stop();
 	}
 	
 }

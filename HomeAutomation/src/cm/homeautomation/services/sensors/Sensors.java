@@ -258,20 +258,22 @@ public class Sensors extends BaseService {
 
 						double floatLastValue = Double.parseDouble(lastValue);
 
-						double diff = floatLastValue - floatCurrentValue;
-						double diffAbsolute = Math.sqrt(diff * diff);
+						if (floatLastValue != floatCurrentValue) {
+							double diff = floatLastValue - floatCurrentValue;
+							double diffAbsolute = Math.sqrt(diff * diff);
 
-						if (diffAbsolute > 1) {
+							if (diffAbsolute >= 1) {
 
-							SensorValue sensorValue = new SensorValue();
-							sensorValue.setDateTime(sData.getDateTime());
+								SensorValue sensorValue = new SensorValue();
+								sensorValue.setDateTime(sData.getDateTime());
 
-							sensorValue.setValue(currentValue);
+								sensorValue.setValue(currentValue);
 
-							latestValue = sData.getValue();
-							lastSensorValue = sensorValue;
-							sensorData.getValues().add(sensorValue);
+								latestValue = sData.getValue();
+								lastSensorValue = sensorValue;
+								sensorData.getValues().add(sensorValue);
 
+							}
 						}
 					}
 				}
@@ -280,20 +282,22 @@ public class Sensors extends BaseService {
 					if (dataObject instanceof SensorData) {
 						SensorData sData = (SensorData) dataObject;
 
-						if (lastSensorValue != null) {
-							SensorValue tempSensorValue = new SensorValue();
-							tempSensorValue.setValue(lastSensorValue.getValue());
-							tempSensorValue.setDateTime(new Date(sData.getDateTime().getTime() - 1000));
-							sensorData.getValues().add(tempSensorValue);
+						if (lastSensorValue==null || (lastSensorValue!=null && sData.getValue() != lastSensorValue.getValue())) {
+							if (lastSensorValue != null) {
+								SensorValue tempSensorValue = new SensorValue();
+								tempSensorValue.setValue(lastSensorValue.getValue());
+								tempSensorValue.setDateTime(new Date(sData.getDateTime().getTime() - 1000));
+								sensorData.getValues().add(tempSensorValue);
+							}
+
+							SensorValue sensorValue = new SensorValue();
+							sensorValue.setDateTime(sData.getDateTime());
+							sensorValue.setValue(sData.getValue());
+
+							latestValue = sData.getValue();
+							lastSensorValue = sensorValue;
+							sensorData.getValues().add(sensorValue);
 						}
-
-						SensorValue sensorValue = new SensorValue();
-						sensorValue.setDateTime(sData.getDateTime());
-						sensorValue.setValue(sData.getValue());
-
-						latestValue = sData.getValue();
-						lastSensorValue = sensorValue;
-						sensorData.getValues().add(sensorValue);
 					}
 				}
 			}

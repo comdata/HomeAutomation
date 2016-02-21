@@ -39,11 +39,15 @@ public class OverviewWebSocket {
 	}
 
 	public void sendTile(OverviewTile tile) {
+
 		for (Session session : userSessions) {
-			System.out.println("Sending to " + session.getId());
-			session.getAsyncRemote().sendObject(tile);
+			try {
+				System.out.println("Sending to " + session.getId());
+				session.getAsyncRemote().sendObject(tile);
+			} catch (Exception e) {
+
+			}
 		}
 	}
-	
-	
+
 }

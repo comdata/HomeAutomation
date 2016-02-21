@@ -22,7 +22,7 @@ public class HAPHumiditySensor implements HumiditySensor {
 	@Override
 	public int getId() {
 		// TODO Auto-generated method stub
-		return id.intValue()+100;
+		return id.intValue()+200;
 	}
 
 	@Override

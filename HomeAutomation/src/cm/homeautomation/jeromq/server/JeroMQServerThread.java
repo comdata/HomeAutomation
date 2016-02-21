@@ -8,16 +8,17 @@ import org.zeromq.ZMQ.Socket;
 
 public class JeroMQServerThread implements Runnable {
 
+	private Socket frontend;
+	private Socket backend;
+
 	@Override
 	public void run() {
 		ZContext ctx = new ZContext();
 
-        //  Frontend socket talks to clients over TCP
-        Socket frontend = ctx.createSocket(ZMQ.ROUTER);
+        frontend = ctx.createSocket(ZMQ.ROUTER);
         frontend.bind("tcp://*:5570");
 
-        //  Backend socket talks to workers over inproc
-        Socket backend = ctx.createSocket(ZMQ.DEALER);
+        backend = ctx.createSocket(ZMQ.DEALER);
         backend.bind("inproc://backend");
 
         //  Launch pool of worker threads, precise number is not critical
@@ -30,6 +31,11 @@ public class JeroMQServerThread implements Runnable {
 
         ctx.destroy();
 
+	}
+	
+	public void stop() {
+		frontend.close();
+		backend.close();
 	}
 
 }
