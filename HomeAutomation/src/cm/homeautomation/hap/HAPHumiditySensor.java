@@ -72,12 +72,6 @@ public class HAPHumiditySensor implements HumiditySensor {
 
 
 	@Override
-	public Collection<Service> getServices() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public CompletableFuture<Double> getCurrentRelativeHumidity() {
 		
 		return CompletableFuture.completedFuture(getHumidity());

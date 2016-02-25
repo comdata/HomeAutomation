@@ -106,6 +106,21 @@ public class Sensors extends BaseService {
 		}
 	}
 
+	@GET
+	@Path("forroom/save/{sensorId}/{value}")
+	public boolean saveSensorData(@PathParam("sensorId") Long sensorId, @PathParam("value") String value) {
+		SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
+		sensorDataSaveRequest.setSensorId(sensorId);
+		SensorData sensorData=new SensorData();
+		sensorData.setValue(value);
+		sensorData.setDateTime(new Date());
+		sensorDataSaveRequest.setSensorData(sensorData);
+		
+		saveSensorData(sensorDataSaveRequest);
+		
+		return true;
+	}
+	
 	@POST
 	@Path("forroom/save")
 	public void saveSensorData(SensorDataSaveRequest request) {

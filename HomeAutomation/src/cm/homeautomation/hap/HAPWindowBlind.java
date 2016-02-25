@@ -29,13 +29,13 @@ public class HAPWindowBlind implements WindowCovering {
 
 	@Override
 	public int getId() {
-		// TODO Auto-generated method stub
+		
 		return id;
 	}
 
 	@Override
 	public String getLabel() {
-		// TODO Auto-generated method stub
+		
 		return label;
 	}
 
@@ -61,12 +61,6 @@ public class HAPWindowBlind implements WindowCovering {
 	public String getManufacturer() {
 		// TODO Auto-generated method stub
 		return "none";
-	}
-
-	@Override
-	public Collection<Service> getServices() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

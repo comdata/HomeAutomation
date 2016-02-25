@@ -80,8 +80,34 @@ public class WindowBlindService extends BaseService {
 				.setParameter("id", windowBlindId).getSingleResult();
 		String dimUrl = singleWindowBlind.getDimUrl().replace("{DIMVALUE}", value);
 
-		GetMethod getMethod = new GetMethod(dimUrl);
+		
+		performHTTPDim(value, singleWindowBlind, dimUrl);
+		
+		singleWindowBlind.setCurrentValue(Float.parseFloat(value));
+		
+		em.getTransaction().begin();
+		em.merge(singleWindowBlind);
+		em.getTransaction().commit();
+	}
+
+	@GET
+	@Path("setPosition/{windowBlind}/{value}")
+	public void setPosition(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value) {
+		EntityManager em = EntityManagerService.getNewManager();
+
+		em.getTransaction().begin();
+		
+		WindowBlind singleWindowBlind = (WindowBlind) em.createQuery("select w from WindowBlind w where w.id=:id")
+				.setParameter("id", windowBlindId).getSingleResult();
+		
+		singleWindowBlind.setCurrentValue(Float.parseFloat(value));
+		em.merge(singleWindowBlind);
+		em.getTransaction().commit();
+	}
+	
+	private void performHTTPDim(String value, WindowBlind singleWindowBlind, String dimUrl) {
 		try {
+			GetMethod getMethod = new GetMethod(dimUrl);
 			HttpClient httpClient = new HttpClient();
 
 			String[] userPassword=dimUrl.split("@")[0].replace("http://", "").split(":");
@@ -97,9 +123,7 @@ public class WindowBlindService extends BaseService {
 			httpClient.executeMethod(getMethod);
 			
 			singleWindowBlind.setCurrentValue(new Long(value));
-			em.getTransaction().begin();
-			em.merge(singleWindowBlind);
-			em.getTransaction().commit();
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
