@@ -26,7 +26,7 @@ sap.ui.base.Object
                 var resultModel=new sap.ui.model.json.JSONModel();
                 resultModel.setData(event.getSource().oData);
 
-                successCallback.apply(subject, [event, resultModel]);
+                successCallback.apply(subject, [event, resultModel, event.getSource().oData]);
             });
 
             if (!errorCallBack) {
@@ -39,7 +39,7 @@ sap.ui.base.Object
             }
             model.attachRequestFailed(function (event) {
                 errorCallBack(event);
-            });
+            })
 
 
             model.loadData(url, inModel, true, method);
