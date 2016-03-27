@@ -3,54 +3,24 @@
         xmlns:core="sap.ui.core">
     <Dialog title="Raumdetails -  {currentRoom>roomName}" afterClose="afterDialogClose" stretch="true">
         <content>
+            <List visible="false" id="switchList"
 
-            <Panel expandable="true" expanded="true" headerText="Switches" width="auto"
-                   class="sapUiResponsiveMargin">
-                <content>
-                    <List visible="false" id="switchList"
-
-                          items="{
+                    items="{
 			path: 'switches>/switchStatuses'
 		}">
-                        <InputListItem
-                                label="{switches>name}"
-                                description="{switches>name}"
-                                icon="sap-icon://lightbulb"
-                                iconDensityAware="false"
-                                iconInset="false"
-                                >
-                            <Switch state="{switches>switchState}" change="handleSwitchChange"/>
-                        </InputListItem>
-                    </List>
-                    <List visible="false" id="windowBlinds"
-
-                          items="{
-			path: 'windowBlinds>/windowBlinds'
-		}">
-                        <InputListItem
-                                label="{windowBlinds>name}"
-                                description="{windowBlinds>name}"
-                                icon="sap-icon://lightbulb"
-                                iconDensityAware="false"
-                                iconInset="false"
-                                >
-                            <Slider min="0" max="99" value="{windowBlinds>currentValue}" width="100px"
-                                    change="handleBlindChange"/>
-                        </InputListItem>
-                    </List>
-                </content>
-            </Panel>
-
-            <Panel expandable="true" expanded="false" headerText="Historic Data" width="auto"
-                   class="sapUiResponsiveMargin" expand="expandHistoricData">
-                <content>
-
-                    <core:HTML content="&lt;div id='chart'&gt;
+                <InputListItem
+                        label="{switches>name}"
+                        description="{switches>name}"
+                        icon="sap-icon://lightbulb"
+                        iconDensityAware="false"
+                        iconInset="false"
+                        >
+                    <Switch state="{switches>switchState}" change="handleSwitchChange"/>
+                </InputListItem>
+            </List>
+            <core:HTML content="&lt;div id='chart'&gt;
     &lt;svg style='height:300px; width:100%;'&gt;&lt;/svg&gt;
 &lt;/div&gt;"></core:HTML>
-                </content>
-            </Panel>
-
         </content>
         <beginButton>
             <Button text="Schliessen" press="dialogClose"/>

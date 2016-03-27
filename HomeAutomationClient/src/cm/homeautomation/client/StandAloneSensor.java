@@ -163,7 +163,7 @@ public class StandAloneSensor extends Thread {
 			
 			ZMQ.Context context = ZMQ.context(1);
 	        ZMQ.Socket socket = context.socket(ZMQ.REQ);
-	        socket.connect("tcp://192.168.1.57:5570");
+	        socket.connect("tcp://192.168.1.76:5570");
 
 	        socket.send(jsonInString.getBytes(), 0);
 	        //String result = new String(socket.recv(0));
