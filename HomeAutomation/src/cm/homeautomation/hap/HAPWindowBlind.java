@@ -1,10 +1,8 @@
 package cm.homeautomation.hap;
 
-import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
-import com.beowulfe.hap.Service;
 import com.beowulfe.hap.accessories.WindowCovering;
 import com.beowulfe.hap.accessories.properties.WindowCoveringPositionState;
 
@@ -99,7 +97,7 @@ public class HAPWindowBlind implements WindowCovering {
 	@Override
 	public CompletableFuture<Void> setHoldPosition(boolean hold) throws Exception {
 		// TODO Auto-generated method stub
-		return null;
+		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override

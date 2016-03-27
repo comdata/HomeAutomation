@@ -52,6 +52,7 @@ public class OverviewService extends BaseService {
 	public OverviewTile getOverviewTileForRoom(EntityManager em, Room room) {
 		OverviewTile roomTile = new OverviewTile();
 
+		
 		String temperature = "";
 		String humidity = "";
 		String icon = "";
@@ -114,7 +115,7 @@ public class OverviewService extends BaseService {
 				? (temperature.replace(",", ".") + ((humidity != null && !"".equals(humidity)) ? " / " + humidity : ""))
 				: "";
 		roomTile.setNumber(number);
-		roomTile.setNumberUnit("°C / %");
+		roomTile.setNumberUnit("°C "+ (number.contains("/")? "/ %": ""));
 		roomTile.setTitle(room.getRoomName());
 		roomTile.setRoomName(room.getRoomName());
 		roomTile.setInfo((sensorDate != null) ? sensorDate.toLocaleString() : "");

@@ -24,7 +24,7 @@
 		<servlet-class>cm.homeautomation.web.HttpProxyServlet</servlet-class>
 		<init-param>
 			<param-name>url</param-name>
-			<param-value>http://192.168.1.34:8081/stream.mjpg</param-value>
+			<param-value>http://192.168.1.57:8081/stream.mjpg</param-value>
 		</init-param>
 	</servlet>
 

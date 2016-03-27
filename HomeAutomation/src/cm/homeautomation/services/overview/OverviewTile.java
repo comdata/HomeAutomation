@@ -13,6 +13,7 @@ public class OverviewTile {
 	private String info;
 	private String infoState;
 	private String roomName;
+	private String eventHandler="handleSelect";
    /* "icon" : "inbox",
     "number" : "89",
     "title" : "Approve Leave Requests",
@@ -66,5 +67,11 @@ public class OverviewTile {
 	
 	public String getRoomName() {
 		return roomName;
+	}
+	public String getEventHandler() {
+		return eventHandler;
+	}
+	public void setEventHandler(String eventHandler) {
+		this.eventHandler = eventHandler;
 	}
 }

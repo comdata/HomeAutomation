@@ -12,6 +12,7 @@ public class HAPHumiditySensor implements HumiditySensor {
 	private String label;
 	private Long id;
 	private Double humidity;
+	private HomekitCharacteristicChangeCallback callback;
 
 	public HAPHumiditySensor(String name, Long id) {
 
@@ -79,6 +80,7 @@ public class HAPHumiditySensor implements HumiditySensor {
 
 	@Override
 	public void subscribeCurrentRelativeHumidity(HomekitCharacteristicChangeCallback callback) {
+		this.callback = callback;
 		// TODO Auto-generated method stub
 		
 	}
@@ -86,6 +88,7 @@ public class HAPHumiditySensor implements HumiditySensor {
 	@Override
 	public void unsubscribeCurrentRelativeHumidity() {
 		// TODO Auto-generated method stub
+		this.callback=null;
 		
 	}
 

@@ -1,51 +1,44 @@
 package cm.homeautomation.hap;
 
-import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
-
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
 import com.beowulfe.hap.Service;
-import com.beowulfe.hap.accessories.Lightbulb;
-import com.beowulfe.hap.impl.services.LightbulbService;
+import com.beowulfe.hap.accessories.Switch;
 
 import cm.homeautomation.services.actor.ActorService;
 
-public class HAPSwitch implements Lightbulb {
-	
-	private boolean powerState = false;
-	private HomekitCharacteristicChangeCallback subscribeCallback = null;
-	private String label;
-	private Long id;
+public class HAPSwitch implements Switch {
 
-	public HAPSwitch() {
+	private Long id;
+	private boolean powerState;
+	private String label;
+	private HomekitCharacteristicChangeCallback subscribeCallback = null;
+
+	public HAPSwitch(String name, boolean initialState, Long id) {
+		powerState = initialState;
+		label = name;
+		this.id = id;
+
 	}
-	
-	public HAPSwitch(String name,boolean initialState, Long id) {
-		powerState=initialState;
-		label=name;
-		this.id=id;
-	}
-	
+
 	@Override
 	public int getId() {
-		return id.intValue()+2000;
+		// TODO Auto-generated method stub
+		return id.intValue() + 2000;
 	}
 
 	@Override
 	public String getLabel() {
+		// TODO Auto-generated method stub
 		return label;
 	}
 
 	@Override
 	public void identify() {
-		System.out.println("Identifying light");
+		System.out.println("Identifying switch");
+
 	}
 
 	@Override
@@ -64,32 +57,33 @@ public class HAPSwitch implements Lightbulb {
 	}
 
 	@Override
-	public CompletableFuture<Boolean> getLightbulbPowerState() {
+	public CompletableFuture<Boolean> getSwitchState() {
+
 		return CompletableFuture.completedFuture(powerState);
 	}
 
 	@Override
-	public CompletableFuture<Void> setLightbulbPowerState(boolean powerState)
-			throws Exception {
+	public CompletableFuture<Void> setSwitchState(boolean powerState) throws Exception {
 		this.powerState = powerState;
 		if (subscribeCallback != null) {
 			subscribeCallback.changed();
 		}
-		
+
 		ActorService.getInstance().pressSwitch(id.toString(), (powerState ? "ON" : "OFF"));
-		
-		System.out.println("The lightbulb is now "+(powerState ? "on" : "off"));
+
+		System.out.println("The switch is now " + (powerState ? "on" : "off"));
 		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override
-	public void subscribeLightbulbPowerState(
-			HomekitCharacteristicChangeCallback callback) {
+	public void subscribeSwitchState(HomekitCharacteristicChangeCallback callback) {
 		this.subscribeCallback = callback;
+
 	}
 
 	@Override
-	public void unsubscribeLightbulbPowerState() {
+	public void unsubscribeSwitchState() {
 		this.subscribeCallback = null;
 	}
+
 }

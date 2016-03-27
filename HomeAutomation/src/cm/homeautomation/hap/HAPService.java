@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import com.beowulfe.hap.HomekitAuthInfo;
@@ -68,12 +69,49 @@ public class HAPService {
 
 		for (WindowBlind windowBlind : windowBlindsList) {
 			int id = 3000 + new Long(windowBlind.getId()).intValue();
-			HAPWindowBlind hapWindowBlind = new HAPWindowBlind(windowBlind, id, windowBlind.getName());
+			String name=replaceUmlaut(windowBlind.getName());
+			HAPWindowBlind hapWindowBlind = new HAPWindowBlind(windowBlind, id, name);
 			System.out.println("Adding Windowblind: " + id + " - " + hapWindowBlind.getLabel());
 
 			bridge.addAccessory(hapWindowBlind);
 		}
 	}
+	
+	/**
+	  * Replaces all german umlaute in the input string with the usual replacement 
+	  * scheme, also taking into account capitilization.
+	  * A test String such as 
+	  * "Käse Köln Füße Öl Übel Äü Üß ÄÖÜ Ä Ö Ü ÜBUNG" will yield the result 
+	  * "Kaese Koeln Fuesse Oel Uebel Aeue Uess AEOEUe Ae Oe Ue UEBUNG"
+	  * @param input
+	  * @return the input string with replaces umlaute
+	  */
+	 private static String replaceUmlaut(String input) {
+	 
+	     //replace all lower Umlauts
+	     String o_strResult =
+	             input
+	             .replaceAll("ü", "ue")
+	             .replaceAll("ö", "oe")
+	             .replaceAll("ä", "ae")
+	             .replaceAll("ß", "ss");
+	 
+	     //first replace all capital umlaute in a non-capitalized context (e.g. Übung)
+	     o_strResult =
+	             o_strResult
+	             .replaceAll("Ü(?=[a-zäöüß ])", "Ue")
+	             .replaceAll("Ö(?=[a-zäöüß ])", "Oe")
+	             .replaceAll("Ä(?=[a-zäöüß ])", "Ae");
+	 
+	     //now replace all the other capital umlaute
+	     o_strResult =
+	             o_strResult
+	             .replaceAll("Ü", "UE")
+	             .replaceAll("Ö", "OE")
+	             .replaceAll("Ä", "AE");
+	 
+	     return o_strResult;
+	 }
 
 	public void addTemperatureSensor(HomekitRoot bridge) {
 		System.out.println("Loading Temperature");
@@ -89,9 +127,11 @@ public class HAPService {
 				if (latestDataList != null && !latestDataList.isEmpty()) {
 					SensorData sensorData = latestDataList.get(0);
 
-					System.out.println("Adding Sensor: " + singleSensor.getSensorName());
+					String name=replaceUmlaut(singleSensor.getSensorName());
 
-					HAPTemperatureSensor hapTemperature = new HAPTemperatureSensor(singleSensor.getSensorName(),
+					System.out.println("Adding Sensor: " + name);
+					
+					HAPTemperatureSensor hapTemperature = new HAPTemperatureSensor( name,
 							singleSensor.getId());
 					hapTemperature.setTemperature(new Double(sensorData.getValue().replace(",", ".")));
 					getTemperatureSensors().put(singleSensor.getId(), hapTemperature);
@@ -115,9 +155,11 @@ public class HAPService {
 
 				SensorData sensorData = latestDataList.get(0);
 
-				System.out.println("Adding Sensor: " + singleSensor.getSensorName());
+				String name=replaceUmlaut(singleSensor.getSensorName());
+				System.out.println("Adding Sensor: " + name);
 
-				HAPHumiditySensor hapHumiditySensor = new HAPHumiditySensor(singleSensor.getSensorName(),
+				
+				HAPHumiditySensor hapHumiditySensor = new HAPHumiditySensor(name,
 						singleSensor.getId());
 				hapHumiditySensor.setHumidity(new Double(sensorData.getValue().replace(",", ".")));
 				getHumiditySensors().put(singleSensor.getId(), hapHumiditySensor);
@@ -127,9 +169,9 @@ public class HAPService {
 		}
 	}
 
-	public void addSwitchesToBridge(HomekitRoot bridge) {
-		System.out.println("Loading Switches");
-		List<Switch> switchList = em.createQuery("select sw from Switch sw").getResultList();
+	public void addLightsToBridge(HomekitRoot bridge) {
+		System.out.println("Loading Lights");
+		List<Switch> switchList = em.createQuery("select sw from Switch sw where sw.switchType='LIGHT'").getResultList();
 
 		if (switchList != null) {
 			for (Switch singleSwitch : switchList) {
@@ -137,10 +179,35 @@ public class HAPService {
 				if ("ON".equals(singleSwitch.getLatestStatus())) {
 					status = true;
 				}
+				
+				String name=replaceUmlaut(singleSwitch.getName());
 
-				System.out.println("Adding Switch: " + singleSwitch.getName());
+				System.out.println("Adding Light: " + name);
 
-				HAPSwitch hapSwitch = new HAPSwitch(singleSwitch.getName(), status, singleSwitch.getId());
+				HAPLight hapSwitch = new HAPLight(name, status, singleSwitch.getId());
+
+				bridge.addAccessory(hapSwitch);
+			}
+
+		}
+	}
+	
+	public void addSocketsToBridge(HomekitRoot bridge) {
+		System.out.println("Loading Switches");
+		List<Switch> switchList = em.createQuery("select sw from Switch sw where sw.switchType='SOCKET'").getResultList();
+
+		if (switchList != null) {
+			for (Switch singleSwitch : switchList) {
+				boolean status = false;
+				if ("ON".equals(singleSwitch.getLatestStatus())) {
+					status = true;
+				}
+				
+				String name=replaceUmlaut(singleSwitch.getName());
+
+				System.out.println("Adding Switch: " + name);
+
+				HAPSwitch hapSwitch = new HAPSwitch(name, status, singleSwitch.getId());
 
 				bridge.addAccessory(hapSwitch);
 			}
@@ -184,10 +251,11 @@ public class HAPService {
 			HomekitAuthInfo authInfo = new HomekitAuthInfoImpl("032-45-154");
 			bridge = homekit.createBridge(authInfo, "Haus", "CM, Inc.", "V1", "111a2222be2341");
 			// bridge.allowUnauthenticatedRequests(true);
-			addSwitchesToBridge(bridge);
+			addLightsToBridge(bridge);
+			addSocketsToBridge(bridge);
 			addTemperatureSensor(bridge);
-			// addWindowCovering(bridge);
-			// addHumiditySensor(bridge);
+			//addWindowCovering(bridge);
+			addHumiditySensor(bridge);
 
 			System.out.println("Starting bridge");
 			bridge.start();
