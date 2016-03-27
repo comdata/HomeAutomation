@@ -4,14 +4,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.concurrent.Future;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 import cm.homeautomation.sensors.RFEvent;
@@ -19,6 +22,8 @@ import cm.homeautomation.sensors.RFEvent;
 public class StandAloneRFSniffer extends Thread {
 
 	private String url;
+	private int lastParsedCode = 0;
+	private long lastParsingTime = 0;
 
 	public StandAloneRFSniffer(String url) {
 		this.url = url;
@@ -40,8 +45,11 @@ public class StandAloneRFSniffer extends Thread {
 
 		public void run() {
 			try {
-				Client c = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
-				WebTarget r = c.target(url);
+				Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+				client.property(ClientProperties.CONNECT_TIMEOUT, 60000);
+				client.property(ClientProperties.READ_TIMEOUT, 60000);
+
+				WebTarget r = client.target(url);
 
 				BufferedReader br = new BufferedReader(new InputStreamReader(is));
 				String line = null;
@@ -52,24 +60,51 @@ public class StandAloneRFSniffer extends Thread {
 						int parsedCode = Integer.parseInt(code);
 						System.out.println(parsedCode);
 
-						try {
-							RFEvent event = new RFEvent();
-							event.setCode(parsedCode);
+						if (lastParsedCode != parsedCode || lastParsingTime + 5000 < System.currentTimeMillis()) {
 
-							Response response = r.request(MediaType.APPLICATION_JSON)
-									.post(Entity.entity(event, MediaType.APPLICATION_JSON));
-							System.out.println("Status: " + response.getStatus());
-						} catch (Exception e) {
+							try {
+								RFEvent event = new RFEvent();
+								event.setCode(parsedCode);
 
+								r.request(MediaType.APPLICATION_JSON).async().post(
+										Entity.entity(event, MediaType.APPLICATION_JSON),
+										new InvocationCallback<Response>() {
+
+											@Override
+											public void completed(Response response) {
+												// TODO Auto-generated method
+												// stub
+
+												System.out.println("Status: " + response.getStatus());
+											}
+
+											@Override
+											public void failed(Throwable throwable) {
+												// TODO Auto-generated method
+												// stub
+												System.out.println("Error message: " + throwable.getMessage());
+											}
+										});
+
+							} catch (Exception e) {
+
+							}
+							lastParsedCode = parsedCode;
+							lastParsingTime = System.currentTimeMillis();
 						}
 					}
 
 				}
 
-			} catch (IOException ioe) {
+			} catch (
+
+			IOException ioe)
+
+			{
 				ioe.printStackTrace();
 			}
 		}
+
 	}
 
 	public static void main(String[] args) {

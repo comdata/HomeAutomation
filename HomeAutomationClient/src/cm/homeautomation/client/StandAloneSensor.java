@@ -9,22 +9,31 @@ import java.util.Set;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.zeromq.ZMQ;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cm.homeautomation.entities.SensorData;
+import cm.homeautomation.planes.PlaneSensor;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.sensors.base.HumiditySensor;
 import cm.homeautomation.sensors.base.TechnicalSensor;
 import cm.homeautomation.sensors.base.TemperatureSensor;
+import cm.homeautomation.tv.PanasonicTVSensor;
 
 public class StandAloneSensor extends Thread {
 	Map<String, TechnicalSensor> sensorList = new HashMap<String, TechnicalSensor>();
 	private String roomId;
 	private String url;
+	private int timeout=60;
 
 	public StandAloneSensor(String roomId, String url) {
 		this.roomId = roomId;
@@ -33,7 +42,6 @@ public class StandAloneSensor extends Thread {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		super.run();
 
 		Properties props = new Properties();
@@ -73,11 +81,23 @@ public class StandAloneSensor extends Thread {
 			case "HUMIDITY":
 				sensorList.put(id, new HumiditySensor(technicalType, pin));
 				break;
+			case "PRESSURE":
+				sensorList.put(id, new PressureSensor(technicalType, pin));
+				break;
+			case "PLANE":
+				sensorList.put(id, new PlaneSensor(technicalType, pin));
+				break;
+			case "PANASONIC-TV":
+				sensorList.put(id, new PanasonicTVSensor(technicalType,pin));
+				break;
 			}
 		}
 
-		Client c = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
-		WebTarget r = c.target(url);
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		client.property(ClientProperties.CONNECT_TIMEOUT, 60000);
+		client.property(ClientProperties.READ_TIMEOUT, 60000);
+
+		WebTarget r = client.target(url);
 
 		while (true) {
 
@@ -91,39 +111,38 @@ public class StandAloneSensor extends Thread {
 					SensorData sensorData = new SensorData();
 
 					String value = "";
-					
+
+					// TODO fix
 					// repeat sensor aquisition
 					for (int i = 0; i < 10; i++) {
 						value = technicalSensor.getValue();
-						System.out.println("Read: "+value);
-						if (Float.parseFloat(value)>2) {
+						System.out.println("Read: " + value);
+						if (Float.parseFloat(value) > 2 || ("PLANE".equals(technicalSensor.getType())) || ("PANASONIC-TV".equals(technicalSensor.getType())) ) {
 							break;
 						} else {
 							Thread.sleep(500);
 						}
 					}
-					
-					if (Float.parseFloat(value)<0) {
+
+					if (Float.parseFloat(value) < 0) {
 						continue;
 					}
-					
+
 					sensorData.setValue(value);
 
 					saveRequest.setSensorData(sensorData);
 					saveRequest.setSensorId(Long.parseLong(sensor));
 
 					System.out.println(sensorData.getValue());
-					try {
-						Response response = r.request(MediaType.APPLICATION_JSON)
-								.post(Entity.entity(saveRequest, MediaType.APPLICATION_JSON));
-						System.out.println("Status: " + response.getStatus());
-					} catch (Exception e) {
-
-					}
-
+					
+					
+					//	RESTDeliveryMethod(r, saveRequest);
+					
+					callJeroMQDeliveryMethod(saveRequest);
+					
 				}
 
-				Thread.sleep(60 * 1000);
+				Thread.sleep(this.timeout * 1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -132,13 +151,77 @@ public class StandAloneSensor extends Thread {
 
 	}
 
+	private void callJeroMQDeliveryMethod(SensorDataSaveRequest saveRequest) {
+		
+
+
+		//Object to JSON in String
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			
+			String jsonInString = mapper.writeValueAsString(saveRequest);
+			
+			ZMQ.Context context = ZMQ.context(1);
+	        ZMQ.Socket socket = context.socket(ZMQ.REQ);
+	        socket.connect("tcp://192.168.1.57:5570");
+
+	        socket.send(jsonInString.getBytes(), 0);
+	        //String result = new String(socket.recv(0));
+
+	        socket.close();
+	        context.term();
+			
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void RESTDeliveryMethod(WebTarget r, SensorDataSaveRequest saveRequest) {
+		try {
+			
+			r.request(MediaType.APPLICATION_JSON).async()
+			.post( Entity.entity(saveRequest, MediaType.APPLICATION_JSON), new InvocationCallback<Response>() {
+
+				@Override
+				public void completed(Response response) {
+					// TODO Auto-generated method stub
+
+					System.out.println("Status: " + response.getStatus());
+				}
+
+				@Override
+				public void failed(Throwable throwable) {
+					// TODO Auto-generated method stub
+					System.out.println("Error message: " + throwable.getMessage());
+				}});
+			
+		} catch (Exception e) {
+
+		}
+	}
+
 	public static void main(String[] args) {
 		StandAloneActor standAloneActor = new StandAloneActor();
 		standAloneActor.start();
 		StandAloneSensor standAloneSensor = new StandAloneSensor(args[0], args[1]);
+		
+		if (args.length>3) {
+			standAloneSensor.setTimeout(args[3]);
+		}
+		
 		standAloneSensor.start();
-		StandAloneRFSniffer standAloneRFSniffer = new StandAloneRFSniffer(args[2]);
-		standAloneRFSniffer.start();
 
+		if (args.length > 2) {
+
+			StandAloneRFSniffer standAloneRFSniffer = new StandAloneRFSniffer(args[2]);
+			standAloneRFSniffer.start();
+		}
+
+	}
+
+	private void setTimeout(String timeout) {
+		this.timeout=Integer.parseInt(timeout);
+		
 	}
 }

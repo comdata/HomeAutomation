@@ -1,5 +1,8 @@
 package cm.homeautomation.services.overview;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class OverviewTile {
 
 	private String roomId;
@@ -9,6 +12,8 @@ public class OverviewTile {
 	private String title;
 	private String info;
 	private String infoState;
+	private String roomName;
+	private String eventHandler="handleSelect";
    /* "icon" : "inbox",
     "number" : "89",
     "title" : "Approve Leave Requests",
@@ -55,5 +60,18 @@ public class OverviewTile {
 	}
 	public void setRoomId(String roomId) {
 		this.roomId = roomId;
+	}
+	public void setRoomName(String roomName) {
+		this.roomName = roomName;
+	}
+	
+	public String getRoomName() {
+		return roomName;
+	}
+	public String getEventHandler() {
+		return eventHandler;
+	}
+	public void setEventHandler(String eventHandler) {
+		this.eventHandler = eventHandler;
 	}
 }

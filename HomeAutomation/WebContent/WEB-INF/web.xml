@@ -20,6 +20,15 @@
 	</servlet>
 
 	<servlet>
+		<servlet-name>cameraproxy</servlet-name>
+		<servlet-class>cm.homeautomation.web.HttpProxyServlet</servlet-class>
+		<init-param>
+			<param-name>url</param-name>
+			<param-value>http://192.168.1.57:8081/stream.mjpg</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet>
 		<servlet-name>jersey</servlet-name>
 		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
 		<init-param>
@@ -37,6 +46,11 @@
 	<servlet-mapping>
 		<servlet-name>jersey</servlet-name>
 		<url-pattern>/services/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>cameraproxy</servlet-name>
+		<url-pattern>/cameraproxy/*</url-pattern>
 	</servlet-mapping>
 
 	<!-- <filter> <filter-name>CacheControlFilter</filter-name> <filter-class>com.sap.openui5.CacheControlFilter</filter-class> 

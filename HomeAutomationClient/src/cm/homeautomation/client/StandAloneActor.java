@@ -14,7 +14,6 @@ public class StandAloneActor extends Thread {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		super.run();
 		run = true;
 		while (run) {
@@ -31,13 +30,11 @@ public class StandAloneActor extends Thread {
 					socket.receive(packet);
 
 					String received = new String(packet.getData());
-					System.out.println("Got message: "+received );
-					ActorMessage message=new ObjectMapper().readValue(received, ActorMessage.class);
-					
-					Runtime rt = Runtime.getRuntime();
-					
-					Process proc = rt.exec("send "+message.getHouseCode()+" "+message.getSwitchNo()+" "+message.getStatus());
-					proc.waitFor();
+					System.out.println("Got message: " + received);
+					ActorMessage message = new ObjectMapper().readValue(received, ActorMessage.class);
+
+					ProcessRunner processRunner = new ProcessRunner(message);
+					processRunner.run();
 				}
 
 				socket.leaveGroup(group);
@@ -47,6 +44,35 @@ public class StandAloneActor extends Thread {
 				e.printStackTrace();
 			}
 
+		}
+
+	}
+	
+	class ProcessRunner {
+		private ActorMessage message;
+		
+		public ProcessRunner(ActorMessage message) {
+			this.message = message;
+		}
+
+		public void run() {
+			Runtime rt = Runtime.getRuntime();
+
+			String houseCode = message.getHouseCode();
+			Process proc;
+			try {
+				if ("CODESEND".equals(houseCode)) {
+					proc = rt.exec("codesend " + message.getStatus());
+				} else {
+					proc = rt.exec("send " + houseCode + " " + message.getSwitchNo() + " "
+							+ message.getStatus());
+				}
+
+				proc.waitFor();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

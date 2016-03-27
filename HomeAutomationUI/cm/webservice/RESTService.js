@@ -42,6 +42,6 @@ sap.ui.base.Object
             })
 
 
-            model.loadData(url, inModel, true, method);
+            model.loadData(url, inModel, true, method, false, false);
         }
     });
