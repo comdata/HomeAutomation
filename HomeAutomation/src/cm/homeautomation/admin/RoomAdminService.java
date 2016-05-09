@@ -17,13 +17,15 @@ public class RoomAdminService extends BaseService {
 
 	@GET
 	@Path("getAll")
-	public List<Room> getRooms() {
-		
+	public RoomList getRooms() {
+		RoomList roomList=new RoomList();
 		EntityManager em = EntityManagerService.getNewManager();
 		
 		List<Room> resultList = em.createQuery("select r from Room r").getResultList();
 		
-		return resultList;
+		roomList.setRooms(resultList);
+		
+		return roomList;
 	}
 	
 	@GET
@@ -39,4 +41,20 @@ public class RoomAdminService extends BaseService {
 		return room;
 	}
 	
+	@GET
+	@Path("update/{roomId}/{roomName}") 
+	public Room updateRoom(@PathParam("roomId") Long roomId, @PathParam("roomName") String roomName) {
+		
+		EntityManager em = EntityManagerService.getNewManager();
+		em.getTransaction().begin();
+		Room room=(Room)em.createQuery("select r from Room r where r.id=:roomId").setParameter("roomId", roomId).getSingleResult();
+		
+		if (room!=null) {
+			room.setRoomName(roomName);
+			room=em.merge(room);
+			em.getTransaction().commit();
+		}
+		
+		return room;
+	}
 }

@@ -2,6 +2,7 @@ package cm.homeautomation.entities;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -29,6 +30,12 @@ public class Switch {
 	private String switchOnCode;
 	private String switchOffCode;
 	private String switchType;
+	
+	@Column(name="SWITCH_SET_URL")
+	private String switchSetUrl;
+	
+	@Column(name="SUBTYPE")
+	private String subType;
 	
 	@OneToOne
 	@JoinColumn(name="SENSOR_ID")
@@ -161,6 +168,22 @@ public class Switch {
 
 	public void setSensor(Sensor sensor) {
 		this.sensor = sensor;
+	}
+
+	public String getSwitchSetUrl() {
+		return switchSetUrl;
+	}
+
+	public void setSwitchSetUrl(String switchSetUrl) {
+		this.switchSetUrl = switchSetUrl;
+	}
+
+	public String getSubType() {
+		return subType;
+	}
+
+	public void setSubType(String subType) {
+		this.subType = subType;
 	}
 
 }

@@ -8,6 +8,7 @@ import java.util.concurrent.CountDownLatch;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -19,6 +20,8 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.Switch;
+import cm.homeautomation.eventbus.EventBus;
+import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.hap.HAPService;
 import cm.homeautomation.hap.HAPTemperatureSensor;
 import cm.homeautomation.sensors.RFEvent;
@@ -29,6 +32,7 @@ import cm.homeautomation.sensors.SensorValues;
 import cm.homeautomation.services.actor.ActorEndpoint;
 import cm.homeautomation.services.actor.ActorEndpointConfigurator;
 import cm.homeautomation.services.base.BaseService;
+import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.overview.OverviewEndPointConfiguration;
 import cm.homeautomation.services.overview.OverviewService;
 import cm.homeautomation.services.overview.OverviewTile;
@@ -41,6 +45,7 @@ public class Sensors extends BaseService {
 	private ActorEndpoint endpointInstance;
 	private OverviewEndPointConfiguration overviewEndPointConfiguration;
 	private OverviewWebSocket overviewEndpoint;
+
 
 	@POST
 	@Path("rfsniffer")
@@ -122,6 +127,47 @@ public class Sensors extends BaseService {
 	}
 	
 	@POST
+	@Path("save")
+	public GenericStatus save(SensorDataRoomSaveRequest request) {
+		
+		if (request==null) {
+			System.out.println("got null request"); 
+			return new GenericStatus(false);
+		}
+		EntityManager em = EntityManagerService.getNewManager();
+		Long roomID = request.getRoomID();
+		
+		List<Sensor> sensorList = em.createQuery("select s from Sensor s where s.room=(select r from Room r where r.id=:roomId)").setParameter("roomId", roomID).getResultList();
+		
+		if (sensorList!=null) {
+			for (Sensor sensor : sensorList) {
+				
+				if ("TEMPERATURE".equals(sensor.getSensorType())) {
+					saveSensorData(sensor.getId(), Float.toString(request.getData().getTemperature()));
+				}
+
+				if ("HUMIDITY".equals(sensor.getSensorType())) {
+					saveSensorData(sensor.getId(), Float.toString(request.getData().getHumidity()));
+				}
+				
+				if ("PRESSURE".equals(sensor.getSensorType())) {
+					saveSensorData(sensor.getId(), Float.toString(request.getData().getPressure()));
+				}
+				
+				if ("VCC".equals(sensor.getSensorType())) {
+					saveSensorData(sensor.getId(), Float.toString(request.getData().getVcc()));
+				}
+			}
+			
+			
+		} else {
+			System.out.println("found no sensors for room "+roomID);
+		}
+		
+		return new GenericStatus(true);
+	}
+	
+	@POST
 	@Path("forroom/save")
 	public void saveSensorData(SensorDataSaveRequest request) {
 		EntityManager em = EntityManagerService.getNewManager();
@@ -181,7 +227,9 @@ public class Sensors extends BaseService {
 					}
 				}
 			}
-
+			
+			EventBus.getInstance().sendMessage(new EventObject("SENSOR_DATA", sensorData));
+			
 			OverviewTile overviewTileForRoom = new OverviewService()
 					.getOverviewTileForRoom(sensorData.getSensor().getRoom());
 			try {
@@ -211,7 +259,7 @@ public class Sensors extends BaseService {
 		em.getTransaction().begin();
 		@SuppressWarnings("unchecked")
 		List<Object> sensors = em
-				.createQuery("select s FROM Sensor s where s.room=(select r from Room r where r.id=:room)")
+				.createQuery("select s FROM Sensor s where s.showData=true and s.room=(select r from Room r where r.id=:room)")
 				.setParameter("room", Long.parseLong(room)).getResultList();
 
 		Date now = new Date();

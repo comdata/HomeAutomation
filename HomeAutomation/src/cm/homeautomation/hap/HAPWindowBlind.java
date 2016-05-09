@@ -1,15 +1,18 @@
 package cm.homeautomation.hap;
 
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
+import com.beowulfe.hap.Service;
+import com.beowulfe.hap.accessories.VerticalTiltingWindowCovering;
 import com.beowulfe.hap.accessories.WindowCovering;
 import com.beowulfe.hap.accessories.properties.WindowCoveringPositionState;
 
 import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.windowblind.WindowBlindService;
 
-public class HAPWindowBlind implements WindowCovering {
+public class HAPWindowBlind implements VerticalTiltingWindowCovering {
 
 	private int id;
 	private String label;
@@ -18,46 +21,46 @@ public class HAPWindowBlind implements WindowCovering {
 	private HomekitCharacteristicChangeCallback targetPositionCallback;
 	private HomekitCharacteristicChangeCallback positionStateCallback;
 	private HomekitCharacteristicChangeCallback obstructionCallback;
-	
+	private HomekitCharacteristicChangeCallback currentTiltAngleCallback;
+	private HomekitCharacteristicChangeCallback targetTiltAngleCallback;
+
 	public HAPWindowBlind(WindowBlind windowBlind, int id, String label) {
 		this.windowBlind = windowBlind;
 		this.label = label;
-		this.id=id;
+		this.id = id;
+	}
+	
+	public HAPWindowBlind() {
+		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public int getId() {
-		
 		return id;
 	}
 
 	@Override
 	public String getLabel() {
-		
 		return label;
 	}
 
 	@Override
 	public void identify() {
 		System.out.println("Identifying Window Covering");
-		
 	}
 
 	@Override
 	public String getSerialNumber() {
-		// TODO Auto-generated method stub
 		return "none";
 	}
 
 	@Override
 	public String getModel() {
-		// TODO Auto-generated method stub
 		return "none";
 	}
 
 	@Override
 	public String getManufacturer() {
-		// TODO Auto-generated method stub
 		return "none";
 	}
 
@@ -72,19 +75,16 @@ public class HAPWindowBlind implements WindowCovering {
 
 	@Override
 	public CompletableFuture<Integer> getTargetPosition() {
-
 		return CompletableFuture.completedFuture(getPosition());
 	}
 
 	@Override
 	public CompletableFuture<WindowCoveringPositionState> getPositionState() {
-		// TODO Auto-generated method stub
 		return CompletableFuture.completedFuture(WindowCoveringPositionState.STOPPED);
 	}
 
 	@Override
 	public CompletableFuture<Boolean> getObstructionDetected() {
-		// TODO Auto-generated method stub
 		return CompletableFuture.completedFuture(Boolean.FALSE);
 	}
 
@@ -96,63 +96,51 @@ public class HAPWindowBlind implements WindowCovering {
 
 	@Override
 	public CompletableFuture<Void> setHoldPosition(boolean hold) throws Exception {
-		// TODO Auto-generated method stub
 		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override
 	public void subscribeCurrentPosition(HomekitCharacteristicChangeCallback callback) {
+		System.out.println("Current position callback");
 		this.currentPositionCallback = callback;
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void subscribeTargetPosition(HomekitCharacteristicChangeCallback callback) {
+		System.out.println("Target position callback");
 		this.targetPositionCallback = callback;
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void subscribePositionState(HomekitCharacteristicChangeCallback callback) {
+		System.out.println("position state callback");
 		this.positionStateCallback = callback;
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void subscribeObstructionDetected(HomekitCharacteristicChangeCallback callback) {
+		System.out.println("Obstruction position callback");
 		this.obstructionCallback = callback;
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void unsubscribeCurrentPosition() {
-		// TODO Auto-generated method stub
-		this.currentPositionCallback=null;
+		this.currentPositionCallback = null;
 	}
 
 	@Override
 	public void unsubscribeTargetPosition() {
-		// TODO Auto-generated method stub
-		this.targetPositionCallback=null;
-		
+		this.targetPositionCallback = null;
 	}
 
 	@Override
 	public void unsubscribePositionState() {
-		// TODO Auto-generated method stub
-		this.positionStateCallback=null;
-		
+		this.positionStateCallback = null;
 	}
 
 	@Override
 	public void unsubscribeObstructionDetected() {
-		// TODO Auto-generated method stub
-		this.obstructionCallback=null;
-		
+		this.obstructionCallback = null;
 	}
 
 	public void setId(int id) {
@@ -163,4 +151,44 @@ public class HAPWindowBlind implements WindowCovering {
 		this.label = label;
 	}
 
+
+	@Override
+	public CompletableFuture<Integer> getCurrentVerticalTiltAngle() {
+		
+		return CompletableFuture.completedFuture(new Integer(0));
+	}
+
+	@Override
+	public CompletableFuture<Integer> getTargetVerticalTiltAngle() {
+		
+		return CompletableFuture.completedFuture(new Integer(0));
+	}
+
+	@Override
+	public CompletableFuture<Void> setTargetVerticalTiltAngle(int angle) throws Exception {
+		
+		return CompletableFuture.completedFuture(null);
+	}
+
+	@Override
+	public void subscribeCurrentVerticalTiltAngle(HomekitCharacteristicChangeCallback callback) {
+		this.currentTiltAngleCallback = callback;
+	}
+
+	@Override
+	public void subscribeTargetVerticalTiltAngle(HomekitCharacteristicChangeCallback callback) {
+		this.targetTiltAngleCallback = callback;
+	}
+
+	@Override
+	public void unsubscribeCurrentVerticalTiltAngle() {
+		this.currentTiltAngleCallback=null;
+		
+	}
+
+	@Override
+	public void unsubscribeTargetVerticalTiltAngle() {
+		this.targetTiltAngleCallback = null;
+		
+	}
 }

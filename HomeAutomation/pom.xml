@@ -15,8 +15,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<sapui5.version>1.30.10</sapui5.version>
-		<version.jersey>2.22.1</version.jersey>
+		<sapui5.version>1.36.5</sapui5.version>
+		<version.jersey>2.22.2</version.jersey>
 		<version.servlet.api>3.1.0</version.servlet.api>
 	</properties>
 

@@ -42,21 +42,23 @@ public class HAPService {
 	private Map<Long, HAPHumiditySensor> humiditySensors = new HashMap<Long, HAPHumiditySensor>();
 
 	public HAPService() {
-		Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+		if (true) {
+			Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
-		LoggerContext loggerContext = rootLogger.getLoggerContext();
-		loggerContext.reset();
+			LoggerContext loggerContext = rootLogger.getLoggerContext();
+			loggerContext.reset();
 
-		PatternLayoutEncoder logEncoder = new PatternLayoutEncoder();
-		logEncoder.setContext(loggerContext);
-		logEncoder.setPattern("%-12date{YYYY-MM-dd HH:mm:ss.SSS} %-5level - %msg%n");
-		logEncoder.start();
+			PatternLayoutEncoder logEncoder = new PatternLayoutEncoder();
+			logEncoder.setContext(loggerContext);
+			logEncoder.setPattern("%-12date{YYYY-MM-dd HH:mm:ss.SSS} %-5level - %msg%n");
+			logEncoder.start();
 
-		ConsoleAppender logConsoleAppender = new ConsoleAppender();
-		logConsoleAppender.setContext(loggerContext);
-		logConsoleAppender.setName("console");
-		logConsoleAppender.setEncoder(logEncoder);
-		logConsoleAppender.start();
+			ConsoleAppender logConsoleAppender = new ConsoleAppender();
+			logConsoleAppender.setContext(loggerContext);
+			logConsoleAppender.setName("console");
+			logConsoleAppender.setEncoder(logEncoder);
+			logConsoleAppender.start();
+		}
 
 		init();
 	}
@@ -68,50 +70,41 @@ public class HAPService {
 		List<WindowBlind> windowBlindsList = allWindowBlinds.getWindowBlinds();
 
 		for (WindowBlind windowBlind : windowBlindsList) {
-			int id = 3000 + new Long(windowBlind.getId()).intValue();
-			String name=replaceUmlaut(windowBlind.getName());
+			int id = 3000 + windowBlind.getId().intValue();
+			String name = replaceUmlaut(windowBlind.getName());
 			HAPWindowBlind hapWindowBlind = new HAPWindowBlind(windowBlind, id, name);
 			System.out.println("Adding Windowblind: " + id + " - " + hapWindowBlind.getLabel());
 
 			bridge.addAccessory(hapWindowBlind);
 		}
 	}
-	
+
 	/**
-	  * Replaces all german umlaute in the input string with the usual replacement 
-	  * scheme, also taking into account capitilization.
-	  * A test String such as 
-	  * "Käse Köln Füße Öl Übel Äü Üß ÄÖÜ Ä Ö Ü ÜBUNG" will yield the result 
-	  * "Kaese Koeln Fuesse Oel Uebel Aeue Uess AEOEUe Ae Oe Ue UEBUNG"
-	  * @param input
-	  * @return the input string with replaces umlaute
-	  */
-	 private static String replaceUmlaut(String input) {
-	 
-	     //replace all lower Umlauts
-	     String o_strResult =
-	             input
-	             .replaceAll("ü", "ue")
-	             .replaceAll("ö", "oe")
-	             .replaceAll("ä", "ae")
-	             .replaceAll("ß", "ss");
-	 
-	     //first replace all capital umlaute in a non-capitalized context (e.g. Übung)
-	     o_strResult =
-	             o_strResult
-	             .replaceAll("Ü(?=[a-zäöüß ])", "Ue")
-	             .replaceAll("Ö(?=[a-zäöüß ])", "Oe")
-	             .replaceAll("Ä(?=[a-zäöüß ])", "Ae");
-	 
-	     //now replace all the other capital umlaute
-	     o_strResult =
-	             o_strResult
-	             .replaceAll("Ü", "UE")
-	             .replaceAll("Ö", "OE")
-	             .replaceAll("Ä", "AE");
-	 
-	     return o_strResult;
-	 }
+	 * Replaces all german umlaute in the input string with the usual
+	 * replacement scheme, also taking into account capitilization. A test
+	 * String such as "Käse Köln Füße Öl Übel Äü Üß ÄÖÜ Ä Ö Ü ÜBUNG" will yield
+	 * the result
+	 * "Kaese Koeln Fuesse Oel Uebel Aeue Uess AEOEUe Ae Oe Ue UEBUNG"
+	 * 
+	 * @param input
+	 * @return the input string with replaces umlaute
+	 */
+	private static String replaceUmlaut(String input) {
+
+		// replace all lower Umlauts
+		String o_strResult = input.replaceAll("ü", "ue").replaceAll("ö", "oe").replaceAll("ä", "ae").replaceAll("ß",
+				"ss");
+
+		// first replace all capital umlaute in a non-capitalized context (e.g.
+		// Übung)
+		o_strResult = o_strResult.replaceAll("Ü(?=[a-zäöüß ])", "Ue").replaceAll("Ö(?=[a-zäöüß ])", "Oe")
+				.replaceAll("Ä(?=[a-zäöüß ])", "Ae");
+
+		// now replace all the other capital umlaute
+		o_strResult = o_strResult.replaceAll("Ü", "UE").replaceAll("Ö", "OE").replaceAll("Ä", "AE");
+
+		return o_strResult;
+	}
 
 	public void addTemperatureSensor(HomekitRoot bridge) {
 		System.out.println("Loading Temperature");
@@ -127,12 +120,12 @@ public class HAPService {
 				if (latestDataList != null && !latestDataList.isEmpty()) {
 					SensorData sensorData = latestDataList.get(0);
 
-					String name=replaceUmlaut(singleSensor.getSensorName());
+					String name = replaceUmlaut(singleSensor.getSensorName());
+					name += " in " + singleSensor.getRoom().getRoomName();
 
 					System.out.println("Adding Sensor: " + name);
-					
-					HAPTemperatureSensor hapTemperature = new HAPTemperatureSensor( name,
-							singleSensor.getId());
+
+					HAPTemperatureSensor hapTemperature = new HAPTemperatureSensor(name, singleSensor.getId());
 					hapTemperature.setTemperature(new Double(sensorData.getValue().replace(",", ".")));
 					getTemperatureSensors().put(singleSensor.getId(), hapTemperature);
 					bridge.addAccessory(hapTemperature);
@@ -153,15 +146,19 @@ public class HAPService {
 						.createQuery("select sd from SensorData sd where sd.sensor=:sensor order by sd.dateTime desc")
 						.setParameter("sensor", singleSensor).setMaxResults(1).getResultList();
 
-				SensorData sensorData = latestDataList.get(0);
+				String name = replaceUmlaut(singleSensor.getSensorName());
+				name += " in " + singleSensor.getRoom().getRoomName();
 
-				String name=replaceUmlaut(singleSensor.getSensorName());
 				System.out.println("Adding Sensor: " + name);
 
-				
-				HAPHumiditySensor hapHumiditySensor = new HAPHumiditySensor(name,
-						singleSensor.getId());
-				hapHumiditySensor.setHumidity(new Double(sensorData.getValue().replace(",", ".")));
+				HAPHumiditySensor hapHumiditySensor = new HAPHumiditySensor(name, singleSensor.getId());
+
+				if (latestDataList != null && !latestDataList.isEmpty()) {
+
+					SensorData sensorData = latestDataList.get(0);
+					hapHumiditySensor.setHumidity(new Double(sensorData.getValue().replace(",", ".")));
+				}
+
 				getHumiditySensors().put(singleSensor.getId(), hapHumiditySensor);
 				bridge.addAccessory(hapHumiditySensor);
 			}
@@ -171,7 +168,8 @@ public class HAPService {
 
 	public void addLightsToBridge(HomekitRoot bridge) {
 		System.out.println("Loading Lights");
-		List<Switch> switchList = em.createQuery("select sw from Switch sw where sw.switchType='LIGHT'").getResultList();
+		List<Switch> switchList = em.createQuery("select sw from Switch sw where sw.switchType='LIGHT'")
+				.getResultList();
 
 		if (switchList != null) {
 			for (Switch singleSwitch : switchList) {
@@ -179,8 +177,9 @@ public class HAPService {
 				if ("ON".equals(singleSwitch.getLatestStatus())) {
 					status = true;
 				}
-				
-				String name=replaceUmlaut(singleSwitch.getName());
+
+				String name = replaceUmlaut(singleSwitch.getName());
+				name += " in " + singleSwitch.getRoom().getRoomName();
 
 				System.out.println("Adding Light: " + name);
 
@@ -191,10 +190,11 @@ public class HAPService {
 
 		}
 	}
-	
+
 	public void addSocketsToBridge(HomekitRoot bridge) {
 		System.out.println("Loading Switches");
-		List<Switch> switchList = em.createQuery("select sw from Switch sw where sw.switchType='SOCKET'").getResultList();
+		List<Switch> switchList = em.createQuery("select sw from Switch sw where sw.switchType='SOCKET'")
+				.getResultList();
 
 		if (switchList != null) {
 			for (Switch singleSwitch : switchList) {
@@ -202,8 +202,9 @@ public class HAPService {
 				if ("ON".equals(singleSwitch.getLatestStatus())) {
 					status = true;
 				}
-				
-				String name=replaceUmlaut(singleSwitch.getName());
+
+				String name = replaceUmlaut(singleSwitch.getName());
+				name += " in " + singleSwitch.getRoom().getRoomName();
 
 				System.out.println("Adding Switch: " + name);
 
@@ -254,7 +255,7 @@ public class HAPService {
 			addLightsToBridge(bridge);
 			addSocketsToBridge(bridge);
 			addTemperatureSensor(bridge);
-			//addWindowCovering(bridge);
+			// addWindowCovering(bridge);
 			addHumiditySensor(bridge);
 
 			System.out.println("Starting bridge");

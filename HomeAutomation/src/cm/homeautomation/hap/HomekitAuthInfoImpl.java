@@ -195,23 +195,4 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
 		}
 	}
 
-	@Override
-	public void loadUsers() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public byte[] readKey(String string) {
-		// TODO Auto-generated method stub
-		return getUserPublicKey(string);
-	}
-
-	@Override
-	public void saveKey(String name, byte[] privateKey2) {
-		// TODO Auto-generated method stub
-		createUser(name, privateKey2);
-		
-	}
-
 }

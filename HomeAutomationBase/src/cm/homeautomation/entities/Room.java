@@ -9,17 +9,22 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlIDREF;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class Room {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	private Long id;
 	
 	private String roomName;
 	
 	@OneToMany(mappedBy="room", cascade=CascadeType.ALL)
+	@JsonManagedReference("room")
 	private List<Sensor> sensors;
 
 	@OneToMany(mappedBy="room", cascade=CascadeType.ALL)
@@ -40,6 +45,9 @@ public class Room {
 		return sensors;
 	}
 
+	@XmlIDREF
+	
+	
 	public void setSensors(List<Sensor> sensors) {
 		this.sensors = sensors;
 	}

@@ -112,7 +112,7 @@ public class OverviewService extends BaseService {
 
 		}
 		String number = (temperature != null && !"".equals(temperature))
-				? (temperature.replace(",", ".") + ((humidity != null && !"".equals(humidity)) ? " / " + humidity : ""))
+				? (temperature.replace(",", ".") + ((humidity != null && !"".equals(humidity)) ? " / " + humidity.replace(",", ".") : ""))
 				: "";
 		roomTile.setNumber(number);
 		roomTile.setNumberUnit("°C "+ (number.contains("/")? "/ %": ""));

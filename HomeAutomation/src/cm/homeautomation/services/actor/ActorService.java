@@ -32,7 +32,7 @@ import cm.homeautomation.services.base.BaseService;
 public class ActorService extends BaseService {
 
 	private int port = 5000;
-	
+
 	private static ActorService instance;
 
 	/**
@@ -48,16 +48,41 @@ public class ActorService extends BaseService {
 		SwitchStatuses switchStatuses = new SwitchStatuses();
 
 		List<Switch> switchList = em
-				.createQuery("select sw from Switch sw where sw.room=(select r from Room r where r.id=:room)")
+				.createQuery(
+						"select sw from Switch sw where sw.switchType IN ('SOCKET', 'LIGHT') and sw.room=(select r from Room r where r.id=:room)")
 				.setParameter("room", Long.parseLong(room)).getResultList();
 
 		for (Switch singleSwitch : switchList) {
+
 			singleSwitch.setSwitchState(("ON".equals(singleSwitch.getLatestStatus()) ? true : false));
+
 			switchStatuses.getSwitchStatuses().add(singleSwitch);
 		}
 		return switchStatuses;
 	}
 
+	/**
+	 * get switch status for a room
+	 * 
+	 * @param room
+	 * @return
+	 */
+	@GET
+	@Path("thermostat/forroom/{room}")
+	public SwitchStatuses getThermostatStatusesForRoom(@PathParam("room") String room) {
+		EntityManager em = EntityManagerService.getNewManager();
+		SwitchStatuses switchStatuses = new SwitchStatuses();
+
+		List<Switch> switchList = em
+				.createQuery(
+						"select sw from Switch sw where sw.switchType IN ('THERMOSTAT') and sw.room=(select r from Room r where r.id=:room)")
+				.setParameter("room", Long.parseLong(room)).getResultList();
+
+		switchStatuses.getSwitchStatuses().addAll(switchList);
+		
+		return switchStatuses;
+	}
+	
 	/**
 	 * press a switch via cron
 	 * 
@@ -76,10 +101,10 @@ public class ActorService extends BaseService {
 	 * @param params
 	 * @return
 	 */
-	public synchronized SwitchPressResponse pressSwitch(String [] params) {
+	public synchronized SwitchPressResponse pressSwitch(String[] params) {
 		return pressSwitch(params[0], params[1]);
 	}
-	
+
 	/**
 	 * press a switch
 	 * 
@@ -145,7 +170,7 @@ public class ActorService extends BaseService {
 			}
 
 			socket.close();
-			
+
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -166,14 +191,15 @@ public class ActorService extends BaseService {
 	 * @return the instance
 	 */
 	public static ActorService getInstance() {
-		if (instance==null) {
-			instance=new ActorService();
+		if (instance == null) {
+			instance = new ActorService();
 		}
 		return instance;
 	}
 
 	/**
-	 * @param instance the instance to set
+	 * @param instance
+	 *            the instance to set
 	 */
 	public static void setInstance(ActorService instance) {
 		ActorService.instance = instance;
