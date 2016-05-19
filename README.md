@@ -1,5 +1,7 @@
 # HomeAutomation
 
+[![Build Status](https://travis-ci.org/comdata/HomeAutomation.svg?branch=master)](https://travis-ci.org/comdata/HomeAutomation)
+
 This is my first approach to automate my home.
 
 Currently this is using the 433Utils for receiving/sending data and 
