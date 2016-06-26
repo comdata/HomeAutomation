@@ -350,7 +350,7 @@ public class Sensors extends BaseService {
 								SensorValue tempSensorValue = new SensorValue();
 								tempSensorValue.setValue(lastSensorValue.getValue());
 								tempSensorValue.setDateTime(new Date(sData.getDateTime().getTime() - 1000));
-								sensorData.getValues().add(tempSensorValue);
+								//sensorData.getValues().add(tempSensorValue);
 							}
 
 							SensorValue sensorValue = new SensorValue();
