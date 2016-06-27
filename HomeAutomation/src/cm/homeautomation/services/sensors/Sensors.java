@@ -17,6 +17,7 @@ import javax.ws.rs.PathParam;
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
 
 import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.entities.Device;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.Switch;
@@ -25,6 +26,7 @@ import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.hap.HAPService;
 import cm.homeautomation.hap.HAPTemperatureSensor;
 import cm.homeautomation.sensors.RFEvent;
+import cm.homeautomation.sensors.SensorDataRoomSaveRequest;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.sensors.SensorDatas;
 import cm.homeautomation.sensors.SensorValue;
@@ -134,8 +136,28 @@ public class Sensors extends BaseService {
 			System.out.println("got null request"); 
 			return new GenericStatus(false);
 		}
-		EntityManager em = EntityManagerService.getNewManager();
+		
 		Long roomID = request.getRoomID();
+		
+		EntityManager em = EntityManagerService.getNewManager();
+		
+		
+		String mac = request.getMac();
+		if (roomID==null && mac!=null) {
+			
+			Device device = (Device) em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac).getSingleResult();
+			
+			if (device==null) {
+				
+				return new GenericStatus(false);
+			}
+			
+			roomID=device.getRoom().getId();
+		}
+		
+		
+		
+		
 		
 		List<Sensor> sensorList = em.createQuery("select s from Sensor s where s.room=(select r from Room r where r.id=:roomId)").setParameter("roomId", roomID).getResultList();
 		

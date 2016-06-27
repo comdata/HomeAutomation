@@ -1,11 +1,8 @@
 package cm.homeautomation.sensors;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import cm.homeautomation.entities.SensorData;
 
-@XmlRootElement
-public class SensorDataSaveRequest {
+public class SensorDataSaveRequest extends JSONSensorDataBase {
 	private Long sensorId;
 	private SensorData sensorData;
 	

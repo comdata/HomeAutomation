@@ -11,6 +11,8 @@ import org.zeromq.ZMsg;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import cm.homeautomation.sensors.JSONSensorDataBase;
+import cm.homeautomation.sensors.SensorDataRoomSaveRequest;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.services.sensors.Sensors;
 
@@ -26,7 +28,7 @@ public class JeroMQServerWorker implements Runnable {
 	public void run() {
 		Socket worker = ctx.createSocket(ZMQ.DEALER);
 		worker.connect("inproc://backend");
-		
+
 		Sensors sensorsService = new Sensors();
 
 		while (!Thread.currentThread().isInterrupted()) {
@@ -42,11 +44,16 @@ public class JeroMQServerWorker implements Runnable {
 
 			ObjectMapper mapper = new ObjectMapper();
 
-
 			try {
-				SensorDataSaveRequest sensorData = mapper.readValue(messageContent, SensorDataSaveRequest.class);
 
-				sensorsService.saveSensorData(sensorData);
+				JSONSensorDataBase sensorData = mapper.readValue(messageContent, JSONSensorDataBase.class);
+
+				if (sensorData instanceof SensorDataSaveRequest) {
+					sensorsService.saveSensorData((SensorDataSaveRequest) sensorData);
+				} else if (sensorData instanceof SensorDataRoomSaveRequest) {
+					sensorsService.save((SensorDataRoomSaveRequest)sensorData);					
+				}
+
 				address.send(worker, ZFrame.REUSE + ZFrame.MORE);
 				content.send(worker, ZFrame.REUSE);
 			} catch (IOException e1) {

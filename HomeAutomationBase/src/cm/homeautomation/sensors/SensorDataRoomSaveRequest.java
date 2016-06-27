@@ -1,21 +1,33 @@
-package cm.homeautomation.services.sensors;
+package cm.homeautomation.sensors;
 
-import javax.xml.bind.annotation.XmlRootElement;
+public class SensorDataRoomSaveRequest extends JSONSensorDataBase {
+	private Long roomID;
+	private SensorDataRoomPayload data;
+	
+	// mac address of the sensor
+	private String mac;
 
-@XmlRootElement
-public class SensorDataRoomSaveRequest {
-private Long roomID;
-private SensorDataRoomPayload data;
-public Long getRoomID() {
-	return roomID;
-}
-public void setRoomID(Long roomID) {
-	this.roomID = roomID;
-}
-public SensorDataRoomPayload getData() {
-	return data;
-}
-public void setData(SensorDataRoomPayload data) {
-	this.data = data;
-}
+	public Long getRoomID() {
+		return roomID;
+	}
+
+	public void setRoomID(Long roomID) {
+		this.roomID = roomID;
+	}
+
+	public SensorDataRoomPayload getData() {
+		return data;
+	}
+
+	public void setData(SensorDataRoomPayload data) {
+		this.data = data;
+	}
+
+	public String getMac() {
+		return mac;
+	}
+
+	public void setMac(String mac) {
+		this.mac = mac;
+	}
 }
