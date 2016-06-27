@@ -41,6 +41,7 @@ public class JeroMQServerWorker implements Runnable {
 			msg.destroy();
 
 			String messageContent = content.toString();
+			System.out.println("Got message: "+messageContent);
 
 			ObjectMapper mapper = new ObjectMapper();
 
