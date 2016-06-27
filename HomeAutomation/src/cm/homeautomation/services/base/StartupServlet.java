@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServlet;
 import cm.homeautomation.eventbus.EventBus;
 import cm.homeautomation.hap.HAPService;
 import cm.homeautomation.jeromq.server.JeroMQServer;
+import cm.homeautomation.moquette.server.MoquetteServer;
 import cm.homeautomation.services.overview.OverviewEndPointConfiguration;
 import cm.homeautomation.services.overview.OverviewWebSocket;
 
@@ -20,6 +21,7 @@ public class StartupServlet extends HttpServlet {
 	// private Server webSocketServer;
 	private JeroMQServer jeroMQServer;
 	private OverviewWebSocket overviewEndpoint;
+	private MoquetteServer moquetteServer;
 
 	public void init(ServletConfig config) throws ServletException {
 		EventBus.getInstance();
@@ -30,6 +32,8 @@ public class StartupServlet extends HttpServlet {
 		System.out.println("Starting HAP");
 		HAPService hapService = HAPService.getInstance();
 
+		moquetteServer = new MoquetteServer();
+		
 		jeroMQServer = new JeroMQServer();
 
 		try {
