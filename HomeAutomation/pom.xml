@@ -21,6 +21,11 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
+
+    <repository>
+        <id>Eclipse Paho Repo</id>
+        <url>https://repo.eclipse.org/content/repositories/paho-releases/</url>
+    </repository>
 	</repositories>
 
 	<properties>
@@ -39,6 +44,11 @@
 
 
 	<dependencies>
+<dependency>
+        <groupId>org.eclipse.paho</groupId>
+        <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+        <version>1.0.2</version>
+    </dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
