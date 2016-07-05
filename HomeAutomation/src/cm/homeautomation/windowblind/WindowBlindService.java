@@ -22,7 +22,6 @@ import cm.homeautomation.services.base.BaseService;
 @Path("windowBlinds")
 public class WindowBlindService extends BaseService {
 
-	
 	public WindowBlindsList getAll() {
 		WindowBlindsList windowBlindsList = new WindowBlindsList();
 
@@ -30,14 +29,12 @@ public class WindowBlindService extends BaseService {
 		em.getTransaction().begin();
 
 		@SuppressWarnings("unchecked")
-		List<WindowBlind> windowBlinds = em
-				.createQuery("select w FROM WindowBlind w ")
-				.getResultList();
+		List<WindowBlind> windowBlinds = em.createQuery("select w FROM WindowBlind w ").getResultList();
 
 		if (windowBlinds != null) {
 			for (WindowBlind windowBlind : windowBlinds) {
-//				windowBlind.setDimUrl(null);
-//				windowBlind.setStatusUrl(null);
+				// windowBlind.setDimUrl(null);
+				// windowBlind.setStatusUrl(null);
 				windowBlindsList.getWindowBlinds().add(windowBlind);
 			}
 		}
@@ -45,7 +42,7 @@ public class WindowBlindService extends BaseService {
 		em.getTransaction().commit();
 		return windowBlindsList;
 	}
-	
+
 	@GET
 	@Path("forRoom/{roomId}")
 	public WindowBlindsList getAllForRoom(@PathParam("roomId") Long roomId) {
@@ -59,12 +56,16 @@ public class WindowBlindService extends BaseService {
 				.createQuery("select w FROM WindowBlind w where w.room=(select r from Room r where r.id=:roomId)")
 				.setParameter("roomId", roomId).getResultList();
 
-		if (windowBlinds != null) {
-			for (WindowBlind windowBlind : windowBlinds) {
-//				windowBlind.setDimUrl(null);
-//				windowBlind.setStatusUrl(null);
-				windowBlindsList.getWindowBlinds().add(windowBlind);
-			}
+		if (windowBlinds != null && !windowBlinds.isEmpty()) {
+			windowBlindsList.getWindowBlinds().addAll(windowBlinds);
+
+			// create and entry for all at once
+			WindowBlind allAtOnce = new WindowBlind();
+			allAtOnce.setType(WindowBlind.ALL_AT_ONCE);
+			allAtOnce.setName("Alle");
+			allAtOnce.setRoom(windowBlindsList.getWindowBlinds().get(0).getRoom());
+			windowBlindsList.getWindowBlinds().add(allAtOnce);
+
 		}
 
 		em.getTransaction().commit();
@@ -74,20 +75,47 @@ public class WindowBlindService extends BaseService {
 	@GET
 	@Path("setDim/{windowBlind}/{value}")
 	public void setDim(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value) {
+		setDim(windowBlindId, value, WindowBlind.SINGLE, null);
+	}
+
+	@GET
+	@Path("setDim/{windowBlind}/{value}/{type}/{roomId}")
+	public void setDim(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value,
+			@PathParam("type") String type, @PathParam("roomId") String roomId) {
 		EntityManager em = EntityManagerService.getNewManager();
 
-		WindowBlind singleWindowBlind = (WindowBlind) em.createQuery("select w from WindowBlind w where w.id=:id")
-				.setParameter("id", windowBlindId).getSingleResult();
-		String dimUrl = singleWindowBlind.getDimUrl().replace("{DIMVALUE}", value);
+		if (WindowBlind.SINGLE.equals(type)) {
 
-		
-		performHTTPDim(value, singleWindowBlind, dimUrl);
-		
-		singleWindowBlind.setCurrentValue(Float.parseFloat(value));
-		
-		em.getTransaction().begin();
-		em.merge(singleWindowBlind);
-		em.getTransaction().commit();
+			WindowBlind singleWindowBlind = (WindowBlind) em.createQuery("select w from WindowBlind w where w.id=:id")
+					.setParameter("id", windowBlindId).getSingleResult();
+			String dimUrl = singleWindowBlind.getDimUrl().replace("{DIMVALUE}", value);
+
+			performHTTPDim(value, singleWindowBlind, dimUrl);
+
+			singleWindowBlind.setCurrentValue(Float.parseFloat(value));
+
+			em.getTransaction().begin();
+			em.merge(singleWindowBlind);
+			em.getTransaction().commit();
+		} else if (WindowBlind.ALL_AT_ONCE.equals(type)) {
+
+			@SuppressWarnings("unchecked")
+			List<WindowBlind> windowBlinds = em
+					.createQuery("select w FROM WindowBlind w where w.room=(select r from Room r where r.id=:roomId)")
+					.setParameter("roomId", roomId).getResultList();
+
+			for (WindowBlind singleWindowBlind : windowBlinds) {
+				String dimUrl = singleWindowBlind.getDimUrl().replace("{DIMVALUE}", value);
+
+				performHTTPDim(value, singleWindowBlind, dimUrl);
+
+				singleWindowBlind.setCurrentValue(Float.parseFloat(value));
+
+				em.getTransaction().begin();
+				em.merge(singleWindowBlind);
+				em.getTransaction().commit();
+			}
+		}
 	}
 
 	@GET
@@ -96,34 +124,33 @@ public class WindowBlindService extends BaseService {
 		EntityManager em = EntityManagerService.getNewManager();
 
 		em.getTransaction().begin();
-		
+
 		WindowBlind singleWindowBlind = (WindowBlind) em.createQuery("select w from WindowBlind w where w.id=:id")
 				.setParameter("id", windowBlindId).getSingleResult();
-		
+
 		singleWindowBlind.setCurrentValue(Float.parseFloat(value));
 		em.merge(singleWindowBlind);
 		em.getTransaction().commit();
 	}
-	
+
 	private void performHTTPDim(String value, WindowBlind singleWindowBlind, String dimUrl) {
 		try {
 			GetMethod getMethod = new GetMethod(dimUrl);
 			HttpClient httpClient = new HttpClient();
 
-			String[] userPassword=dimUrl.split("@")[0].replace("http://", "").split(":");
-			
-			
-			
+			String[] userPassword = dimUrl.split("@")[0].replace("http://", "").split(":");
+
 			Credentials defaultcreds = new UsernamePasswordCredentials(userPassword[0], userPassword[1]);
-			
+
 			System.out.println(getMethod.getURI().getUserinfo());
-			httpClient.getState().setCredentials(new AuthScope(getMethod.getURI().getHost(), getMethod.getURI().getPort(), AuthScope.ANY_REALM),
+			httpClient.getState().setCredentials(
+					new AuthScope(getMethod.getURI().getHost(), getMethod.getURI().getPort(), AuthScope.ANY_REALM),
 					defaultcreds);
 
 			httpClient.executeMethod(getMethod);
-			
+
 			singleWindowBlind.setCurrentValue(new Long(value));
-			
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
