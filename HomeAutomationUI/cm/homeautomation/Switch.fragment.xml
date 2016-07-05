@@ -1,26 +1,76 @@
 <core:FragmentDefinition
         xmlns="sap.m"
-        xmlns:core="sap.ui.core">
+        xmlns:core="sap.ui.core" xmlns:commons="sap.ui.commons">
     <Dialog title="Raumdetails -  {currentRoom>roomName}" afterClose="afterDialogClose" stretch="true">
         <content>
-            <List visible="false" id="switchList"
 
-                    items="{
+            <Panel expandable="true" expanded="false" headerText="Einstellungen" width="auto"
+                   class="sapUiResponsiveMargin" id="switchPanel">
+                <content>
+                    <List visible="false" id="switchList"
+
+                          items="{
 			path: 'switches>/switchStatuses'
 		}">
-                <InputListItem
-                        label="{switches>name}"
-                        description="{switches>name}"
-                        icon="sap-icon://lightbulb"
-                        iconDensityAware="false"
-                        iconInset="false"
-                        >
-                    <Switch state="{switches>switchState}" change="handleSwitchChange"/>
-                </InputListItem>
-            </List>
-            <core:HTML content="&lt;div id='chart'&gt;
+                        <InputListItem
+                                label="{switches>name}"
+                                description="{switches>name}"
+                                icon="sap-icon://lightbulb"
+                                iconDensityAware="false"
+                                iconInset="false"
+                                >
+                            <Switch state="{switches>switchState}" change="handleSwitchChange"/>
+                        </InputListItem>
+                    </List>
+                    <List visible="false" id="windowBlinds"
+
+                          items="{
+			path: 'windowBlinds>/windowBlinds'
+		}">
+                        <InputListItem
+                                label="{windowBlinds>name}"
+                                description="{windowBlinds>name}"
+                                icon="sap-icon://lightbulb"
+                                iconDensityAware="false"
+                                iconInset="false"
+                                >
+                            <Label text="{windowBlinds>currentValue}"></Label>
+                            <Slider min="0" max="99" value="{windowBlinds>currentValue}" width="100px"
+                                    change="handleBlindChange"/>
+                        </InputListItem>
+                    </List>
+                    <List visible="false" id="thermostats"
+
+                          items="{
+			path: 'thermostats>/switchStatuses'
+		}">
+                        <InputListItem
+                                label="{thermostats>name}"
+                                description="{thermostats>name}"
+                                icon="sap-icon://lightbulb"
+                                iconDensityAware="false"
+                                iconInset="false"
+                                >
+                            <Label text="{thermostats>latestStatus}"></Label>
+                            <Slider min="16" max="28" step="0.5" value="{thermostats>latestStatus}" width="100px"
+                                    change="handleThermostatChange" progress="true" showHandleTooltip="true" />
+                        </InputListItem>
+                    </List>
+
+                   <!-- <commons:ColorPicker id="lampe" name="Wohnzimmer"/>-->
+                </content>
+            </Panel>
+
+            <Panel expandable="true" expanded="false" headerText="Historic Data" width="auto"
+                   class="sapUiResponsiveMargin" expand="expandHistoricData">
+                <content>
+
+                    <core:HTML content="&lt;div id='chart'&gt;
     &lt;svg style='height:300px; width:100%;'&gt;&lt;/svg&gt;
 &lt;/div&gt;"></core:HTML>
+                </content>
+            </Panel>
+
         </content>
         <beginButton>
             <Button text="Schliessen" press="dialogClose"/>

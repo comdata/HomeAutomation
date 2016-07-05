@@ -8,6 +8,9 @@
 				text="Reload Scheduler" 
 				id="reloadScheduler"
 				icon="sap-icon://refresh"/>
-			
+			<u:MenuItem
+					text="Administration"
+					id="openAdminDialog"
+					icon="sap-icon://settings"/>
 		</u:Menu>
 </core:FragmentDefinition>

@@ -8,7 +8,7 @@ sap.ui.base.Object
     .extend(
     "cm.webservice.RESTService",
     {
-        messageToast:null,
+        messageToast: null,
         /**
          * Constructor to create THWebservice object instance
          *
@@ -16,17 +16,20 @@ sap.ui.base.Object
          */
         constructor: function () {
             jQuery.sap.require("sap.m.MessageToast");
-            this.messageToast=sap.m.MessageToast;
+            this.messageToast = sap.m.MessageToast;
         },
         loadDataAsync: function (url, inModel, method, successCallback, errorCallBack, subject) {
             jQuery.sap.require("sap.ui.model.json.JSONModel");
             var model = new sap.ui.model.json.JSONModel();
 
             model.attachRequestCompleted(function (event) {
-                var resultModel=new sap.ui.model.json.JSONModel();
+                var resultModel = new sap.ui.model.json.JSONModel();
                 resultModel.setData(event.getSource().oData);
 
-                successCallback.apply(subject, [event, resultModel]);
+                if (successCallback != null) {
+
+                    successCallback.apply(subject, [event, resultModel, event.getSource().oData]);
+                }
             });
 
             if (!errorCallBack) {
@@ -39,7 +42,7 @@ sap.ui.base.Object
             }
             model.attachRequestFailed(function (event) {
                 errorCallBack(event);
-            });
+            })
 
 
             model.loadData(url, inModel, true, method, false, false);
