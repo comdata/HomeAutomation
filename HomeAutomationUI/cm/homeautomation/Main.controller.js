@@ -374,7 +374,7 @@ sap.ui.define([
 
             var oModel = new RESTService();
             oModel.loadDataAsync("/HomeAutomation/services/windowBlinds/setDim/" + windowBlind.id + "/"
-                + value, "", "GET", this.handleSwitchChanged, null, this);
+                + value+"/"+windowBlind.type+"/"+windowBlind.room.id, "", "GET", this.handleSwitchChanged, null, this);
         },
         handleThermostatChange: function (event) {
             var thermostat = sap.ui.getCore().getModel("thermostats").getProperty(event.getSource().oPropagatedProperties.oBindingContexts.thermostats.sPath);
