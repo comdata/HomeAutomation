@@ -63,6 +63,7 @@ public class WindowBlindService extends BaseService {
 			WindowBlind allAtOnce = new WindowBlind();
 			allAtOnce.setType(WindowBlind.ALL_AT_ONCE);
 			allAtOnce.setName("Alle");
+			allAtOnce.setCurrentValue(windowBlindsList.getWindowBlinds().get(0).getCurrentValue());
 			allAtOnce.setRoom(windowBlindsList.getWindowBlinds().get(0).getRoom());
 			windowBlindsList.getWindowBlinds().add(allAtOnce);
 

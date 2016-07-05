@@ -76,7 +76,7 @@ public class WindowBlind {
 		
 	}
 
-	public String getype() {
+	public String getType() {
 		return windowBlindType;
 	}
 
