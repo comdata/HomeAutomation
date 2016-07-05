@@ -51,4 +51,12 @@ public class Device {
 	public void setMac(String mac) {
 		this.mac = mac;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 }
