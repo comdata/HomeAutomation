@@ -8,21 +8,20 @@ import java.util.concurrent.CountDownLatch;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
+import com.google.common.eventbus.EventBus;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Device;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.Switch;
-import cm.homeautomation.eventbus.EventBus;
-import cm.homeautomation.eventbus.EventObject;
+import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.hap.HAPService;
 import cm.homeautomation.hap.HAPTemperatureSensor;
 import cm.homeautomation.sensors.RFEvent;
@@ -250,7 +249,8 @@ public class Sensors extends BaseService {
 				}
 			}
 			
-			EventBus.getInstance().sendMessage(new EventObject("SENSOR_DATA", sensorData));
+			EventBusService.getEventBus().post(sensorData); 
+			
 			
 			OverviewTile overviewTileForRoom = new OverviewService()
 					.getOverviewTileForRoom(sensorData.getSensor().getRoom());

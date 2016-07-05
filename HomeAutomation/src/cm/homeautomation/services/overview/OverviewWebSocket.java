@@ -1,6 +1,5 @@
 package cm.homeautomation.services.overview;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,27 +11,22 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.zeromq.ZMQ;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.entities.SensorData;
-import cm.homeautomation.eventbus.EventBus;
-import cm.homeautomation.eventbus.EventObject;
-import cm.homeautomation.sensors.SensorDataSaveRequest;
+import cm.homeautomation.eventbus.EventBusService;
 
 @ServerEndpoint(value = "/overview", configurator = OverviewEndPointConfiguration.class, encoders = {
 		OverviewMessageTranscoder.class }, decoders = { OverviewMessageTranscoder.class })
-public class OverviewWebSocket extends Thread {
+public class OverviewWebSocket {
 	private Set<Session> userSessions = Collections.synchronizedSet(new HashSet<Session>());
 
 	private OverviewEndPointConfiguration overviewEndPointConfiguration;
 	private OverviewWebSocket overviewEndpoint;
 
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		super.run();
+	public OverviewWebSocket() {
+		super();
 
 		try {
 			if (overviewEndPointConfiguration == null) {
@@ -40,47 +34,21 @@ public class OverviewWebSocket extends Thread {
 				overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
 			}
 
-			ObjectMapper mapper = new ObjectMapper();
-			ZMQ.Context context = ZMQ.context(1);
-
-			// Socket to talk to server
-			System.out.println("Collecting updates from weather server");
-			ZMQ.Socket subscriber = context.socket(ZMQ.SUB);
-			subscriber.connect("tcp://localhost:"+EventBus.ZEROMQPORT);
-
-			subscriber.subscribe("".getBytes());
-			while (!Thread.currentThread().isInterrupted()) {
-				String recvStr = subscriber.recvStr(0);
-
-				
-				try {
-					System.out.println("Got Event: "+recvStr);
-					EventObject eventObject = mapper.readValue(recvStr, EventObject.class);
-
-					if ("SENSOR_DATA".equals(eventObject.getEventName())) {
-						Object data = eventObject.getData();
-						if (data instanceof SensorData) {
-							SensorData sensorData = (SensorData) data;
-							forwardSensorData(overviewEndpoint, sensorData);
-						}
-					}
-				} catch (JsonParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (JsonMappingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-			}
-
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		EventBusService.getEventBus().register(this);
+	}
+
+	@Subscribe
+	public void handleSensorDataChanged(SensorData sensorData) {
+		OverviewTile overviewTileForRoom = new OverviewService()
+				.getOverviewTileForRoom(sensorData.getSensor().getRoom());
+
+		overviewEndpoint.sendTile(overviewTileForRoom);
+
 	}
 
 	private void forwardSensorData(OverviewWebSocket overviewEndpoint, SensorData sensorData) {

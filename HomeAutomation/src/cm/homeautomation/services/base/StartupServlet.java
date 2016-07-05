@@ -4,7 +4,6 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
-import cm.homeautomation.eventbus.EventBus;
 import cm.homeautomation.hap.HAPService;
 import cm.homeautomation.jeromq.server.JeroMQServer;
 import cm.homeautomation.moquette.server.MoquetteServer;
@@ -24,8 +23,7 @@ public class StartupServlet extends HttpServlet {
 	private MoquetteServer moquetteServer;
 
 	public void init(ServletConfig config) throws ServletException {
-		EventBus.getInstance();
-		
+
 		System.out.println("Starting scheduler");
 		schedulerThread = SchedulerThread.getInstance();
 
@@ -33,17 +31,13 @@ public class StartupServlet extends HttpServlet {
 		HAPService hapService = HAPService.getInstance();
 
 		moquetteServer = new MoquetteServer();
-		
+
 		jeroMQServer = new JeroMQServer();
 
 		try {
 			OverviewEndPointConfiguration overviewEndPointConfiguration = new OverviewEndPointConfiguration();
-
 			overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
-
-			overviewEndpoint.start();
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -67,11 +61,6 @@ public class StartupServlet extends HttpServlet {
 
 		}
 
-		try {
-			EventBus.getInstance().close();
-		} catch (Exception e) {
-
-		}
 	}
 
 }
