@@ -14,6 +14,7 @@ The system currently supports reading:
 - number of planes from dump1090
 - state of TV (Panasonic)
 - communication and control of Z-Wave Window Blinds using FHEM
+- Receive measurements via ZeroMQ and MQTT (using a local Moquette Broker)
  
 Additionally it can proxy for a MJPEG camera.
 
