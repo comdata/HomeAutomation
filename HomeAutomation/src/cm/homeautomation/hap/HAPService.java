@@ -10,18 +10,10 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.LoggerFactory;
-
 import com.beowulfe.hap.HomekitAuthInfo;
 import com.beowulfe.hap.HomekitRoot;
 import com.beowulfe.hap.HomekitServer;
-import com.beowulfe.hap.impl.jmdns.JmdnsHomekitAdvertiser;
 
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
-import ch.qos.logback.core.ConsoleAppender;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
@@ -42,23 +34,6 @@ public class HAPService {
 	private Map<Long, HAPHumiditySensor> humiditySensors = new HashMap<Long, HAPHumiditySensor>();
 
 	public HAPService() {
-		if (true) {
-			Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-
-			LoggerContext loggerContext = rootLogger.getLoggerContext();
-			loggerContext.reset();
-
-			PatternLayoutEncoder logEncoder = new PatternLayoutEncoder();
-			logEncoder.setContext(loggerContext);
-			logEncoder.setPattern("%-12date{YYYY-MM-dd HH:mm:ss.SSS} %-5level - %msg%n");
-			logEncoder.start();
-
-			ConsoleAppender logConsoleAppender = new ConsoleAppender();
-			logConsoleAppender.setContext(loggerContext);
-			logConsoleAppender.setName("console");
-			logConsoleAppender.setEncoder(logEncoder);
-			logConsoleAppender.start();
-		}
 
 		init();
 	}
