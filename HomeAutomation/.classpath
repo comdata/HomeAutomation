@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="test/" kind="src" output="target/classes" path="src"/>
+	<classpathentry excluding="test/|test/java/" kind="src" output="target/classes" path="src"/>
 	<classpathentry kind="src" path="resources"/>
-	<classpathentry kind="src" path="src/test"/>
+	<classpathentry excluding="java/" kind="src" path="src/test"/>
+	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
