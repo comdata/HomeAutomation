@@ -55,7 +55,19 @@ public class OverviewWebSocket {
 		OverviewTile overviewTileForRoom = new OverviewService()
 				.getOverviewTileForRoom(sensorData.getSensor().getRoom());
 
-		overviewEndpoint.sendTile(overviewTileForRoom);
+		try {
+			if (overviewEndPointConfiguration == null) {
+				overviewEndPointConfiguration = new OverviewEndPointConfiguration();
+				overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
+				overviewEndpoint.sendTile(overviewTileForRoom);
+			}
+
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
 
 	}
 
