@@ -82,7 +82,7 @@ public class WindowBlindService extends BaseService {
 	@GET
 	@Path("setDim/{windowBlind}/{value}/{type}/{roomId}")
 	public void setDim(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value,
-			@PathParam("type") String type, @PathParam("roomId") String roomId) {
+			@PathParam("type") String type, @PathParam("roomId") Long roomId) {
 		EntityManager em = EntityManagerService.getNewManager();
 
 		if (WindowBlind.SINGLE.equals(type)) {

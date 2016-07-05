@@ -373,7 +373,8 @@ sap.ui.define([
             console.log("new value: " + value);
 
             var oModel = new RESTService();
-            oModel.loadDataAsync("/HomeAutomation/services/windowBlinds/setDim/" + windowBlind.id + "/"
+            var windowBlindId=( windowBlind.id==null) ? 0 : windowBlind.id;
+            oModel.loadDataAsync("/HomeAutomation/services/windowBlinds/setDim/" + windowBlindId + "/"
                 + value+"/"+windowBlind.type+"/"+windowBlind.room.id, "", "GET", this.handleSwitchChanged, null, this);
         },
         handleThermostatChange: function (event) {
