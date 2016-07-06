@@ -20,29 +20,35 @@ public class SensorTest {
 	@Before
 	public void setup() {
 		em = EntityManagerService.getNewManager();
+		em.getTransaction().begin();
 		
 		room = new Room();
 		room.setRoomName("Test Sensor Room");
 
 		em.persist(room);
+		em.getTransaction().commit();
 	}
 	
 	@Test
 	public void testCreateSensor() throws Exception {
+		em.getTransaction().begin();
 		Sensor sensor = new Sensor();
 		sensor.setRoom(room);
 		sensor.setSensorName("Testsensor");
 		
 		em.persist(sensor);
+		em.getTransaction().commit();
 
 		assertTrue("Id: "+sensor.getId(), sensor.getId()!=null);
 	}
 
 	@Test(expected=PersistenceException.class)
 	public void testCreateEmptySensor() throws Exception {
+		em.getTransaction().begin();
 		Sensor sensor = new Sensor();
 		sensor.setRoom(room);
 		em.persist(sensor);
+		em.getTransaction().commit();
 		assertTrue("Id: "+sensor.getId(), sensor.getId()==null);
 	}
 }
