@@ -233,22 +233,6 @@ public class Sensors extends BaseService {
 			
 			EventBusService.getEventBus().post(sensorData); 
 			
-			//TODO check
-			OverviewTile overviewTileForRoom = new OverviewService()
-					.getOverviewTileForRoom(sensorData.getSensor().getRoom());
-			try {
-
-				if (overviewEndPointConfiguration == null) {
-					overviewEndPointConfiguration = new OverviewEndPointConfiguration();
-					overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
-				}
-
-				overviewEndpoint.sendTile(overviewTileForRoom);
-
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		} else {
 			System.err.println("Not a sensor");
 		}
