@@ -27,6 +27,7 @@ public class Sensor {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(name="SENSORNAME", nullable=false)
 	private String sensorName;
 	private String sensorType;
 	private String sensorPin;

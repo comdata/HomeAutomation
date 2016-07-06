@@ -19,7 +19,7 @@ public class DeviceTest {
 		em = EntityManagerService.getNewManager();
 		
 		room=new Room();
-		room.setRoomName("Test Room");
+		room.setRoomName("Test Device Room");
 
 		em.persist(room);
 	}

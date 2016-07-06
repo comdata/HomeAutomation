@@ -19,13 +19,13 @@ public class Device {
 	
 	@JsonBackReference("room")
 	@ManyToOne
-	@JoinColumn(name = "ROOM_ID")
+	@JoinColumn(name = "ROOM_ID", nullable=false)
 	private Room room;
 	
-	@Column(name="MAC")
+	@Column(name="MAC", nullable=false)
 	private String mac;
 	
-	@Column(name="NAME")
+	@Column(name="NAME", nullable=false)
 	private String name;
 
 	public Long getId() {
