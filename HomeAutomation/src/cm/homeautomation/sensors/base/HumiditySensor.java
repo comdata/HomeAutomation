@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import se.hirt.w1.impl.DHTHygrometer;
 import se.hirt.w1.impl.DHTSensor;
-import se.hirt.w1.impl.DHTTemperature;
 import se.hirt.w1.impl.DHTType;
 
 public class HumiditySensor implements TechnicalSensor {

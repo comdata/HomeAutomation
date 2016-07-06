@@ -15,6 +15,7 @@ import cm.homeautomation.sensors.base.TechnicalSensor;
 import cm.homeautomation.sensors.base.TemperatureSensor;
 import cm.homeautomation.services.sensors.Sensors;
 
+// TODO remove
 public class SensorDataThread extends Thread {
 
 	HashMap<Sensor, TechnicalSensor> sensorList = new HashMap<Sensor, TechnicalSensor>();
