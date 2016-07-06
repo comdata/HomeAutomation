@@ -1,7 +1,8 @@
-[![Stories in Ready](https://badge.waffle.io/comdata/HomeAutomation.png?label=ready&title=Ready)](https://waffle.io/comdata/HomeAutomation)
+
 # HomeAutomation
 
 [![Build Status](https://travis-ci.org/comdata/HomeAutomation.svg?branch=master)](https://travis-ci.org/comdata/HomeAutomation)
+[![Stories in Ready](https://badge.waffle.io/comdata/HomeAutomation.png?label=ready&title=Ready)](https://waffle.io/comdata/HomeAutomation)
 
 This is my first approach to automate my home.
 
