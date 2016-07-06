@@ -6,6 +6,9 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/resources"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
+        <dependent-module archiveName="HomeAutomationBase-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/HomeAutomationBase/HomeAutomationBase">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="context-root" value="HomeAutomation"/>
         <property name="java-output-path" value="/HomeAutomation/build/classes"/>
     </wb-module>
