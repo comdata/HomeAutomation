@@ -387,7 +387,7 @@ sap.ui.define([
             		
             		var singleWindowBlind=windowBlinds.windowBlinds[i];
             		
-            		if (windowBlind.type=="SINGLE") {
+            		if (singleWindowBlind.type=="SINGLE") {
             			singleWindowBlind.currentValue=value;
             		}
             	}
