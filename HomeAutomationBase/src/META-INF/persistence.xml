@@ -9,11 +9,12 @@
 		<class>cm.homeautomation.entities.SensorData</class>
 		<class>cm.homeautomation.entities.Weather</class>
 		<class>cm.homeautomation.entities.Switch</class>
+		<class>cm.homeautomation.entities.WindowBlind</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:mariadb://localhost:3306/HA" />
 			<property name="javax.persistence.jdbc.user" value="root" />
-			<property name="javax.persistence.jdbc.password" value="test1234" />
+			<property name="javax.persistence.jdbc.password" value="" />
 
 			<!-- EclipseLink should create the database schema automatically -->
 			<property name="eclipselink.ddl-generation" value="create-tables" />
