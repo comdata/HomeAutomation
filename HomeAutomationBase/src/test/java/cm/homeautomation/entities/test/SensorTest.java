@@ -34,6 +34,8 @@ public class SensorTest {
 		sensor.setSensorName("Testsensor");
 		
 		em.persist(sensor);
+		
+		assertTrue(sensor.getId()!=null);
 	}
 
 	@Test(expected=PersistenceException.class)
