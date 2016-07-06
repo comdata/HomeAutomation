@@ -8,8 +8,8 @@ function resize(element) {
 
     if (element != null) {
 
-        //if (!imageFullScreen) {
-        //	imageFullScreen=true;
+        // if (!imageFullScreen) {
+        // imageFullScreen=true;
 
         var targetWidth = (window.innerWidth - 30);
         var targetHeight = targetWidth * (0.5625);
@@ -17,12 +17,11 @@ function resize(element) {
         element.style.height = targetHeight + "px";
 
         element.style.width = targetWidth + "px";
-        /*} else  {
-         imageFullScreen=false;
-         element.style.height="324px";
-         element.style.width="576px";
-
-         }*/
+        /*
+		 * } else { imageFullScreen=false; element.style.height="324px";
+		 * element.style.width="576px";
+		 *  }
+		 */
 
     }
 }
@@ -130,11 +129,11 @@ sap.ui.define([
                     tile.info = newData.info;
                     tile.infoState = newData.infoState;
                 }
-                //this.getView().getModel().setData(this.overviewData);
-                //newTiles.setData(tiles);
+                // this.getView().getModel().setData(this.overviewData);
+                // newTiles.setData(tiles);
                 this.getView().getModel().refresh(false);
 
-                //this.getView().setModel(newTiles);
+                // this.getView().setModel(newTiles);
                 $(".sapMStdTileIconDiv > img[src='/HomeAutomation/cameraproxy']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
             }
         },
@@ -146,10 +145,10 @@ sap.ui.define([
         },
 
         /**
-         * initialize
-         *
-         * @param evt
-         */
+		 * initialize
+		 * 
+		 * @param evt
+		 */
         onInit: function (evt) {
             this.loadData();
             var subject = this;
@@ -158,9 +157,10 @@ sap.ui.define([
 
             sap.ui.getCore().getModel(this.currentRoomModel, "currentRoom");
 
-            /*window.setInterval(function () {
-             subject.loadData.apply(subject)
-             }, 30000);*/
+            /*
+			 * window.setInterval(function () { subject.loadData.apply(subject) },
+			 * 30000);
+			 */
 
             window.setInterval(
                 function () {
@@ -186,9 +186,9 @@ sap.ui.define([
         },
         loadDataInProgress: false,
         /**
-         * perform data loading
-         *
-         */
+		 * perform data loading
+		 * 
+		 */
         loadData: function () {
 
             if (this.loadDataInProgress == false) {
@@ -198,11 +198,11 @@ sap.ui.define([
             }
         },
         /**
-         * handle successful data loading
-         *
-         * @param event
-         * @param model
-         */
+		 * handle successful data loading
+		 * 
+		 * @param event
+		 * @param model
+		 */
         handleDataLoaded: function (event, model, jsonModelData) {
             this.getView().setModel(model);
             this.overviewData = jsonModelData;
@@ -237,7 +237,7 @@ sap.ui.define([
                 icon: "sap-icon://flight"
             };
 
-            //this.byId(this.createId("container")).addTile(cameraTile);
+            // this.byId(this.createId("container")).addTile(cameraTile);
 
             this.getView().getModel().getData().overviewTiles.push(this.planesTile);
 
@@ -247,7 +247,7 @@ sap.ui.define([
 
             this.getView().getModel().refresh(false);
             $(".sapMStdTileIconDiv > img[src='/HomeAutomation/camerasnapshot']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
-///HomeAutomation/cameraproxy
+// /HomeAutomation/cameraproxy
             this.loadDataInProgress = false;
             var subject = this;
 
@@ -265,7 +265,7 @@ sap.ui.define([
 
 
             $(".sapMStdTileIconDiv > img[src='/HomeAutomation/camerasnapshot2']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
-///HomeAutomation/cameraproxy
+// /HomeAutomation/cameraproxy
             this.loadDataInProgress = false;
             var subject = this;
 
@@ -295,9 +295,10 @@ sap.ui.define([
                 console.log("Anzahl " + result.length);
                 planesTile.number = result.length;
                 planesTile.info = $.format.date(new Date(), "dd.MM.yyyy HH:mm:ss");
-                /*$.each(result, function(i, field){
-                 console.log(i+" - "+field);
-                 });*/
+                /*
+				 * $.each(result, function(i, field){ console.log(i+" -
+				 * "+field); });
+				 */
             });
         },
         handleSwitchesLoaded: function (event, model) {
@@ -315,7 +316,7 @@ sap.ui.define([
             sap.ui.getCore().setModel(model, "switches");
 
 
-            //alert(sap.ui.getCore().getModel("switches"));
+            // alert(sap.ui.getCore().getModel("switches"));
         },
         handleWindowBlindsLoaded: function (event, model) {
 
@@ -330,7 +331,7 @@ sap.ui.define([
 
             sap.ui.getCore().setModel(model, "windowBlinds");
 
-            //alert(sap.ui.getCore().getModel("switches"));
+            // alert(sap.ui.getCore().getModel("switches"));
         },
 
         handleThermostatsLoaded: function (event, model) {
@@ -346,13 +347,13 @@ sap.ui.define([
 
             sap.ui.getCore().setModel(model, "thermostats");
 
-            //alert(sap.ui.getCore().getModel("switches"));
+            // alert(sap.ui.getCore().getModel("switches"));
         },
 
         handleSwitchChange: function (event) {
             var singleSwitch = sap.ui.getCore().getModel("switches").getProperty(event.getSource().oPropagatedProperties.oBindingContexts.switches.sPath);
 
-            //alert(singleSwitch.switchState);
+            // alert(singleSwitch.switchState);
 
             var newState = "";
 
@@ -376,6 +377,22 @@ sap.ui.define([
             var windowBlindId=( windowBlind.id==null) ? 0 : windowBlind.id;
             oModel.loadDataAsync("/HomeAutomation/services/windowBlinds/setDim/" + windowBlindId + "/"
                 + value+"/"+windowBlind.type+"/"+windowBlind.room.id, "", "GET", this.handleSwitchChanged, null, this);
+            
+            if (windowBlind.type=="ALL_AT_ONCE") {
+            	
+            	var windowBlinds=sap.ui.getCore().getModel("windowBlinds").getProperty("/");
+            	
+            	for(var i = 0; i < windowBlinds.length; i++) {
+            		
+            		var singleWindowBlind=windowBlinds[i];
+            		
+            		if (windowBlind.type=="SINGLE") {
+            			singleWindowBlind.currentValue=value;
+            		}
+            	}
+            	
+            }
+            
         },
         handleThermostatChange: function (event) {
             var thermostat = sap.ui.getCore().getModel("thermostats").getProperty(event.getSource().oPropagatedProperties.oBindingContexts.thermostats.sPath);
@@ -394,8 +411,8 @@ sap.ui.define([
 
         },
         /**
-         * load a room
-         */
+		 * load a room
+		 */
         loadRoom: function () {
 
             var subject = this;
@@ -411,9 +428,9 @@ sap.ui.define([
         },
 
         /**
-         * trigger a reload if something goes wrong
-         *
-         */
+		 * trigger a reload if something goes wrong
+		 * 
+		 */
         _loadDataFailed: function (event) {
             this.loadDataInProgress = false;
             var subject = this;
@@ -425,19 +442,19 @@ sap.ui.define([
         },
 
         expandHistoricData: function (oEvent) {
-            //window.setTimeout(function () {
+            // window.setTimeout(function () {
             if (oEvent.getParameter("expand") == true) {
                 getHistoricalSensordata(this.selectedRoom);
             }
-            //}, 5000);
+            // }, 5000);
 
         },
 
         /**
-         * handle selection, triggering navigation
-         *
-         * @param event
-         */
+		 * handle selection, triggering navigation
+		 * 
+		 * @param event
+		 */
         handleSelect: function (event) {
 
 
@@ -459,7 +476,7 @@ sap.ui.define([
                     this.camera = sap.ui.xmlfragment("cm.homeautomation.Camera", this);
                     jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.camera);
                     this.camera.open();
-                    //this.cameraTile.icon=null;
+                    // this.cameraTile.icon=null;
                 }
             }
 
@@ -468,7 +485,7 @@ sap.ui.define([
                     this.camera = sap.ui.xmlfragment("cm.homeautomation.Camera2", this);
                     jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.camera);
                     this.camera.open();
-                    //this.cameraTile.icon=null;
+                    // this.cameraTile.icon=null;
                 }
             }
             else if (tileType == "planes") {
@@ -500,13 +517,19 @@ sap.ui.define([
         },
         cameraDialogClose: function () {
             this.camera.close();
-            //this.cameraTile.icon='http://192.168.1.57:8080/?action=snapshot';
-            //$(".sapMStdTileIconDiv > img[src='http://192.168.1.57:8080/?action=snapshot']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
+            // this.cameraTile.icon='http://192.168.1.57:8080/?action=snapshot';
+            // $(".sapMStdTileIconDiv >
+			// img[src='http://192.168.1.57:8080/?action=snapshot']").css("width",
+			// "200px").css("height", "112px").css("position",
+			// "relative").css("left", "-20px").css("top", "30px");
         },
         planesDialogClose: function () {
             this.planesView.close();
-            //this.cameraTile.icon='http://192.168.1.57:8080/?action=snapshot';
-            //$(".sapMStdTileIconDiv > img[src='http://192.168.1.57:8080/?action=snapshot']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
+            // this.cameraTile.icon='http://192.168.1.57:8080/?action=snapshot';
+            // $(".sapMStdTileIconDiv >
+			// img[src='http://192.168.1.57:8080/?action=snapshot']").css("width",
+			// "200px").css("height", "112px").css("position",
+			// "relative").css("left", "-20px").css("top", "30px");
         },
         afterDialogClose: function () {
             this._oDialog.destroy();
@@ -627,7 +650,8 @@ sap.ui.define([
             this.roomAdminDialogShow("ADD", model);
         },
         handleEditRoomButtonPress: function (event) {
-            //administrationSelectedRoom = sap.ui.getCore().getModel("rooms").getProperty(sap.ui.getCore().byId("rooms").getSelectedItem().oBindingContexts.rooms.sPath);
+            // administrationSelectedRoom =
+			// sap.ui.getCore().getModel("rooms").getProperty(sap.ui.getCore().byId("rooms").getSelectedItem().oBindingContexts.rooms.sPath);
             console.log("selected room:" + this.administrationSelectedRoom.id);
 
             var model = new JSONModel();
@@ -681,7 +705,7 @@ sap.ui.define([
         administrationRoomPressed: function (oEvent) {
             this.administrationSelectedRoom=sap.ui.getCore().getModel("rooms").getProperty(oEvent.getParameter("listItem").oBindingContexts.rooms.sPath);
             var roomId=oEvent.getParameter("listItem").getCustomData()[0].getValue();
-            //alert("room selected "+roomId);
+            // alert("room selected "+roomId);
 
             this._administrationShowRoomDetails(this.administrationSelectedRoom);
         },
