@@ -1,5 +1,7 @@
 package cm.homeautomation.entities.test;
 
+import static org.junit.Assert.assertTrue;
+
 import javax.persistence.EntityManager;
 
 import org.junit.Before;
@@ -17,22 +19,26 @@ public class DeviceTest {
 	@Before
 	public void setup() {
 		em = EntityManagerService.getNewManager();
-		
-		room=new Room();
+		em.getTransaction().begin();
+
+		room = new Room();
 		room.setRoomName("Test Device Room");
 
 		em.persist(room);
+		em.getTransaction().commit();
 	}
-	
+
 	@Test
 	public void testCreateDevice() throws Exception {
-		
+		em.getTransaction().begin();
 		Device device = new Device();
-		
+
 		device.setMac("00:00:00:00:00");
 		device.setName("Test device");
 		device.setRoom(room);
-		
-		em.persist(device );
+
+		em.persist(device);
+		assertTrue("Id: " + device.getId(), device.getId() != null);
+		em.getTransaction().commit();
 	}
 }

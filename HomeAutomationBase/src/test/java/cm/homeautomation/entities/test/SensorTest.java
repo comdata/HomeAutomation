@@ -39,7 +39,7 @@ public class SensorTest {
 		em.persist(sensor);
 		em.getTransaction().commit();
 
-		assertTrue("Id: "+sensor.getId(), sensor.getId()!=null);
+		assertTrue("Id: " + sensor.getId(), sensor.getId() != null);
 	}
 
 	@Test(expected=PersistenceException.class)
