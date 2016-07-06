@@ -42,7 +42,7 @@ public class SensorTest {
 		assertTrue("Id: " + sensor.getId(), sensor.getId() != null);
 	}
 
-	@Test(expected=PersistenceException.class)
+	@Test(expected=RuntimeException.class)
 	public void testCreateEmptySensor() throws Exception {
 		em.getTransaction().begin();
 		Sensor sensor = new Sensor();
