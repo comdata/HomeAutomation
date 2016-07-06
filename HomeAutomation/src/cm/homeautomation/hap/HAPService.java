@@ -11,14 +11,17 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 
 import com.beowulfe.hap.HomekitAuthInfo;
+import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
 import com.beowulfe.hap.HomekitRoot;
 import com.beowulfe.hap.HomekitServer;
+import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.entities.WindowBlind;
+import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.windowblind.WindowBlindService;
 import cm.homeautomation.windowblind.WindowBlindsList;
 
@@ -34,8 +37,9 @@ public class HAPService {
 	private Map<Long, HAPHumiditySensor> humiditySensors = new HashMap<Long, HAPHumiditySensor>();
 
 	public HAPService() {
-
+		
 		init();
+		EventBusService.getEventBus().register(this);
 	}
 
 	public void addWindowCovering(HomekitRoot bridge) {
@@ -51,6 +55,24 @@ public class HAPService {
 			System.out.println("Adding Windowblind: " + id + " - " + hapWindowBlind.getLabel());
 
 			bridge.addAccessory(hapWindowBlind);
+		}
+	}
+	
+	@Subscribe
+	public void handleSensorDataChanged(SensorData sensorData) {
+		if ("TEMPERATURE".equals(sensorData.getSensor().getSensorType())) {
+
+			HAPTemperatureSensor hapTemperatureSensor = HAPService.getInstance().getTemperatureSensors()
+					.get(sensorData.getSensor().getId());
+
+			if (hapTemperatureSensor != null) {
+				double valueAsDouble = Double.parseDouble(sensorData.getValue().replace(",", "."));
+				hapTemperatureSensor.setTemperature(new Double(valueAsDouble));
+				HomekitCharacteristicChangeCallback subscribeCallback = hapTemperatureSensor.getSubscribeCallback();
+				if (subscribeCallback != null) {
+					subscribeCallback.changed();
+				}
+			}
 		}
 	}
 
@@ -83,11 +105,13 @@ public class HAPService {
 
 	public void addTemperatureSensor(HomekitRoot bridge) {
 		System.out.println("Loading Temperature");
+		@SuppressWarnings("unchecked")
 		List<Sensor> sensorList = em.createQuery("select s from Sensor s where s.sensorType='TEMPERATURE'")
 				.getResultList();
 
 		if (sensorList != null) {
 			for (Sensor singleSensor : sensorList) {
+				@SuppressWarnings("unchecked")
 				List<SensorData> latestDataList = em
 						.createQuery("select sd from SensorData sd where sd.sensor=:sensor order by sd.dateTime desc")
 						.setParameter("sensor", singleSensor).setMaxResults(1).getResultList();
@@ -112,11 +136,13 @@ public class HAPService {
 
 	public void addHumiditySensor(HomekitRoot bridge) {
 		System.out.println("Loading Humidity");
+		@SuppressWarnings("unchecked")
 		List<Sensor> sensorList = em.createQuery("select s from Sensor s where s.sensorType='HUMIDITY'")
 				.getResultList();
 
 		if (sensorList != null) {
 			for (Sensor singleSensor : sensorList) {
+				@SuppressWarnings("unchecked")
 				List<SensorData> latestDataList = em
 						.createQuery("select sd from SensorData sd where sd.sensor=:sensor order by sd.dateTime desc")
 						.setParameter("sensor", singleSensor).setMaxResults(1).getResultList();
@@ -143,6 +169,7 @@ public class HAPService {
 
 	public void addLightsToBridge(HomekitRoot bridge) {
 		System.out.println("Loading Lights");
+		@SuppressWarnings("unchecked")
 		List<Switch> switchList = em.createQuery("select sw from Switch sw where sw.switchType='LIGHT'")
 				.getResultList();
 
@@ -168,6 +195,7 @@ public class HAPService {
 
 	public void addSocketsToBridge(HomekitRoot bridge) {
 		System.out.println("Loading Switches");
+		@SuppressWarnings("unchecked")
 		List<Switch> switchList = em.createQuery("select sw from Switch sw where sw.switchType='SOCKET'")
 				.getResultList();
 
@@ -194,15 +222,15 @@ public class HAPService {
 	public InetAddress getLocalAddress() {
 		InetAddress address = null;
 
-		Enumeration e;
+		
 		try {
-			e = NetworkInterface.getNetworkInterfaces();
+			Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
 
 			while (e.hasMoreElements()) {
-				NetworkInterface n = (NetworkInterface) e.nextElement();
-				Enumeration ee = n.getInetAddresses();
+				NetworkInterface n =  e.nextElement();
+				Enumeration<InetAddress> ee = n.getInetAddresses();
 				while (ee.hasMoreElements()) {
-					InetAddress i = (InetAddress) ee.nextElement();
+					InetAddress i = ee.nextElement();
 					String hostAddress = i.getHostAddress();
 					if (hostAddress.startsWith("192.168")) {
 						address = i;

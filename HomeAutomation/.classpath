@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry excluding="test/|test/java/" kind="src" output="target/classes" path="src"/>
 	<classpathentry kind="src" path="resources"/>
-	<classpathentry excluding="java/" kind="src" path="src/test"/>
 	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
