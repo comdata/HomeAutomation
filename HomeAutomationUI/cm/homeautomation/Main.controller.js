@@ -368,7 +368,8 @@ sap.ui.define([
                 + newState, "", "GET", this.handleSwitchChanged, null, this);
         },
         handleBlindChange: function (event) {
-            var windowBlind = sap.ui.getCore().getModel("windowBlinds").getProperty(event.getSource().oPropagatedProperties.oBindingContexts.windowBlinds.sPath);
+        	var windowBlindsModel = sap.ui.getCore().getModel("windowBlinds");
+            var windowBlind = windowBlindsModel.getProperty(event.getSource().oPropagatedProperties.oBindingContexts.windowBlinds.sPath);
 
             var value = windowBlind.currentValue;
             console.log("new value: " + value);
@@ -380,7 +381,7 @@ sap.ui.define([
             
             if (windowBlind.type=="ALL_AT_ONCE") {
             	
-            	var windowBlinds=sap.ui.getCore().getModel("windowBlinds").getProperty("/");
+            	var windowBlinds=windowBlindsModel.getProperty("/");
             	
             	for(var i = 0; i < windowBlinds.length; i++) {
             		
@@ -390,6 +391,7 @@ sap.ui.define([
             			singleWindowBlind.currentValue=value;
             		}
             	}
+            	windowBlindsModel.setData(windowBlinds);
             	
             }
             
