@@ -379,6 +379,10 @@ sap.ui.define([
             oModel.loadDataAsync("/HomeAutomation/services/windowBlinds/setDim/" + windowBlindId + "/"
                 + value+"/"+windowBlind.type+"/"+windowBlind.room.id, "", "GET", this.handleSwitchChanged, null, this);
             
+            /**
+             * set value directly to all other window blinds
+             * 
+             */
             if (windowBlind.type=="ALL_AT_ONCE") {
             	
             	var windowBlinds=windowBlindsModel.getProperty("/");
