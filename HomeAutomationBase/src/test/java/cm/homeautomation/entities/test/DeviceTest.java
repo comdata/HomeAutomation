@@ -38,7 +38,9 @@ public class DeviceTest {
 		device.setRoom(room);
 
 		em.persist(device);
-		assertTrue("Id: " + device.getId(), device.getId() != null);
+
 		em.getTransaction().commit();
+		
+		assertTrue("Id: " + device.getId(), device.getId() != null);
 	}
 }
