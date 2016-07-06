@@ -3,6 +3,7 @@ package cm.homeautomation.entities.test;
 import static org.junit.Assert.*;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +36,7 @@ public class SensorTest {
 		em.persist(sensor);
 	}
 
-	@Test
+	@Test(expected=PersistenceException.class)
 	public void testCreateEmptySensor() throws Exception {
 		Sensor sensor = new Sensor();
 		sensor.setRoom(room);
