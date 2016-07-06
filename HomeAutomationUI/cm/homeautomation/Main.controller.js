@@ -383,9 +383,9 @@ sap.ui.define([
             	
             	var windowBlinds=windowBlindsModel.getProperty("/");
             	
-            	for(var i = 0; i < windowBlinds.length; i++) {
+            	for(var i = 0; i < windowBlinds.windowBlinds.length; i++) {
             		
-            		var singleWindowBlind=windowBlinds[i];
+            		var singleWindowBlind=windowBlinds.windowBlinds[i];
             		
             		if (windowBlind.type=="SINGLE") {
             			singleWindowBlind.currentValue=value;
