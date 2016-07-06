@@ -392,6 +392,7 @@ sap.ui.define([
             		}
             	}
             	windowBlindsModel.setData(windowBlinds);
+            	sap.ui.getCore().SetModel(windowBlindsModel, "windowBlinds");
             	
             }
             
