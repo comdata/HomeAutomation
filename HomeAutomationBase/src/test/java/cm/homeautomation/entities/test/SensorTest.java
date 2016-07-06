@@ -1,11 +1,9 @@
 package cm.homeautomation.entities.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
 
-import org.eclipse.persistence.exceptions.DatabaseException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,7 +41,7 @@ public class SensorTest {
 		assertTrue("Id: " + sensor.getId(), sensor.getId() != null);
 	}
 
-	@Test(expected=DatabaseException.class)
+	@Test(expected=javax.persistence.RollbackException.class)
 	public void testCreateEmptySensor() throws Exception {
 		em.getTransaction().begin();
 		Sensor sensor = new Sensor();
