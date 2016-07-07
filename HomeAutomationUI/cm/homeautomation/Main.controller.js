@@ -42,7 +42,9 @@ sap.ui.define([
         messageToast: null,
         _wsActorUri: "ws://" + location.host + "/HomeAutomation/actor",
         _wsOverviewUri: "ws://" + location.host + "/HomeAutomation/overview",
+        _wsEventBusUri: "ws://" + location.host + "/HomeAutomation/eventbus",
         _webActorSocket: null,
+        _webEventBusSocket: null,
         _webOverviewSocket: null,
         initWebSocket: function (uri, callback, socket) {
 
@@ -104,6 +106,9 @@ sap.ui.define([
 
                 sap.ui.getCore().setModel(switchModel, "switches");
             }
+        },
+        wsEventBusOnMessage: function (evt) {
+            var newData = JSON.parse(evt.data);
         },
         wsOverviewOnMessage: function (evt) {
             var newData = JSON.parse(evt.data);
@@ -182,6 +187,7 @@ sap.ui.define([
 
             sap.ui.getCore().setModel(imageModel, "imageTile");
             this.initWebSocket(this._wsActorUri, this.wsActorOnMessage, this._webActorSocket);
+            this.initWebSocket(this._wsEventBusUri, this.wsEventBusOnMessage, this._webEventBusSocket);
             this.initWebSocket(this._wsOverviewUri, this.wsOverviewOnMessage, this._webOverviewSocket);
         },
         loadDataInProgress: false,
