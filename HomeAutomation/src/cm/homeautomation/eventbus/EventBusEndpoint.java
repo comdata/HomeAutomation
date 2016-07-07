@@ -52,7 +52,7 @@ public class EventBusEndpoint {
 	public void handleEvent(EventObject eventObject) {
 		
 		for (Session session : userSessions) {
-			System.out.println("Sending to " + session.getId());
+			System.out.println("Eventbus Sending to " + session.getId());
 			session.getAsyncRemote().sendObject(eventObject);
 		}
 	}

@@ -47,7 +47,7 @@ public class ActorEndpoint {
 		switchEvent.setStatus(status);
 		
 		for (Session session : userSessions) {
-			System.out.println("Sending to " + session.getId());
+			System.out.println("Actor Sending to " + session.getId());
 			session.getAsyncRemote().sendObject(switchEvent);
 		}
 	}
