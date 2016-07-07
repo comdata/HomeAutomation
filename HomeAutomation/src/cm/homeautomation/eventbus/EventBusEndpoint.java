@@ -20,6 +20,10 @@ public class EventBusEndpoint {
 
 	private Set<Session> userSessions = Collections.synchronizedSet(new HashSet<Session>());
 
+	public EventBusEndpoint() {
+		EventBusService.getEventBus().register(this);
+	}
+	
 	/**
 	 * Callback hook for Connection open events. This method will be invoked
 	 * when a client requests for a WebSocket connection.
