@@ -50,6 +50,8 @@ public class OverviewWebSocket {
 			SensorData sensorData=(SensorData)eventData;
 			OverviewTile overviewTileForRoom = new OverviewService()
 					.getOverviewTileForRoom(sensorData.getSensor().getRoom());
+			
+			System.out.println("Got eventbus for room: "+sensorData.getSensor().getRoom().getRoomName());
 
 			try {
 				if (overviewEndPointConfiguration == null) {
@@ -111,7 +113,7 @@ public class OverviewWebSocket {
 
 		for (Session session : userSessions) {
 			try {
-				System.out.println("Sending to " + session.getId());
+				System.out.println("Sending to " + session.getId()+" - "+tile.getRoomName()+" - "+tile.getNumber());
 				session.getAsyncRemote().sendObject(tile);
 			} catch (Exception e) {
 
