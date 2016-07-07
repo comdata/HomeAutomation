@@ -15,7 +15,7 @@ import com.google.common.eventbus.Subscribe;
 import cm.homeautomation.services.actor.MessageTranscoder;
 
 @ServerEndpoint(value = "/eventbus", configurator = EventBusEndpointConfigurator.class, encoders = {
-		MessageTranscoder.class }, decoders = { MessageTranscoder.class })
+		EventTranscoder.class }, decoders = { EventTranscoder.class })
 public class EventBusEndpoint {
 
 	private Set<Session> userSessions = Collections.synchronizedSet(new HashSet<Session>());
