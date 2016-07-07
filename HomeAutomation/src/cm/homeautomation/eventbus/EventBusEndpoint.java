@@ -49,9 +49,7 @@ public class EventBusEndpoint {
 	}
 
 	@Subscribe
-	public void handleEvent(Object eventPayload) {
-		
-		EventObject eventObject = new EventObject(eventPayload);
+	public void handleEvent(EventObject eventObject) {
 		
 		for (Session session : userSessions) {
 			System.out.println("Sending to " + session.getId());

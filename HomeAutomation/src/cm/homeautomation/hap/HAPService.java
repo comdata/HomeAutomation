@@ -22,6 +22,7 @@ import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.eventbus.EventBusService;
+import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.windowblind.WindowBlindService;
 import cm.homeautomation.windowblind.WindowBlindsList;
 
@@ -37,7 +38,7 @@ public class HAPService {
 	private Map<Long, HAPHumiditySensor> humiditySensors = new HashMap<Long, HAPHumiditySensor>();
 
 	public HAPService() {
-		
+
 		init();
 		EventBusService.getEventBus().register(this);
 	}
@@ -57,20 +58,26 @@ public class HAPService {
 			bridge.addAccessory(hapWindowBlind);
 		}
 	}
-	
+
 	@Subscribe
-	public void handleSensorDataChanged(SensorData sensorData) {
-		if ("TEMPERATURE".equals(sensorData.getSensor().getSensorType())) {
+	public void handleSensorDataChanged(EventObject eventObject) {
 
-			HAPTemperatureSensor hapTemperatureSensor = HAPService.getInstance().getTemperatureSensors()
-					.get(sensorData.getSensor().getId());
+		Object eventData = eventObject.getData();
+		if (eventData instanceof SensorData) {
 
-			if (hapTemperatureSensor != null) {
-				double valueAsDouble = Double.parseDouble(sensorData.getValue().replace(",", "."));
-				hapTemperatureSensor.setTemperature(new Double(valueAsDouble));
-				HomekitCharacteristicChangeCallback subscribeCallback = hapTemperatureSensor.getSubscribeCallback();
-				if (subscribeCallback != null) {
-					subscribeCallback.changed();
+			SensorData sensorData = (SensorData) eventData;
+			if ("TEMPERATURE".equals(sensorData.getSensor().getSensorType())) {
+
+				HAPTemperatureSensor hapTemperatureSensor = HAPService.getInstance().getTemperatureSensors()
+						.get(sensorData.getSensor().getId());
+
+				if (hapTemperatureSensor != null) {
+					double valueAsDouble = Double.parseDouble(sensorData.getValue().replace(",", "."));
+					hapTemperatureSensor.setTemperature(new Double(valueAsDouble));
+					HomekitCharacteristicChangeCallback subscribeCallback = hapTemperatureSensor.getSubscribeCallback();
+					if (subscribeCallback != null) {
+						subscribeCallback.changed();
+					}
 				}
 			}
 		}
@@ -222,12 +229,11 @@ public class HAPService {
 	public InetAddress getLocalAddress() {
 		InetAddress address = null;
 
-		
 		try {
 			Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
 
 			while (e.hasMoreElements()) {
-				NetworkInterface n =  e.nextElement();
+				NetworkInterface n = e.nextElement();
 				Enumeration<InetAddress> ee = n.getInetAddresses();
 				while (ee.hasMoreElements()) {
 					InetAddress i = ee.nextElement();

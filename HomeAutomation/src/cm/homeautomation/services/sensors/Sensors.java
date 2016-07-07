@@ -19,6 +19,7 @@ import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.eventbus.EventBusService;
+import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.RFEvent;
 import cm.homeautomation.sensors.SensorDataRoomSaveRequest;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
@@ -30,8 +31,6 @@ import cm.homeautomation.services.actor.ActorEndpointConfigurator;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.overview.OverviewEndPointConfiguration;
-import cm.homeautomation.services.overview.OverviewService;
-import cm.homeautomation.services.overview.OverviewTile;
 import cm.homeautomation.services.overview.OverviewWebSocket;
 
 @Path("sensors")
@@ -229,9 +228,7 @@ public class Sensors extends BaseService {
 
 			em.getTransaction().commit();
 
-
-			
-			EventBusService.getEventBus().post(sensorData); 
+			EventBusService.getEventBus().post(new EventObject(sensorData)); 
 			
 		} else {
 			System.err.println("Not a sensor");

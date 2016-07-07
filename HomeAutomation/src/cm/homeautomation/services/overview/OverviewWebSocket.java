@@ -9,13 +9,11 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-import org.zeromq.ZMQ;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.eventbus.EventBusService;
+import cm.homeautomation.eventbus.EventObject;
 
 @ServerEndpoint(value = "/overview", configurator = OverviewEndPointConfiguration.class, encoders = {
 		OverviewMessageTranscoder.class }, decoders = { OverviewMessageTranscoder.class })
@@ -43,20 +41,27 @@ public class OverviewWebSocket {
 	}
 
 	@Subscribe
-	public void handleSensorDataChanged(SensorData sensorData) {
-		OverviewTile overviewTileForRoom = new OverviewService()
-				.getOverviewTileForRoom(sensorData.getSensor().getRoom());
+	public void handleSensorDataChanged(EventObject eventObject) {
 
-		try {
-			if (overviewEndPointConfiguration == null) {
-				overviewEndPointConfiguration = new OverviewEndPointConfiguration();
-				overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
-				overviewEndpoint.sendTile(overviewTileForRoom);
+		
+		Object eventData = eventObject.getData();
+		if (eventData instanceof SensorData) {
+
+			SensorData sensorData=(SensorData)eventData;
+			OverviewTile overviewTileForRoom = new OverviewService()
+					.getOverviewTileForRoom(sensorData.getSensor().getRoom());
+
+			try {
+				if (overviewEndPointConfiguration == null) {
+					overviewEndPointConfiguration = new OverviewEndPointConfiguration();
+					overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
+					overviewEndpoint.sendTile(overviewTileForRoom);
+				}
+
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
