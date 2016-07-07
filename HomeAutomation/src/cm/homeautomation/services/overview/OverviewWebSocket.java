@@ -47,26 +47,25 @@ public class OverviewWebSocket {
 		Object eventData = eventObject.getData();
 		if (eventData instanceof SensorData) {
 
-			SensorData sensorData=(SensorData)eventData;
+			SensorData sensorData = (SensorData) eventData;
 			OverviewTile overviewTileForRoom = new OverviewService()
 					.getOverviewTileForRoom(sensorData.getSensor().getRoom());
-			
-			System.out.println("Got eventbus for room: "+sensorData.getSensor().getRoom().getRoomName());
+
+			System.out.println("Got eventbus for room: " + sensorData.getSensor().getRoom().getRoomName());
 
 			try {
-				if (overviewEndPointConfiguration == null) {
-					overviewEndPointConfiguration = new OverviewEndPointConfiguration();
-					overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
-					System.out.println("Sending tile: "+overviewTileForRoom.getRoomName()+" - "+overviewTileForRoom.getNumber());
-					overviewEndpoint.sendTile(overviewTileForRoom);
-				}
 
+				overviewEndPointConfiguration = new OverviewEndPointConfiguration();
+				overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
+				System.out.println(
+						"Sending tile: " + overviewTileForRoom.getRoomName() + " - " + overviewTileForRoom.getNumber());
+				overviewEndpoint.sendTile(overviewTileForRoom);
 			} catch (InstantiationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else {
-			System.out.println("Eventdata not SensorData: "+eventData.getClass().getName());
+			System.out.println("Eventdata not SensorData: " + eventData.getClass().getName());
 		}
 	}
 
@@ -116,7 +115,8 @@ public class OverviewWebSocket {
 
 		for (Session session : userSessions) {
 			try {
-				System.out.println("Sending to " + session.getId()+" - "+tile.getRoomName()+" - "+tile.getNumber());
+				System.out.println(
+						"Sending to " + session.getId() + " - " + tile.getRoomName() + " - " + tile.getNumber());
 				session.getAsyncRemote().sendObject(tile);
 			} catch (Exception e) {
 
