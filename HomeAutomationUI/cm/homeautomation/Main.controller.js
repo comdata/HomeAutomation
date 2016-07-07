@@ -109,6 +109,8 @@ sap.ui.define([
         },
         wsEventBusOnMessage: function (evt) {
             var newData = JSON.parse(evt.data);
+            
+            console.log(evt.data);
         },
         wsOverviewOnMessage: function (evt) {
             var newData = JSON.parse(evt.data);
