@@ -43,7 +43,7 @@ public class OverviewWebSocket {
 	@Subscribe
 	public void handleSensorDataChanged(EventObject eventObject) {
 
-		
+		System.out.println("Overview got event");
 		Object eventData = eventObject.getData();
 		if (eventData instanceof SensorData) {
 
