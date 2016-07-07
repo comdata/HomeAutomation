@@ -57,6 +57,7 @@ public class OverviewWebSocket {
 				if (overviewEndPointConfiguration == null) {
 					overviewEndPointConfiguration = new OverviewEndPointConfiguration();
 					overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
+					System.out.println("Sending tile: "+overviewTileForRoom.getRoomName()+" - "+overviewTileForRoom.getNumber());
 					overviewEndpoint.sendTile(overviewTileForRoom);
 				}
 
