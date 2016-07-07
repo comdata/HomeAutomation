@@ -65,6 +65,8 @@ public class OverviewWebSocket {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		} else {
+			System.out.println("Eventdata not SensorData: "+eventData.getClass().getName());
 		}
 	}
 
