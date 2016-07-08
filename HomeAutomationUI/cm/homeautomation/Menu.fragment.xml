@@ -9,11 +9,4 @@
 			icon="sap-icon://settings" />
 	</u:Menu>
 
-	<List headerText="MenuToggles">
-
-		<InputListItem label="Camera">
-			<Switch state="true" change="handleCameraRefreshChange" />
-		</InputListItem>
-	</List>
-
 </core:FragmentDefinition>
