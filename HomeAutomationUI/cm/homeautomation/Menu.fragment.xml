@@ -1,17 +1,18 @@
-<core:FragmentDefinition
-	xmlns="sap.m"
-	xmlns:core="sap.ui.core"
-	xmlns:u="sap.ui.unified">
-		<u:Menu  
-			itemSelect="handleMenuItemPress">
-			<u:MenuItem 
-				text="Reload Scheduler" 
-				id="reloadScheduler"
-				icon="sap-icon://refresh"/>
-			<u:MenuItem
-					text="Administration"
-					id="openAdminDialog"
-					icon="sap-icon://settings"/>
-		</u:Menu>
-		<Switch state="{cameraRefresh>refreshState}" change="handleCameraRefreshChange"/>
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core" xmlns:u="sap.ui.unified">
+	<u:Menu itemSelect="handleMenuItemPress">
+		<u:MenuItem text="Reload Scheduler" id="reloadScheduler"
+			icon="sap-icon://refresh" />
+		<u:MenuItem text="Administration" id="openAdminDialog"
+			icon="sap-icon://settings" />
+	</u:Menu>
+
+	<List headerText="MenuToggles">
+
+		<InputListItem label="Camera">
+			<Switch state="true" change="handleCameraRefreshChange" />
+		</InputListItem>
+	</List>
+
+
 </core:FragmentDefinition>
