@@ -1,28 +1,19 @@
 <core:FragmentDefinition xmlns="sap.m"
 	xmlns:core="sap.ui.core" xmlns:u="sap.ui.unified">
 
-	<Panel width="auto" class="sapUiResponsiveMargin">
-<!-- 		<headerToolbar>
-			<Toolbar height="3rem">
-				<Title text="Panel with picture" />
-			</Toolbar>
-		</headerToolbar>
- -->		<content>
-			<u:Menu itemSelect="handleMenuItemPress">
-				<u:MenuItem text="Reload Scheduler" id="reloadScheduler"
-					icon="sap-icon://refresh" />
-				<u:MenuItem text="Administration" id="openAdminDialog"
-					icon="sap-icon://settings" />
-			</u:Menu>
 
-			<List headerText="MenuToggles">
+	<u:Menu itemSelect="handleMenuItemPress">
+		<u:MenuItem text="Reload Scheduler" id="reloadScheduler"
+			icon="sap-icon://refresh" />
+		<u:MenuItem text="Administration" id="openAdminDialog"
+			icon="sap-icon://settings" />
+	</u:Menu>
 
-				<InputListItem label="Camera">
-					<Switch state="true" change="handleCameraRefreshChange" />
-				</InputListItem>
-			</List>
-		</content>
-	</Panel>
+	<List headerText="MenuToggles">
 
+		<InputListItem label="Camera">
+			<Switch state="true" change="handleCameraRefreshChange" />
+		</InputListItem>
+	</List>
 
 </core:FragmentDefinition>
