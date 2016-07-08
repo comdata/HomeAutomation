@@ -12,12 +12,6 @@
 					text="Administration"
 					id="openAdminDialog"
 					icon="sap-icon://settings"/>
-					
-			<u:MenuItem
-					text="Camera"
-					id=""
-					icon="sap-icon://settings">
-					<Switch state="{cameraRefresh>refreshState}" change="handleCameraRefreshChange"/>
-					</u:MenuItem>
 		</u:Menu>
+		<Switch state="{cameraRefresh>refreshState}" change="handleCameraRefreshChange"/>
 </core:FragmentDefinition>
