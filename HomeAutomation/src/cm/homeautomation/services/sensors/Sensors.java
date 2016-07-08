@@ -224,11 +224,13 @@ public class Sensors extends BaseService {
 				sensorData = requestSensorData;
 				sensorData.setSensor(sensor);
 				em.persist(sensorData);
+				
+				EventBusService.getEventBus().post(new EventObject(sensorData));
 			}
 
 			em.getTransaction().commit();
 
-			EventBusService.getEventBus().post(new EventObject(sensorData)); 
+ 
 			
 		} else {
 			System.err.println("Not a sensor");
