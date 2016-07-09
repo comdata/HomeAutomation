@@ -1,5 +1,0 @@
-# HomeAutomation Documentation
-
-## Server
-
-## Client
