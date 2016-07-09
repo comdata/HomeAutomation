@@ -13,17 +13,13 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
-import com.google.common.eventbus.EventBus;
-
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Device;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.eventbus.EventBusService;
-import cm.homeautomation.hap.HAPService;
-import cm.homeautomation.hap.HAPTemperatureSensor;
+import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.RFEvent;
 import cm.homeautomation.sensors.SensorDataRoomSaveRequest;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
@@ -35,8 +31,6 @@ import cm.homeautomation.services.actor.ActorEndpointConfigurator;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.overview.OverviewEndPointConfiguration;
-import cm.homeautomation.services.overview.OverviewService;
-import cm.homeautomation.services.overview.OverviewTile;
 import cm.homeautomation.services.overview.OverviewWebSocket;
 
 @Path("sensors")
@@ -153,11 +147,9 @@ public class Sensors extends BaseService {
 			
 			roomID=device.getRoom().getId();
 		}
+	
 		
-		
-		
-		
-		
+		@SuppressWarnings("unchecked")
 		List<Sensor> sensorList = em.createQuery("select s from Sensor s where s.room=(select r from Room r where r.id=:roomId)").setParameter("roomId", roomID).getResultList();
 		
 		if (sensorList!=null) {
@@ -202,7 +194,8 @@ public class Sensors extends BaseService {
 
 			SensorData sensorData;
 
-			List existingSensorDataList = em
+			@SuppressWarnings("unchecked")
+			List<SensorData> existingSensorDataList = em
 					.createQuery(
 							"select sd from SensorData sd where sd.sensor IN (select s from Sensor s where s.id=:sensorId) order by sd.dateTime desc")
 					.setMaxResults(1).setParameter("sensorId", request.getSensorId()).getResultList();
@@ -231,47 +224,25 @@ public class Sensors extends BaseService {
 				sensorData = requestSensorData;
 				sensorData.setSensor(sensor);
 				em.persist(sensorData);
+				
+				EventBusService.getEventBus().post(new EventObject(sensorData));
 			}
 
 			em.getTransaction().commit();
 
-			if ("TEMPERATURE".equals(sensorData.getSensor().getSensorType())) {
-
-				HAPTemperatureSensor hapTemperatureSensor = HAPService.getInstance().getTemperatureSensors()
-						.get(sensorData.getSensor().getId());
-
-				if (hapTemperatureSensor != null) {
-					hapTemperatureSensor.setTemperature(new Double(valueAsDouble));
-					HomekitCharacteristicChangeCallback subscribeCallback = hapTemperatureSensor.getSubscribeCallback();
-					if (subscribeCallback != null) {
-						subscribeCallback.changed();
-					}
-				}
-			}
+ 
 			
-			EventBusService.getEventBus().post(sensorData); 
-			
-			
-			OverviewTile overviewTileForRoom = new OverviewService()
-					.getOverviewTileForRoom(sensorData.getSensor().getRoom());
-			try {
-
-				if (overviewEndPointConfiguration == null) {
-					overviewEndPointConfiguration = new OverviewEndPointConfiguration();
-					overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
-				}
-
-				overviewEndpoint.sendTile(overviewTileForRoom);
-
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		} else {
 			System.err.println("Not a sensor");
 		}
 	}
 
+	/**
+	 * load sensor data for a room
+	 * 
+	 * @param room
+	 * @return
+	 */
 	@Path("forroom/{room}")
 	@GET
 	public SensorDatas getDataForRoom(@PathParam("room") String room) {
@@ -297,13 +268,20 @@ public class Sensors extends BaseService {
 			latch.await();
 			em.getTransaction().commit();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		
 		}
 
 		return sensorDatas;
 	}
 
+	/**
+	 * TODO refactor filtering
+	 * 
+	 * @param sensorDatas
+	 * @param em
+	 * @param now
+	 * @param object
+	 */
 	public void loadSensorData(SensorDatas sensorDatas, EntityManager em, Date now, Object object) {
 		if (object instanceof Sensor) {
 			Sensor sensor = (Sensor) object;
@@ -419,6 +397,14 @@ public class Sensors extends BaseService {
 		public void run() {
 			loadSensorData(sensorDatas, em, now, object);
 			this.latch.countDown();
+		}
+
+		public SensorDatas getSensorDatas() {
+			return sensorDatas;
+		}
+
+		public void setSensorDatas(SensorDatas sensorDatas) {
+			this.sensorDatas = sensorDatas;
 		}
 	}
 }

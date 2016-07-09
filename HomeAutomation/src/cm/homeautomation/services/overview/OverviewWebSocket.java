@@ -9,13 +9,11 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-import org.zeromq.ZMQ;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.eventbus.EventBusService;
+import cm.homeautomation.eventbus.EventObject;
 
 @ServerEndpoint(value = "/overview", configurator = OverviewEndPointConfiguration.class, encoders = {
 		OverviewMessageTranscoder.class }, decoders = { OverviewMessageTranscoder.class })
@@ -43,21 +41,32 @@ public class OverviewWebSocket {
 	}
 
 	@Subscribe
-	public void handleSensorDataChanged(SensorData sensorData) {
-		OverviewTile overviewTileForRoom = new OverviewService()
-				.getOverviewTileForRoom(sensorData.getSensor().getRoom());
+	public void handleSensorDataChanged(EventObject eventObject) {
 
-                try {
-                        if (overviewEndPointConfiguration == null) {
-                                overviewEndPointConfiguration = new OverviewEndPointConfiguration();
-                                overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
-                                overviewEndpoint.sendTile(overviewTileForRoom);
-                        }
+		System.out.println("Overview got event");
+		Object eventData = eventObject.getData();
+		if (eventData instanceof SensorData) {
 
-                } catch (InstantiationException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                }
+			SensorData sensorData = (SensorData) eventData;
+			OverviewTile overviewTileForRoom = new OverviewService()
+					.getOverviewTileForRoom(sensorData.getSensor().getRoom());
+
+			System.out.println("Got eventbus for room: " + sensorData.getSensor().getRoom().getRoomName());
+
+			try {
+
+				overviewEndPointConfiguration = new OverviewEndPointConfiguration();
+				overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
+				System.out.println(
+						"Sending tile: " + overviewTileForRoom.getRoomName() + " - " + overviewTileForRoom.getNumber());
+				overviewEndpoint.sendTile(overviewTileForRoom);
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("Eventdata not SensorData: " + eventData.getClass().getName());
+		}
 	}
 
 	private void forwardSensorData(OverviewWebSocket overviewEndpoint, SensorData sensorData) {
@@ -75,8 +84,6 @@ public class OverviewWebSocket {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-
 
 	}
 
@@ -108,7 +115,8 @@ public class OverviewWebSocket {
 
 		for (Session session : userSessions) {
 			try {
-				System.out.println("Sending to " + session.getId());
+				System.out.println(
+						"Sending to " + session.getId() + " - " + tile.getRoomName() + " - " + tile.getNumber());
 				session.getAsyncRemote().sendObject(tile);
 			} catch (Exception e) {
 

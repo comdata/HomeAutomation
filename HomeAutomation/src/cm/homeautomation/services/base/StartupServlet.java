@@ -4,6 +4,8 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
+import cm.homeautomation.eventbus.EventBusEndpoint;
+import cm.homeautomation.eventbus.EventBusEndpointConfigurator;
 import cm.homeautomation.hap.HAPService;
 import cm.homeautomation.jeromq.server.JeroMQServer;
 import cm.homeautomation.moquette.server.MoquetteServer;
@@ -23,6 +25,7 @@ public class StartupServlet extends HttpServlet {
 	private JeroMQServer jeroMQServer;
 	private OverviewWebSocket overviewEndpoint;
 	private MQTTReceiverClient moquetteClient;
+	private EventBusEndpoint eventBusEndpoint;
 
 	public void init(ServletConfig config) throws ServletException {
 
@@ -40,6 +43,13 @@ public class StartupServlet extends HttpServlet {
 		try {
 			OverviewEndPointConfiguration overviewEndPointConfiguration = new OverviewEndPointConfiguration();
 			overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			EventBusEndpointConfigurator eventBusEndPointConfiguration = new EventBusEndpointConfigurator();
+			eventBusEndpoint = eventBusEndPointConfiguration.getEndpointInstance(EventBusEndpoint.class);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		}
@@ -64,6 +74,13 @@ public class StartupServlet extends HttpServlet {
 
 		}
 
+		try {
+			moquetteClient.stop();
+		} catch (Exception e) {
+
+		}
+
+		
 	}
 
 }

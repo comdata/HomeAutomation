@@ -5,27 +5,31 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class EventObject {
 
-	private String eventName;
 	private Object data;
+	private String clazz;
 	
-	public EventObject(String eventName, Object data) {
-		this.eventName = eventName;
-		this.data = data;
+	public EventObject(Object data) {
+		setData(data);
 	}
 
 	public Object getData() {
+			
 		return data;
 	}
 
 	public void setData(Object data) {
+		if (data!=null) {
+			setClazz(data.getClass().getSimpleName());
+		}
+		
 		this.data = data;
 	}
 
-	public String getEventName() {
-		return eventName;
+	public String getClazz() {
+		return clazz;
 	}
 
-	public void setEventName(String eventName) {
-		this.eventName = eventName;
+	public void setClazz(String clazz) {
+		this.clazz = clazz;
 	}
 }

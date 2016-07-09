@@ -3,3 +3,5 @@ jdk:
   - oraclejdk8
 addons:
   mariadb: '10.0'
+before_script:
+  - mysql -u root -e 'CREATE DATABASE HA;'

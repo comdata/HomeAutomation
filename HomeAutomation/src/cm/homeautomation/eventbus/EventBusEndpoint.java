@@ -1,4 +1,4 @@
-package cm.homeautomation.services.actor;
+package cm.homeautomation.eventbus;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -10,12 +10,20 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-@ServerEndpoint(value = "/actor", configurator = ActorEndpointConfigurator.class, encoders = {
-		MessageTranscoder.class }, decoders = { MessageTranscoder.class })
-public class ActorEndpoint {
+import com.google.common.eventbus.Subscribe;
+
+import cm.homeautomation.services.actor.MessageTranscoder;
+
+@ServerEndpoint(value = "/eventbus", configurator = EventBusEndpointConfigurator.class, encoders = {
+		EventTranscoder.class }, decoders = { EventTranscoder.class })
+public class EventBusEndpoint {
 
 	private Set<Session> userSessions = Collections.synchronizedSet(new HashSet<Session>());
 
+	public EventBusEndpoint() {
+		EventBusService.getEventBus().register(this);
+	}
+	
 	/**
 	 * Callback hook for Connection open events. This method will be invoked
 	 * when a client requests for a WebSocket connection.
@@ -40,15 +48,12 @@ public class ActorEndpoint {
 		userSessions.remove(userSession);
 	}
 
-	public void handleEvent(String id, String status) {
-		
-		SwitchEvent switchEvent = new SwitchEvent();
-		switchEvent.setSwitchId(id);
-		switchEvent.setStatus(status);
+	@Subscribe
+	public void handleEvent(EventObject eventObject) {
 		
 		for (Session session : userSessions) {
-			System.out.println("Actor Sending to " + session.getId());
-			session.getAsyncRemote().sendObject(switchEvent);
+			System.out.println("Eventbus Sending to " + session.getId());
+			session.getAsyncRemote().sendObject(eventObject);
 		}
 	}
 	

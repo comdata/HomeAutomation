@@ -11,6 +11,8 @@ import javax.websocket.EndpointConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import cm.homeautomation.eventbus.EventObject;
+
 public class MessageTranscoder implements Encoder.Text<SwitchEvent>, Decoder.Text<SwitchEvent> {
 
 	private ObjectMapper mapper;
@@ -22,7 +24,7 @@ public class MessageTranscoder implements Encoder.Text<SwitchEvent>, Decoder.Tex
 
 	@Override
 	public void destroy() {
-		
+
 	}
 
 	@Override
