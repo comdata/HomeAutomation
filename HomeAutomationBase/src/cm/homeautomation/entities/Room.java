@@ -34,7 +34,7 @@ public class Room {
 	private List<Switch> switches;
 	
 	@OneToMany(mappedBy="room", cascade=CascadeType.ALL)
-	private List<Switch> devices;
+	private List<Device> devices;
 	
 	public String getRoomName() {
 		return roomName;
@@ -74,11 +74,11 @@ public class Room {
 		this.switches = switches;
 	}
 
-	public List<Switch> getDevices() {
+	public List<Device> getDevices() {
 		return devices;
 	}
 
-	public void setDevices(List<Switch> devices) {
+	public void setDevices(List<Device> devices) {
 		this.devices = devices;
 	}
 }
