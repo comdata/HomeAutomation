@@ -18,7 +18,7 @@
                             vertical="true"
                             focusable="true">
                         <content>
-                    <List visible="true" id="rooms"
+                    <List visible="true" id="adminRooms"
                           items="{
 			                path: 'rooms>/rooms'
 		                    }"
@@ -47,7 +47,7 @@
                     </List></content></ScrollContainer>
                 </u:secondaryContent>
                 <u:content>
-                	<List visible="true" id="devices"
+                	<List visible="true" id="adminDevices"
                           items="{
 			                path: 'administrationRoomDetail>/devices'
 		                    }"
@@ -74,7 +74,7 @@
                             </Toolbar>
                         </headerToolbar>
                     </List>
-                    <List visible="true" id="sensor"
+                    <List visible="true" id="adminSensor"
                           items="{
 			                path: 'administrationRoomDetail>/sensors'
 		                    }"
@@ -101,7 +101,7 @@
                             </Toolbar>
                         </headerToolbar>
                     </List>
-                    <List visible="true" id="switches"
+                    <List visible="true" id="adminSwitches"
                           items="{
 			                path: 'administrationRoomDetail>/switches'
 		                    }"
