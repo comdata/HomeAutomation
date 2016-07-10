@@ -1,0 +1,30 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
+    <Dialog title="Device" afterClose="afterDeviceAdminDialogClose" stretch="false">
+        <content>
+
+            <f:SimpleForm id="DeviceAdminForm"
+                          editable="true"
+                          layout="ResponsiveGridLayout" >
+
+            <f:content>
+                <Label text="Device Name" />
+                <Input value="{deviceAdminDetail>/name}" />
+
+                <Label text="MAC Address" />
+                 <Input value="{deviceAdminDetail>/mac}" />
+            </f:content>
+            </f:SimpleForm>
+
+        </content>
+        <endButton>
+            <Button text="Ok" press="deviceAdminDialogOk"/>
+
+        </endButton>
+        <beginButton>
+
+            <Button text="Cancel" press="deviceAdminDialogCancel"/>
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>

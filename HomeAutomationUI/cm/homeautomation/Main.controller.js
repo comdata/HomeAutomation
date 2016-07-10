@@ -741,6 +741,10 @@ sap.ui.define([
 
             this.sensorAdminDialogShow("ADD", model);
         },
+        administrationDevicePressed: function(event) {
+        	console.log("device pressed");
+        },
+        
         sensorAdminDialogShow: function (mode, model) {
             if (!this.sensorAdminView) {
                 this.sensorAdminView = sap.ui.xmlfragment("cm.homeautomation.SensorAdmin", this);
