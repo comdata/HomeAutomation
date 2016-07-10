@@ -19,6 +19,13 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 		
 	}
 
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		super.run();
+		start();
+	}
+	
 	public void start() {
 		try {
 			while(run) {
