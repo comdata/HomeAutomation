@@ -37,8 +37,10 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 				} else {
 					connect();
 				}
+				Thread.sleep(1000);
+				
 			}
-			Thread.sleep(1000);
+			
 
 		} catch (MqttException e) {
 			// TODO Auto-generated catch block
