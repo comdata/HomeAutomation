@@ -13,10 +13,10 @@ import cm.homeautomation.jeromq.server.JSONSensorDataReceiver;
 public class MQTTReceiverClient extends Thread implements MqttCallback {
 
 	private MqttClient client;
-	private boolean run=true;
+	private boolean run = true;
 
 	public MQTTReceiverClient() {
-		
+
 	}
 
 	@Override
@@ -25,29 +25,33 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 		super.run();
 		start();
 	}
-	
+
 	public void start() {
 		try {
 			connect();
-			
-			while(run) {
-				if (client!=null) {
-					if (!client.isConnected()) {
+
+			while (run) {
+				try {
+					if (client != null) {
+						if (!client.isConnected()) {
+							connect();
+						}
+
+					} else {
 						connect();
 					}
-					
-				} else {
-					connect();
+					Thread.sleep(10000);
+				} catch (MqttException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				Thread.sleep(10000);
-				
+
 			}
-			
 
 		} catch (MqttException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -57,16 +61,14 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 		client = new MqttClient("tcp://localhost:1883", "HomeAutomation");
 		client.setCallback(this);
 		MqttConnectOptions connOpt = new MqttConnectOptions();
-		
+
 		connOpt.setCleanSession(true);
 		connOpt.setKeepAliveInterval(30);
-		//connOpt.setUserName(M2MIO_USERNAME);
-		//connOpt.setPassword(M2MIO_PASSWORD_MD5.toCharArray());
-		
+		// connOpt.setUserName(M2MIO_USERNAME);
+		// connOpt.setPassword(M2MIO_PASSWORD_MD5.toCharArray());
+
 		client.connect(connOpt);
 
-
-		
 		client.subscribe("/sensordata", 0);
 		System.out.println("Started MQTT client");
 	}
@@ -74,7 +76,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 	public void stopServer() {
 
 		try {
-			run=false;
+			run = false;
 			client.disconnect();
 		} catch (MqttException e) {
 			// TODO Auto-generated catch block
@@ -86,7 +88,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 	public void connectionLost(Throwable cause) {
 		// TODO Auto-generated method stub
 		System.out.println("trying reconnect to MQTT broker");
-		//connect();
+		// connect();
 	}
 
 	@Override
