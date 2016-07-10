@@ -743,6 +743,10 @@ sap.ui.define([
         },
         administrationDevicePressed: function(event) {
         	console.log("device pressed");
+        	
+        	var device=sap.ui.getCore().getModel("administrationRoomDetail").getProperty(oEvent.getParameter("listItem").oBindingContexts.rooms.sPath);
+        
+        	console.log("device mac:" +device.mac);
         },
         
         sensorAdminDialogShow: function (mode, model) {
