@@ -744,7 +744,7 @@ sap.ui.define([
         administrationDevicePressed: function(oEvent) {
         	console.log("device pressed");
         	
-        	var device=sap.ui.getCore().getModel("administrationRoomDetail").getProperty(oEvent.getParameter("listItem").oBindingContexts.rooms.sPath);
+        	var device=sap.ui.getCore().getModel("administrationRoomDetail").getProperty(oEvent.getParameter("listItem").oBindingContexts.administrationRoomDetail.sPath);
         
         	console.log("device mac:" +device.mac);
         },
