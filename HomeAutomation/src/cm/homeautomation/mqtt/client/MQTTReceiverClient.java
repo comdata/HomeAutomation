@@ -24,9 +24,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 		// TODO Auto-generated method stub
 		super.run();
 		start();
-	}
 
-	public void start() {
 		try {
 			connect();
 
