@@ -4,7 +4,7 @@
 	<groupId>HomeAutomation</groupId>
 	<artifactId>HomeAutomation</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<!-- <packaging>war</packaging> -->
 
 	<repositories>
 		<repository>
