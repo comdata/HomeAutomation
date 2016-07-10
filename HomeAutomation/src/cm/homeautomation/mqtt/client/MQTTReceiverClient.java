@@ -28,16 +28,18 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 	
 	public void start() {
 		try {
+			connect();
+			
 			while(run) {
 				if (client!=null) {
-					if (client.isConnected()==false) {
+					if (!client.isConnected()) {
 						connect();
 					}
 					
 				} else {
 					connect();
 				}
-				Thread.sleep(1000);
+				Thread.sleep(10000);
 				
 			}
 			
