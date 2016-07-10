@@ -82,7 +82,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 	public void connectionLost(Throwable cause) {
 		// TODO Auto-generated method stub
 		System.out.println("trying reconnect to MQTT broker");
-		start();
+		//connect();
 	}
 
 	@Override
