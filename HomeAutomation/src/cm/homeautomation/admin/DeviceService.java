@@ -69,4 +69,32 @@ public class DeviceService extends BaseService {
 		return new GenericStatus(true);
 	}
 
+	/**
+	 * create a device
+	 * 
+	 * @param roomId
+	 * @param name
+	 * @param mac
+	 * @return
+	 */
+	@GET
+	@Path("update/{roomId}/{name}/{mac}")
+	public GenericStatus update(@PathParam("roomId") String roomId, @PathParam("name") String name,
+			@PathParam("mac") String mac) {
+
+		EntityManager em = EntityManagerService.getNewManager();
+
+		Device device = (Device)em.createQuery("select d from Device d where mac=:mac").setParameter("mac", mac).getSingleResult();
+		
+		em.getTransaction().begin();
+
+		device.setMac(mac);
+		device.setName(name);
+		em.merge(device);
+
+		em.getTransaction().commit();
+
+		return new GenericStatus(true);
+	}
+	
 }

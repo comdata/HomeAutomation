@@ -756,8 +756,34 @@ sap.ui.define([
 
              }
              this.deviceAdminView.open();
+             this.deviceAdminMode="EDIT";
 
              sap.ui.getCore().setModel(model, "deviceAdminDetail");
+        },
+        
+        deviceAdminDialogOk: function (event) {
+        	
+            var model = sap.ui.getCore().getModel("deviceAdminDetail");
+
+            var name = model.getProperty("/name");
+            var mac = model.getProperty("/mac");
+            var roomId=this.administrationSelectedRoom.roomId;
+
+            var url = "";
+
+            if (this.deviceAdminMode == "ADD") {
+                url = "/HomeAutomation/services/admin/device/create/"+roomId+ "/" + name+ "/" +mac;
+            } else if (this.deviceAdminMode == "EDIT") {
+                url = "/HomeAutomation/services/admin/device/update/"+roomId+"/" + name + "/"+mac;
+            }
+
+            var deviceUpdate = new RESTService();
+            deviceUpdate.loadDataAsync(url, "", "GET", this.handleDeviceUpdated, null, this);
+        	
+        	this.deviceAdminView.close();
+        },
+        deviceAdminDialogCancel: function (event) {
+            this.deviceAdminView.close();
         },
         
         sensorAdminDialogShow: function (mode, model) {
