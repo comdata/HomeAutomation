@@ -34,10 +34,12 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 				try {
 					if (client != null) {
 						if (!client.isConnected()) {
+							System.out.println("Not connected");
 							connect();
 						}
 
 					} else {
+						System.out.println("client is null");
 						connect();
 					}
 					Thread.sleep(10000);
