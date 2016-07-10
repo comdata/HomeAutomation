@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,6 +32,9 @@ public class Room {
 
 	@OneToMany(mappedBy="room", cascade=CascadeType.ALL)
 	private List<Switch> switches;
+	
+	@OneToMany(mappedBy="room", cascade=CascadeType.ALL)
+	private List<Switch> devices;
 	
 	public String getRoomName() {
 		return roomName;
@@ -68,5 +72,13 @@ public class Room {
 
 	public void setSwitches(List<Switch> switches) {
 		this.switches = switches;
+	}
+
+	public List<Switch> getDevices() {
+		return devices;
+	}
+
+	public void setDevices(List<Switch> devices) {
+		this.devices = devices;
 	}
 }
