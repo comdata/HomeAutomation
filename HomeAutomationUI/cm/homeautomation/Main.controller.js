@@ -741,7 +741,7 @@ sap.ui.define([
 
             this.sensorAdminDialogShow("ADD", model);
         },
-        administrationDevicePressed: function(event) {
+        administrationDevicePressed: function(oEvent) {
         	console.log("device pressed");
         	
         	var device=sap.ui.getCore().getModel("administrationRoomDetail").getProperty(oEvent.getParameter("listItem").oBindingContexts.rooms.sPath);
