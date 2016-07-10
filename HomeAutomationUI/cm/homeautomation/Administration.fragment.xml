@@ -47,6 +47,33 @@
                     </List></content></ScrollContainer>
                 </u:secondaryContent>
                 <u:content>
+                	<List visible="true" id="sensor"
+                          items="{
+			                path: 'administrationRoomDetail>/devices'
+		                    }"
+
+                          itemPress="administrationDevicePressed"
+
+                            >
+                        <!--  itemPress="administrationRoomPressed" mode="SingleSelect" selectionChange="handleRoomSelected" -->
+                        <items>
+                            <StandardListItem
+                                    title="{administrationRoomDetail>name}" type="Navigation" custom:mac="{administrationRoomDetail>mac}"
+                                    >
+                            </StandardListItem></items>
+                        <headerToolbar>
+                            <Toolbar>
+                                <Title text="Devices" level="H2" />
+                                <ToolbarSpacer />
+                                <Button
+                                        icon="sap-icon://add"
+                                        press="handleAddDeviceButtonPress" />
+                                <!--<Button
+                                        icon="sap-icon://edit"
+                                        press="handleEditDeviceButtonPress" />-->
+                            </Toolbar>
+                        </headerToolbar>
+                    </List>
                     <List visible="true" id="sensor"
                           items="{
 			                path: 'administrationRoomDetail>/sensors'
