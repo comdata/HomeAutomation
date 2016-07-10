@@ -747,6 +747,17 @@ sap.ui.define([
         	var device=sap.ui.getCore().getModel("administrationRoomDetail").getProperty(oEvent.getParameter("listItem").oBindingContexts.administrationRoomDetail.sPath);
         
         	console.log("device mac:" +device.mac);
+        	
+        	 var model = new JSONModel();
+        	 model.setData(device);
+        	 
+             if (!this.deviceAdminView) {
+                 this.deviceAdminView = sap.ui.xmlfragment("cm.homeautomation.DeviceAdmin", this);
+
+             }
+             this.deviceAdminView.open();
+
+             sap.ui.getCore().setModel(model, "deviceAdminDetail");
         },
         
         sensorAdminDialogShow: function (mode, model) {
