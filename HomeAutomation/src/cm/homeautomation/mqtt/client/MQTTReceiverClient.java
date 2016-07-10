@@ -6,42 +6,64 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 
 import cm.homeautomation.jeromq.server.JSONSensorDataReceiver;
 
-public class MQTTReceiverClient implements MqttCallback {
+public class MQTTReceiverClient extends Thread implements MqttCallback {
 
 	private MqttClient client;
+	private boolean run=true;
 
 	public MQTTReceiverClient() {
-		start();
+		
 	}
 
 	public void start() {
 		try {
-			client = new MqttClient("tcp://localhost:1883", "HomeAutomation");
-			client.setCallback(this);
-			MqttConnectOptions connOpt = new MqttConnectOptions();
-			
-			connOpt.setCleanSession(true);
-			connOpt.setKeepAliveInterval(30);
-			//connOpt.setUserName(M2MIO_USERNAME);
-			//connOpt.setPassword(M2MIO_PASSWORD_MD5.toCharArray());
-			
-			client.connect(connOpt);
-
-			client.subscribe("/sensordata", 0);
-			System.out.println("Started MQTT client");
+			while(run) {
+				if (client!=null) {
+					if (client.isConnected()==false) {
+						connect();
+					}
+					
+				} else {
+					connect();
+				}
+			}
+			Thread.sleep(1000);
 
 		} catch (MqttException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	public void stop() {
+	private void connect() throws MqttException, MqttSecurityException {
+		client = new MqttClient("tcp://localhost:1883", "HomeAutomation");
+		client.setCallback(this);
+		MqttConnectOptions connOpt = new MqttConnectOptions();
+		
+		connOpt.setCleanSession(true);
+		connOpt.setKeepAliveInterval(30);
+		//connOpt.setUserName(M2MIO_USERNAME);
+		//connOpt.setPassword(M2MIO_PASSWORD_MD5.toCharArray());
+		
+		client.connect(connOpt);
+
+
+		
+		client.subscribe("/sensordata", 0);
+		System.out.println("Started MQTT client");
+	}
+
+	public void stopServer() {
 
 		try {
+			run=false;
 			client.disconnect();
 		} catch (MqttException e) {
 			// TODO Auto-generated catch block

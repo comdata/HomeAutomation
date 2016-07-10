@@ -75,7 +75,7 @@ public class StartupServlet extends HttpServlet {
 		}
 
 		try {
-			moquetteClient.stop();
+			moquetteClient.stopServer();
 		} catch (Exception e) {
 
 		}
