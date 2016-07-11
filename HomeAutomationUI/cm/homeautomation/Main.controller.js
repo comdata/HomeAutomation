@@ -761,6 +761,22 @@ sap.ui.define([
              sap.ui.getCore().setModel(model, "deviceAdminDetail");
         },
         
+        handleAddDeviceButtonPress: function (event) {
+            var model = new JSONModel();
+    	 
+         if (!this.deviceAdminView) {
+             this.deviceAdminView = sap.ui.xmlfragment("cm.homeautomation.DeviceAdmin", this);
+
+         }
+         this.deviceAdminView.open();
+         this.deviceAdminMode="ADD";
+
+         sap.ui.getCore().setModel(model, "deviceAdminDetail");
+         
+            console.log("pressed add device");
+
+        },
+        
         deviceAdminDialogOk: function (event) {
         	
             var model = sap.ui.getCore().getModel("deviceAdminDetail");
