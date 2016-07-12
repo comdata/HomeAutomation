@@ -54,7 +54,7 @@ public class DeviceService extends BaseService {
 
 		EntityManager em = EntityManagerService.getNewManager();
 
-		Room room = (Room)em.createQuery("select r from Room r where id=:roomId").setParameter("roomId", roomId).getSingleResult();
+		Room room = (Room)em.createQuery("select r from Room r where r.id=:roomId").setParameter("roomId", roomId).getSingleResult();
 		
 		em.getTransaction().begin();
 
