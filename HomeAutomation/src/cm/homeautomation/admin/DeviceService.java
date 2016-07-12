@@ -84,7 +84,7 @@ public class DeviceService extends BaseService {
 
 		EntityManager em = EntityManagerService.getNewManager();
 
-		Device device = (Device)em.createQuery("select d from Device d where mac=:mac").setParameter("mac", mac).getSingleResult();
+		Device device = (Device)em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac).getSingleResult();
 		
 		em.getTransaction().begin();
 
