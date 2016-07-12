@@ -783,7 +783,7 @@ sap.ui.define([
 
             var name = model.getProperty("/name");
             var mac = model.getProperty("/mac");
-            var roomId=this.administrationSelectedRoom.roomId;
+            var roomId=this.administrationSelectedRoom.id;
 
             var url = "";
 
