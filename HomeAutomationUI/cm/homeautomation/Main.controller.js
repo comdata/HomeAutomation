@@ -812,10 +812,22 @@ sap.ui.define([
 
             var deviceUpdate = new RESTService();
             var subject=this;
-            deviceUpdate.loadDataAsync(url, "", "GET", function() {subject.administrationReloadRoom}, null, this);
+            deviceUpdate.loadDataAsync(url, "", "GET", function() {subject.administrationReloadRoom(); this.deviceAdminView.close();}, null, this);
         	
-        	this.deviceAdminView.close();
         },
+        deviceAdminDialogDelete: function (event) {
+        	
+            var model = sap.ui.getCore().getModel("deviceAdminDetail");
+
+            var mac = model.getProperty("/mac");
+            var url = "/HomeAutomation/services/admin/device/delete/" +mac;
+           
+            var deviceUpdate = new RESTService();
+            var subject=this;
+            deviceUpdate.loadDataAsync(url, "", "GET", function() {subject.administrationReloadRoom(); this.deviceAdminView.close(); }, null, this);
+        	
+        },
+        
         deviceAdminDialogCancel: function (event) {
             this.deviceAdminView.close();
         },

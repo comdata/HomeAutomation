@@ -23,7 +23,7 @@
 
         </endButton>
         <beginButton>
-
+			<Button text="Delete" press="deviceAdminDialogDelete"/>
             <Button text="Cancel" press="deviceAdminDialogCancel"/>
         </beginButton>
     </Dialog>
