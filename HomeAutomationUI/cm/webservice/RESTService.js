@@ -21,6 +21,7 @@ sap.ui.base.Object
         loadDataAsync: function (url, inModel, method, successCallback, errorCallBack, subject) {
             jQuery.sap.require("sap.ui.model.json.JSONModel");
             var model = new sap.ui.model.json.JSONModel();
+            var subject = this;
 
             model.attachRequestCompleted(function (event) {
                 var resultModel = new sap.ui.model.json.JSONModel();
@@ -36,7 +37,7 @@ sap.ui.base.Object
                 errorCallBack = function (event) {
 
 
-                    this.messageToast.show("Loading failed");
+                	subject.messageToast.show("Loading failed");
                 }
 
             }
