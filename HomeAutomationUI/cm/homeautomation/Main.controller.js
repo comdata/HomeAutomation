@@ -737,9 +737,9 @@ sap.ui.define([
             var roomModel = new RESTService();
            
             roomModel.loadDataAsync("/HomeAutomation/services/admin/room/getAll", "", "GET", function () { 
-            		subject.handleAdminRoomsLoaded();
+            		//subject.handleAdminRoomsLoaded();
             		
-            		subject.administrationSelectedRoom=sap.ui.getCore().getModel("rooms").getProperty(this.administrationSelectedRoomPath);
+            		subject.administrationSelectedRoom=sap.ui.getCore().getModel("rooms").getProperty(subject.administrationSelectedRoomPath);
                     var roomId=oEvent.getParameter("listItem").getCustomData()[0].getValue();
                     // alert("room selected "+roomId);
 
