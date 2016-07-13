@@ -2,7 +2,7 @@
 
 The system uses Weather Underground to acquire data for display the current outside temperature.
 
-Create a wether.properties file with
+Create a weather.properties file with
 
 ```
 apiKey=<apikey>
