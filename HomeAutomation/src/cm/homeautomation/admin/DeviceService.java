@@ -49,7 +49,7 @@ public class DeviceService extends BaseService {
 	 */
 	@GET
 	@Path("create/{roomId}/{name}/{mac}")
-	public GenericStatus createDevice(@PathParam("roomId") String roomId, @PathParam("name") String name,
+	public GenericStatus createDevice(@PathParam("roomId") Long roomId, @PathParam("name") String name,
 			@PathParam("mac") String mac) {
 
 		EntityManager em = EntityManagerService.getNewManager();
