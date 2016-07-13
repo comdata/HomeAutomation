@@ -18,13 +18,12 @@
             </f:SimpleForm>
 
         </content>
-        <endButton>
-            <Button text="Ok" press="deviceAdminDialogOk"/>
+        <buttons>
 
-        </endButton>
-        <beginButton>
 			<Button text="Delete" press="deviceAdminDialogDelete"/>
             <Button text="Cancel" press="deviceAdminDialogCancel"/>
-        </beginButton>
+            <Button text="Ok" press="deviceAdminDialogOk"/>
+
+        </buttons>
     </Dialog>
 </core:FragmentDefinition>
