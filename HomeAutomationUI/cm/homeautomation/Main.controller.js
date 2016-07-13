@@ -718,7 +718,8 @@ sap.ui.define([
             var selectedRoom = sap.ui.getCore().getModel("rooms").getProperty(sap.ui.getCore().byId("rooms").getSelectedItem().oBindingContexts.rooms.sPath);
         },
         administrationRoomPressed: function (oEvent) {
-            this.administrationSelectedRoom=sap.ui.getCore().getModel("rooms").getProperty(oEvent.getParameter("listItem").oBindingContexts.rooms.sPath);
+        	this.administrationSelectedRoomPath=oEvent.getParameter("listItem").oBindingContexts.rooms.sPath;
+            this.administrationSelectedRoom=sap.ui.getCore().getModel("rooms").getProperty(this.administrationSelectedRoomPath);
             var roomId=oEvent.getParameter("listItem").getCustomData()[0].getValue();
             // alert("room selected "+roomId);
 
@@ -730,6 +731,22 @@ sap.ui.define([
 
             sap.ui.getCore().setModel(roomDetailModel, "administrationRoomDetail");
 
+        },
+        administrationReloadRoom: function () {
+        	            var subject = this;
+            var roomModel = new RESTService();
+           
+            roomModel.loadDataAsync("/HomeAutomation/services/admin/room/getAll", "", "GET", function () { 
+            		subject.handleAdminRoomsLoaded();
+            		
+            		subject.administrationSelectedRoom=sap.ui.getCore().getModel("rooms").getProperty(this.administrationSelectedRoomPath);
+                    var roomId=oEvent.getParameter("listItem").getCustomData()[0].getValue();
+                    // alert("room selected "+roomId);
+
+                    subject._administrationShowRoomDetails(this.administrationSelectedRoom);
+
+            		}
+            		, null, subject);
         },
         handleAddSensorButtonPress: function (event) {
 
@@ -794,7 +811,8 @@ sap.ui.define([
             }
 
             var deviceUpdate = new RESTService();
-            deviceUpdate.loadDataAsync(url, "", "GET", this.handleDeviceUpdated, null, this);
+            var subject=this;
+            deviceUpdate.loadDataAsync(url, "", "GET", function() {subject.administrationReloadRoom}, null, this);
         	
         	this.deviceAdminView.close();
         },
