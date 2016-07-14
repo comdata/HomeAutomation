@@ -67,7 +67,7 @@
                                 <ToolbarSpacer />
                                 <Button
                                         icon="sap-icon://add"
-                                        press="handleAddDeviceButtonPress" visible="{= ${administrationRoomDetail>id!=''}? true: false}" />
+                                        press="handleAddDeviceButtonPress" visible="{= ${administrationRoomDetail>/id!=''}? true: false}" />
                                 <!--<Button
                                         icon="sap-icon://edit"
                                         press="handleEditDeviceButtonPress" />-->
