@@ -47,7 +47,7 @@
                     </List></content></ScrollContainer>
                 </u:secondaryContent>
                 <u:content>
-                	<List visible="true" id="adminDevices"
+                	<List visible="{= ${administrationRoomDetail>/id==''}? false: true }" id="adminDevices"
                           items="{
 			                path: 'administrationRoomDetail>/devices'
 		                    }"
@@ -67,7 +67,7 @@
                                 <ToolbarSpacer />
                                 <Button
                                         icon="sap-icon://add"
-                                        press="handleAddDeviceButtonPress" visible="{= ${administrationRoomDetail>/id!=''}? true: false}" />
+                                        press="handleAddDeviceButtonPress" />
                                 <!--<Button
                                         icon="sap-icon://edit"
                                         press="handleEditDeviceButtonPress" />-->
