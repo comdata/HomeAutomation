@@ -15,7 +15,7 @@
                                   constraints : { 
                                       minLength : 1, 
                                       maxLength : 20 
-                                  }}" />
+                                  }}" change="deviceAdminValidate" />
 
 					<Label text="MAC Address" required="true" />
 					<Input
@@ -33,7 +33,7 @@
 		</content>
 		<buttons>
 
-			<Button text="Delete" press="deviceAdminDialogDelete" />
+			<Button text="Delete" visible="{=${deviceAdminDetail>/mode} === 'EDIT' ? true: false }" press="deviceAdminDialogDelete" />
 			<Button text="Cancel" press="deviceAdminDialogCancel" />
 			<Button text="Ok" press="deviceAdminDialogOk" />
 

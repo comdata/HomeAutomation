@@ -768,6 +768,7 @@ sap.ui.define([
         	console.log("device mac:" +device.mac);
         	
         	 var model = new JSONModel();
+        	 device.mode="EDIT";
         	 model.setData(device);
         	 
              if (!this.deviceAdminView) {
