@@ -764,6 +764,7 @@ sap.ui.define([
         	
         	var device=sap.ui.getCore().getModel("administrationRoomDetail").getProperty(oEvent.getParameter("listItem").oBindingContexts.administrationRoomDetail.sPath);
         
+        	this.adminDeviceForEdit=device;
         	console.log("device mac:" +device.mac);
         	
         	 var model = new JSONModel();
@@ -795,33 +796,39 @@ sap.ui.define([
 
         },
         
-        deviceAdminDialogOk: function (event) {
-        	
+        deviceAdminValidate: function () {
+
             var validator = new Validator();
             
             // Validate input fields against root page with id 'somePage'
             if (validator.validate(sap.ui.getCore().byId("DeviceAdminForm"))) {
-                // perform the actual form submit here
+                return true;
             }
+            return false;
+        },
+        
+        deviceAdminDialogOk: function (event) {
         	
-            var model = sap.ui.getCore().getModel("deviceAdminDetail");
-
-            var name = model.getProperty("/name");
-            var mac = model.getProperty("/mac");
-            var roomId=this.administrationSelectedRoom.id;
-
-            var url = "";
-
-            if (this.deviceAdminMode == "ADD") {
-                url = "/HomeAutomation/services/admin/device/create/"+roomId+ "/" + name+ "/" +mac;
-            } else if (this.deviceAdminMode == "EDIT") {
-                url = "/HomeAutomation/services/admin/device/update/"+roomId+"/" + name + "/"+mac;
-            }
-
-            var deviceUpdate = new RESTService();
-            var subject=this;
-            deviceUpdate.loadDataAsync(url, "", "GET", function() {subject.administrationReloadRoom(); this.deviceAdminView.close();}, null, this);
-        	
+        	if (this.deviceAdminValidate()) {
+	            var model = sap.ui.getCore().getModel("deviceAdminDetail");
+	
+	            var name = model.getProperty("/name");
+	            var mac = model.getProperty("/mac");
+	            var roomId=this.administrationSelectedRoom.id;
+	
+	            var url = "";
+	
+	            if (this.deviceAdminMode == "ADD") {
+	                url = "/HomeAutomation/services/admin/device/create/"+roomId+ "/" + name+ "/" +mac;
+	            } else if (this.deviceAdminMode == "EDIT") {
+	            	var oldMac=this.adminDeviceForEdit.mac
+	                url = "/HomeAutomation/services/admin/device/update/"+roomId+"/" + name + "/"+oldMac+"/"+mac;
+	            }
+	
+	            var deviceUpdate = new RESTService();
+	            var subject=this;
+	            deviceUpdate.loadDataAsync(url, "", "GET", function() {subject.administrationReloadRoom(); this.deviceAdminView.close();}, null, this);
+        	}
         },
         deviceAdminDialogDelete: function (event) {
         	

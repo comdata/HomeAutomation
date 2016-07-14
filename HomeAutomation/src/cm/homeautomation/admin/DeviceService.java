@@ -82,9 +82,9 @@ public class DeviceService extends BaseService {
 	 * @return
 	 */
 	@GET
-	@Path("update/{roomId}/{name}/{mac}")
+	@Path("update/{roomId}/{name}/{oldMac}/{newMac}")
 	public GenericStatus update(@PathParam("roomId") String roomId, @PathParam("name") String name,
-			@PathParam("mac") String mac) {
+			@PathParam("oldMac") String mac, @PathParam("newMac") String newMac) {
 
 		EntityManager em = EntityManagerService.getNewManager();
 
@@ -93,7 +93,7 @@ public class DeviceService extends BaseService {
 
 		em.getTransaction().begin();
 
-		device.setMac(mac);
+		device.setMac(newMac);
 		device.setName(name);
 		em.merge(device);
 
