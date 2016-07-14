@@ -9,10 +9,10 @@
                           layout="ResponsiveGridLayout" >
 
             <f:content>
-                <Label text="Device Name" />
+                <Label text="Device Name" required="true" />
                 <Input value="{deviceAdminDetail>/name}" />
 
-                <Label text="MAC Address" />
+                <Label text="MAC Address" required="true" />
                  <Input value="{
                  	path: 'deviceAdminDetail>/mac',
                  	type: 'sap.ui.model.type.String',
