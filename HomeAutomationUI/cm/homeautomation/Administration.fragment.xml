@@ -47,7 +47,7 @@
                     </List></content></ScrollContainer>
                 </u:secondaryContent>
                 <u:content>
-                	<List visible="{= ${administrationRoomDetail>/id} === '' ? false : true }" id="adminDevices"
+                	<List visible="{= ${administrationRoomDetail>/id} === null ? false : true }" id="adminDevices"
                           items="{
 			                path: 'administrationRoomDetail>/devices'
 		                    }"
@@ -63,7 +63,7 @@
                             </StandardListItem></items>
                         <headerToolbar>
                             <Toolbar>
-                                <Title text="{=${administrationRoomDetail>/id}}" level="H2" />
+                                <Title text="Devices" level="H2" />
                                 <ToolbarSpacer />
                                 <Button
                                         icon="sap-icon://add"
