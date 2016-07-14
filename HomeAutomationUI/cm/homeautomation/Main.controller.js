@@ -31,8 +31,9 @@ sap.ui.define([
     'jquery.sap.global',
     'sap/ui/core/mvc/Controller',
     'sap/ui/model/json/JSONModel',
-    'cm/webservice/RESTService'
-], function (jQuery, Controller, JSONModel, RESTService) {
+    'cm/webservice/RESTService',
+    'cm/homeautomation/Validator',
+], function (jQuery, Controller, JSONModel, RESTService, Validator) {
     "use strict";
 
     return Controller.extend("cm.homeautomation.Main", {
