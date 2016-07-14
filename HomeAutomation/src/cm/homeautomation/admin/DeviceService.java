@@ -62,7 +62,10 @@ public class DeviceService extends BaseService {
 		device.setMac(mac);
 		device.setName(name);
 		device.setRoom(room);
+		room.getDevices().add(device);
+		
 		em.persist(device);
+		em.persist(room);
 
 		em.getTransaction().commit();
 
