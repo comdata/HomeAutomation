@@ -1,5 +1,6 @@
 package cm.homeautomation.sensors.weather;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
@@ -24,7 +25,11 @@ public class WeatherService {
 		String country = "";
 		Properties props = new Properties();
 		try {
-			props.load(new FileReader("weather.properties"));
+			File file = new File("weather.properties");
+			System.out.println("Weather properties: "+file.getAbsolutePath());
+			FileReader fileReader = new FileReader(file);
+			
+			props.load(fileReader);
 			apiKey = props.getProperty("apiKey");
 			city = props.getProperty("city");
 			country = props.getProperty("country");
