@@ -7,6 +7,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import cm.homeautomation.jeromq.server.JSONSensorDataReceiver;
 
@@ -57,12 +58,13 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 	}
 
 	private void connect() throws MqttException, MqttSecurityException {
-		client = new MqttClient("tcp://localhost:1883", "HomeAutomation");
+		client = new MqttClient("tcp://localhost:1883", "HomeAutomation", new MemoryPersistence());
 		client.setCallback(this);
 		MqttConnectOptions connOpt = new MqttConnectOptions();
 
-		connOpt.setCleanSession(false);
+		connOpt.setCleanSession(true);
 		connOpt.setKeepAliveInterval(30);
+		connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
 		// connOpt.setUserName(M2MIO_USERNAME);
 		// connOpt.setPassword(M2MIO_PASSWORD_MD5.toCharArray());
 
