@@ -764,7 +764,7 @@ sap.ui.define([
         	
         	var device=sap.ui.getCore().getModel("administrationRoomDetail").getProperty(oEvent.getParameter("listItem").oBindingContexts.administrationRoomDetail.sPath);
         
-        	this.adminDeviceForEdit=device;
+        	this.adminDeviceForEditMac=device.mac;
         	console.log("device mac:" +device.mac);
         	
         	 var model = new JSONModel();
@@ -821,7 +821,7 @@ sap.ui.define([
 	            if (this.deviceAdminMode == "ADD") {
 	                url = "/HomeAutomation/services/admin/device/create/"+roomId+ "/" + name+ "/" +mac;
 	            } else if (this.deviceAdminMode == "EDIT") {
-	            	var oldMac=this.adminDeviceForEdit.mac
+	            	var oldMac=this.adminDeviceForEditMac
 	                url = "/HomeAutomation/services/admin/device/update/"+roomId+"/" + name + "/"+oldMac+"/"+mac;
 	            }
 	
