@@ -26,6 +26,7 @@ public class StartupServlet extends HttpServlet {
 	private OverviewWebSocket overviewEndpoint;
 	private MQTTReceiverClient moquetteClient;
 	private EventBusEndpoint eventBusEndpoint;
+	private Thread mqttThread;
 
 	public void init(ServletConfig config) throws ServletException {
 
@@ -35,8 +36,14 @@ public class StartupServlet extends HttpServlet {
 		System.out.println("Starting HAP");
 		HAPService hapService = HAPService.getInstance();
 
-		moquetteClient = new MQTTReceiverClient();
-		moquetteClient.start();
+		Runnable mqttClient = new Runnable() {
+			public void run() {
+				moquetteClient = new MQTTReceiverClient();
+				moquetteClient.start();
+			}
+		};
+		mqttThread = new Thread(mqttClient);
+		mqttThread.start();
 
 		jeroMQServer = new JeroMQServer();
 
@@ -46,7 +53,7 @@ public class StartupServlet extends HttpServlet {
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		}
-		
+
 		try {
 			EventBusEndpointConfigurator eventBusEndPointConfiguration = new EventBusEndpointConfigurator();
 			eventBusEndpoint = eventBusEndPointConfiguration.getEndpointInstance(EventBusEndpoint.class);
@@ -75,12 +82,19 @@ public class StartupServlet extends HttpServlet {
 		}
 
 		try {
+			if (mqttThread != null) {
+				mqttThread.stop();
+			}
+		} catch (Exception e) {
+
+		}
+
+		try {
 			moquetteClient.stopServer();
 		} catch (Exception e) {
 
 		}
 
-		
 	}
 
 }
