@@ -54,8 +54,9 @@ public class DeviceService extends BaseService {
 
 		EntityManager em = EntityManagerService.getNewManager();
 
-		Room room = (Room)em.createQuery("select r from Room r where r.id=:roomId").setParameter("roomId", roomId).getSingleResult();
-		
+		Room room = (Room) em.createQuery("select r from Room r where r.id=:roomId").setParameter("roomId", roomId)
+				.getSingleResult();
+
 		em.getTransaction().begin();
 
 		Device device = new Device();
@@ -63,7 +64,7 @@ public class DeviceService extends BaseService {
 		device.setName(name);
 		device.setRoom(room);
 		room.getDevices().add(device);
-		
+
 		em.persist(device);
 		em.persist(room);
 
@@ -87,8 +88,9 @@ public class DeviceService extends BaseService {
 
 		EntityManager em = EntityManagerService.getNewManager();
 
-		Device device = (Device)em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac).getSingleResult();
-		
+		Device device = (Device) em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac)
+				.getSingleResult();
+
 		em.getTransaction().begin();
 
 		device.setMac(mac);
@@ -99,25 +101,27 @@ public class DeviceService extends BaseService {
 
 		return new GenericStatus(true);
 	}
-	
+
 	@GET
 	@Path("delete/{mac}")
 	public GenericStatus delete(@PathParam("mac") String mac) {
 		EntityManager em = EntityManagerService.getNewManager();
 
-		Device device = (Device)em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac).getSingleResult();
-		
-	
-		
+		List<Device> devices = em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac)
+				.getResultList();
+
 		em.getTransaction().begin();
-		Room room=device.getRoom();
-		room.getDevices().remove(device);
-		em.merge(room);
 
-		em.remove(device);
+		for (Device device : devices) {
 
+			Room room = device.getRoom();
+			room.getDevices().remove(device);
+			em.merge(room);
+
+			em.remove(device);
+
+		}
 		em.getTransaction().commit();
-		
 		return new GenericStatus(true);
 	}
 }
