@@ -47,7 +47,7 @@
                     </List></content></ScrollContainer>
                 </u:secondaryContent>
                 <u:content>
-                	<List visible="{= ${administrationRoomDetail>/id==''}? false: true }" id="adminDevices"
+                	<List visible="{= ${administrationRoomDetail>/id}=='' ? false: true }" id="adminDevices"
                           items="{
 			                path: 'administrationRoomDetail>/devices'
 		                    }"
