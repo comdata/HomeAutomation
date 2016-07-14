@@ -15,7 +15,7 @@
                 <Label text="MAC Address" />
                  <Input value="{
                  	path: 'deviceAdminDetail>/mac',
-                 	type: 'sap.ui.model.type.String'
+                 	type: 'sap.ui.model.type.String',
                  	constraints: {
                  		search: '^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$'
                  	}
