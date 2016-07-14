@@ -796,6 +796,13 @@ sap.ui.define([
         
         deviceAdminDialogOk: function (event) {
         	
+            var validator = new Validator();
+            
+            // Validate input fields against root page with id 'somePage'
+            if (validator.validate(this.byId("DeviceAdminForm"))) {
+                // perform the actual form submit here
+            }
+        	
             var model = sap.ui.getCore().getModel("deviceAdminDetail");
 
             var name = model.getProperty("/name");
