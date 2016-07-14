@@ -29,7 +29,7 @@ public class WeatherService {
 			city = props.getProperty("city");
 			country = props.getProperty("country");
 		} catch (IOException e) {
-			System.out.println("Could not find sensors properties!");
+			System.out.println("Could not find weather properties!");
 			return null;
 		}
 
