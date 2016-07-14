@@ -800,7 +800,7 @@ sap.ui.define([
             var validator = new Validator();
             
             // Validate input fields against root page with id 'somePage'
-            if (validator.validate(this.byId("DeviceAdminForm"))) {
+            if (validator.validate(sap.ui.getCore().byId("DeviceAdminForm"))) {
                 // perform the actual form submit here
             }
         	
