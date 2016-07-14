@@ -736,11 +736,11 @@ sap.ui.define([
         	            var subject = this;
             var roomModel = new RESTService();
            
-            roomModel.loadDataAsync("/HomeAutomation/services/admin/room/getAll", "", "GET", function () { 
-            		subject.handleAdminRoomsLoaded();
+            roomModel.loadDataAsync("/HomeAutomation/services/admin/room/getAll", "", "GET", function (event, model) { 
+            		subject.handleAdminRoomsLoaded(event, model);
             		
-            		subject.administrationSelectedRoom=sap.ui.getCore().getModel("rooms").getProperty(this.administrationSelectedRoomPath);
-                    var roomId=oEvent.getParameter("listItem").getCustomData()[0].getValue();
+            		subject.administrationSelectedRoom=sap.ui.getCore().getModel("rooms").getProperty(subject.administrationSelectedRoomPath);
+                    //var roomId=oEvent.getParameter("listItem").getCustomData()[0].getValue();
                     // alert("room selected "+roomId);
 
                     subject._administrationShowRoomDetails(this.administrationSelectedRoom);
@@ -812,10 +812,22 @@ sap.ui.define([
 
             var deviceUpdate = new RESTService();
             var subject=this;
-            deviceUpdate.loadDataAsync(url, "", "GET", function() {subject.administrationReloadRoom}, null, this);
+            deviceUpdate.loadDataAsync(url, "", "GET", function() {subject.administrationReloadRoom(); this.deviceAdminView.close();}, null, this);
         	
-        	this.deviceAdminView.close();
         },
+        deviceAdminDialogDelete: function (event) {
+        	
+            var model = sap.ui.getCore().getModel("deviceAdminDetail");
+
+            var mac = model.getProperty("/mac");
+            var url = "/HomeAutomation/services/admin/device/delete/" +mac;
+           
+            var deviceUpdate = new RESTService();
+            var subject=this;
+            deviceUpdate.loadDataAsync(url, "", "GET", function() {subject.administrationReloadRoom(); this.deviceAdminView.close(); }, null, this);
+        	
+        },
+        
         deviceAdminDialogCancel: function (event) {
             this.deviceAdminView.close();
         },

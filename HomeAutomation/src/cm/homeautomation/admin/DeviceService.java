@@ -97,4 +97,24 @@ public class DeviceService extends BaseService {
 		return new GenericStatus(true);
 	}
 	
+	@GET
+	@Path("delete/{mac}")
+	public GenericStatus delete(@PathParam("mac") String mac) {
+		EntityManager em = EntityManagerService.getNewManager();
+
+		Device device = (Device)em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac).getSingleResult();
+		
+	
+		
+		em.getTransaction().begin();
+		Room room=device.getRoom();
+		room.getDevices().remove(device);
+		em.merge(room);
+
+		em.remove(device);
+
+		em.getTransaction().commit();
+		
+		return new GenericStatus(true);
+	}
 }

@@ -36,7 +36,7 @@ sap.ui.base.Object
                 errorCallBack = function (event) {
 
 
-                    this.messageToast.show("Loading failed");
+                	subject.messageToast.show("Loading failed");
                 }
 
             }

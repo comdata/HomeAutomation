@@ -22,7 +22,7 @@ public class Device {
 	@JoinColumn(name = "ROOM_ID", nullable=false)
 	private Room room;
 	
-	@Column(name="MAC", nullable=false)
+	@Column(name="MAC", nullable=false, unique=true)
 	private String mac;
 	
 	@Column(name="NAME", nullable=false)
