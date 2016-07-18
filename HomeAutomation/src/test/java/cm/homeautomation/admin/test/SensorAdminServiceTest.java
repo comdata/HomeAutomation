@@ -62,6 +62,7 @@ public class SensorAdminServiceTest {
 		assertTrue(createSensorResult.isSuccess());
 		
 		em.getTransaction().begin();
+		sensor=em.merge(sensor);
 		em.remove(sensor);
 		em.getTransaction().commit();
 	}
