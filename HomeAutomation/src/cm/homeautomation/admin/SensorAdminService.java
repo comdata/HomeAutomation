@@ -27,6 +27,11 @@ public class SensorAdminService {
 		sensor.setRoom(room);
 		room.getSensors().add(sensor);
 		
+		em.getTransaction().begin();
+		em.persist(sensor);
+		em.merge(room);
+		em.getTransaction().commit();
+		
 		GenericStatus genericStatus = new GenericStatus(true);
 		genericStatus.setObject(sensor);
 		return genericStatus;

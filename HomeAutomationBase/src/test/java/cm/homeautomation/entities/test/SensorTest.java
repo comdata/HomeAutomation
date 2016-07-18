@@ -41,7 +41,7 @@ public class SensorTest {
 		assertTrue("Id: " + sensor.getId(), sensor.getId() != null);
 	}
 
-	@Test(expected=javax.persistence.RollbackException.class)
+	@Test(expected=org.eclipse.persistence.exceptions.DatabaseException.class)
 	public void testCreateEmptySensor() throws Exception {
 		em.getTransaction().begin();
 		Sensor sensor = new Sensor();
