@@ -24,6 +24,6 @@ pages:
 - Overview: 'index.md'
 - English:
     - Home: 'en/index.md'
-    - Configuration
+    - Configuration: 'en/configuration.md'
     	- Weather: 'en/weather.md'
     	- Scheduler: 'en/scheduler.md'
