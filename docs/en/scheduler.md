@@ -1,5 +1,5 @@
 # Scheduler
 
-´´´schedule.cron
+'''schedule.cron
 */5 * * * * java:cm.homeautomation.services.base.WeatherDataThread#loadWeather
-´´´
+'''
