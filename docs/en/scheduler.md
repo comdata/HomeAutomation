@@ -8,7 +8,7 @@ The scheduler can be used to control the following aspects of the system:
 
 ## general configuration file structure
 
-The format follows the general cron format (see [[https://en.wikipedia.org/wiki/Cron]] for details)
+The format follows the general cron format (see [Wikipedia Cron](https://en.wikipedia.org/wiki/Cron) for details)
 
 save a schedule.cron file in /var/lib/tomcat8/webapps/HomeAutomation
 
