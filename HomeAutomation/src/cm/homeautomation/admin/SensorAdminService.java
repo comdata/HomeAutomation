@@ -23,7 +23,7 @@ public class SensorAdminService {
 		EntityManager em = EntityManagerService.getNewManager();
 
 		@SuppressWarnings("unchecked")
-		List<Room> rooms = (List<Room>) em.createQuery("select r from Room r where id=:roomId")
+		List<Room> rooms = (List<Room>) em.createQuery("select r from Room r where r.id=:roomId")
 				.setParameter("roomId", roomId).getResultList();
 
 		for (Room room : rooms) {
