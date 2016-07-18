@@ -1,5 +1,7 @@
 package cm.homeautomation.admin;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -15,25 +17,30 @@ public class SensorAdminService {
 
 	@GET
 	@Path("create/{roomId}/{name}/{type}")
-	public GenericStatus createSensor(@PathParam("roomId")Long roomId, @PathParam("name") String name, @PathParam("type") String type) {
-		
-		EntityManager em = EntityManagerService.getNewManager();
-		
-		Room room = (Room)em.createQuery("select r from Room r where id=:roomId").setParameter("roomId", roomId).getSingleResult();
-		
-		Sensor sensor = new Sensor();
-		sensor.setSensorName(name);
-		sensor.setSensorType(type);
-		sensor.setRoom(room);
-		room.getSensors().add(sensor);
-		
-		em.getTransaction().begin();
-		em.persist(sensor);
-		em.merge(room);
-		em.getTransaction().commit();
-		
+	public GenericStatus createSensor(@PathParam("roomId") Long roomId, @PathParam("name") String name,
+			@PathParam("type") String type) {
 		GenericStatus genericStatus = new GenericStatus(true);
-		genericStatus.setObject(sensor);
+		EntityManager em = EntityManagerService.getNewManager();
+
+		@SuppressWarnings("unchecked")
+		List<Room> rooms = (List<Room>) em.createQuery("select r from Room r where id=:roomId")
+				.setParameter("roomId", roomId).getResultList();
+
+		for (Room room : rooms) {
+
+			Sensor sensor = new Sensor();
+			sensor.setSensorName(name);
+			sensor.setSensorType(type);
+			sensor.setRoom(room);
+			room.getSensors().add(sensor);
+
+			em.getTransaction().begin();
+			em.persist(sensor);
+			em.merge(room);
+			em.getTransaction().commit();
+
+			genericStatus.setObject(sensor);
+		}
 		return genericStatus;
 	}
 
