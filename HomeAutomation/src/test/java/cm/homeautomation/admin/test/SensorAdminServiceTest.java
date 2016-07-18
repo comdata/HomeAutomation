@@ -2,6 +2,8 @@ package cm.homeautomation.admin.test;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 
 import org.junit.After;
@@ -16,6 +18,7 @@ import cm.homeautomation.services.base.GenericStatus;
 
 public class SensorAdminServiceTest {
 
+	private static final String TEST_ROOM = "Test Room";
 	private SensorAdminService sensorAdminService;
 	private EntityManager em;
 	private Room room;
@@ -27,7 +30,7 @@ public class SensorAdminServiceTest {
 		
 		em.getTransaction().begin();
 		room = new Room();
-		room.setRoomName("Test Room");
+		room.setRoomName(TEST_ROOM);
 
 		em.persist(room);
 		em.getTransaction().commit();
@@ -36,7 +39,15 @@ public class SensorAdminServiceTest {
 	@After
 	public void cleanup() {
 		em.getTransaction().begin();
-		em.remove(room);
+
+		@SuppressWarnings("unchecked")
+		List<Room> rooms = (List<Room>) em.createQuery("select r from Room r where r.name=:roomName")
+				.setParameter("roomName", TEST_ROOM).getResultList();
+
+		for (Room room : rooms) {
+			em.remove(room);
+		}
+		
 		em.getTransaction().commit();
 	}
 
