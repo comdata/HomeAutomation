@@ -1,7 +1,5 @@
 package cm.homeautomation.entities.test;
 
-import static org.junit.Assert.*;
-
 import javax.persistence.EntityManager;
 
 import org.junit.Before;

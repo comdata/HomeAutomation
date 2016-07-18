@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class GenericStatus {
 	
-	
+	private Object object;
 	private boolean success;
 
 	public GenericStatus() {
@@ -23,5 +23,13 @@ public class GenericStatus {
 
 	public void setSuccess(boolean success) {
 		this.success = success;
+	}
+
+	public Object getObject() {
+		return object;
+	}
+
+	public void setObject(Object object) {
+		this.object = object;
 	}
 }

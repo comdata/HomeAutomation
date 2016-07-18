@@ -74,7 +74,7 @@ public class DeviceService extends BaseService {
 	}
 
 	/**
-	 * create a device
+	 * update a device
 	 * 
 	 * @param roomId
 	 * @param name
@@ -102,12 +102,19 @@ public class DeviceService extends BaseService {
 		return new GenericStatus(true);
 	}
 
+	/**
+	 * delete device
+	 * 
+	 * @param mac
+	 * @return
+	 */
 	@GET
 	@Path("delete/{mac}")
 	public GenericStatus delete(@PathParam("mac") String mac) {
 		EntityManager em = EntityManagerService.getNewManager();
 
-		List<Device> devices = em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac)
+		@SuppressWarnings("unchecked")
+		List<Device> devices = (List<Device>)em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac)
 				.getResultList();
 
 		em.getTransaction().begin();
