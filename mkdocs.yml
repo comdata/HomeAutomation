@@ -25,3 +25,4 @@ pages:
 - English:
     - Home: 'en/index.md'
     - Weather: 'en/weather.md'
+    - Scheduler: 'en/scheduler.md'
