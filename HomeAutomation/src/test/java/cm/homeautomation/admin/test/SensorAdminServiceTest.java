@@ -61,10 +61,10 @@ public class SensorAdminServiceTest {
 		assertTrue(sensor.getId().longValue()>0);
 		assertTrue(createSensorResult.isSuccess());
 		
-		em.getTransaction().begin();
+		/*em.getTransaction().begin();
 		sensor=em.merge(sensor);
 		em.remove(sensor);
-		em.getTransaction().commit();
+		em.getTransaction().commit();*/
 	}
 
 	@Test
