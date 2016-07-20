@@ -45,14 +45,51 @@ public class SensorAdminService {
 	}
 
 	@GET
-	@Path("update/{sensorId}")
-	public GenericStatus updateSensor(@PathParam("sensorId") Long sensorId) {
+	@Path("update/{sensorId}/{name}/{type}")
+	public GenericStatus updateSensor(@PathParam("sensorId") Long sensorId, @PathParam("name") String name,
+			@PathParam("type") String type) {
+
+		EntityManager em = EntityManagerService.getNewManager();
+
+		@SuppressWarnings("unchecked")
+		List<Sensor> sensors = (List<Sensor>) em.createQuery("select s from Sensor s where s.id=:sensorId")
+				.setParameter("sensorId", sensorId).getResultList();
+
+		if (sensors != null) {
+			em.getTransaction().begin();
+			for (Sensor sensor : sensors) {
+				sensor.setSensorName(name);
+				sensor.setSensorType(type);
+				em.persist(sensor);
+			}
+			
+			em.getTransaction().commit();
+		}
 		return new GenericStatus(true);
 	}
 
 	@GET
 	@Path("delete/{sensorId}")
 	public GenericStatus deleteSensor(@PathParam("sensorId") Long sensorId) {
+
+		EntityManager em = EntityManagerService.getNewManager();
+
+		@SuppressWarnings("unchecked")
+		List<Sensor> sensors = (List<Sensor>) em.createQuery("select s from Sensor s where s.id=:sensorId")
+				.setParameter("sensorId", sensorId).getResultList();
+
+		if (sensors != null) {
+			em.getTransaction().begin();
+			for (Sensor sensor : sensors) {
+				Room room = sensor.getRoom();
+				room.getSensors().remove(sensor);
+
+				em.persist(room);
+				em.remove(sensor);
+			}
+			em.getTransaction().commit();
+		}
+
 		return new GenericStatus(true);
 	}
 }
