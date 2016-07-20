@@ -15,6 +15,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 
 	private MqttClient client;
 	private boolean run = true;
+	private MemoryPersistence memoryPersistence;
 
 	public MQTTReceiverClient() {
 
@@ -57,7 +58,8 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 	}
 
 	private void connect() throws MqttException, MqttSecurityException {
-		client = new MqttClient("tcp://localhost:1883", "HomeAutomation", new MemoryPersistence());
+		memoryPersistence = new MemoryPersistence();
+		client = new MqttClient("tcp://localhost:1883", "HomeAutomation");
 		client.setCallback(this);
 		MqttConnectOptions connOpt = new MqttConnectOptions();
 
@@ -69,7 +71,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 
 		client.connect(connOpt);
 
-		client.subscribe("/sensordata", 0);
+		client.subscribe("/sensordata");
 		System.out.println("Started MQTT client");
 	}
 
@@ -102,11 +104,13 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 		String messageContent = new String(payload);
 		System.out.println("Got MQTT message: " + messageContent);
 		JSONSensorDataReceiver.receiveSensorData(messageContent);
+		
+	
 	}
 
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken token) {
-		// TODO Auto-generated method stub
+	
 
 	}
 }
