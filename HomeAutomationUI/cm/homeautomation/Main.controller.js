@@ -277,79 +277,10 @@ sap.ui.define([
             	});
             }, 60000);
             
-            /*this.cameraTile = {
-                tileType: "camera",
-                roomId: "camera",
-                tile: "Küche",
-                info: "Kamera - Küche",
-                eventHandler: "showCamera",
-                icon: "/HomeAutomation/camerasnapshot"
-            };
-            this.cameraTile2 = {
-                tileType: "camera2",
-                roomId: "camera2",
-                tile: "Keller",
-                info: "Kamera - Keller",
-                eventHandler: "showCamera2",
-                icon: "/HomeAutomation/camerasnapshot2"
-            };
-
-            this.getView().getModel().getData().overviewTiles.push(this.cameraTile);
-            this.getView().getModel().getData().overviewTiles.push(this.cameraTile2);*/
-
-            this.planesTile = {
-                tileType: "planes",
-                roomId: "planes",
-                tile: "Flugzeuge",
-                numberUnit: "Anzahl",
-                eventHandler: "showPlanes",
-                infoState: sap.ui.core.ValueState.Success,
-                icon: "sap-icon://flight"
-            };
-
-            // this.byId(this.createId("container")).addTile(cameraTile);
 
             this.getView().getModel().getData().overviewTiles.push(this.planesTile);
 
             var planesTile = this.planesTile;
-
-
-
-            this.getView().getModel().refresh(false);
-            /*$(".sapMStdTileIconDiv > img[src='/HomeAutomation/camerasnapshot']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
-// /HomeAutomation/cameraproxy
-            this.loadDataInProgress = false;
-            var subject = this;
-
-            if (this.cameraTimer == null) {
-
-                this.cameraTimer = window.setInterval(function () {
-                    subject.cameraTile.icon = "/HomeAutomation/camerasnapshot?" + Math.random();
-
-                }, 60000);
-
-                window.setInterval(function () {
-                    $(".sapMStdTileIconDiv > img[src*='" + subject.cameraTile.icon + "']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
-                }, 1000);
-            }
-
-
-            $(".sapMStdTileIconDiv > img[src='/HomeAutomation/camerasnapshot2']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
-// /HomeAutomation/cameraproxy
-            this.loadDataInProgress = false;
-            var subject = this;
-
-            if (this.cameraTimer2 == null) {
-
-                this.cameraTimer2 = window.setInterval(function () {
-                    subject.cameraTile2.icon = "/HomeAutomation/camerasnapshot2?" + Math.random();
-
-                }, 60000);
-
-                window.setInterval(function () {
-                    $(".sapMStdTileIconDiv > img[src*='" + subject.cameraTile2.icon + "']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
-                }, 1000);
-            }*/
 
             if (this.planesTimer == null) {
                 this.updatePlanesTile(planesTile);
