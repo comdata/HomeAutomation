@@ -256,8 +256,10 @@ sap.ui.define([
             	
             ];
 
+            var subject=this;
+            
             $.each(cameras, function (i, camera) {
-            	this.getView().getModel().getData().overviewTiles.push(camera.tile);
+            	subject.getView().getModel().getData().overviewTiles.push(camera.tile);
             	$(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
             });
             
