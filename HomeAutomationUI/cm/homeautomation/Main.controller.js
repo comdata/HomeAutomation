@@ -549,9 +549,10 @@ sap.ui.define([
             if (tileType == "camera") {
                 if (!this.camera) {
                     this.camera = sap.ui.xmlfragment("cm.homeautomation.Camera", this);
+                    var stream = selectedElement.stream;
                     jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.camera);
                     this.camera.open();
-                    this.camera.getContent()[0].setContent("&lt;div align=&quot;center&quot; width=&quot;100%&quot; &gt;&lt;img onload=&quot;resize(this)&quot; onclick=&quot;resize(this)&quot; src=&quot;/HomeAutomation/cameraproxy&quot; width=&quot;576&quot; height=&quot;324&quot; /&gt;&lt;/div&gt;&lt;br /&gt;");
+                    this.camera.getContent()[0].setContent('<div align="center" width="100%" ><img onload="resize(this)" onclick="resize(this)" src="'+stream+'" width="576" height="324" /></div><br />');
                     // this.cameraTile.icon=null;
                 }
             }
