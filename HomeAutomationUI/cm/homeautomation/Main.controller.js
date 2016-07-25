@@ -277,9 +277,9 @@ sap.ui.define([
             this.planesTimer=null;
             
             if (this.planesTimer == null) {
-                this.updatePlanesTile.apply(this, [planesTile]);
+                this.updatePlanesTile.apply(this, [subject, planesTile]);
                 this.planesTimer = window.setInterval(function () {
-                    subject.updatePlanesTile.apply(subject, [planesTile]);
+                    subject.updatePlanesTile.apply(subject, [subject, planesTile]);
                 }, 60000);
 
             }
@@ -307,13 +307,13 @@ sap.ui.define([
             	});
             }, 60000);
         },
-        updatePlanesTile: function (planesTile) {
+        updatePlanesTile: function (subject, planesTile) {
             $.getJSON("/HomeAutomation/planesproxy", function (result) {
 
                 console.log("Anzahl " + result.length);
                 planesTile.number = result.length;
                 planesTile.info = $.format.date(new Date(), "dd.MM.yyyy HH:mm:ss");
-                this.getView().getModel().refresh(false);
+                subject.getView().getModel().refresh(false);
                 /*
 				 * $.each(result, function(i, field){ console.log(i+" -
 				 * "+field); });
