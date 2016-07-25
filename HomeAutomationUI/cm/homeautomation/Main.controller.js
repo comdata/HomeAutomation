@@ -263,6 +263,16 @@ sap.ui.define([
 
             var subject=this;
             
+            this.planesTile = {
+                    tileType: "planes",
+                    roomId: "planes",
+                    tile: "Flugzeuge",
+                    numberUnit: "Anzahl",
+                    eventHandler: "showPlanes",
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://flight"
+                };
+            
             var planesTile = this.planesTile;
             this.planesTimer=null;
             
