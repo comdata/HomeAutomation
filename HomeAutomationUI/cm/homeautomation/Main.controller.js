@@ -551,7 +551,7 @@ sap.ui.define([
                     this.camera = sap.ui.xmlfragment("cm.homeautomation.Camera", this);
                     jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.camera);
                     this.camera.open();
-                    this.byId("cameraContent").setContent("&lt;div align=&quot;center&quot; width=&quot;100%&quot; &gt;&lt;img onload=&quot;resize(this)&quot; onclick=&quot;resize(this)&quot; src=&quot;/HomeAutomation/cameraproxy&quot; width=&quot;576&quot; height=&quot;324&quot; /&gt;&lt;/div&gt;&lt;br /&gt;");
+                    this.camera.getContent()[0].setContent("&lt;div align=&quot;center&quot; width=&quot;100%&quot; &gt;&lt;img onload=&quot;resize(this)&quot; onclick=&quot;resize(this)&quot; src=&quot;/HomeAutomation/cameraproxy&quot; width=&quot;576&quot; height=&quot;324&quot; /&gt;&lt;/div&gt;&lt;br /&gt;");
                     // this.cameraTile.icon=null;
                 }
             }
