@@ -277,9 +277,9 @@ sap.ui.define([
             this.planesTimer=null;
             
             if (this.planesTimer == null) {
-                this.updatePlanesTile(planesTile);
+                this.updatePlanesTile.apply(this, [planesTile]);
                 this.planesTimer = window.setInterval(function () {
-                    subject.updatePlanesTile(planesTile);
+                    subject.updatePlanesTile.apply(subject, [planesTile]);
                 }, 60000);
 
             }
@@ -292,6 +292,7 @@ sap.ui.define([
             });
             
             this.getView().getModel().refresh(false);
+            
             $.each(cameras, function (i, camera) {
             	
             	$(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
@@ -312,6 +313,7 @@ sap.ui.define([
                 console.log("Anzahl " + result.length);
                 planesTile.number = result.length;
                 planesTile.info = $.format.date(new Date(), "dd.MM.yyyy HH:mm:ss");
+                this.getView().getModel().refresh(false);
                 /*
 				 * $.each(result, function(i, field){ console.log(i+" -
 				 * "+field); });
