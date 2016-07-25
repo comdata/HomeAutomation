@@ -516,15 +516,6 @@ sap.ui.define([
                     // this.cameraTile.icon=null;
                 }
             }
-
-            else if (tileType == "camera2") {
-                if (!this.camera) {
-                    this.camera = sap.ui.xmlfragment("cm.homeautomation.Camera2", this);
-                    jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.camera);
-                    this.camera.open();
-                    // this.cameraTile.icon=null;
-                }
-            }
             else if (tileType == "planes") {
                 if (!this.planesView) {
                     this.planesView = sap.ui.xmlfragment("cm.homeautomation.Planes", this);
