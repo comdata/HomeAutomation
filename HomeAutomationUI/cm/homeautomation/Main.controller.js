@@ -262,7 +262,8 @@ sap.ui.define([
             this.getView().getModel().getData().overviewTiles.push(this.planesTile);
 
             var planesTile = this.planesTile;
-
+            this.planesTimer=null;
+            
             if (this.planesTimer == null) {
                 this.updatePlanesTile(planesTile);
                 this.planesTimer = window.setInterval(function () {
