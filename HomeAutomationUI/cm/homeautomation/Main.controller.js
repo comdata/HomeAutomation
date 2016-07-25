@@ -256,6 +256,22 @@ sap.ui.define([
             	
             ];
 
+         
+            
+
+            this.getView().getModel().getData().overviewTiles.push(this.planesTile);
+
+            var planesTile = this.planesTile;
+
+            if (this.planesTimer == null) {
+                this.updatePlanesTile(planesTile);
+                this.planesTimer = window.setInterval(function () {
+                    subject.updatePlanesTile(planesTile);
+                }, 60000);
+
+            }
+            
+            
             var subject=this;
             
             $.each(cameras, function (i, camera) {
@@ -276,19 +292,6 @@ sap.ui.define([
 
             	});
             }, 60000);
-            
-
-            this.getView().getModel().getData().overviewTiles.push(this.planesTile);
-
-            var planesTile = this.planesTile;
-
-            if (this.planesTimer == null) {
-                this.updatePlanesTile(planesTile);
-                this.planesTimer = window.setInterval(function () {
-                    subject.updatePlanesTile(planesTile);
-                }, 60000);
-
-            }
         },
         updatePlanesTile: function (planesTile) {
             $.getJSON("/HomeAutomation/planesproxy", function (result) {
