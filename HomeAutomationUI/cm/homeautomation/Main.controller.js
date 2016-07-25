@@ -294,16 +294,19 @@ sap.ui.define([
             this.getView().getModel().refresh(false);
             
             $.each(cameras, function (i, camera) {
-            	
+            	window.setTimeout(function () {
             	$(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
-            });
+            	}, 10000);
+            	});
             
             
             this.cameraTimer = window.setInterval(function () {
             	$.each(cameras, function (i, camera) {
             		 camera.tile.icon = camera.tile.icon.split("?")[0]+"?" + Math.random();
             		 $(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
-
+            		 window.setTimeout(function () {
+                     	$(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
+                     	}, 10000);
             	});
             }, 60000);
         },
