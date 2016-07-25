@@ -246,8 +246,8 @@ sap.ui.define([
             		tile: {
                         tileType: "camera",
                         roomId: "camera3",
-                        tile: "Keller",
-                        info: "Kamera - Keller",
+                        tile: "Wohnzimmer",
+                        info: "Kamera - Wohnzimmer",
                         eventHandler: "showCamera",
                         icon: "/HomeAutomation/camerasnapshot3",
                         stream: "/HomeAutomation/cameraproxy3"
@@ -296,6 +296,8 @@ sap.ui.define([
             $.each(cameras, function (i, camera) {
             	window.setTimeout(function () {
             	$(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
+            	$($(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").parent().parent().parent()[2].children[1].children[1]).css("position", "relative").css("left", "-0px").css("top", "-170px").css("z-index", 100).css("font-size", "16pt");
+       		 
             	}, 10000);
             	});
             
@@ -304,9 +306,13 @@ sap.ui.define([
             	$.each(cameras, function (i, camera) {
             		 camera.tile.icon = camera.tile.icon.split("?")[0]+"?" + Math.random();
             		 $(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
+            		 
             		 window.setTimeout(function () {
                      	$(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
-                     	}, 10000);
+                     
+                     	$($(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").parent().parent().parent()[2].children[1].children[1]).css("position", "relative").css("left", "-0px").css("top", "-170px").css("z-index", 100).css("font-size", "16pt");
+            		 
+            		 }, 10000);
             	});
             }, 60000);
         },
