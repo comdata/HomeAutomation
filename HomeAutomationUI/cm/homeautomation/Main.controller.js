@@ -259,7 +259,7 @@ sap.ui.define([
          
             
 
-            this.getView().getModel().getData().overviewTiles.push(this.planesTile);
+            
 
             var subject=this;
             
@@ -283,7 +283,7 @@ sap.ui.define([
                 }, 60000);
 
             }
-            
+            this.getView().getModel().getData().overviewTiles.push(this.planesTile);
             
            
             
