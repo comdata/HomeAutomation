@@ -261,6 +261,8 @@ sap.ui.define([
 
             this.getView().getModel().getData().overviewTiles.push(this.planesTile);
 
+            var subject=this;
+            
             var planesTile = this.planesTile;
             this.planesTimer=null;
             
@@ -273,7 +275,7 @@ sap.ui.define([
             }
             
             
-            var subject=this;
+           
             
             $.each(cameras, function (i, camera) {
             	subject.getView().getModel().getData().overviewTiles.push(camera.tile);
