@@ -260,8 +260,14 @@ sap.ui.define([
             
             $.each(cameras, function (i, camera) {
             	subject.getView().getModel().getData().overviewTiles.push(camera.tile);
+            });
+            
+            this.getView().getModel().refresh(false);
+            $.each(cameras, function (i, camera) {
+            	
             	$(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
             });
+            
             
             this.cameraTimer = window.setInterval(function () {
             	$.each(cameras, function (i, camera) {
