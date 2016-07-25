@@ -215,8 +215,59 @@ sap.ui.define([
         handleDataLoaded: function (event, model, jsonModelData) {
             this.getView().setModel(model);
             this.overviewData = jsonModelData;
+            
+            var cameras = [
+            	{
+            		window:null,
+            		tile: {
+                        tileType: "camera",
+                        roomId: "camera",
+                        tile: "Küche",
+                        info: "Kamera - Küche",
+                        eventHandler: "showCamera",
+                        icon: "/HomeAutomation/camerasnapshot",
+                        stream: "/HomeAutomation/cameraproxy"
+                    }
+            	},
+            	{
+            		window:null,
+            		tile: {
+                        tileType: "camera",
+                        roomId: "camera2",
+                        tile: "Keller",
+                        info: "Kamera - Keller",
+                        eventHandler: "showCamera",
+                        icon: "/HomeAutomation/camerasnapshot2",
+                        stream: "/HomeAutomation/cameraproxy2"
+                    }
+            	},
+            	{
+            		window:null,
+            		tile: {
+                        tileType: "camera",
+                        roomId: "camera3",
+                        tile: "Keller",
+                        info: "Kamera - Keller",
+                        eventHandler: "showCamera",
+                        icon: "/HomeAutomation/camerasnapshot3",
+                        stream: "/HomeAutomation/cameraproxy3"
+                    }
+            	}
+            	
+            ];
 
-            this.cameraTile = {
+            $.each(cameras, function (i, camera) {
+            	this.getView().getModel().getData().overviewTiles.push(camera.tile);
+            	$(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
+            });
+            
+            this.cameraTimer = window.setInterval(function () {
+            	$.each(cameras, function (i, camera) {
+            		 camera.tile.icon = camera.tile.icon.split("?")[0]+"?" + Math.random();
+            	});
+            }, 60000);
+            
+            /*this.cameraTile = {
                 tileType: "camera",
                 roomId: "camera",
                 tile: "Küche",
@@ -234,7 +285,7 @@ sap.ui.define([
             };
 
             this.getView().getModel().getData().overviewTiles.push(this.cameraTile);
-            this.getView().getModel().getData().overviewTiles.push(this.cameraTile2);
+            this.getView().getModel().getData().overviewTiles.push(this.cameraTile2);*/
 
             this.planesTile = {
                 tileType: "planes",
@@ -255,7 +306,7 @@ sap.ui.define([
 
 
             this.getView().getModel().refresh(false);
-            $(".sapMStdTileIconDiv > img[src='/HomeAutomation/camerasnapshot']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
+            /*$(".sapMStdTileIconDiv > img[src='/HomeAutomation/camerasnapshot']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
 // /HomeAutomation/cameraproxy
             this.loadDataInProgress = false;
             var subject = this;
@@ -288,7 +339,7 @@ sap.ui.define([
                 window.setInterval(function () {
                     $(".sapMStdTileIconDiv > img[src*='" + subject.cameraTile2.icon + "']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
                 }, 1000);
-            }
+            }*/
 
             if (this.planesTimer == null) {
                 this.updatePlanesTile(planesTile);
@@ -492,6 +543,7 @@ sap.ui.define([
                     this.camera = sap.ui.xmlfragment("cm.homeautomation.Camera", this);
                     jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.camera);
                     this.camera.open();
+                    this.byId("cameraContent").setContent("&lt;div align=&quot;center&quot; width=&quot;100%&quot; &gt;&lt;img onload=&quot;resize(this)&quot; onclick=&quot;resize(this)&quot; src=&quot;/HomeAutomation/cameraproxy&quot; width=&quot;576&quot; height=&quot;324&quot; /&gt;&lt;/div&gt;&lt;br /&gt;");
                     // this.cameraTile.icon=null;
                 }
             }
