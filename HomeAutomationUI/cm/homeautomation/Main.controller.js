@@ -122,7 +122,7 @@ sap.ui.define([
                 var tileNo = null;
 
                 $.each(this.overviewData.overviewTiles, function (i, tile) {
-                    if (tile.roomId == newData.roomId) {
+                    if (tile!=null && tile.roomId!=null && tile.roomId == newData.roomId) {
                         tileNo = i;
                     }
 
