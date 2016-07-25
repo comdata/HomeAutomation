@@ -296,7 +296,7 @@ sap.ui.define([
             $.each(cameras, function (i, camera) {
             	window.setTimeout(function () {
             	$(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
-            	$($(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").parent().parent().parent()[2].children[1].children[1]).css("position", "relative").css("left", "-0px").css("top", "-170px").css("z-index", 100).css("font-size", "16pt");
+            	$($(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").parent().parent().parent()[2].children[1].children[1]).css("position", "relative").css("left", "-10px").css("top", "-215px").css("z-index", 100).css("font-size", "16pt");
        		 
             	}, 10000);
             	});
@@ -310,7 +310,7 @@ sap.ui.define([
             		 window.setTimeout(function () {
                      	$(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
                      
-                     	$($(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").parent().parent().parent()[2].children[1].children[1]).css("position", "relative").css("left", "-0px").css("top", "-170px").css("z-index", 100).css("font-size", "16pt");
+                     	$($(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").parent().parent().parent()[2].children[1].children[1]).css("position", "relative").css("left", "-10px").css("top", "-215px").css("z-index", 100).css("font-size", "16pt");
             		 
             		 }, 10000);
             	});
