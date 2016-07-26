@@ -68,7 +68,6 @@ public class EventBusEndpoint {
 					System.out.println("Eventbus Sending to " + session.getId());
 					session.getAsyncRemote().sendObject(eventObject);
 				} catch (IllegalStateException e) {
-					// session is invalid remove
 					userSessions.remove(key);
 				}
 			} else {
