@@ -1,6 +1,7 @@
 package cm.homeautomation.transmission;
 
 import java.net.URI;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,6 +11,7 @@ import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import nl.stil4m.transmission.api.TransmissionRpcClient;
 import nl.stil4m.transmission.api.domain.RemoveTorrentInfo;
+import nl.stil4m.transmission.api.domain.TorrentInfo;
 import nl.stil4m.transmission.api.domain.TorrentInfoCollection;
 import nl.stil4m.transmission.rpc.RpcClient;
 import nl.stil4m.transmission.rpc.RpcCommand;
@@ -48,12 +50,23 @@ public class TransmissionMonitor extends Thread {
 				System.out.println("Download speed: " + downloadSpeed);
 				System.out.println("Upload speed: " + uploadSpeed);
 				int numberOfTorrents = result.getTorrents().size();
+				int numberOfDoneTorrents=0;
+				List<TorrentInfo> torrents = result.getTorrents();
+				for (TorrentInfo torrentInfo : torrents) {
+					Boolean finished = torrentInfo.getFinished();
+					
+					if (finished.booleanValue()==true) {
+						numberOfDoneTorrents++;
+					}
+				}
+				
 				System.out.println("Running torrents: " + numberOfTorrents);
 
 				TransmissionStatusData torrentData = new TransmissionStatusData();
 				torrentData.setUploadSpeed(uploadSpeed);
 				torrentData.setDownloadSpeed(downloadSpeed);
 				torrentData.setTorrents(numberOfTorrents);
+				torrentData.setDoneTorrents(numberOfDoneTorrents);
 				EventObject eventObject = new EventObject(torrentData);
 				EventBusService.getEventBus().post(eventObject);
 				

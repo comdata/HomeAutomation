@@ -8,6 +8,7 @@ public class TransmissionStatusData {
 	private Long uploadSpeed;
 	private Long downloadSpeed;
 	private int numberOfTorrents;
+	private int numberOfDoneTorrents;
 
 	public void setUploadSpeed(Long uploadSpeed) {
 		this.uploadSpeed = uploadSpeed;
@@ -31,6 +32,14 @@ public class TransmissionStatusData {
 
 	public int getNumberOfTorrents() {
 		return numberOfTorrents;
+	}
+
+	public void setDoneTorrents(int numberOfDoneTorrents) {
+		this.numberOfDoneTorrents = numberOfDoneTorrents;
+	}
+	
+	public int getNumberOfDoneTorrents() {
+		return numberOfDoneTorrents;
 	}
 
 }

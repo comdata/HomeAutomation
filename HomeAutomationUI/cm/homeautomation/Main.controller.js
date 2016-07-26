@@ -155,7 +155,7 @@ sap.ui.define([
         },
         
         handleTransmissionStatus: function (data) {
-        	this.transmissionTile.number=data.numberOfTorrents;
+        	this.transmissionTile.number=data.numberOfDoneTorrents+" / "data.numberOfTorrents;
         	this.transmissionTile.info=Math.round(data.downloadSpeed/1024*100)/100+" / "+Math.round(data.uploadSpeed/1024*100)/100 + " kb";
         },
 
