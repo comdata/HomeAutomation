@@ -273,7 +273,7 @@ sap.ui.define([
             this.planesTile = {
                     tileType: "planes",
                     roomId: "planes",
-                    tile: "Flugzeuge",
+                    title: "Flugzeuge",
                     numberUnit: "Anzahl",
                     eventHandler: "showPlanes",
                     infoState: sap.ui.core.ValueState.Success,
@@ -283,7 +283,7 @@ sap.ui.define([
             this.transmissionTile = {
                     tileType: "transmission",
                     roomId: "transmission",
-                    tile: "Downloads",
+                    title: "Downloads",
                     numberUnit: "Anzahl",
                     eventHandler: null,
                     infoState: sap.ui.core.ValueState.Success,
