@@ -56,12 +56,12 @@ public class TransmissionMonitor extends Thread {
 					Boolean finished = torrentInfo.getFinished();
 					
 					double percentDone = torrentInfo.getPercentDone().doubleValue();
-					
-					if (percentDone==100) {
+					System.out.println("Percent done: " +percentDone );
+					if (percentDone==1) {
 						numberOfDoneTorrents++;
 					}
 				}
-				
+				System.out.println("Done torrents: " + numberOfDoneTorrents);	
 				System.out.println("Running torrents: " + numberOfTorrents);
 
 				TransmissionStatusData torrentData = new TransmissionStatusData();
