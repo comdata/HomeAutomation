@@ -229,7 +229,7 @@ sap.ui.define([
             		tile: {
                         tileType: "camera",
                         roomId: "camera",
-                        tile: "Küche",
+                        title: "Küche",
                         info: "Kamera - Küche",
                         eventHandler: "showCamera",
                         icon: "/HomeAutomation/camerasnapshot",
@@ -241,7 +241,7 @@ sap.ui.define([
             		tile: {
                         tileType: "camera",
                         roomId: "camera2",
-                        tile: "Keller",
+                        title: "Keller",
                         info: "Kamera - Keller",
                         eventHandler: "showCamera",
                         icon: "/HomeAutomation/camerasnapshot2",
@@ -253,7 +253,7 @@ sap.ui.define([
             		tile: {
                         tileType: "camera",
                         roomId: "camera3",
-                        tile: "Wohnzimmer",
+                        title: "Wohnzimmer",
                         info: "Kamera - Wohnzimmer",
                         eventHandler: "showCamera",
                         icon: "/HomeAutomation/camerasnapshot3",
