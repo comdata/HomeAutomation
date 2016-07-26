@@ -156,7 +156,7 @@ sap.ui.define([
         
         handleTransmissionStatus: function (data) {
         	this.transmissionTile.number=data.numberOfTorrents;
-        	this.transmissionTile.info=data.downloadSpeed+" / "+data.uploadSpeed;
+        	this.transmissionTile.info=data.downloadSpeed+" / "+data.uploadSpeed + " kb";
         },
 
         /**
@@ -284,7 +284,7 @@ sap.ui.define([
                     tileType: "transmission",
                     roomId: "transmission",
                     tile: "Downloads",
-                    numberUnit: "kb",
+                    numberUnit: "Anzahl",
                     eventHandler: null,
                     infoState: sap.ui.core.ValueState.Success,
                     icon: "sap-icon://download-from-cloud"
