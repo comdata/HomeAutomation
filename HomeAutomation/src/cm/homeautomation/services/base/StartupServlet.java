@@ -11,7 +11,7 @@ import cm.homeautomation.jeromq.server.JeroMQServer;
 import cm.homeautomation.moquette.server.MoquetteServer;
 import cm.homeautomation.services.overview.OverviewEndPointConfiguration;
 import cm.homeautomation.services.overview.OverviewWebSocket;
-
+import cm.homeautomation.transmission.TransmissionMonitor;
 import cm.homeautomation.mqtt.client.MQTTReceiverClient;
 
 public class StartupServlet extends HttpServlet {
@@ -27,6 +27,7 @@ public class StartupServlet extends HttpServlet {
 	private MQTTReceiverClient moquetteClient;
 	private EventBusEndpoint eventBusEndpoint;
 	private Thread mqttThread;
+	private TransmissionMonitor transmissionMonitor;
 
 	public void init(ServletConfig config) throws ServletException {
 
@@ -60,6 +61,9 @@ public class StartupServlet extends HttpServlet {
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		}
+		
+		transmissionMonitor = new TransmissionMonitor();
+		transmissionMonitor.start();
 	}
 
 	public void destroy() {
@@ -91,6 +95,12 @@ public class StartupServlet extends HttpServlet {
 
 		try {
 			moquetteClient.stopServer();
+		} catch (Exception e) {
+
+		}
+
+		try {
+			transmissionMonitor.stopMonitor();
 		} catch (Exception e) {
 
 		}
