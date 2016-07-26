@@ -13,10 +13,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 public final class HttpProxyServlet extends HttpServlet {
 
@@ -37,8 +40,10 @@ public final class HttpProxyServlet extends HttpServlet {
 		} catch (MalformedURLException me) {
 			throw new ServletException("Proxy URL is invalid", me);
 		}
-		proxy = new HttpClient();
-		proxy.getHostConfiguration().setHost(url.getHost());
+		proxy = HttpClientBuilder.create().build();
+//		proxy.
+//		
+//		.getHostConfiguration().setHost(url.getHost());
 	}
 
 	@Override
@@ -65,16 +70,16 @@ public final class HttpProxyServlet extends HttpServlet {
 		}
 
 		String uri = String.format("%s%s", url.toString(), query.toString());
-		GetMethod proxyMethod = new GetMethod(uri);
+		HttpGet proxyMethod = new HttpGet(uri);
 
-		proxy.executeMethod(proxyMethod);
+		HttpResponse httpResponse = proxy.execute(proxyMethod);
 
-		Header[] responseHeaders = proxyMethod.getResponseHeaders();
+		Header[] responseHeaders = proxyMethod.getAllHeaders();
 		for (Header header : responseHeaders) {
 			response.setHeader(header.getName(), header.getValue());
 		}
 
-		write(proxyMethod.getResponseBodyAsStream(), response.getOutputStream());
+		write(httpResponse.getEntity().getContent(), response.getOutputStream());
 	}
 
 	@Override
@@ -84,16 +89,17 @@ public final class HttpProxyServlet extends HttpServlet {
 		Map<String, String[]> requestParameters = request.getParameterMap();
 
 		String uri = url.toString();
-		PostMethod proxyMethod = new PostMethod(uri);
+		HttpPost proxyMethod = new HttpPost(uri);
 		for (String name : requestParameters.keySet()) {
 			for (String value : requestParameters.get(name)) {
-				proxyMethod.addParameter(name, value);
+
+				proxyMethod.getParams().setParameter(name, value);
 			}
 		}
 
-		proxy.executeMethod(proxyMethod);
+		HttpResponse httpResponse = proxy.execute(proxyMethod);
 		try {
-			write(proxyMethod.getResponseBodyAsStream(), response.getOutputStream());
+			write(httpResponse.getEntity().getContent(), response.getOutputStream());
 		} catch (IOException ioex) {
 
 		}

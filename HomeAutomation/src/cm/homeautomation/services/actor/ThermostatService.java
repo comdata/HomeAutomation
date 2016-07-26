@@ -7,11 +7,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Switch;
@@ -24,20 +26,25 @@ public class ThermostatService extends BaseService {
 
 	private void performHTTPSetPoint(String value, Switch singleSwitch, String setURL) {
 		try {
-			GetMethod getMethod = new GetMethod(setURL);
-			HttpClient httpClient = new HttpClient();
+			HttpGet getMethod = new HttpGet(setURL);
+			HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+			
+			
+			String[] userPassword = setURL.split("@")[0].replace("http://", "").split(":");
+			
+			CredentialsProvider credsProvider = new BasicCredentialsProvider();
+		        credsProvider.setCredentials(
+		                new AuthScope(getMethod.getURI().getHost(), getMethod.getURI().getPort()),
+		                new UsernamePasswordCredentials(userPassword[0], userPassword[1]));
+		    clientBuilder.setDefaultCredentialsProvider(credsProvider);   
+			HttpClient httpClient = clientBuilder.build();
 
-			String[] userPassword=setURL.split("@")[0].replace("http://", "").split(":");
 			
-			
-			
-			Credentials defaultcreds = new UsernamePasswordCredentials(userPassword[0], userPassword[1]);
-			System.out.println("URL: "+setURL);
-			System.out.println(getMethod.getURI().getUserinfo());
-			httpClient.getState().setCredentials(new AuthScope(getMethod.getURI().getHost(), getMethod.getURI().getPort(), AuthScope.ANY_REALM),
-					defaultcreds);
 
-			httpClient.executeMethod(getMethod);
+
+
+			httpClient.execute(getMethod);
+			
 			
 			singleSwitch.setLatestStatus(value);
 			
