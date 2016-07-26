@@ -117,7 +117,13 @@ public class OverviewWebSocket {
 			try {
 				System.out.println(
 						"Sending to " + session.getId() + " - " + tile.getRoomName() + " - " + tile.getNumber());
-				session.getAsyncRemote().sendObject(tile);
+
+				if (session.isOpen()) {
+
+					session.getAsyncRemote().sendObject(tile);
+				} else {
+					userSessions.remove(session);
+				}
 			} catch (Exception e) {
 
 			}
