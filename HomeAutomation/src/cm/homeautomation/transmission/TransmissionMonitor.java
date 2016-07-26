@@ -22,7 +22,7 @@ public class TransmissionMonitor extends Thread {
 	private boolean run = false;
 
 	public TransmissionMonitor() {
-	
+
 		run = true;
 	}
 
@@ -38,9 +38,9 @@ public class TransmissionMonitor extends Thread {
 				rpcConfiguration.setHost(URI.create("http://192.168.1.36:9091/transmission/rpc"));
 
 				RpcClient client = new RpcClient(rpcConfiguration, objectMapper);
-				
+
 				rpcClient = new TransmissionRpcClient(client);
-				
+
 				TorrentInfoCollection result = rpcClient.getAllTorrentsInfo();
 
 				Long downloadSpeed = rpcClient.getSessionStats().getDownloadSpeed();
@@ -49,17 +49,21 @@ public class TransmissionMonitor extends Thread {
 				System.out.println("Upload speed: " + uploadSpeed);
 				int numberOfTorrents = result.getTorrents().size();
 				System.out.println("Running torrents: " + numberOfTorrents);
-				
-				
-				
-				TransmissionStatusData torrentData=new TransmissionStatusData();
+
+				TransmissionStatusData torrentData = new TransmissionStatusData();
 				torrentData.setUploadSpeed(uploadSpeed);
 				torrentData.setDownloadSpeed(downloadSpeed);
 				torrentData.setTorrents(numberOfTorrents);
-				EventObject eventObject=new EventObject(torrentData);
+				EventObject eventObject = new EventObject(torrentData);
 				EventBusService.getEventBus().post(eventObject);
 				
-				Thread.sleep(60 * 1000);
+				if (numberOfTorrents > 0) {
+					// something interesting is happening, query more often
+					Thread.sleep(10 * 1000);
+				} else {
+					Thread.sleep(60 * 1000);
+				}
+
 			} catch (RpcException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -76,10 +80,10 @@ public class TransmissionMonitor extends Thread {
 		run = false;
 		this.interrupt();
 	}
-	
+
 	public static void main(String[] args) {
 		TransmissionMonitor transmissionMonitor = new TransmissionMonitor();
-		
+
 		transmissionMonitor.start();
 	}
 }
