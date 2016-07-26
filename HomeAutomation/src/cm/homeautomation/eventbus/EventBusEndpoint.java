@@ -63,8 +63,12 @@ public class EventBusEndpoint {
 
 			Session session = userSessions.get(key);
 
-			System.out.println("Eventbus Sending to " + session.getId());
-			session.getAsyncRemote().sendObject(eventObject);
+			if (session.isOpen()) {
+				System.out.println("Eventbus Sending to " + session.getId());
+				session.getAsyncRemote().sendObject(eventObject);
+			} else {
+				userSessions.remove(key);
+			}
 		}
 	}
 
