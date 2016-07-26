@@ -9,6 +9,7 @@ import nl.stil4m.transmission.api.TransmissionRpcClient;
 import nl.stil4m.transmission.api.domain.RemoveTorrentInfo;
 import nl.stil4m.transmission.api.domain.TorrentInfoCollection;
 import nl.stil4m.transmission.rpc.RpcClient;
+import nl.stil4m.transmission.rpc.RpcCommand;
 import nl.stil4m.transmission.rpc.RpcConfiguration;
 import nl.stil4m.transmission.rpc.RpcException;
 
@@ -18,14 +19,7 @@ public class TransmissionMonitor extends Thread {
 	private boolean run = false;
 
 	public TransmissionMonitor() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-		RpcConfiguration rpcConfiguration = new RpcConfiguration();
-		rpcConfiguration.setHost(URI.create("http://192.168.1.36:9091/transmission/rpc"));
-
-		RpcClient client = new RpcClient(rpcConfiguration, objectMapper);
-
-		rpcClient = new TransmissionRpcClient(client);
+	
 		run = true;
 	}
 
@@ -35,6 +29,15 @@ public class TransmissionMonitor extends Thread {
 
 		while (run) {
 			try {
+				ObjectMapper objectMapper = new ObjectMapper();
+				objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+				RpcConfiguration rpcConfiguration = new RpcConfiguration();
+				rpcConfiguration.setHost(URI.create("http://192.168.1.36:9091/transmission/rpc"));
+
+				RpcClient client = new RpcClient(rpcConfiguration, objectMapper);
+				
+				rpcClient = new TransmissionRpcClient(client);
+				
 				TorrentInfoCollection result = rpcClient.getAllTorrentsInfo();
 
 				Long downloadSpeed = rpcClient.getSessionStats().getDownloadSpeed();
