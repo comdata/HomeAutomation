@@ -1,8 +1,11 @@
 package cm.homeautomation.eventbus;
 
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentHashMap.KeySetView;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -18,12 +21,15 @@ import cm.homeautomation.services.actor.MessageTranscoder;
 		EventTranscoder.class }, decoders = { EventTranscoder.class })
 public class EventBusEndpoint {
 
-	private Set<Session> userSessions = Collections.synchronizedSet(new HashSet<Session>());
+	private ConcurrentHashMap<String, Session> userSessions = new ConcurrentHashMap<String, Session>();
+
+	// private Set<Session> userSessions = Collections.synchronizedSet(new
+	// HashSet<Session>());
 
 	public EventBusEndpoint() {
 		EventBusService.getEventBus().register(this);
 	}
-	
+
 	/**
 	 * Callback hook for Connection open events. This method will be invoked
 	 * when a client requests for a WebSocket connection.
@@ -33,7 +39,7 @@ public class EventBusEndpoint {
 	 */
 	@OnOpen
 	public void onOpen(Session userSession) {
-		userSessions.add(userSession);
+		userSessions.put(userSession.getId(), userSession);
 	}
 
 	/**
@@ -50,16 +56,20 @@ public class EventBusEndpoint {
 
 	@Subscribe
 	public void handleEvent(EventObject eventObject) {
-		
-		for (Session session : userSessions) {
+		Enumeration<String> keySet = userSessions.keys();
+
+		while (keySet.hasMoreElements()) {
+			String key = keySet.nextElement();
+
+			Session session = userSessions.get(key);
+
 			System.out.println("Eventbus Sending to " + session.getId());
 			session.getAsyncRemote().sendObject(eventObject);
 		}
 	}
-	
+
 	@OnMessage
 	public void onMessage(String message, Session userSession) {
 
-		
 	}
 }
