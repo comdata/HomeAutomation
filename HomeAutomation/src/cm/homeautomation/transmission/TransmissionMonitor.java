@@ -60,4 +60,10 @@ public class TransmissionMonitor extends Thread {
 		run = false;
 		this.interrupt();
 	}
+	
+	public static void main(String[] args) {
+		TransmissionMonitor transmissionMonitor = new TransmissionMonitor();
+		
+		transmissionMonitor.start();
+	}
 }
