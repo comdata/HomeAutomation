@@ -70,7 +70,7 @@ public class SensorAdminServiceTest {
 	//@Test
 	public void testUpdateSensor() throws Exception {
 		Long sensorId = new Long(1);
-		GenericStatus updateSensorResult = sensorAdminService.updateSensor(sensorId);
+		GenericStatus updateSensorResult = sensorAdminService.updateSensor(sensorId, "Test Sensor 2", "HUMIDITY");
 		assertTrue(updateSensorResult.isSuccess());
 	}
 }
