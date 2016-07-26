@@ -110,7 +110,9 @@ sap.ui.define([
         },
         wsEventBusOnMessage: function (evt) {
             var newData = JSON.parse(evt.data);
-            
+            if (newData.clazz=="TransmissionStatusData") {
+            	this.handleTransmissionStatus(newData.data);
+            }
             console.log(evt.data);
         },
         wsOverviewOnMessage: function (evt) {
@@ -150,6 +152,11 @@ sap.ui.define([
             window.setTimeout(function () {
             that.initWebSocket(uri, callback, socket);
             }, 2000);
+        },
+        
+        handleTransmissionStatus: function (data) {
+        	this.transmissionTile.number=data.numberOfTorrents;
+        	this.transmissionTile.info=data.downloadSpeed+" / "+data.uploadSpeed;
         },
 
         /**
@@ -272,6 +279,17 @@ sap.ui.define([
                     infoState: sap.ui.core.ValueState.Success,
                     icon: "sap-icon://flight"
                 };
+ 
+            this.transmissionTile = {
+                    tileType: "transmission",
+                    roomId: "transmission",
+                    tile: "Downloads",
+                    numberUnit: "kb",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://download-from-cloud"
+                };
+            this.getView().getModel().getData().overviewTiles.push(this.transmissionTile);
             
             var planesTile = this.planesTile;
             this.planesTimer=null;
