@@ -55,7 +55,9 @@ public class TransmissionMonitor extends Thread {
 				for (TorrentInfo torrentInfo : torrents) {
 					Boolean finished = torrentInfo.getFinished();
 					
-					if (finished.booleanValue()==true) {
+					double percentDone = torrentInfo.getPercentDone().doubleValue();
+					
+					if (percentDone==100) {
 						numberOfDoneTorrents++;
 					}
 				}
