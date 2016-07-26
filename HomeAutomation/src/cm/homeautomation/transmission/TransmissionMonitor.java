@@ -4,7 +4,10 @@ import java.net.URI;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.eventbus.EventBus;
 
+import cm.homeautomation.eventbus.EventBusService;
+import cm.homeautomation.eventbus.EventObject;
 import nl.stil4m.transmission.api.TransmissionRpcClient;
 import nl.stil4m.transmission.api.domain.RemoveTorrentInfo;
 import nl.stil4m.transmission.api.domain.TorrentInfoCollection;
@@ -44,13 +47,26 @@ public class TransmissionMonitor extends Thread {
 				Long uploadSpeed = rpcClient.getSessionStats().getUploadSpeed();
 				System.out.println("Download speed: " + downloadSpeed);
 				System.out.println("Upload speed: " + uploadSpeed);
-				System.out.println("Running torrents: " + result.getTorrents().size());
+				int numberOfTorrents = result.getTorrents().size();
+				System.out.println("Running torrents: " + numberOfTorrents);
+				
+				
+				
+				TransmissionStatusData torrentData=new TransmissionStatusData();
+				torrentData.setUploadSpeed(uploadSpeed);
+				torrentData.setDownloadSpeed(downloadSpeed);
+				torrentData.setTorrents(numberOfTorrents);
+				EventObject eventObject=new EventObject(torrentData);
+				EventBusService.getEventBus().post(eventObject);
+				
 				Thread.sleep(60 * 1000);
 			} catch (RpcException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
