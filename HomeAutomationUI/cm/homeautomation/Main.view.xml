@@ -29,24 +29,6 @@
         </TileContainer>
 
 
-        <!--<TileContainer
-                id="container1"
-                tiles="{imageTile>/tiles}" width="100%">
-            <CustomTile>
-                <content>-->
-      <!--  <ScrollContainer
-                height="100%"
-                width="100%"
-                horizontal="true"
-                vertical="true"
-                focusable="true">-->
-                  <!--  <core:HTML content="&lt;div align=&quot;center&quot; width=&quot;100%&quot; &gt;&lt;img onload=&quot;resize(this)&quot; onclick=&quot;resize(this)&quot; src=&quot;/HomeAutomation/cameraproxy&quot; width=&quot;576&quot; height=&quot;324&quot; /&gt;&lt;/div&gt;&lt;br /&gt;" /> -->
-<!--</ScrollContainer>-->
-                <!--</content>
-
-            </CustomTile>
-          </TileContainer>-->
-
         <footer>
             <Toolbar>
                 <ToolbarSpacer/>

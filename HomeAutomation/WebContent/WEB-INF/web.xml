@@ -34,6 +34,22 @@
 			<param-value>http://192.168.1.34:8080/?action=snapshot</param-value>
 		</init-param>
 	</servlet>
+		<servlet>
+		<servlet-name>cameraproxy3</servlet-name>
+		<servlet-class>cm.homeautomation.web.HttpProxyServlet</servlet-class>
+		<init-param>
+			<param-name>url</param-name>
+			<param-value>http://192.168.1.76:8081/?action=stream</param-value>
+		</init-param>
+	</servlet>
+	<servlet>
+		<servlet-name>camerasnapshot3</servlet-name>
+		<servlet-class>cm.homeautomation.web.HttpProxyServlet</servlet-class>
+		<init-param>
+			<param-name>url</param-name>
+			<param-value>http://192.168.1.76:8081/?action=snapshot</param-value>
+		</init-param>
+	</servlet>
 	<servlet>
 		<servlet-name>cameraproxy</servlet-name>
 		<servlet-class>cm.homeautomation.web.HttpProxyServlet</servlet-class>
@@ -78,7 +94,15 @@
 		<servlet-name>jersey</servlet-name>
 		<url-pattern>/services/*</url-pattern>
 	</servlet-mapping>
-	
+	<servlet-mapping>
+		<servlet-name>cameraproxy3</servlet-name>
+		<url-pattern>/cameraproxy3/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>camerasnapshot3</servlet-name>
+		<url-pattern>/camerasnapshot3/*</url-pattern>
+	</servlet-mapping>		
 	<servlet-mapping>
 		<servlet-name>cameraproxy2</servlet-name>
 		<url-pattern>/cameraproxy2/*</url-pattern>
