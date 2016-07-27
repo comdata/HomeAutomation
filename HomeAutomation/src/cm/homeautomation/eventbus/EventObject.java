@@ -7,6 +7,7 @@ public class EventObject {
 
 	private Object data;
 	private String clazz;
+	private String packageName;
 	
 	public EventObject(Object data) {
 		setData(data);
@@ -20,9 +21,18 @@ public class EventObject {
 	public void setData(Object data) {
 		if (data!=null) {
 			setClazz(data.getClass().getSimpleName());
+			setPackageName(data.getClass().getPackage().getName());
 		}
 		
 		this.data = data;
+	}
+
+	public void setPackageName(String packageName) {
+		this.packageName = packageName;
+	}
+	
+	public String getPackageName() {
+		return packageName;
 	}
 
 	public String getClazz() {
