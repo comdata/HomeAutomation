@@ -120,6 +120,10 @@
 	</servlet-mapping>
 
 	<servlet-mapping>
+		<servlet-name>camerasnapshot4</servlet-name>
+		<url-pattern>/camerasnapshot4/*</url-pattern>
+	</servlet-mapping>		
+	<servlet-mapping>
 		<servlet-name>camerasnapshot3</servlet-name>
 		<url-pattern>/camerasnapshot3/*</url-pattern>
 	</servlet-mapping>		
