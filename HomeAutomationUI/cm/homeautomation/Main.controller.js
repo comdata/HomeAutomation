@@ -261,7 +261,20 @@ sap.ui.define([
                         icon: "/HomeAutomation/camerasnapshot3",
                         stream: "/HomeAutomation/cameraproxy3"
                     }
+            	},
+            	{
+            		window:null,
+            		tile: {
+                        tileType: "camera",
+                        roomId: "camera4",
+                        title: "Spielzimmer",
+                        info: "Kamera - Spielzimmer",
+                        eventHandler: "showCamera",
+                        icon: "/HomeAutomation/camerasnapshot4",
+                        stream: "/HomeAutomation/cameraproxy4"
+                    }
             	}
+            	
             	
             ];
 
