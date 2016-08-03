@@ -19,7 +19,7 @@ public class WindowBlind {
 	private Long id;
 	
 	@ManyToOne
-	@JoinColumn(name = "ROOM_ID")
+	@JoinColumn(name = "ROOM_ID", nullable=false)
 	private Room room;
 	
 	private String name;
