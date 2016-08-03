@@ -34,7 +34,6 @@ public class WindowBlindTest {
 	
 	@After
 	public void tearDown() {
-		em.getTransaction().commit();
 		em = EntityManagerService.getNewManager();
 		em.getTransaction().begin();
 		windowBlind=em.merge(windowBlind);
