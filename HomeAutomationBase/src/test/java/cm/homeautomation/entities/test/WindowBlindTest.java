@@ -40,8 +40,8 @@ public class WindowBlindTest {
 		
 		em.getTransaction().commit();
 		
-		assertTrue(windowBlind.getId()!=null);
-		assertTrue(windowBlind.getId().longValue()>0);
-		assertTrue(calibrationUrl.equals(windowBlind.getCalibrationUrl()));
+		assertTrue("id is null",windowBlind.getId()!=null);
+		assertTrue("id is not greater 0", windowBlind.getId().longValue()>0);
+		assertTrue("calibration Url is not: " + calibrationUrl, calibrationUrl.equals(windowBlind.getCalibrationUrl()));
 	}
 }
