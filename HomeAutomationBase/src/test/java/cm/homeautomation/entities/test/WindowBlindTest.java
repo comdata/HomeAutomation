@@ -52,7 +52,7 @@ public class WindowBlindTest {
 		em.getTransaction().commit();
 	}
 	
-	@Test(expected=PersistenceException.class)
+	@Test(expected=IllegalStateException.class)
 	public void testWindowBlindFailsWithoutRoom() throws Exception {
 		em.getTransaction().begin();
 		windowBlind = new WindowBlind();
