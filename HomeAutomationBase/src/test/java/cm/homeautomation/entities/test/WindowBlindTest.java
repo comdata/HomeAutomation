@@ -44,6 +44,7 @@ public class WindowBlindTest {
 	
 	@Test
 	public void testCreateBlind() throws Exception {
+		em = EntityManagerService.getNewManager();
 		em.getTransaction().begin();
 		windowBlind = new WindowBlind();
 		
@@ -55,6 +56,7 @@ public class WindowBlindTest {
 	
 	@Test(expected=RollbackException.class)
 	public void testWindowBlindFailsWithoutRoom() throws Exception {
+		em = EntityManagerService.getNewManager();
 		em.getTransaction().begin();
 		windowBlind = new WindowBlind();
 
@@ -65,8 +67,8 @@ public class WindowBlindTest {
 	
 	@Test
 	public void testCalibrationURL() throws Exception {
-		
-		
+		em = EntityManagerService.getNewManager();
+		em.getTransaction().begin();
 		windowBlind = new WindowBlind();
 		
 		windowBlind.setCalibrationUrl(calibrationUrl);
