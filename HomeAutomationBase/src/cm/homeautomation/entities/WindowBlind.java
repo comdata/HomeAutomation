@@ -26,6 +26,7 @@ public class WindowBlind {
 
 	private String statusUrl;
 	private String dimUrl;
+	private String calibrationUrl;
 	private float currentValue;
 
 	@Transient
@@ -86,5 +87,13 @@ public class WindowBlind {
 
 	public void setRoom(Room room) {
 		this.room = room;
+	}
+
+	public String getCalibrationUrl() {
+		return calibrationUrl;
+	}
+
+	public void setCalibrationUrl(String calibrationUrl) {
+		this.calibrationUrl = calibrationUrl;
 	}
 }

@@ -39,4 +39,14 @@ java:<package name>.<class name>#<method name>
 
 ## window blind movement
 
+Set the window blind to a specific dim value at a given time.
+```
+0 0 1 * *	java:cm.homeautomation.windowblind.WindowBlindService#cronSetDim <windowBlindId> <dimValue>
+```
+
+Perform a regular calibration of the window blinds by using a scheduler.
+```
+0 0 1 * *	java:cm.homeautomation.windowblind.WindowBlindService#cronPerformCalibration <windowBlindId>
+```
+
 ## actor changes

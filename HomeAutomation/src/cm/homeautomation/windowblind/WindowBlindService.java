@@ -94,7 +94,7 @@ public class WindowBlindService extends BaseService {
 					.setParameter("id", windowBlindId).getSingleResult();
 			String dimUrl = singleWindowBlind.getDimUrl().replace("{DIMVALUE}", value);
 
-			performHTTPDim(value, singleWindowBlind, dimUrl);
+			performHTTPRequest(dimUrl);
 
 			singleWindowBlind.setCurrentValue(Float.parseFloat(value));
 
@@ -111,7 +111,7 @@ public class WindowBlindService extends BaseService {
 			for (WindowBlind singleWindowBlind : windowBlinds) {
 				String dimUrl = singleWindowBlind.getDimUrl().replace("{DIMVALUE}", value);
 
-				performHTTPDim(value, singleWindowBlind, dimUrl);
+				performHTTPRequest(dimUrl);
 
 				singleWindowBlind.setCurrentValue(Float.parseFloat(value));
 
@@ -137,28 +137,20 @@ public class WindowBlindService extends BaseService {
 		em.getTransaction().commit();
 	}
 
-	private void performHTTPDim(String value, WindowBlind singleWindowBlind, String dimUrl) {
+	private void performHTTPRequest(String url) {
 		try {
-			HttpGet getMethod = new HttpGet(dimUrl);
+			HttpGet getMethod = new HttpGet(url);
 			HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-			
-			
-			String[] userPassword = dimUrl.split("@")[0].replace("http://", "").split(":");
-			
+
+			String[] userPassword = url.split("@")[0].replace("http://", "").split(":");
+
 			CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		        credsProvider.setCredentials(
-		                new AuthScope(getMethod.getURI().getHost(), getMethod.getURI().getPort()),
-		                new UsernamePasswordCredentials(userPassword[0], userPassword[1]));
-		    clientBuilder.setDefaultCredentialsProvider(credsProvider);   
+			credsProvider.setCredentials(new AuthScope(getMethod.getURI().getHost(), getMethod.getURI().getPort()),
+					new UsernamePasswordCredentials(userPassword[0], userPassword[1]));
+			clientBuilder.setDefaultCredentialsProvider(credsProvider);
 			HttpClient httpClient = clientBuilder.build();
 
-			
-
-
-
 			httpClient.execute(getMethod);
-
-			singleWindowBlind.setCurrentValue(new Long(value));
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -166,11 +158,40 @@ public class WindowBlindService extends BaseService {
 		}
 	}
 
+	/**
+	 * call this method to set a specific dim value
+	 * @param args
+	 */
 	public synchronized static void cronSetDim(String[] args) {
 		String windowBlindId = args[0];
 		String dimValue = args[1];
 
 		new WindowBlindService().setDim(new Long(windowBlindId), dimValue);
+	}
+
+	/**
+	 * call this method to perform a calibration of the window blind
+	 * 
+	 * @param args
+	 */
+	public synchronized static void cronPerformCalibration(String[] args) {
+		String windowBlindId = args[0];
+
+		new WindowBlindService().performCalibration(new Long(windowBlindId));
+	}
+
+	public void performCalibration(Long windowBlindId) {
+		EntityManager em = EntityManagerService.getNewManager();
+		WindowBlind windowBlind = em.find(WindowBlind.class, windowBlindId);
+
+		if (windowBlind != null) {
+			String calibrationUrl = windowBlind.getCalibrationUrl();
+
+			if (calibrationUrl != null && !("".equals(calibrationUrl))) {
+				performHTTPRequest(calibrationUrl);
+			}
+		}
+
 	}
 
 }
