@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
+import javax.persistence.RollbackException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -52,7 +53,7 @@ public class WindowBlindTest {
 		em.getTransaction().commit();
 	}
 	
-	@Test(expected=IllegalStateException.class)
+	@Test(expected=RollbackException.class)
 	public void testWindowBlindFailsWithoutRoom() throws Exception {
 		em.getTransaction().begin();
 		windowBlind = new WindowBlind();
