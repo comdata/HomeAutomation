@@ -27,6 +27,8 @@ public class WindowBlindTest {
 		room.setRoomName("Test Sensor Room");
 
 		em.persist(room);
+		room=em.merge(room);
+		em.getTransaction().commit();
 	}
 	
 	@After
@@ -41,6 +43,7 @@ public class WindowBlindTest {
 	
 	@Test
 	public void testCreateBlind() throws Exception {
+		em.getTransaction().begin();
 		windowBlind = new WindowBlind();
 		
 		windowBlind.setName("Testblind");
@@ -51,8 +54,9 @@ public class WindowBlindTest {
 	
 	@Test(expected=PersistenceException.class)
 	public void testWindowBlindFailsWithoutRoom() throws Exception {
+		em.getTransaction().begin();
 		windowBlind = new WindowBlind();
-		
+
 		windowBlind.setName("Testblind");
 		em.persist(windowBlind);
 		em.getTransaction().commit();		
