@@ -37,7 +37,7 @@ public class WindowBlindTest {
 		windowBlind = new WindowBlind();
 		
 		windowBlind.setCalibrationUrl(calibrationUrl);
-		
+		em.persist(windowBlind);
 		em.getTransaction().commit();
 		
 		assertTrue("id is null",windowBlind.getId()!=null);
