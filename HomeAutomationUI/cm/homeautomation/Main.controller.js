@@ -258,8 +258,8 @@ sap.ui.define([
                         title: "Wohnzimmer",
                         info: "Kamera - Wohnzimmer",
                         eventHandler: "showCamera",
-                        icon: "/HomeAutomation/newCameraProxy?_ip=76&_port=8090&_action=snapshot",
-                        stream: "/HomeAutomation/newCameraProxy?_ip=76&_port=8090&_action=stream"
+                        icon: "/HomeAutomation/newCameraProxy?_ip=76&_port=8081&_action=snapshot",
+                        stream: "/HomeAutomation/newCameraProxy?_ip=76&_port=8081&_action=stream"
                     }
             	},
             	{
