@@ -337,7 +337,16 @@ sap.ui.define([
             
             this.cameraTimer = window.setInterval(function () {
             	$.each(cameras, function (i, camera) {
-            		 camera.tile.icon = camera.tile.icon.split("?")[0]+"&" + Math.random();
+            		 var parts=camera.tile.icon.split("&");
+            		 var newUrl="";
+            		 
+            		 for (var i=0; i<parts.length;i++) {
+            			 if (parts[i].indexOf("random=")==-1) {
+            				 newUrl+=parts[i];
+            			 }
+            		 }
+            		 
+					camera.tile.icon = newUrl+"&random=" + Math.random();
             		 $(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
             		 
             		 window.setTimeout(function () {
