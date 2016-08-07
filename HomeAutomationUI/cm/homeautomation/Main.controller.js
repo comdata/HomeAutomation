@@ -342,11 +342,11 @@ sap.ui.define([
             		 
             		 for (var i=0; i<parts.length;i++) {
             			 if (parts[i].indexOf("random=")==-1) {
-            				 newUrl+=parts[i];
+            				 newUrl+=parts[i]+"&";
             			 }
             		 }
             		 
-					camera.tile.icon = newUrl+"&random=" + Math.random();
+					camera.tile.icon = newUrl+"random=" + Math.random();
             		 $(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
             		 
             		 window.setTimeout(function () {
