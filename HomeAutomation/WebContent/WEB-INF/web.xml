@@ -91,6 +91,24 @@
 		</init-param>
 	</servlet>
 
+<servlet>
+  <servlet-name>newCameraProxy</servlet-name>
+  <servlet-class>org.mitre.dsmiley.httpproxy.URITemplateProxyServlet</servlet-class>
+  <init-param>
+    <param-name>targetUri</param-name>
+    <param-value>http://192.168.1.{_ip}:{_port}/?action={_action}</param-value>
+  </init-param>
+  <init-param>
+    <param-name>log</param-name>
+    <param-value>true</param-value>
+  </init-param>
+</servlet>
+
+<servlet-mapping>
+  <servlet-name>newCameraProxy</servlet-name>
+  <url-pattern>/newCameraProxy/*</url-pattern>
+</servlet-mapping>
+
 	<servlet>
 		<servlet-name>jersey</servlet-name>
 		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>

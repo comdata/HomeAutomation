@@ -234,8 +234,8 @@ sap.ui.define([
                         title: "Küche",
                         info: "Kamera - Küche",
                         eventHandler: "showCamera",
-                        icon: "/HomeAutomation/camerasnapshot",
-                        stream: "/HomeAutomation/cameraproxy"
+                        icon: "/HomeAutomation/newCameraProxy?_ip=57&_port=8080&_action=snapshot",
+                        stream: "/HomeAutomation/newCameraProxy?_ip=57&_port=8080&_action=stream"
                     }
             	},
             	{
