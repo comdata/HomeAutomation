@@ -337,7 +337,7 @@ sap.ui.define([
             
             this.cameraTimer = window.setInterval(function () {
             	$.each(cameras, function (i, camera) {
-            		 camera.tile.icon = camera.tile.icon.split("?")[0]+"?" + Math.random();
+            		 camera.tile.icon = camera.tile.icon.split("?")[0]+"&" + Math.random();
             		 $(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
             		 
             		 window.setTimeout(function () {
