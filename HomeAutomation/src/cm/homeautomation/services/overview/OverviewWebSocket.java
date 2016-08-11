@@ -1,12 +1,15 @@
 package cm.homeautomation.services.overview;
 
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import com.google.common.eventbus.Subscribe;
@@ -15,10 +18,10 @@ import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 
-@ServerEndpoint(value = "/overview", configurator = OverviewEndPointConfiguration.class, encoders = {
+@ServerEndpoint(value = "/overview/{clientId}", configurator = OverviewEndPointConfiguration.class, encoders = {
 		OverviewMessageTranscoder.class }, decoders = { OverviewMessageTranscoder.class })
 public class OverviewWebSocket {
-	private Set<Session> userSessions = Collections.synchronizedSet(new HashSet<Session>());
+	private ConcurrentHashMap<String, Session> userSessions = new ConcurrentHashMap<String, Session>();
 
 	private OverviewEndPointConfiguration overviewEndPointConfiguration;
 	private OverviewWebSocket overviewEndpoint;
@@ -95,8 +98,8 @@ public class OverviewWebSocket {
 	 *            the userSession which is opened.
 	 */
 	@OnOpen
-	public void onOpen(Session userSession) {
-		userSessions.add(userSession);
+	public void onOpen(@PathParam("clientId") String clientId, Session userSession) {
+		userSessions.put(clientId, userSession);
 	}
 
 	/**
@@ -113,19 +116,28 @@ public class OverviewWebSocket {
 
 	public void sendTile(OverviewTile tile) {
 
-		for (Session session : userSessions) {
-			try {
-				System.out.println(
-						"Sending to " + session.getId() + " - " + tile.getRoomName() + " - " + tile.getNumber());
+		Enumeration<String> keySet = userSessions.keys();
 
-				if (session.isOpen()) {
+		while (keySet.hasMoreElements()) {
+			String key = keySet.nextElement();
 
-					session.getAsyncRemote().sendObject(tile);
-				} else {
-					userSessions.remove(session);
+			Session session = userSessions.get(key);
+
+			if (session.isOpen()) {
+
+				try {
+					System.out.println(
+							"Sending to " + session.getId() + " - " + tile.getRoomName() + " - " + tile.getNumber());
+
+					if (session.isOpen()) {
+
+						session.getAsyncRemote().sendObject(tile);
+					} else {
+						userSessions.remove(session);
+					}
+				} catch (Exception e) {
+
 				}
-			} catch (Exception e) {
-
 			}
 		}
 	}
