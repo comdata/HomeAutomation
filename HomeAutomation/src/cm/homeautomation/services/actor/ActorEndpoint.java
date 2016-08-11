@@ -11,9 +11,10 @@ import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
-@ServerEndpoint(value = "/actor", configurator = ActorEndpointConfigurator.class, encoders = {
+@ServerEndpoint(value = "/actor/{clientId}", configurator = ActorEndpointConfigurator.class, encoders = {
 		MessageTranscoder.class }, decoders = { MessageTranscoder.class })
 public class ActorEndpoint {
 
@@ -27,11 +28,8 @@ public class ActorEndpoint {
 	 *            the userSession which is opened.
 	 */
 	@OnOpen
-	public void onOpen(Session userSession) {
-		URI requestURI = userSession.getRequestURI();
-		String[] paths = requestURI.getRawPath().split("/");
-		String id = paths[paths.length - 1];
-		userSessions.put(id, userSession);
+	public void onOpen(@PathParam("clientId") String clientId, Session userSession) {
+		userSessions.put(clientId, userSession);
 	}
 
 	/**

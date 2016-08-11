@@ -12,13 +12,14 @@ import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.services.actor.MessageTranscoder;
 
-@ServerEndpoint(value = "/eventbus", configurator = EventBusEndpointConfigurator.class, encoders = {
+@ServerEndpoint(value = "/eventbus/{clientId}", configurator = EventBusEndpointConfigurator.class, encoders = {
 		EventTranscoder.class }, decoders = { EventTranscoder.class })
 public class EventBusEndpoint {
 
@@ -39,11 +40,8 @@ public class EventBusEndpoint {
 	 *            the userSession which is opened.
 	 */
 	@OnOpen
-	public void onOpen(Session userSession) {
-		URI requestURI = userSession.getRequestURI();
-		String[] paths = requestURI.getRawPath().split("/");
-		String id=paths[paths.length-1];
-		userSessions.put(id, userSession);
+	public void onOpen(@PathParam("clientId") String clientId, Session userSession) {
+		userSessions.put(clientId, userSession);
 	}
 
 	/**
