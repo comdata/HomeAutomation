@@ -1,5 +1,6 @@
 package cm.homeautomation.eventbus;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -39,7 +40,10 @@ public class EventBusEndpoint {
 	 */
 	@OnOpen
 	public void onOpen(Session userSession) {
-		userSessions.put(userSession.getId(), userSession);
+		URI requestURI = userSession.getRequestURI();
+		String[] paths = requestURI.getRawPath().split("/");
+		String id=paths[paths.length-1];
+		userSessions.put(id, userSession);
 	}
 
 	/**

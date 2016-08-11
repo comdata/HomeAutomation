@@ -26,6 +26,14 @@ function resize(element) {
     }
 }
 
+function guid() {
+	function s4() {
+		return Math.floor((1 + Math.random()) * 0x10000)
+			.toString(16)
+			.substring(1);
+	}
+	return s4() + s4() + '-' + s4() + '-' + s4() + '-' +s4() + '-' + s4() + s4() + s4();
+}
 
 sap.ui.define([
     'jquery.sap.global',
@@ -47,6 +55,7 @@ sap.ui.define([
         _webActorSocket: null,
         _webEventBusSocket: null,
         _webOverviewSocket: null,
+        _wsGuid: guid(),
         initWebSocket: function (uri, callback, socket) {
 
             try {
@@ -57,7 +66,7 @@ sap.ui.define([
 
             }
 
-            socket = new WebSocket(uri);
+            socket = new WebSocket(uri+"/"+this._wsGuid);
             var controller = this;
             socket.onopen = function (evt) {
                 controller.wsOnOpen.apply(controller, [evt])
