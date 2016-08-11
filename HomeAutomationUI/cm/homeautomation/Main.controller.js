@@ -240,8 +240,8 @@ sap.ui.define([
                         title: "Küche",
                         info: "Kamera - Küche",
                         eventHandler: "showCamera",
-                        icon: "/HomeAutomation/camerasnapshot",
-                        stream: "/HomeAutomation/cameraproxy"
+                        icon: "/HomeAutomation/newCameraProxy?_ip=57&_port=8080&_action=snapshot",
+                        stream: "/HomeAutomation/newCameraProxy?_ip=57&_port=8080&_action=stream"
                     }
             	},
             	{
@@ -252,8 +252,8 @@ sap.ui.define([
                         title: "Keller",
                         info: "Kamera - Keller",
                         eventHandler: "showCamera",
-                        icon: "/HomeAutomation/camerasnapshot2",
-                        stream: "/HomeAutomation/cameraproxy2"
+                        icon: "/HomeAutomation/newCameraProxy?_ip=34&_port=8080&_action=snapshot",
+                        stream: "/HomeAutomation/newCameraProxy?_ip=34&_port=8080&_action=stream"
                     }
             	},
             	{
@@ -264,8 +264,8 @@ sap.ui.define([
                         title: "Wohnzimmer",
                         info: "Kamera - Wohnzimmer",
                         eventHandler: "showCamera",
-                        icon: "/HomeAutomation/camerasnapshot3",
-                        stream: "/HomeAutomation/cameraproxy3"
+                        icon: "/HomeAutomation/newCameraProxy?_ip=76&_port=8081&_action=snapshot",
+                        stream: "/HomeAutomation/newCameraProxy?_ip=76&_port=8081&_action=stream"
                     }
             	},
             	{
@@ -276,8 +276,8 @@ sap.ui.define([
                         title: "Spielzimmer",
                         info: "Kamera - Spielzimmer",
                         eventHandler: "showCamera",
-                        icon: "/HomeAutomation/camerasnapshot4",
-                        stream: "/HomeAutomation/cameraproxy4"
+                        icon: "/HomeAutomation/newCameraProxy?_ip=33&_port=8090&_action=snapshot",
+                        stream: "/HomeAutomation/newCameraProxy?_ip=336&_port=8090&_action=stream"
                     }
             	}
             	
@@ -343,7 +343,16 @@ sap.ui.define([
             
             this.cameraTimer = window.setInterval(function () {
             	$.each(cameras, function (i, camera) {
-            		 camera.tile.icon = camera.tile.icon.split("?")[0]+"?" + Math.random();
+            		 var parts=camera.tile.icon.split("&");
+            		 var newUrl="";
+            		 
+            		 for (var i=0; i<parts.length;i++) {
+            			 if (parts[i].indexOf("random=")==-1) {
+            				 newUrl+=parts[i]+"&";
+            			 }
+            		 }
+            		 
+					camera.tile.icon = newUrl+"random=" + Math.random();
             		 $(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
             		 
             		 window.setTimeout(function () {
