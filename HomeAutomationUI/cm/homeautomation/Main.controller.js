@@ -75,8 +75,13 @@ sap.ui.define([
         wsOnOpen: function (evt) {
 
         },
+        wsClose: function(socket ) {
+        	if (socket!=null && socket.readyState<3) {
+        		socket.close();
+        	}
+        },
         wsOnClose: function (evt, uri, callback, socket) {
-
+        	this.wsClose(socket);
             var that=this;
             window.setTimeout(function () {
                 that.initWebSocket(uri, callback, socket);
@@ -148,6 +153,7 @@ sap.ui.define([
             }
         },
         wsOnError: function (evt, uri, callback, socket) {
+        	this.wsClose(socket);
             var that=this;
             window.setTimeout(function () {
             that.initWebSocket(uri, callback, socket);
