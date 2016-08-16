@@ -562,7 +562,13 @@ sap.ui.define([
             
             var currentRoomData={"roomName": roomName};
             
+           
+            
+            this.currentRoomModel = new sap.ui.model.json.JSONModel();
+
             this.currentRoomModel.setData(currentRoomData);
+            
+            sap.ui.getCore().getModel(this.currentRoomModel, "currentRoom");
 
             var roomId = this.selectedRoom;
 
