@@ -1,7 +1,7 @@
 <core:FragmentDefinition
         xmlns="sap.m"
         xmlns:core="sap.ui.core" xmlns:commons="sap.ui.commons">
-    <Dialog title="Raumdetails -  {currentRoom>/roomName}" afterClose="afterDialogClose" stretch="true">
+    <Dialog title="{currentRoom>/roomName}" afterClose="afterDialogClose" stretch="true">
         <content>
 
             <Panel expandable="true" expanded="false" headerText="Einstellungen" width="auto"

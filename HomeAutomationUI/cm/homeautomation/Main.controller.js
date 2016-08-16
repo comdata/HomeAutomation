@@ -559,7 +559,7 @@ sap.ui.define([
             this.selectedRoom = selectedElement.roomId;
             var roomName = selectedElement.roomName;
             var tileType = selectedElement.tileType;
-            this.currentRoomModel.setProperty("roomName", roomName);
+            this.currentRoomModel.setProperty("/roomName", roomName);
 
             var roomId = this.selectedRoom;
 
