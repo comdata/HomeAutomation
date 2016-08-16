@@ -564,11 +564,11 @@ sap.ui.define([
             
            
             
-            this.currentRoomModel = new sap.ui.model.json.JSONModel();
+            var currentRoomModel = new sap.ui.model.json.JSONModel();
 
-            this.currentRoomModel.setData(currentRoomData);
+            currentRoomModel.setData(currentRoomData);
             
-            sap.ui.getCore().getModel(this.currentRoomModel, "currentRoom");
+            sap.ui.getCore().setModel(currentRoomModel, "currentRoom");
 
             var roomId = this.selectedRoom;
 
@@ -597,6 +597,8 @@ sap.ui.define([
                     if (!this._oDialog) {
                         this._oDialog = sap.ui.xmlfragment("cm.homeautomation.Switch", this);
                         this._oDialog.setModel(this.getView().getModel());
+                        
+                        
                     }
 
                     // toggle compact style
