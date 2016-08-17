@@ -196,7 +196,7 @@
                         .rotateLabels(-45)
                         .tickFormat(function (d) {
                         	
-                            return moment(d.dateTime).format('YYYY-MM-DD HH:mm:ss');
+                            return moment(d.dateTime).format('DD.MM.YYYY HH:mm:ss');
                         })
                 ;
 
@@ -209,7 +209,7 @@
                         .call(chart);
 
                 nv.utils.windowResize(function () {
-                    chart.update()
+                    chart.update();
                 });
                 return chart;
             });
