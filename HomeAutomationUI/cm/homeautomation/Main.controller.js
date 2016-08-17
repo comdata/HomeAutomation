@@ -348,8 +348,10 @@ sap.ui.define([
             $.each(cameras, function (i, camera) {
             		$(".sapMStdTileIconDiv > img").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
             	});
-            //$(".sapMStdTileIconDiv > img").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
-            
+            //
+            $(".sapMStdTileIconDiv > img").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
+            $(".sapMStdTileIconDiv > img").parent().parent().parent().children().find('div[class="sapMStdTileTitle"]').css("position", "relative").css("top", "-120px");
+            $(".sapMStdTileInfoNone").css("position", "relative").css("top", "-30px");            
             
             /**
              * 
@@ -360,6 +362,15 @@ sap.ui.define([
              * var myData = context.getImageData(0, 0, img.width, img.height);
              * 
              */
+            
+            $.each($(".sapMStdTileIconDiv > img"), function(i, image) {
+            	console.log("img:"+image.src);
+            	image.onload=function () {
+            		$(".sapMStdTileIconDiv > img").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
+            	 	$(".sapMStdTileIconDiv > img").parent().parent().parent().children().find('div[class="sapMStdTileTitle"]').css("position", "relative").css("top", "-120px");
+                 	$(".sapMStdTileInfoNone").css("position", "relative").css("top", "-30px");
+            	};
+            });
             
             this.cameraTimer = window.setInterval(function () {
             	$.each(cameras, function (i, camera) {
@@ -386,6 +397,9 @@ sap.ui.define([
                          $(".sapMStdTileInfoNone").css("position", "relative").css("top", "-30px");
          		     
             		 };
+            		 
+            		 
+            		 
             		 downloadingImage.src=imageURL;
             	});
             	
