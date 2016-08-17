@@ -358,10 +358,10 @@ sap.ui.define([
             		 
             		 for (var i=0; i<parts.length;i++) {
             			 if (parts[i].indexOf("random=")==-1) {
-            				 newUrl+=parts[i];
+            				 newUrl+=parts[i]+"&";
             			 }
             		 }
-            		 var imageURL = newUrl+"&random=" + Math.random();
+            		 var imageURL = newUrl+"random=" + Math.random();
             		 
             		 var image = $(".sapMStdTileIconDiv > img[src*='"+newUrl+"']")[0];
             		 console.log("old image src: "+image.src);
