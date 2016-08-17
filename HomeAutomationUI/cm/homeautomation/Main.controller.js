@@ -362,10 +362,10 @@ sap.ui.define([
             		 }
             		 var imageURL = newUrl+"random=" + Math.random();
             		 
-            		 var image = $(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']")[0];
+            		 var image = $(".sapMStdTileIconDiv > img[src*='"+newUrl+"']")[0];
             		 var downloadingImage = new Image();
             		 downloadingImage.onload = function(){
-            		     image.src = this.src;   
+            		     image.src = downloadingImage.src;   
             		 };
             		 downloadingImage.src=imageURL;
 					
