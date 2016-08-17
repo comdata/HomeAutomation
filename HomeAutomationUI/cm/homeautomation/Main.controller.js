@@ -336,7 +336,7 @@ sap.ui.define([
            
             
             $.each(cameras, function (i, camera) {
-            	camera.icon=camera.icon+"&random=" + Math.random();
+            	camera.tile.icon=camera.tile.icon+"&random=" + Math.random();
             	subject.getView().getModel().getData().overviewTiles.push(camera.tile);
             });
             
