@@ -340,6 +340,8 @@ sap.ui.define([
             	subject.getView().getModel().getData().overviewTiles.push(camera.tile);
             });
             
+            $(".sapMStdTileInfoNone").css("position", "relative").css("top", "-50px");
+            
             this.getView().getModel().refresh(false);
             
             $.each(cameras, function (i, camera) {
