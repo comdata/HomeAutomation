@@ -367,7 +367,7 @@ sap.ui.define([
             		 var downloadingImage = new Image();
             		 downloadingImage.onload = function(){
             			 console.log("new loaded image src: "+downloadingImage.src);
-            		     image.src = downloadingImage.src;   
+            		     image.src = this.src;   
             		 };
             		 downloadingImage.src=imageURL;
 					
