@@ -336,11 +336,13 @@ sap.ui.define([
            
             
             $.each(cameras, function (i, camera) {
+            	camera.tile.info=moment().format('DD.MM.YYYY HH:mm:ss');
             	camera.tile.icon=camera.tile.icon+"&random=" + Math.random();
             	subject.getView().getModel().getData().overviewTiles.push(camera.tile);
             });
             
-            $(".sapMStdTileInfoNone").css("position", "relative").css("top", "-50px");
+            $(".sapMStdTileIconDiv > img").parent().parent().parent().children().find('div[class="sapMStdTileTitle"]').css("position", "relative").css("top", "-120px");
+            $(".sapMStdTileInfoNone").css("position", "relative").css("top", "-30px");
             
             this.getView().getModel().refresh(false);
             
@@ -370,6 +372,7 @@ sap.ui.define([
             		 downloadingImage.onload = function(){
             			 console.log("new loaded image src: "+downloadingImage.src);
             		     image.src = this.src;   
+            		     camera.tile.info=moment().format('DD.MM.YYYY HH:mm:ss');
             		 };
             		 downloadingImage.src=imageURL;
             	});
