@@ -360,8 +360,16 @@ sap.ui.define([
             				 newUrl+=parts[i]+"&";
             			 }
             		 }
+            		 var imageURL = newUrl+"random=" + Math.random();
             		 
-					camera.tile.icon = newUrl+"random=" + Math.random();
+            		 var image = $(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']")[0];
+            		 var downloadingImage = new Image();
+            		 downloadingImage.onload = function(){
+            		     image.src = this.src;   
+            		 };
+            		 downloadingImage.src=imageURL;
+					
+					/*camera.tile.icon = imageURL;
             		 $(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
             		 
             		 window.setTimeout(function () {
@@ -369,7 +377,7 @@ sap.ui.define([
                      
                      	$($(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").parent().parent().parent()[2].children[1].children[1]).css("position", "relative").css("left", "-10px").css("top", "-215px").css("z-index", 100).css("font-size", "16pt");
             		 
-            		 }, 1000);
+            		 }, 1000);*/
             	});
             }, 60000);
         },
