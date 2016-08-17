@@ -363,8 +363,10 @@ sap.ui.define([
             		 var imageURL = newUrl+"random=" + Math.random();
             		 
             		 var image = $(".sapMStdTileIconDiv > img[src*='"+newUrl+"']")[0];
+            		 console.log("old image src: "+image.src);
             		 var downloadingImage = new Image();
             		 downloadingImage.onload = function(){
+            			 console.log("new loaded image src: "+downloadingImage.src);
             		     image.src = downloadingImage.src;   
             		 };
             		 downloadingImage.src=imageURL;
