@@ -276,7 +276,9 @@ sap.ui.define([
                         icon: "/HomeAutomation/newCameraProxy?_ip=76&_port=8081&_action=snapshot",
                         stream: "/HomeAutomation/newCameraProxy?_ip=76&_port=8081&_action=stream"
                     }
-            	},
+            	}
+            	
+            	/*,
             	{
             		window:null,
             		tile: {
@@ -288,7 +290,7 @@ sap.ui.define([
                         icon: "/HomeAutomation/newCameraProxy?_ip=33&_port=8090&_action=snapshot",
                         stream: "/HomeAutomation/newCameraProxy?_ip=336&_port=8090&_action=stream"
                     }
-            	}
+            	}*/
             	
             	
             ];
