@@ -185,7 +185,7 @@
                  });*/
 
                 chart.x(function (d) {
-                    return moment.utc(d.dateTime).format('YYYY-MM-DD HH:mm:ss');
+                    return moment.utc(d.dateTime);
                 })
                     //adjusting, 100% is 1.00, not 100 as it is in the data
                         .y(function (d) {
@@ -195,7 +195,7 @@
                 chart.xAxis
                         .rotateLabels(-45)
                         .tickFormat(function (d) {
-                            return new Date(d).toJSON().replace("T", " ").substring(0,19);
+                            return d.format('YYYY-MM-DD HH:mm:ss');
                         })
                 ;
 
