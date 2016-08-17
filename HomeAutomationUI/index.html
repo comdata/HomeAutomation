@@ -47,6 +47,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <script src="js/moment.min.js"></script>
     <!--<script src="http://d3js.org/d3.v3.min.js"></script>-->
 
 
@@ -184,7 +185,7 @@
                  });*/
 
                 chart.x(function (d) {
-                    return d.dateTime;
+                    return moment.utc(d.dateTime).format('YYYY-MM-DD HH:mm:ss');
                 })
                     //adjusting, 100% is 1.00, not 100 as it is in the data
                         .y(function (d) {
