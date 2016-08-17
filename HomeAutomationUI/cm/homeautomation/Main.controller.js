@@ -346,11 +346,9 @@ sap.ui.define([
             this.getView().getModel().refresh(false);
             
             $.each(cameras, function (i, camera) {
-            	window.setTimeout(function () {
-            		$(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
-            	       		 
-            	}, 1000);
+            		$(".sapMStdTileIconDiv > img").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
             	});
+            //$(".sapMStdTileIconDiv > img").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
             
             
             /**
@@ -383,7 +381,7 @@ sap.ui.define([
             		     image.src = this.src;   
             		     camera.tile.info=moment().format('DD.MM.YYYY HH:mm:ss');
             		     
-            		     $(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
+            		     $(".sapMStdTileIconDiv > img").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
                          $(".sapMStdTileIconDiv > img").parent().parent().parent().children().find('div[class="sapMStdTileTitle"]').css("position", "relative").css("top", "-120px");
                          $(".sapMStdTileInfoNone").css("position", "relative").css("top", "-30px");
          		     
