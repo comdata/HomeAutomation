@@ -341,9 +341,6 @@ sap.ui.define([
             	subject.getView().getModel().getData().overviewTiles.push(camera.tile);
             });
             
-            $(".sapMStdTileIconDiv > img").parent().parent().parent().children().find('div[class="sapMStdTileTitle"]').css("position", "relative").css("top", "-120px");
-            $(".sapMStdTileInfoNone").css("position", "relative").css("top", "-30px");
-            
             this.getView().getModel().refresh(false);
             
             $.each(cameras, function (i, camera) {
@@ -376,6 +373,10 @@ sap.ui.define([
             		 };
             		 downloadingImage.src=imageURL;
             	});
+            	
+                $(".sapMStdTileIconDiv > img").parent().parent().parent().children().find('div[class="sapMStdTileTitle"]').css("position", "relative").css("top", "-120px");
+                $(".sapMStdTileInfoNone").css("position", "relative").css("top", "-30px");
+
             }, 60000);
         },
         updatePlanesTile: function (subject, planesTile) {
