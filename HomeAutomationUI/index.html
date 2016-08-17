@@ -195,7 +195,7 @@
                 chart.xAxis
                         .rotateLabels(-45)
                         .tickFormat(function (d) {
-                            return d.format('YYYY-MM-DD HH:mm:ss');
+                            return moment.utc(d.dateTime).format('YYYY-MM-DD HH:mm:ss');
                         })
                 ;
 
