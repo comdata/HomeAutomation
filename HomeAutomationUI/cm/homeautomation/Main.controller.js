@@ -347,11 +347,21 @@ sap.ui.define([
             
             $.each(cameras, function (i, camera) {
             	window.setTimeout(function () {
-            	$(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
+            		$(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
             	       		 
             	}, 1000);
             	});
             
+            
+            /**
+             * 
+             * var canvas = document.createElement('canvas');
+             * var context = canvas.getContext('2d');
+             * var img = document.getElementById('myimg');
+             * context.drawImage(img, 0, 0 );
+             * var myData = context.getImageData(0, 0, img.width, img.height);
+             * 
+             */
             
             this.cameraTimer = window.setInterval(function () {
             	$.each(cameras, function (i, camera) {
@@ -372,12 +382,15 @@ sap.ui.define([
             			 console.log("new loaded image src: "+downloadingImage.src);
             		     image.src = this.src;   
             		     camera.tile.info=moment().format('DD.MM.YYYY HH:mm:ss');
+            		     
+            		     $(".sapMStdTileIconDiv > img[src='"+camera.tile.icon+"']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
+                         $(".sapMStdTileIconDiv > img").parent().parent().parent().children().find('div[class="sapMStdTileTitle"]').css("position", "relative").css("top", "-120px");
+                         $(".sapMStdTileInfoNone").css("position", "relative").css("top", "-30px");
+         		     
             		 };
             		 downloadingImage.src=imageURL;
             	});
             	
-                $(".sapMStdTileIconDiv > img").parent().parent().parent().children().find('div[class="sapMStdTileTitle"]').css("position", "relative").css("top", "-120px");
-                $(".sapMStdTileInfoNone").css("position", "relative").css("top", "-30px");
 
             }, 60000);
         },
