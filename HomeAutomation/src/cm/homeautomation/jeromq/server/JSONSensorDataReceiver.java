@@ -2,11 +2,11 @@ package cm.homeautomation.jeromq.server;
 
 import java.io.IOException;
 
-import org.zeromq.ZContext;
-import org.zeromq.ZFrame;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import cm.homeautomation.eventbus.EventBusService;
+import cm.homeautomation.eventbus.EventObject;
+import cm.homeautomation.sensors.DistanceSensorData;
 import cm.homeautomation.sensors.JSONSensorDataBase;
 import cm.homeautomation.sensors.SensorDataRoomSaveRequest;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
@@ -30,8 +30,10 @@ public class JSONSensorDataReceiver {
 				sensorsService.saveSensorData((SensorDataSaveRequest) sensorData);
 			} else if (sensorData instanceof SensorDataRoomSaveRequest) {
 				sensorsService.save((SensorDataRoomSaveRequest) sensorData);
+			} else if (sensorData instanceof DistanceSensorData) {
+				EventObject eventObject=new EventObject((DistanceSensorData)sensorData);
+				EventBusService.getEventBus().post(eventObject);	
 			}
-
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
