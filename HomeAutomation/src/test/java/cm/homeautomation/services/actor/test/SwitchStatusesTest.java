@@ -33,6 +33,6 @@ public class SwitchStatusesTest {
 		assertNotNull(switchStatuses);
 		assertNotNull(switchStatuses.getSwitchStatuses());
 		assertTrue(switchStatuses.getSwitchStatuses().size()==1);
-		assertEquals(aSwitch, switchStatuses.getSwitchStatuses().get(0));
+		assertEquals(aSwitch, (Switch)switchStatuses.getSwitchStatuses().get(0));
 	}
 }
