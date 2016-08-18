@@ -3,6 +3,7 @@ package cm.homeautomation.entities.test;
 import static org.junit.Assert.assertTrue;
 
 import javax.persistence.EntityManager;
+import javax.persistence.RollbackException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -40,17 +41,14 @@ public class SensorTest {
 		assertTrue("Id: " + sensor.getId(), sensor.getId() != null);
 	}
 
-	//@Test
+	@Test(expected = RollbackException.class)
 	public void testCreateEmptySensor() {
-		try {
-			em.getTransaction().begin();
-			Sensor sensor = new Sensor();
-			sensor.setRoom(room);
-			em.persist(sensor);
-			em.getTransaction().commit();
-		} catch (Exception e) {
-			assertTrue(e instanceof javax.persistence.RollbackException);
-		}
+
+		em.getTransaction().begin();
+		Sensor sensor = new Sensor();
+		sensor.setRoom(room);
+		em.persist(sensor);
+		em.getTransaction().commit();
 
 	}
 }
