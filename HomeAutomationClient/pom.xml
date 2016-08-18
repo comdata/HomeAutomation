@@ -21,7 +21,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>HomeAutomationBase</groupId>
+			<groupId>cm.homeautomation</groupId>
 			<artifactId>HomeAutomationBase</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
