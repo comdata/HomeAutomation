@@ -11,3 +11,5 @@ addons:
   mariadb: '10.0'
 before_script:
   - mysql -u root -e 'CREATE DATABASE HA;'
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
