@@ -12,7 +12,9 @@
 		<module>HomeAutomationBase</module>
 		<module>HomeAutomationClient</module>
 		<module>HomeAutomation</module>
-	</modules>
+	
+<module>HomeAutomationUI</module>
+</modules>
 
 
 </project>
