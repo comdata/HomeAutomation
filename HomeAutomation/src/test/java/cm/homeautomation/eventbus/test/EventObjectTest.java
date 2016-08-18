@@ -27,6 +27,6 @@ public class EventObjectTest {
 		assertNotNull(eventObject);
 		assertEquals(testData, eventObject.getData());
 		assertEquals(testData.getClass().getSimpleName(), eventObject.getClazz());
-		assertEquals(testData.getClass().getPackage(), eventObject.getPackageName());
+		assertEquals(testData.getClass().getPackage().getName(), eventObject.getPackageName());
 	}
 }
