@@ -178,7 +178,7 @@ sap.ui.define([
         },
         handleDistanceSensor: function (data) {
         	if (this.distanceTile!=null) {
-        		this.distanceTile.number=data.distance;
+        		this.distanceTile.number=data.distance.toPrecision(4);
         		this.getView().getModel().refresh(false);
         	}
         },
