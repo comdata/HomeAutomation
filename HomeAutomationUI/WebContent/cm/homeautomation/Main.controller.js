@@ -176,7 +176,7 @@ sap.ui.define([
         },
         handleDistanceSensor: function (data) {
         	if (this.distanceTile!=null) {
-        		this.transmissionTile.number=data.distance;
+        		this.distanceTile.number=data.distance;
         	}
         },
         handleTransmissionStatus: function (data) {
