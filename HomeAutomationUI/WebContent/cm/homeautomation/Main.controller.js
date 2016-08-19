@@ -90,6 +90,7 @@ sap.ui.define([
         	}
         },
         wsOnClose: function (evt, uri, callback, socket) {
+        	console.log("socket "+uri+" closed");
         	this.wsClose(socket);
             var that=this;
             window.setTimeout(function () {
@@ -168,6 +169,7 @@ sap.ui.define([
             }
         },
         wsOnError: function (evt, uri, callback, socket) {
+        	console.log("socket "+uri+" errored");
         	this.wsClose(socket);
             var that=this;
             window.setTimeout(function () {
