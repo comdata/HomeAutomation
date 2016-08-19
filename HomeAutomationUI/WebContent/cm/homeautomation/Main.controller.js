@@ -127,6 +127,12 @@ sap.ui.define([
             if (newData.clazz=="TransmissionStatusData") {
             	this.handleTransmissionStatus(newData.data);
             }
+            
+            if (newData.clazz=="DistanceSensorData") {
+            	
+            	this.handleDistanceSensor(newData.data);
+            }
+            
             console.log(evt.data);
         },
         wsOverviewOnMessage: function (evt) {
@@ -168,7 +174,11 @@ sap.ui.define([
             that.initWebSocket(uri, callback, socket);
             }, 2000);
         },
-        
+        handleDistanceSensor: function (data) {
+        	if (this.distanceTile!=null) {
+        		this.transmissionTile.number=data.distance;
+        	}
+        },
         handleTransmissionStatus: function (data) {
         	if (this.transmissionTile!=null) {
         		this.transmissionTile.number=data.numberOfDoneTorrents+" / "+data.numberOfTorrents;
@@ -322,6 +332,17 @@ sap.ui.define([
                     icon: "sap-icon://download-from-cloud"
                 };
             this.getView().getModel().getData().overviewTiles.push(this.transmissionTile);
+            
+            this.distanceTile = {
+                    tileType: "distance",
+                    roomId: "distance",
+                    title: "Distance",
+                    numberUnit: "cm",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://marketing-campaign"
+                };
+            this.getView().getModel().getData().overviewTiles.push(this.distanceTile);
             
             var planesTile = this.planesTile;
             this.planesTimer=null;
