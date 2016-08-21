@@ -361,7 +361,7 @@ sap.ui.define([
             
             var camerasDisabled=jQuery.sap.getUriParameters().get("disableCamera");
             
-            camerasDisabled=(camerasDisabled==true) ? true: false;
+            camerasDisabled=(camerasDisabled=="true") ? true: false;
             
             if (!camerasDisabled) {
 	            $.each(cameras, function (i, camera) {
