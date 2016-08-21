@@ -8,4 +8,11 @@
 	</buildSpec>
 	<natures>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>mkdocs.yml</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/mkdocs.yml</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>

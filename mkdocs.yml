@@ -25,5 +25,6 @@ pages:
 - English:
     - Home: 'en/index.md'
     - Configuration:
+    	- URL Parameters: 'en/urlparameters.md'
         - Weather: 'en/weather.md'
         - Scheduler: 'en/scheduler.md'
