@@ -215,13 +215,13 @@
 			<version>4.0.32.Final</version>
 		</dependency>
 
-		<dependency>
+		<!-- <dependency>
 		    <groupId>cm.homeautomation</groupId>
 		    <artifactId>pushpad.xyz</artifactId>
 		    <version>0.3.0</version>
 		    <scope>system</scope>
 		    <systemPath>${basedir}/WebContent/WEB-INF/lib/pushpad-v0.3.0.jar</systemPath>
-		</dependency>
+		</dependency>-->
 		
 		<dependency>
 			<groupId>com.beowulfe.hap</groupId>

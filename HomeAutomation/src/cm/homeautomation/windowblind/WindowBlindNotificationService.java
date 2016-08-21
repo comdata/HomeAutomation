@@ -21,9 +21,13 @@ public class WindowBlindNotificationService {
 	private String iconUrl;
 
 	public WindowBlindNotificationService() {
+		initialize("/home/hap/pushpad.properties");
+	}
+	
+	protected void initialize(String fileName) {
 		try {
 			Properties props = new Properties();
-			File file = new File("/home/hap/pushpad.properties");
+			File file = new File(fileName);
 			FileReader fileReader = new FileReader(file);
 
 			props.load(fileReader);
