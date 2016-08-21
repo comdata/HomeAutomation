@@ -12,6 +12,7 @@ import cm.homeautomation.moquette.server.MoquetteServer;
 import cm.homeautomation.services.overview.OverviewEndPointConfiguration;
 import cm.homeautomation.services.overview.OverviewWebSocket;
 import cm.homeautomation.transmission.TransmissionMonitor;
+import cm.homeautomation.windowblind.WindowBlindNotificationService;
 import cm.homeautomation.mqtt.client.MQTTReceiverClient;
 
 public class StartupServlet extends HttpServlet {
@@ -28,6 +29,7 @@ public class StartupServlet extends HttpServlet {
 	private EventBusEndpoint eventBusEndpoint;
 	private Thread mqttThread;
 	private TransmissionMonitor transmissionMonitor;
+	private WindowBlindNotificationService windowBlindNotificationService;
 
 	public void init(ServletConfig config) throws ServletException {
 
@@ -64,6 +66,8 @@ public class StartupServlet extends HttpServlet {
 		
 		transmissionMonitor = new TransmissionMonitor();
 		transmissionMonitor.start();
+		
+		windowBlindNotificationService = new WindowBlindNotificationService();
 	}
 
 	public void destroy() {
@@ -105,6 +109,7 @@ public class StartupServlet extends HttpServlet {
 
 		}
 
+		windowBlindNotificationService.destroy();
 	}
 
 }

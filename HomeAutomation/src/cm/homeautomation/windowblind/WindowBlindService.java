@@ -20,6 +20,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.WindowBlind;
+import cm.homeautomation.eventbus.EventBusService;
+import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
 
 @Path("windowBlinds")
@@ -101,8 +103,12 @@ public class WindowBlindService extends BaseService {
 			em.getTransaction().begin();
 			em.merge(singleWindowBlind);
 			em.getTransaction().commit();
+			
+			WindowBlindStatus eventData=new WindowBlindStatus();
+			eventData.setWindowBlind(singleWindowBlind);
+			EventObject eventObject=new EventObject(eventData);
+			EventBusService.getEventBus().post(eventObject);
 		} else if (WindowBlind.ALL_AT_ONCE.equals(type)) {
-
 			@SuppressWarnings("unchecked")
 			List<WindowBlind> windowBlinds = em
 					.createQuery("select w FROM WindowBlind w where w.room=(select r from Room r where r.id=:roomId)")
@@ -118,6 +124,12 @@ public class WindowBlindService extends BaseService {
 				em.getTransaction().begin();
 				em.merge(singleWindowBlind);
 				em.getTransaction().commit();
+				
+				WindowBlindStatus eventData=new WindowBlindStatus();
+				eventData.setWindowBlind(singleWindowBlind);
+				EventObject eventObject=new EventObject(eventData);
+				EventBusService.getEventBus().post(eventObject);
+				
 			}
 		}
 	}
