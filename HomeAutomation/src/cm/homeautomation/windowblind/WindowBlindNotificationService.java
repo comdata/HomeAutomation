@@ -30,6 +30,8 @@ public class WindowBlindNotificationService {
 			authToken = props.getProperty("authToken");
 			projectId = props.getProperty("projectId");
 			notificationUrl = props.getProperty("notificationUrl");
+			
+			System.out.println("Notification setup using authToken: "+authToken+" projectId: "+projectId+" url: "+notificationUrl);
 
 			EventBusService.getEventBus().register(this);
 		} catch (IOException e) {
@@ -59,6 +61,8 @@ public class WindowBlindNotificationService {
 					+ windowBlindStatus.getWindowBlind().getCurrentValue() + " % open.";
 			Notification notification = pushpad.buildNotification("Window Blind ("+name+") changed position", message,
 					notificationUrl);
+			
+			System.out.println("Preparing notification: "+message);
 
 			// optional, defaults to the project icon
 			// notification.iconUrl = notificationUrl;
@@ -70,6 +74,8 @@ public class WindowBlindNotificationService {
 
 				// deliver to everyone
 				notification.broadcast();
+				System.out.println("Notification sent.");
+				
 			} catch (DeliveryException e) {
 				e.printStackTrace();
 			}
