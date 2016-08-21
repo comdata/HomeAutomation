@@ -257,6 +257,7 @@
 				<version>2.6</version>
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
+					 <packagingIncludes>WEB-INF/lib/*.jar</packagingIncludes>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
