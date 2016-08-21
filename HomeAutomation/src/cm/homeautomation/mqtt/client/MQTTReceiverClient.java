@@ -1,5 +1,7 @@
 package cm.homeautomation.mqtt.client;
 
+import java.util.UUID;
+
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -58,8 +60,12 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 	}
 
 	private void connect() throws MqttException, MqttSecurityException {
+		
+		UUID uuid = UUID.randomUUID();
+        String randomUUIDString = uuid.toString();
+        
 		memoryPersistence = new MemoryPersistence();
-		client = new MqttClient("tcp://localhost:1883", "HomeAutomation");
+		client = new MqttClient("tcp://localhost:1883", "HomeAutomation/"+randomUUIDString);
 		client.setCallback(this);
 		MqttConnectOptions connOpt = new MqttConnectOptions();
 

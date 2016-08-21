@@ -215,14 +215,11 @@
 			<version>4.0.32.Final</version>
 		</dependency>
 
-		<!-- <dependency>
-		    <groupId>cm.homeautomation</groupId>
-		    <artifactId>pushpad.xyz</artifactId>
-		    <version>0.3.0</version>
-		    <scope>system</scope>
-		    <systemPath>${basedir}/WebContent/WEB-INF/lib/pushpad-v0.3.0.jar</systemPath>
-		</dependency>-->
-		
+
+		<!-- <dependency> <groupId>cm.homeautomation</groupId> <artifactId>pushpad.xyz</artifactId> 
+			<version>0.3.0</version> <scope>system</scope> <systemPath>${basedir}/WebContent/WEB-INF/lib/pushpad-v0.3.0.jar</systemPath> 
+			</dependency> -->
+
 		<dependency>
 			<groupId>com.beowulfe.hap</groupId>
 			<artifactId>hap</artifactId>
@@ -265,7 +262,7 @@
 				<version>2.6</version>
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
-					 <packagingIncludes>WEB-INF/lib/*.jar</packagingIncludes>
+					<packagingIncludes>WEB-INF/lib/*.jar</packagingIncludes>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
