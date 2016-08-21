@@ -523,7 +523,7 @@ sap.ui.define([
             var oModel = new RESTService();
             var windowBlindId=( windowBlind.id==null) ? 0 : windowBlind.id;
             oModel.loadDataAsync("/HomeAutomation/services/windowBlinds/setDim/" + windowBlindId + "/"
-                + value+"/"+windowBlind.type+"/"+windowBlind.room.id, "", "GET", this.handleSwitchChanged, null, this);
+                + value+"/"+windowBlind.type+"/"+windowBlind.room, "", "GET", this.handleSwitchChanged, null, this);
             
             /**
              * set value directly to all other window blinds
