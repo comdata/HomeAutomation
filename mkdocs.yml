@@ -24,7 +24,7 @@ pages:
 - Overview: 'index.md'
 - English:
     - Home: 'en/index.md'
-    - Installation
+    - Installation:
         - Server: 'en/installation/server.md'
         - Client: 'en/installation/client.md'
     - Configuration:
