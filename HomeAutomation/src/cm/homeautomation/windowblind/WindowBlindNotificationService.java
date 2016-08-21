@@ -18,6 +18,7 @@ public class WindowBlindNotificationService {
 	private String authToken;
 	private String projectId;
 	private String notificationUrl;
+	private String iconUrl;
 
 	public WindowBlindNotificationService() {
 		try {
@@ -30,6 +31,7 @@ public class WindowBlindNotificationService {
 			authToken = props.getProperty("authToken");
 			projectId = props.getProperty("projectId");
 			notificationUrl = props.getProperty("notificationUrl");
+			iconUrl = props.getProperty("iconUrl");
 			
 			System.out.println("Notification setup using authToken: "+authToken+" projectId: "+projectId+" url: "+notificationUrl);
 
@@ -66,6 +68,7 @@ public class WindowBlindNotificationService {
 
 			// optional, defaults to the project icon
 			// notification.iconUrl = notificationUrl;
+			notification.iconUrl=iconUrl;
 			// optional, drop the notification after this number of seconds if a
 			// device is offline
 			notification.ttl = 604800;
