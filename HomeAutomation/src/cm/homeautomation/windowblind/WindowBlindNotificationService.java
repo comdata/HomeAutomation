@@ -22,7 +22,7 @@ public class WindowBlindNotificationService {
 	public WindowBlindNotificationService() {
 		try {
 			Properties props = new Properties();
-			File file = new File("pushpad.properties");
+			File file = new File("/home/hap/pushpad.properties");
 			FileReader fileReader = new FileReader(file);
 
 			props.load(fileReader);
