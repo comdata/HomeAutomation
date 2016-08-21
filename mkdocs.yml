@@ -24,7 +24,10 @@ pages:
 - Overview: 'index.md'
 - English:
     - Home: 'en/index.md'
+    - Installation
+        - Server: 'en/installation/server.md'
+        - Client: 'en/installation/client.md'
     - Configuration:
-    	- URL Parameters: 'en/urlparameters.md'
+        - URL Parameters: 'en/urlparameters.md'
         - Weather: 'en/weather.md'
         - Scheduler: 'en/scheduler.md'
