@@ -8,6 +8,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 @Entity
 public class WindowBlind {
 	public static final String ALL_AT_ONCE = "ALL_AT_ONCE";
@@ -17,11 +22,13 @@ public class WindowBlind {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
+	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+	@JsonIdentityReference(alwaysAsId = true)
 	@ManyToOne
-	@JoinColumn(name = "ROOM_ID", nullable=false)
+	@JoinColumn(name = "ROOM_ID", nullable = false)
 	private Room room;
-	
+
 	private String name;
 
 	private String statusUrl;
@@ -74,7 +81,7 @@ public class WindowBlind {
 
 	public void setType(String windowBlindType) {
 		this.windowBlindType = windowBlindType;
-		
+
 	}
 
 	public String getType() {
