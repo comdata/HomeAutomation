@@ -18,4 +18,8 @@ A server to provide the UI, data storage and control infrastructure and a client
 
 ## Server
 
+See [[Server Installation]](en/installation/server.md) for installation instructions.
+
 ## Client
+
+See [[Client Installation]](en/installation/client.md) for installation instructions.
