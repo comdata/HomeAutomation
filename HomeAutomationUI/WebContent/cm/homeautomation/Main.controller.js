@@ -90,6 +90,7 @@ sap.ui.define([
         	}
         },
         wsOnClose: function (evt, uri, callback, socket) {
+        	console.log("socket "+uri+" closed");
         	this.wsClose(socket);
             var that=this;
             window.setTimeout(function () {
@@ -127,6 +128,12 @@ sap.ui.define([
             if (newData.clazz=="TransmissionStatusData") {
             	this.handleTransmissionStatus(newData.data);
             }
+            
+            if (newData.clazz=="DistanceSensorData") {
+            	
+            	this.handleDistanceSensor(newData.data);
+            }
+            
             console.log(evt.data);
         },
         wsOverviewOnMessage: function (evt) {
@@ -162,13 +169,19 @@ sap.ui.define([
             }
         },
         wsOnError: function (evt, uri, callback, socket) {
+        	console.log("socket "+uri+" errored");
         	this.wsClose(socket);
             var that=this;
             window.setTimeout(function () {
             that.initWebSocket(uri, callback, socket);
             }, 2000);
         },
-        
+        handleDistanceSensor: function (data) {
+        	if (this.distanceTile!=null) {
+        		this.distanceTile.number=data.distance.toPrecision(4);
+        		this.getView().getModel().refresh(false);
+        	}
+        },
         handleTransmissionStatus: function (data) {
         	if (this.transmissionTile!=null) {
         		this.transmissionTile.number=data.numberOfDoneTorrents+" / "+data.numberOfTorrents;
@@ -322,6 +335,17 @@ sap.ui.define([
                     icon: "sap-icon://download-from-cloud"
                 };
             this.getView().getModel().getData().overviewTiles.push(this.transmissionTile);
+            
+            this.distanceTile = {
+                    tileType: "distance",
+                    roomId: "distance",
+                    title: "Distance",
+                    numberUnit: "cm",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://marketing-campaign"
+                };
+            this.getView().getModel().getData().overviewTiles.push(this.distanceTile);
             
             var planesTile = this.planesTile;
             this.planesTimer=null;
