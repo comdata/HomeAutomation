@@ -17,7 +17,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 
 	private MqttClient client;
 	private boolean run = true;
-	private MemoryPersistence memoryPersistence;
+	private MemoryPersistence memoryPersistence= new MemoryPersistence();
 
 	public MQTTReceiverClient() {
 
@@ -64,8 +64,8 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 		UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString();
         
-		memoryPersistence = new MemoryPersistence();
-		client = new MqttClient("tcp://localhost:1883", "HomeAutomation/"+randomUUIDString);
+
+		client = new MqttClient("tcp://localhost:1883", "HomeAutomation/"+randomUUIDString, memoryPersistence);
 		client.setCallback(this);
 		MqttConnectOptions connOpt = new MqttConnectOptions();
 
@@ -95,7 +95,13 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 
 	@Override
 	public void connectionLost(Throwable cause) {
-		// TODO Auto-generated method stub
+		
+		try {
+			client.close();
+			client.disconnect();
+		} catch (MqttException e1) {
+			System.out.println("force close failed.");
+		}
 		System.out.println("trying reconnect to MQTT broker");
 		try {
 			connect();
@@ -111,6 +117,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 		String messageContent = new String(payload);
 		System.out.println("Got MQTT message: " + messageContent);
 		JSONSensorDataReceiver.receiveSensorData(messageContent);
+
 		
 	
 	}
