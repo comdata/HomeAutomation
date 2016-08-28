@@ -28,7 +28,7 @@ public class NetworkDeviceDatabaseUpdater {
 			
 			EntityManager em = EntityManagerService.getNewManager();
 			
-			List<NetworkDevice> resultList = em.createQuery("select n from NetworkDevice where n.ip=:ip").getResultList();
+			List<NetworkDevice> resultList = em.createQuery("select n from NetworkDevice where n.ip=:ip").setParameter("ip", networkDevice.getIp()).getResultList();
 			
 			if (resultList!=null && !resultList.isEmpty()) {
 				
