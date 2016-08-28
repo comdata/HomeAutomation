@@ -1,6 +1,6 @@
 package cm.homeautomation.networkMonitor;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -36,7 +36,7 @@ public class NetworkDeviceDatabaseUpdater {
 				NetworkDevice existingNetworkDevice = resultList.get(0);
 				existingNetworkDevice.setHostname(networkDevice.getHostname());
 				existingNetworkDevice.setMac(networkDevice.getMac());
-				existingNetworkDevice.setLastSeen(new Date((new java.util.Date()).getTime()));
+				existingNetworkDevice.setLastSeen(new Date());
 				em.getTransaction().begin();
 				em.merge(existingNetworkDevice);
 				em.getTransaction().commit();
@@ -44,7 +44,7 @@ public class NetworkDeviceDatabaseUpdater {
 				// this is a new device, so save it
 				
 				em.getTransaction().begin();
-				networkDevice.setLastSeen(new Date((new java.util.Date()).getTime()));
+				networkDevice.setLastSeen(new Date());
 				em.persist(networkDevice);
 				em.getTransaction().commit();
 			}
