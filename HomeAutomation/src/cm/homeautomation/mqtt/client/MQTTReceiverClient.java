@@ -67,10 +67,11 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 
 		client = new MqttClient("tcp://localhost:1883", "HomeAutomation/"+randomUUIDString, memoryPersistence);
 		client.setCallback(this);
+		
 		MqttConnectOptions connOpt = new MqttConnectOptions();
-
+		connOpt.setAutomaticReconnect(true);
 		connOpt.setCleanSession(true);
-		connOpt.setKeepAliveInterval(30);
+		connOpt.setKeepAliveInterval(60);
 		connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
 		// connOpt.setUserName(M2MIO_USERNAME);
 		// connOpt.setPassword(M2MIO_PASSWORD_MD5.toCharArray());
