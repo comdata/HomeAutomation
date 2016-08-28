@@ -4,12 +4,15 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
+import com.google.common.eventbus.EventBus;
+
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 
 public class NetworkScanner {
 
 	private static NetworkScanner networkScanner;
+	private ArrayList<String> availableHosts;
 
 	/**
 	 * check for the availability of a host
@@ -18,7 +21,7 @@ public class NetworkScanner {
 	 * @return
 	 */
 	public ArrayList<String> checkHosts(String subnet) {
-		ArrayList<String> availableHosts = new ArrayList<String>();
+		availableHosts = new ArrayList<String>();
 
 		int timeout = 1000;
 		for (int i = 1; i < 255; i++) {
@@ -26,7 +29,15 @@ public class NetworkScanner {
 			try {
 				if (InetAddress.getByName(host).isReachable(timeout)) {
 					System.out.println(host + " is reachable");
-					availableHosts.add(host);
+					
+					if (!availableHosts.contains(host)) {
+						availableHosts.add(host);
+						
+						NetworkScannerHostFoundMessage newHostMessage=new NetworkScannerHostFoundMessage();
+						newHostMessage.setHost(host);
+						
+						EventBusService.getEventBus().post(new EventObject(newHostMessage));
+					}
 				}
 			} catch (IOException e) {
 			}
