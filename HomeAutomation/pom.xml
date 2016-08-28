@@ -27,6 +27,11 @@
 		</repository>
 
 		<repository>
+			<id>Eclipse Paho Snapshots</id>
+			<url>https://repo.eclipse.org/content/repositories/paho-snapshots/</url>
+		</repository>
+
+		<repository>
 			<id>stil4m-releases</id>
 			<name>stil4m-releases</name>
 			<url>https://github.com/stil4m/maven-repository/raw/master/releases/</url>
@@ -61,11 +66,11 @@
 			<!-- <scope>test</scope> -->
 		</dependency>
 
-<dependency>
-    <groupId>org.eclipse.paho</groupId>
-    <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-    <version>1.1.0</version>
-</dependency>
+		<dependency>
+			<groupId>org.eclipse.paho</groupId>
+			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+			<version>1.1.1-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
