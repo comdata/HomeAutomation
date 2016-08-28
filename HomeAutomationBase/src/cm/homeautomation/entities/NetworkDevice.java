@@ -1,10 +1,16 @@
 package cm.homeautomation.entities;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class NetworkDevice {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	private String mac;
 	private String ip;
 	private String hostname;
@@ -31,5 +37,13 @@ public class NetworkDevice {
 
 	public void setHostname(String hostname) {
 		this.hostname = hostname;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 }
