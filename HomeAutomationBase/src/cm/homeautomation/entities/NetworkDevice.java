@@ -1,5 +1,7 @@
 package cm.homeautomation.entities;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,6 +16,7 @@ public class NetworkDevice {
 	private String mac;
 	private String ip;
 	private String hostname;
+	private Date lastSeen;
 
 	public String getMac() {
 		return mac;
@@ -45,5 +48,13 @@ public class NetworkDevice {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Date getLastSeen() {
+		return lastSeen;
+	}
+
+	public void setLastSeen(Date lastSeen) {
+		this.lastSeen = lastSeen;
 	}
 }
