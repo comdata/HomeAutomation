@@ -54,13 +54,12 @@ public class StartupServlet extends HttpServlet {
 
 		overviewEndpoint = (OverviewWebSocket) eventBusAnnotationInitializer.getInstances()
 				.get(OverviewWebSocket.class);
-		OverviewEndPointConfiguration overviewEndPointConfiguration = new OverviewEndPointConfiguration();
-		overviewEndPointConfiguration.setOverviewEndpoint(overviewEndpoint);
+		OverviewEndPointConfiguration.setOverviewEndpoint(overviewEndpoint);
+		
 
 		eventBusEndpoint = (EventBusEndpoint) eventBusAnnotationInitializer.getInstances().get(EventBusEndpoint.class);
-		EventBusEndpointConfigurator eventBusEndPointConfiguration = new EventBusEndpointConfigurator();
-		eventBusEndPointConfiguration.setEventBusEndpoint(eventBusEndpoint);
-
+		EventBusEndpointConfigurator.setEventBusEndpoint(eventBusEndpoint);
+		
 		transmissionMonitor = new TransmissionMonitor();
 		transmissionMonitor.start();
 
