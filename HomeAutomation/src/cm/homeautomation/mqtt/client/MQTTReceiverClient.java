@@ -17,7 +17,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 
 	private MqttClient client;
 	private boolean run = true;
-	private MemoryPersistence memoryPersistence= new MemoryPersistence();
+	private MemoryPersistence memoryPersistence = new MemoryPersistence();
 
 	public MQTTReceiverClient() {
 
@@ -60,14 +60,13 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 	}
 
 	private void connect() throws MqttException, MqttSecurityException {
-		
-		UUID uuid = UUID.randomUUID();
-        String randomUUIDString = uuid.toString();
-        
 
-		client = new MqttClient("tcp://localhost:1883", "HomeAutomation/"+randomUUIDString, memoryPersistence);
+		UUID uuid = UUID.randomUUID();
+		String randomUUIDString = uuid.toString();
+
+		client = new MqttClient("tcp://localhost:1883", "HomeAutomation/" + randomUUIDString, memoryPersistence);
 		client.setCallback(this);
-		
+
 		MqttConnectOptions connOpt = new MqttConnectOptions();
 		connOpt.setAutomaticReconnect(true);
 		connOpt.setCleanSession(true);
@@ -96,7 +95,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 
 	@Override
 	public void connectionLost(Throwable cause) {
-		
+
 		try {
 			client.close();
 			client.disconnect();
@@ -117,10 +116,13 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 		byte[] payload = message.getPayload();
 		String messageContent = new String(payload);
 		System.out.println("Got MQTT message: " + messageContent);
-		JSONSensorDataReceiver.receiveSensorData(messageContent);
-		client.messageArrivedComplete(message.getId(),message.getQos());
-		
-	
+		try {
+			JSONSensorDataReceiver.receiveSensorData(messageContent);
+		} catch (Exception e) {
+			System.out.println("Got an exception while saving data.");
+		}
+		client.messageArrivedComplete(message.getId(), message.getQos());
+
 	}
 
 	@Override
