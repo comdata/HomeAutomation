@@ -1,7 +1,8 @@
-package cm.homeautomation.windowblind;
+package cm.homeautomation.pushnotificiation;
 
 import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.eventbus.EventObject;
+import cm.homeautomation.windowblind.WindowBlindStatus;
 
 public class WindowBlindNotificationServiceTester extends WindowBlindNotificationService {
 	

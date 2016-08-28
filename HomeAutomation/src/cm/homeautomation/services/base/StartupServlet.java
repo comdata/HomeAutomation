@@ -12,8 +12,8 @@ import cm.homeautomation.moquette.server.MoquetteServer;
 import cm.homeautomation.services.overview.OverviewEndPointConfiguration;
 import cm.homeautomation.services.overview.OverviewWebSocket;
 import cm.homeautomation.transmission.TransmissionMonitor;
-import cm.homeautomation.windowblind.WindowBlindNotificationService;
 import cm.homeautomation.mqtt.client.MQTTReceiverClient;
+import cm.homeautomation.pushnotificiation.WindowBlindNotificationService;
 
 public class StartupServlet extends HttpServlet {
 
