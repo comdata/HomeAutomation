@@ -6,38 +6,40 @@ import java.util.Map;
 import java.util.Set;
 
 import org.reflections.Reflections;
+import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 
 import com.google.common.eventbus.Subscribe;
 
 public class EventBusAnnotationInitializer {
 
-	private Map<Class, Object> instances=new HashMap<Class, Object>();
-	
+	private Map<Class, Object> instances = new HashMap<Class, Object>();
+
 	public EventBusAnnotationInitializer() {
 		init();
 	}
 
 	private void init() {
-		Reflections reflections = new Reflections("cm.homeautomation");
-	
-		
-		//MethodAnnotationsScanner
-		Set<Method> resources =
-		    reflections.getMethodsAnnotatedWith(Subscribe.class);
-		
+		Reflections reflections = new Reflections(new ConfigurationBuilder()
+				.setUrls(ClasspathHelper.forPackage("cm.homeautomation")).setScanners(new MethodAnnotationsScanner()));
+
+		// MethodAnnotationsScanner
+		Set<Method> resources = reflections.getMethodsAnnotatedWith(Subscribe.class);
+
 		for (Method method : resources) {
 			try {
 				Class<?> declaringClass = method.getDeclaringClass();
-				System.out.println("Creating class: "+declaringClass.getName());
+				System.out.println("Creating class: " + declaringClass.getName());
 				Object classInstance = declaringClass.newInstance();
-				
+
 				instances.put(declaringClass, classInstance);
 			} catch (InstantiationException | IllegalAccessException e) {
 				System.out.println("Failed creating class");
 			}
 		}
 	}
-	
+
 	public Map<Class, Object> getInstances() {
 		return instances;
 	}
