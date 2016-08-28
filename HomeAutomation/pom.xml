@@ -36,6 +36,12 @@
 			<name>stil4m-releases</name>
 			<url>https://github.com/stil4m/maven-repository/raw/master/releases/</url>
 		</repository>
+		
+		<repository>
+			<id>Sonatype</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</repository>
+		
 	</repositories>
 
 	<properties>
