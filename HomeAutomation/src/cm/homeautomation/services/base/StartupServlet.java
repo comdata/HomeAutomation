@@ -39,8 +39,7 @@ public class StartupServlet extends HttpServlet {
 		System.out.println("Starting scheduler");
 		schedulerThread = SchedulerThread.getInstance();
 
-		System.out.println("Starting HAP");
-		HAPService hapService = HAPService.getInstance();
+		EventBusAnnotationInitializer eventBusAnnotationInitializer = new EventBusAnnotationInitializer();
 
 		Runnable mqttClient = new Runnable() {
 			public void run() {
@@ -53,26 +52,18 @@ public class StartupServlet extends HttpServlet {
 
 		jeroMQServer = new JeroMQServer();
 
-		try {
-			OverviewEndPointConfiguration overviewEndPointConfiguration = new OverviewEndPointConfiguration();
-			overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		}
+		overviewEndpoint = (OverviewWebSocket) eventBusAnnotationInitializer.getInstances()
+				.get(OverviewWebSocket.class);
+		OverviewEndPointConfiguration overviewEndPointConfiguration = new OverviewEndPointConfiguration();
+		overviewEndPointConfiguration.setOverviewEndpoint(overviewEndpoint);
 
-		try {
-			EventBusEndpointConfigurator eventBusEndPointConfiguration = new EventBusEndpointConfigurator();
-			eventBusEndpoint = eventBusEndPointConfiguration.getEndpointInstance(EventBusEndpoint.class);
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		}
-		
+		eventBusEndpoint = (EventBusEndpoint) eventBusAnnotationInitializer.getInstances().get(EventBusEndpoint.class);
+		EventBusEndpointConfigurator eventBusEndPointConfiguration = new EventBusEndpointConfigurator();
+		eventBusEndPointConfiguration.setEventBusEndpoint(eventBusEndpoint);
+
 		transmissionMonitor = new TransmissionMonitor();
 		transmissionMonitor.start();
-		
-		windowBlindNotificationService = new WindowBlindNotificationService();
-		
-		networkDeviceDatabaseUpdater = new NetworkDeviceDatabaseUpdater();
+
 	}
 
 	public void destroy() {

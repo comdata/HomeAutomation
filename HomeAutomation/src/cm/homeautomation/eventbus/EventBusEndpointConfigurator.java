@@ -3,11 +3,19 @@ package cm.homeautomation.eventbus;
 import javax.websocket.server.ServerEndpointConfig.Configurator;
 
 public class EventBusEndpointConfigurator extends Configurator {
-	private static EventBusEndpoint eventBusEndpoint=new EventBusEndpoint();
+	private static EventBusEndpoint eventBusEndpoint;
 
 	@SuppressWarnings("unchecked")
 	@Override
     public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
-        return (T)eventBusEndpoint;
+        return (T)getEventBusEndpoint();
     }
+
+	public static EventBusEndpoint getEventBusEndpoint() {
+		return eventBusEndpoint;
+	}
+
+	public static void setEventBusEndpoint(EventBusEndpoint eventBusEndpoint) {
+		EventBusEndpointConfigurator.eventBusEndpoint = eventBusEndpoint;
+	}
 }

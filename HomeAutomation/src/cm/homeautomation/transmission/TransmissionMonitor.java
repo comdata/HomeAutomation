@@ -80,10 +80,8 @@ public class TransmissionMonitor extends Thread {
 				}
 
 			} catch (RpcException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (Exception e) {
 				e.printStackTrace();

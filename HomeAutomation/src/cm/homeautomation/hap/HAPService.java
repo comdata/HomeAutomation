@@ -38,7 +38,11 @@ public class HAPService {
 	private Map<Long, HAPHumiditySensor> humiditySensors = new HashMap<Long, HAPHumiditySensor>();
 
 	public HAPService() {
-
+		System.out.println("Starting HAP");
+		if (instance==null) {
+			instance=this;
+		}
+		
 		init();
 		EventBusService.getEventBus().register(this);
 	}
