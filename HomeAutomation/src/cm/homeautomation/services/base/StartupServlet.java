@@ -4,6 +4,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
+import cm.homeautomation.entities.NetworkDevice;
 import cm.homeautomation.eventbus.EventBusEndpoint;
 import cm.homeautomation.eventbus.EventBusEndpointConfigurator;
 import cm.homeautomation.hap.HAPService;
@@ -13,6 +14,7 @@ import cm.homeautomation.services.overview.OverviewEndPointConfiguration;
 import cm.homeautomation.services.overview.OverviewWebSocket;
 import cm.homeautomation.transmission.TransmissionMonitor;
 import cm.homeautomation.mqtt.client.MQTTReceiverClient;
+import cm.homeautomation.networkMonitor.NetworkDeviceDatabaseUpdater;
 import cm.homeautomation.pushnotificiation.WindowBlindNotificationService;
 
 public class StartupServlet extends HttpServlet {
@@ -30,6 +32,7 @@ public class StartupServlet extends HttpServlet {
 	private Thread mqttThread;
 	private TransmissionMonitor transmissionMonitor;
 	private WindowBlindNotificationService windowBlindNotificationService;
+	private NetworkDeviceDatabaseUpdater networkDeviceDatabaseUpdater;
 
 	public void init(ServletConfig config) throws ServletException {
 
@@ -68,6 +71,8 @@ public class StartupServlet extends HttpServlet {
 		transmissionMonitor.start();
 		
 		windowBlindNotificationService = new WindowBlindNotificationService();
+		
+		networkDeviceDatabaseUpdater = new NetworkDeviceDatabaseUpdater();
 	}
 
 	public void destroy() {

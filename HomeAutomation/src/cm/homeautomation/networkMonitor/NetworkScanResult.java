@@ -1,20 +1,23 @@
 package cm.homeautomation.networkMonitor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
+import cm.homeautomation.entities.NetworkDevice;
 
 @XmlRootElement
 public class NetworkScanResult {
 
-	private ArrayList<String> hosts;
+	private HashMap<String, NetworkDevice> hosts;
 
-	public void setHosts(ArrayList<String> hosts) {
-		this.hosts = hosts;
+	public void setHosts(HashMap<String, NetworkDevice> checkHosts) {
+		this.hosts = checkHosts;
 
 	}
 
-	public ArrayList<String> getHosts() {
+	public HashMap<String, NetworkDevice> getHosts() {
 		return hosts;
 	}
 

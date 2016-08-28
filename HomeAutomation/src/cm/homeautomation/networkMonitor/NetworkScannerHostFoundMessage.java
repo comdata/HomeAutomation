@@ -2,17 +2,19 @@ package cm.homeautomation.networkMonitor;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import cm.homeautomation.entities.NetworkDevice;
+
 @XmlRootElement
 public class NetworkScannerHostFoundMessage {
 
-	private String host;
+	private NetworkDevice host;
 
-	public void setHost(String host) {
-		this.host = host;
+	public void setHost(NetworkDevice device) {
+		this.host = device;
 
 	}
 
-	public String getHost() {
+	public NetworkDevice getHost() {
 		return host;
 	}
 
