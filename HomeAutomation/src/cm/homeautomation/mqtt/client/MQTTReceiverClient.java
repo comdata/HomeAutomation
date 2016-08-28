@@ -118,14 +118,13 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 		String messageContent = new String(payload);
 		System.out.println("Got MQTT message: " + messageContent);
 		JSONSensorDataReceiver.receiveSensorData(messageContent);
-
+		client.messageArrivedComplete(message.getId(),message.getQos());
 		
 	
 	}
 
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken token) {
-	
 
 	}
 }
