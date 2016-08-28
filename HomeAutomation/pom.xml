@@ -36,12 +36,12 @@
 			<name>stil4m-releases</name>
 			<url>https://github.com/stil4m/maven-repository/raw/master/releases/</url>
 		</repository>
-		
+
 		<repository>
 			<id>Sonatype</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 		</repository>
-		
+
 	</repositories>
 
 	<properties>
@@ -70,6 +70,12 @@
 			<artifactId>junit-dep</artifactId>
 			<version>4.8.2</version>
 			<!-- <scope>test</scope> -->
+		</dependency>
+
+		<dependency>
+			<groupId>com.jpaulmorrison</groupId>
+			<artifactId>javafbp</artifactId>
+			<version>4.1.0</version>
 		</dependency>
 
 		<dependency>
