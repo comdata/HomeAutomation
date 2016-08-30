@@ -220,7 +220,7 @@ sap.ui.define([
     				mac: data.mac
     		};
     		
-    		var foundElement = this._findInNetworkDeviceList();
+    		var foundElement = this._findInNetworkDeviceList(element);
     		
     		if (foundElement!=null) {
     			foundElement.ipAddress=element.ipAddress;
