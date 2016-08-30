@@ -134,6 +134,11 @@ sap.ui.define([
             	this.handleDistanceSensor(newData.data);
             }
             
+            if (newData.clazz=="NetworkScannerHostFoundMessage") {
+            	
+            	this.handleNetworkMonitor(newData.data);
+            }
+            
             console.log(evt.data);
         },
         wsOverviewOnMessage: function (evt) {
@@ -190,6 +195,54 @@ sap.ui.define([
         		this.transmissionTile.info=Math.round(data.downloadSpeed/1024*100)/100+" / "+Math.round(data.uploadSpeed/1024*100)/100 + " kb";
         	}
         },
+        
+    	handleNetworkMonitor: function(data) {
+    		// create array if required
+    		if ( !Array.isArray(this._networkDevicesList) ) {
+    			this._networkDevicesList=[];
+    			
+    			this._networkDevicesTile={
+                        tileType: "networkDevices",
+                        roomId: "networkDevices",
+                        title: "Devices",
+                        numberUnit: "Anzahl",
+                        eventHandler: null,
+                        infoState: sap.ui.core.ValueState.Success,
+                        icon: "sap-icon://laptop"	
+    			};
+    			
+    			this.getView().getModel().getData().overviewTiles.push(this._networkDevicesTile);
+    		}
+    		
+    		var element = {
+    				ipAddress: data.ip,
+    				hostName: data.hostname,
+    				mac: data.mac
+    		};
+    		
+    		var foundElement = this._findInNetworkDeviceList();
+    		
+    		if (foundElement!=null) {
+    			foundElement.ipAddress=element.ipAddress;
+    			foundElement.hostName=element.hostName;
+    			foundElement.mac=element.mac;
+    		} else {
+    			this._networkDevicesList.push(element);
+    		}
+
+    		this._networkDevicesTile.number=this._networkDevicesList.length;
+    		
+    		this.getView().getModel().refresh(false);
+    		
+    	},
+    	_findInNetworkDeviceList: function (object) {
+    		this._networkDevicesList.forEach(function (element, index, array) {
+    			if (object.ipAddress==element.ipAddres) {
+    				return element;
+    			}
+    		});
+    		return null;
+    	},
 
         /**
 		 * initialize
