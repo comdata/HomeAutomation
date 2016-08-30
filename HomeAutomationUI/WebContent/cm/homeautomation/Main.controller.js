@@ -237,7 +237,7 @@ sap.ui.define([
     	},
     	_findInNetworkDeviceList: function (object) {
     		this._networkDevicesList.forEach(function (element, index, array) {
-    			if (object.ipAddress==element.ipAddres) {
+    			if (object.ipAddress==element.ipAddress) {
     				return element;
     			}
     		});
