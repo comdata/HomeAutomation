@@ -136,7 +136,7 @@ sap.ui.define([
             
             if (newData.clazz=="NetworkScannerHostFoundMessage") {
             	
-            	this.handleNetworkMonitor(newData.data);
+            	this.handleNetworkMonitor(newData.data.host);
             }
             
             console.log(evt.data);
