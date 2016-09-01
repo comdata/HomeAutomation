@@ -41,12 +41,6 @@ public class PanasonicTVBinding {
 	public PanasonicTVBinding() {
 	}
 
-	public void activate() {
-	}
-
-	public void deactivate() {
-	}
-
 	public boolean checkAlive(String tvIp) {
 		boolean alive=false;
 		
