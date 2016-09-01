@@ -1,5 +1,6 @@
 package com.homeautomation.tv.panasonic.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -74,6 +75,29 @@ public class PanasonicTVBindingTest {
 		assertFalse(checkAlive);
 	}
 
+	@Test
+	public void testSendHDMICommand() throws Exception {
+		System.out.println("Running test for testSendHDMICommand()");
+		tvServer = new TVServer();
+		tvServer.setRun(true);
+		tvServer.start();
+		
+		tvServer.setStatusCode("HTTP/1.1 200 OK");
+		
+		PanasonicTVBinding panasonicTVBinding = new PanasonicTVBinding();
+		int statusCode = panasonicTVBinding.sendCommand(tvIp, "HDMI");
+		assertEquals(statusCode, 200);
+	}
+	
+	@Test
+	public void testSendtToEmptyIP() throws Exception {
+		System.out.println("Running test for testSendtToEmptyIP()");
+		
+		PanasonicTVBinding panasonicTVBinding = new PanasonicTVBinding();
+		int statusCode = panasonicTVBinding.sendCommand(null, "");
+		assertEquals(statusCode, 0);
+	}
+	
 	class TVServer extends Thread {
 
 		private boolean run = true;
