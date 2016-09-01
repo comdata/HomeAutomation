@@ -24,18 +24,25 @@ public class PanasonicTVBindingTest {
 
 	@Before
 	public void setup() {
-		tvServer = new TVServer();
-		tvServer.start();
+
+		
 	}
 	
 	@After
 	public void tearDown() {
+		if (tvServer!=null) {
 		tvServer.setRun(false);
 		tvServer.interrupt();
+		System.out.println("Server stopped");
+		}
 	}
 	
 	@Test
 	public void testCheckAlive() throws Exception {
+		tvServer = new TVServer();
+		tvServer.setRun(true);
+		tvServer.start();
+		
 		System.out.println("Running test for checkAlive");
 		tvServer.setStatusCode("HTTP/1.1 200 OK");
 		PanasonicTVBinding panasonicTVBinding = new PanasonicTVBinding();
@@ -46,6 +53,9 @@ public class PanasonicTVBindingTest {
 	
 	@Test
 	public void testCheckAliveFalse() throws Exception {
+		tvServer = new TVServer();
+		tvServer.setRun(true);
+		tvServer.start();
 		System.out.println("Running test for checkAliveFalse");
 		tvServer.setStatusCode("HTTP/1.1 404 Not found");
 		PanasonicTVBinding panasonicTVBinding = new PanasonicTVBinding();
@@ -54,15 +64,14 @@ public class PanasonicTVBindingTest {
 		assertFalse(checkAlive);
 	}
 	
-	@Test(expected=IOException.class)
+	@Test
 	public void testCheckAliveTVOffline() throws Exception {
-		System.out.println("Running test for checkAliveFalse");
-		tvServer.setStatusCode("HTTP/1.1 404 Not found");
-		tvServer.setRun(false);
-		tvServer.interrupt();
+		System.out.println("Running test for testCheckAliveTVOffline");
+
 		
 		PanasonicTVBinding panasonicTVBinding = new PanasonicTVBinding();
 		boolean checkAlive = panasonicTVBinding.checkAlive(tvIp);
+		assertFalse(checkAlive);
 	}
 
 	class TVServer extends Thread {
