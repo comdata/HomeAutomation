@@ -1,5 +1,6 @@
 package com.homeautomation.tv.panasonic.test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
@@ -50,7 +51,18 @@ public class PanasonicTVBindingTest {
 		PanasonicTVBinding panasonicTVBinding = new PanasonicTVBinding();
 		boolean checkAlive = panasonicTVBinding.checkAlive(tvIp);
 		
-		assertTrue(checkAlive);
+		assertFalse(checkAlive);
+	}
+	
+	@Test(expected=IOException.class)
+	public void testCheckAliveTVOffline() throws Exception {
+		System.out.println("Running test for checkAliveFalse");
+		tvServer.setStatusCode("HTTP/1.1 404 Not found");
+		tvServer.setRun(false);
+		tvServer.interrupt();
+		
+		PanasonicTVBinding panasonicTVBinding = new PanasonicTVBinding();
+		boolean checkAlive = panasonicTVBinding.checkAlive(tvIp);
 	}
 
 	class TVServer extends Thread {
