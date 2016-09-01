@@ -4,7 +4,7 @@ public class Main {
 
 	private static final String TV = "192.168.1.88";
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws TVNotReachableException {
 		// TODO Auto-generated method stub
 		PanasonicTVBinding panasonicTVBinding = new PanasonicTVBinding();
 		boolean alive = panasonicTVBinding.checkAlive(TV);
