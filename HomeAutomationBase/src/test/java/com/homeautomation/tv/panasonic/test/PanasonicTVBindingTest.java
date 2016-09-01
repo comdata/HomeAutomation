@@ -24,16 +24,19 @@ public class PanasonicTVBindingTest {
 	@Before
 	public void setup() {
 		tvServer = new TVServer();
+		tvServer.start();
 	}
 	
 	@After
 	public void tearDown() {
 		tvServer.setRun(false);
+		tvServer.interrupt();
 	}
 	
 	@Test
 	public void testCheckAlive() throws Exception {
-		tvServer.setStatusCode("200 OK");
+		System.out.println("Running test for checkAlive");
+		tvServer.setStatusCode("HTTP/1.1 200 OK");
 		PanasonicTVBinding panasonicTVBinding = new PanasonicTVBinding();
 		boolean checkAlive = panasonicTVBinding.checkAlive(tvIp);
 		
@@ -42,7 +45,8 @@ public class PanasonicTVBindingTest {
 	
 	@Test
 	public void testCheckAliveFalse() throws Exception {
-		tvServer.setStatusCode("404 Not found");
+		System.out.println("Running test for checkAliveFalse");
+		tvServer.setStatusCode("HTTP/1.1 404 Not found");
 		PanasonicTVBinding panasonicTVBinding = new PanasonicTVBinding();
 		boolean checkAlive = panasonicTVBinding.checkAlive(tvIp);
 		
@@ -53,13 +57,24 @@ public class PanasonicTVBindingTest {
 
 		private boolean run = true;
 		private String statusCode = "";
+		private ServerSocket welcomeSocket;
+		
+		public TVServer() {
+
+			try {
+				welcomeSocket = new ServerSocket(tvPort);
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("socket creation failed");
+			}
+		}
 
 		public void run() {
+			System.out.println("Starting server");
 			while (run) {
 
 				try {
-					String clientSentence;
-					ServerSocket welcomeSocket = new ServerSocket(tvPort);
+					
 					Socket connectionSocket = welcomeSocket.accept();
 					BufferedReader inFromClient = new BufferedReader(
 							new InputStreamReader(connectionSocket.getInputStream()));
@@ -67,7 +82,7 @@ public class PanasonicTVBindingTest {
 
 					boolean clientData = true;
 					while (clientData) {
-						clientSentence = inFromClient.readLine();
+						String clientSentence = inFromClient.readLine();
 						if (clientSentence.equals("")) {
 							clientData = false;
 						}
