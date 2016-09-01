@@ -50,13 +50,18 @@ public class PanasonicTVBinding {
 	public boolean checkAlive(String tvIp) {
 		boolean alive=false;
 		
-		int sendCommandStatus = sendCommand(tvIp, "DUMMY");
-		
-		if (sendCommandStatus==200) {
-			alive=true;
+		int sendCommandStatus;
+		try {
+			sendCommandStatus = sendCommand(tvIp, "DUMMY");
+			
+			if (sendCommandStatus==200) {
+				alive=true;
+			}
+			
+			System.out.println("Alive Status:" +sendCommandStatus);
+
+		} catch (TVNotReachableException e) {
 		}
-		
-		System.out.println("Alive Status:" +sendCommandStatus);
 		
 		return alive;
 	}
@@ -65,8 +70,9 @@ public class PanasonicTVBinding {
 	 * This methods sends the command to the TV
 	 * 
 	 * @return HTTP response code from the TV (should be 200)
+	 * @throws TVNotReachableException 
 	 */
-	public int sendCommand(String tvIp, String command) {
+	public int sendCommand(String tvIp, String command) throws TVNotReachableException {
 		final String soaprequest_skeleton = "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">"
 				+ "<s:Body><u:X_SendKey xmlns:u=\"urn:panasonic-com:service:p00NetworkControl:1\">"
 				+ "<X_KeyEvent>NRC_%s</X_KeyEvent></u:X_SendKey></s:Body></s:Envelope>\r";
@@ -122,10 +128,12 @@ public class PanasonicTVBinding {
 		} catch (IOException e) {
 			System.out.println("Exception during communication to the TV: "
 					+ e.getStackTrace());
+			
+			throw new TVNotReachableException();
 		} catch (Exception e) {
 			System.out.println("Exception in binding during execution of command: "
 					+ e.getStackTrace());
+			throw new TVNotReachableException();
 		}
-		return 0;
 	}
 }
