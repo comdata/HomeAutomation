@@ -26,32 +26,31 @@ public class PanasonicTVBindingTest {
 	@Before
 	public void setup() {
 
-		
 	}
-	
+
 	@After
 	public void tearDown() {
-		if (tvServer!=null) {
-		tvServer.setRun(false);
-		tvServer.interrupt();
-		System.out.println("Server stopped");
+		if (tvServer != null) {
+			tvServer.setRun(false);
+			tvServer.interrupt();
+			System.out.println("Server stopped");
 		}
 	}
-	
+
 	@Test
 	public void testCheckAlive() throws Exception {
 		tvServer = new TVServer();
 		tvServer.setRun(true);
 		tvServer.start();
-		
+
 		System.out.println("Running test for checkAlive");
 		tvServer.setStatusCode("HTTP/1.1 200 OK");
 		PanasonicTVBinding panasonicTVBinding = new PanasonicTVBinding();
 		boolean checkAlive = panasonicTVBinding.checkAlive(tvIp);
-		
+
 		assertTrue(checkAlive);
 	}
-	
+
 	@Test
 	public void testCheckAliveFalse() throws Exception {
 		tvServer = new TVServer();
@@ -61,15 +60,14 @@ public class PanasonicTVBindingTest {
 		tvServer.setStatusCode("HTTP/1.1 404 Not found");
 		PanasonicTVBinding panasonicTVBinding = new PanasonicTVBinding();
 		boolean checkAlive = panasonicTVBinding.checkAlive(tvIp);
-		
+
 		assertFalse(checkAlive);
 	}
-	
+
 	@Test
 	public void testCheckAliveTVOffline() throws Exception {
 		System.out.println("Running test for testCheckAliveTVOffline");
 
-		
 		PanasonicTVBinding panasonicTVBinding = new PanasonicTVBinding();
 		boolean checkAlive = panasonicTVBinding.checkAlive(tvIp);
 		assertFalse(checkAlive);
@@ -81,29 +79,29 @@ public class PanasonicTVBindingTest {
 		tvServer = new TVServer();
 		tvServer.setRun(true);
 		tvServer.start();
-		
+
 		tvServer.setStatusCode("HTTP/1.1 200 OK");
-		
+
 		PanasonicTVBinding panasonicTVBinding = new PanasonicTVBinding();
 		int statusCode = panasonicTVBinding.sendCommand(tvIp, "HDMI");
 		assertEquals(statusCode, 200);
 	}
-	
+
 	@Test
 	public void testSendtToEmptyIP() throws Exception {
 		System.out.println("Running test for testSendtToEmptyIP()");
-		
+
 		PanasonicTVBinding panasonicTVBinding = new PanasonicTVBinding();
 		int statusCode = panasonicTVBinding.sendCommand(null, "");
 		assertEquals(statusCode, 0);
 	}
-	
+
 	class TVServer extends Thread {
 
 		private boolean run = true;
 		private String statusCode = "";
 		private ServerSocket welcomeSocket;
-		
+
 		public TVServer() {
 
 			try {
@@ -119,7 +117,7 @@ public class PanasonicTVBindingTest {
 			while (run) {
 
 				try {
-					
+
 					Socket connectionSocket = welcomeSocket.accept();
 					BufferedReader inFromClient = new BufferedReader(
 							new InputStreamReader(connectionSocket.getInputStream()));
