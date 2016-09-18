@@ -92,7 +92,7 @@ public class ActorService extends BaseService {
 		String switchId = args[0];
 		String status = args[1];
 
-		new ActorService().pressSwitch(switchId, status);
+		ActorService.getInstance().pressSwitch(switchId, status);
 	}
 
 	/**
