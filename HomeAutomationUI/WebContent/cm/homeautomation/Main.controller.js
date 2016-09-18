@@ -281,7 +281,7 @@ sap.ui.define([
             });
 
             sap.ui.getCore().setModel(imageModel, "imageTile");
-            this.initWebSocket(this._wsActorUri, this.wsActorOnMessage, this._webActorSocket);
+            //this.initWebSocket(this._wsActorUri, this.wsActorOnMessage, this._webActorSocket);
             this.initWebSocket(this._wsEventBusUri, this.wsEventBusOnMessage, this._webEventBusSocket);
             this.initWebSocket(this._wsOverviewUri, this.wsOverviewOnMessage, this._webOverviewSocket);
         },
