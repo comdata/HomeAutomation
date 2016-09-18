@@ -10,6 +10,7 @@
 		<class>cm.homeautomation.entities.SensorData</class>
 		<class>cm.homeautomation.entities.Weather</class>
 		<class>cm.homeautomation.entities.Switch</class>
+		<class>cm.homeautomation.entities.Camera</class>
 		<class>cm.homeautomation.entities.WindowBlind</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" />
