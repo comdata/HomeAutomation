@@ -49,6 +49,7 @@ sap.ui.define([
         selectedRoom: "",
         currentRoomModel: null,
         messageToast: null,
+        _networkDevicesList=[];
         _wsActorUri: "ws://" + location.host + "/HomeAutomation/actor",
         _wsOverviewUri: "ws://" + location.host + "/HomeAutomation/overview",
         _wsEventBusUri: "ws://" + location.host + "/HomeAutomation/eventbus",
@@ -123,6 +124,33 @@ sap.ui.define([
                 sap.ui.getCore().setModel(switchModel, "switches");
             }
         },
+        handleSwitchEvent: function (data) {
+            var eventModel = new JSONModel();
+
+            eventModel.setData(JSON.parse(evt.data));
+
+            var switchId = data.switchId;
+            var status = data.status;
+
+            var switchModel = sap.ui.getCore().getModel("switches");
+            if (switchModel != null) {
+
+                var switches = switchModel.oData;
+
+                switches.switchStatuses.forEach(function (singleSwitch) {
+                    if (singleSwitch.id == switchId) {
+                        singleSwitch.switchState = (status == "ON") ? true : false;
+                    }
+                });
+
+                var switchModel = new JSONModel();
+
+                switchModel.setData(switches);
+
+                sap.ui.getCore().setModel(switchModel, "switches");
+            }
+        },
+        
         wsEventBusOnMessage: function (evt) {
             var newData = JSON.parse(evt.data);
             if (newData.clazz=="TransmissionStatusData") {
@@ -137,6 +165,11 @@ sap.ui.define([
             if (newData.clazz=="NetworkScannerHostFoundMessage") {
             	
             	this.handleNetworkMonitor(newData.data.host);
+            }
+            
+            if  (newData.clazz=="SwitchEvent") {
+            	
+            	this.handleSwitchEvent(newData.data.host);
             }
             
             console.log(evt.data);
@@ -198,21 +231,6 @@ sap.ui.define([
         
     	handleNetworkMonitor: function(data) {
     		// create array if required
-    		if ( !Array.isArray(this._networkDevicesList) ) {
-    			this._networkDevicesList=[];
-    			
-    			this._networkDevicesTile={
-                        tileType: "networkDevices",
-                        roomId: "networkDevices",
-                        title: "Devices",
-                        numberUnit: "Anzahl",
-                        eventHandler: null,
-                        infoState: sap.ui.core.ValueState.Success,
-                        icon: "sap-icon://laptop"	
-    			};
-    			
-    			this.getView().getModel().getData().overviewTiles.push(this._networkDevicesTile);
-    		}
     		
     		var element = {
     				ipAddress: data.ip,
@@ -298,122 +316,76 @@ sap.ui.define([
                 oModel.loadDataAsync("/HomeAutomation/services/overview/get", "", "GET", this.handleDataLoaded, this._loadDataFailed, this);
             }
         },
-        /**
-		 * handle successful data loading
-		 * 
-		 * @param event
-		 * @param model
-		 */
-        handleDataLoaded: function (event, model, jsonModelData) {
-            this.getView().setModel(model);
-            this.overviewData = jsonModelData;
+        _initNetworkTile: function () {
+			this._networkDevicesTile={
+                    tileType: "networkDevices",
+                    roomId: "networkDevices",
+                    title: "Devices",
+                    numberUnit: "Anzahl",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://laptop"	
+			};
+			
+			this.getView().getModel().getData().overviewTiles.push(this._networkDevicesTile);
             
+        },
+        _initCameraTiles: function () {
             var cameras = [
-            	{
-            		window:null,
-            		tile: {
-                        tileType: "camera",
-                        roomId: "camera",
-                        title: "Küche",
-                        info: "Kamera - Küche",
-                        eventHandler: "showCamera",
-                        icon: "/HomeAutomation/newCameraProxy?_ip=57&_port=8080&_action=snapshot",
-                        stream: "/HomeAutomation/newCameraProxy?_ip=57&_port=8080&_action=stream"
-                    }
-            	},
-            	{
-            		window:null,
-            		tile: {
-                        tileType: "camera",
-                        roomId: "camera2",
-                        title: "Keller",
-                        info: "Kamera - Keller",
-                        eventHandler: "showCamera",
-                        icon: "/HomeAutomation/newCameraProxy?_ip=34&_port=8080&_action=snapshot",
-                        stream: "/HomeAutomation/newCameraProxy?_ip=34&_port=8080&_action=stream"
-                    }
-            	},
-            	{
-            		window:null,
-            		tile: {
-                        tileType: "camera",
-                        roomId: "camera3",
-                        title: "Wohnzimmer",
-                        info: "Kamera - Wohnzimmer",
-                        eventHandler: "showCamera",
-                        icon: "/HomeAutomation/newCameraProxy?_ip=76&_port=8081&_action=snapshot",
-                        stream: "/HomeAutomation/newCameraProxy?_ip=76&_port=8081&_action=stream"
-                    }
-            	}
-            	
-            	/*,
-            	{
-            		window:null,
-            		tile: {
-                        tileType: "camera",
-                        roomId: "camera4",
-                        title: "Spielzimmer",
-                        info: "Kamera - Spielzimmer",
-                        eventHandler: "showCamera",
-                        icon: "/HomeAutomation/newCameraProxy?_ip=33&_port=8090&_action=snapshot",
-                        stream: "/HomeAutomation/newCameraProxy?_ip=336&_port=8090&_action=stream"
-                    }
-            	}*/
-            	
-            	
-            ];
+                       	{
+                       		window:null,
+                       		tile: {
+                                   tileType: "camera",
+                                   roomId: "camera",
+                                   title: "Küche",
+                                   info: "Kamera - Küche",
+                                   eventHandler: "showCamera",
+                                   icon: "/HomeAutomation/newCameraProxy?_ip=57&_port=8080&_action=snapshot",
+                                   stream: "/HomeAutomation/newCameraProxy?_ip=57&_port=8080&_action=stream"
+                               }
+                       	},
+                       	{
+                       		window:null,
+                       		tile: {
+                                   tileType: "camera",
+                                   roomId: "camera2",
+                                   title: "Keller",
+                                   info: "Kamera - Keller",
+                                   eventHandler: "showCamera",
+                                   icon: "/HomeAutomation/newCameraProxy?_ip=34&_port=8080&_action=snapshot",
+                                   stream: "/HomeAutomation/newCameraProxy?_ip=34&_port=8080&_action=stream"
+                               }
+                       	},
+                       	{
+                       		window:null,
+                       		tile: {
+                                   tileType: "camera",
+                                   roomId: "camera3",
+                                   title: "Wohnzimmer",
+                                   info: "Kamera - Wohnzimmer",
+                                   eventHandler: "showCamera",
+                                   icon: "/HomeAutomation/newCameraProxy?_ip=76&_port=8081&_action=snapshot",
+                                   stream: "/HomeAutomation/newCameraProxy?_ip=76&_port=8081&_action=stream"
+                               }
+                       	}
+                       	
+                       	/*,
+                       	{
+                       		window:null,
+                       		tile: {
+                                   tileType: "camera",
+                                   roomId: "camera4",
+                                   title: "Spielzimmer",
+                                   info: "Kamera - Spielzimmer",
+                                   eventHandler: "showCamera",
+                                   icon: "/HomeAutomation/newCameraProxy?_ip=33&_port=8090&_action=snapshot",
+                                   stream: "/HomeAutomation/newCameraProxy?_ip=336&_port=8090&_action=stream"
+                               }
+                       	}*/
+                       	
+                       	
+                       ];
 
-         
-            
-
-            
-
-            var subject=this;
-            
-            this.planesTile = {
-                    tileType: "planes",
-                    roomId: "planes",
-                    title: "Flugzeuge",
-                    numberUnit: "Anzahl",
-                    eventHandler: "showPlanes",
-                    infoState: sap.ui.core.ValueState.Success,
-                    icon: "sap-icon://flight"
-                };
- 
-            this.transmissionTile = {
-                    tileType: "transmission",
-                    roomId: "transmission",
-                    title: "Downloads",
-                    numberUnit: "Anzahl",
-                    eventHandler: null,
-                    infoState: sap.ui.core.ValueState.Success,
-                    icon: "sap-icon://download-from-cloud"
-                };
-            this.getView().getModel().getData().overviewTiles.push(this.transmissionTile);
-            
-            this.distanceTile = {
-                    tileType: "distance",
-                    roomId: "distance",
-                    title: "Distance",
-                    numberUnit: "cm",
-                    eventHandler: null,
-                    infoState: sap.ui.core.ValueState.Success,
-                    icon: "sap-icon://marketing-campaign"
-                };
-            this.getView().getModel().getData().overviewTiles.push(this.distanceTile);
-            
-            var planesTile = this.planesTile;
-            this.planesTimer=null;
-            
-            if (this.planesTimer == null) {
-                this.updatePlanesTile.apply(this, [subject, planesTile]);
-                this.planesTimer = window.setInterval(function () {
-                    subject.updatePlanesTile.apply(subject, [subject, planesTile]);
-                }, 60000);
-
-            }
-            this.getView().getModel().getData().overviewTiles.push(this.planesTile);
-            
             var camerasDisabled=jQuery.sap.getUriParameters().get("disableCamera");
             
             camerasDisabled=(camerasDisabled=="true") ? true: false;
@@ -488,6 +460,76 @@ sap.ui.define([
 	
 	            }, 60000);
             }
+            
+        },
+        _initPlanesTile: function () {
+            var subject=this;
+            
+            this.planesTile = {
+                    tileType: "planes",
+                    roomId: "planes",
+                    title: "Flugzeuge",
+                    numberUnit: "Anzahl",
+                    eventHandler: "showPlanes",
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://flight"
+                };
+            var planesTile = this.planesTile;
+            this.planesTimer=null;
+            
+            if (this.planesTimer == null) {
+                this.updatePlanesTile.apply(this, [subject, planesTile]);
+                this.planesTimer = window.setInterval(function () {
+                    subject.updatePlanesTile.apply(subject, [subject, planesTile]);
+                }, 60000);
+
+            }
+            this.getView().getModel().getData().overviewTiles.push(this.planesTile);
+        },
+        _initTransmissionTile: function () {
+            this.transmissionTile = {
+                    tileType: "transmission",
+                    roomId: "transmission",
+                    title: "Downloads",
+                    numberUnit: "Anzahl",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://download-from-cloud"
+                };
+            this.getView().getModel().getData().overviewTiles.push(this.transmissionTile);
+        },
+        _initDistanceTile: function () {
+        	this.distanceTile = {
+                    tileType: "distance",
+                    roomId: "distance",
+                    title: "Distance",
+                    numberUnit: "cm",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://marketing-campaign"
+                };
+            this.getView().getModel().getData().overviewTiles.push(this.distanceTile);
+        },
+        /**
+		 * handle successful data loading
+		 * 
+		 * @param event
+		 * @param model
+		 */
+        handleDataLoaded: function (event, model, jsonModelData) {
+            this.getView().setModel(model);
+            this.overviewData = jsonModelData;
+            
+            this._initNetworkTile();
+            this._initCameraTiles();
+            this._initPlanesTile();
+            this._initTransmissionTile();
+            this._initDistanceTile();
+         
+            
+            
+    
+ 
         },
         updatePlanesTile: function (subject, planesTile) {
             $.getJSON("/HomeAutomation/planesproxy", function (result) {
