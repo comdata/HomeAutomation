@@ -204,7 +204,6 @@ sap.ui.define([
         
     	handleNetworkMonitor: function(data) {
     		// create array if required
-    		
     		var element = {
     				ipAddress: data.ip,
     				hostName: data.hostname,
@@ -247,11 +246,6 @@ sap.ui.define([
             this.currentRoomModel = new sap.ui.model.json.JSONModel();
 
             sap.ui.getCore().getModel(this.currentRoomModel, "currentRoom");
-
-            /*
-			 * window.setInterval(function () { subject.loadData.apply(subject) },
-			 * 30000);
-			 */
 
             window.setInterval(
                 function () {
@@ -301,7 +295,6 @@ sap.ui.define([
 			};
 			
 			this.getView().getModel().getData().overviewTiles.push(this._networkDevicesTile);
-            
         },
         _initCameraTiles: function () {
             var cameras = [

@@ -28,6 +28,7 @@ import cm.homeautomation.sensors.SensorValue;
 import cm.homeautomation.sensors.SensorValues;
 import cm.homeautomation.services.actor.ActorEndpoint;
 import cm.homeautomation.services.actor.ActorEndpointConfigurator;
+import cm.homeautomation.services.actor.SwitchEvent;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.overview.OverviewEndPointConfiguration;
@@ -76,7 +77,13 @@ public class Sensors extends BaseService {
 					status = "UNKNOWN " + code;
 				}
 
-				endpointInstance.handleEvent(Long.toString(sw.getId()), status);
+				SwitchEvent switchEvent = new SwitchEvent();
+				switchEvent.setSwitchId(Long.toString(sw.getId()));
+				switchEvent.setStatus(status);
+				
+				EventBusService.getEventBus().post(switchEvent);
+				
+				//endpointInstance.handleEvent(Long.toString(sw.getId()), status);
 				// endpointInstance.onMessage("Switch: "++" new status:
 				// "+status, null);
 
