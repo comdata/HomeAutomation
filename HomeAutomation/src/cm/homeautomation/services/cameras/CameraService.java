@@ -12,6 +12,10 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.persistence.EntityManager;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+
+import com.google.common.net.MediaType;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Camera;
@@ -35,6 +39,19 @@ public class CameraService extends BaseService {
 		g.drawImage(image, 0, 0, size.width, size.height, null);
 		g.dispose();
 		return resized;
+	}
+	
+	@Path("getSnapshot/{id}")
+	@Produces("image/jpg")
+	public byte[] getSnapshot(@PathParam("id") Long id) {
+		EntityManager em = EntityManagerService.getManager();
+		List<Camera> resultList = (List<Camera>)em.createQuery("select c from Camera c where id=:id")
+				.setParameter("id", id).getResultList();
+		
+		for (Camera camera : resultList) {
+			return camera.getImageSnapshot();
+		}
+		return null;
 	}
 
 	public static void prepareCameraImage(String[] args) {
