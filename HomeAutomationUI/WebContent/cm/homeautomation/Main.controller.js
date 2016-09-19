@@ -144,6 +144,11 @@ sap.ui.define([
             	
             	this.handleSwitchEvent(newData.data.host);
             }
+            if  (newData.clazz=="CameraImageUpdateEvent") {
+            	
+            	this.handleCameraEvent(newData.data);
+            }            
+            
             
             console.log(evt.data);
         },
@@ -186,6 +191,9 @@ sap.ui.define([
             window.setTimeout(function () {
             that.initWebSocket(uri, callback, socket);
             }, 2000);
+        },
+        handleCameraEvent: function (data) {
+        	console.log("got camera event: "+data);
         },
         handleDistanceSensor: function (data) {
         	if (this.distanceTile!=null) {
