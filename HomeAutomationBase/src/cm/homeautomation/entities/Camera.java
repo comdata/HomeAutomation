@@ -27,6 +27,7 @@ public class Camera {
 	
 	private String icon;
 	private String stream;
+	private byte[] imageSnapshot;
 
 	public String getCameraName() {
 		return cameraName;
@@ -66,6 +67,14 @@ public class Camera {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public byte[] getImageSnapshot() {
+		return imageSnapshot;
+	}
+
+	public void setImageSnapshot(byte[] imageSnapshot) {
+		this.imageSnapshot = imageSnapshot;
 	}
 
 }
