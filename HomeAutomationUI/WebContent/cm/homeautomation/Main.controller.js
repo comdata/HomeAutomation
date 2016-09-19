@@ -295,6 +295,7 @@ sap.ui.define([
 			};
 			
 			this.getView().getModel().getData().overviewTiles.push(this._networkDevicesTile);
+			this.getView().getModel().refresh(false);
         },
         _initCameraTiles: function () {
             var cameras = [
@@ -426,7 +427,7 @@ sap.ui.define([
 	
 	            }, 60000);
             }
-            
+            this.getView().getModel().refresh(false);
         },
         _initPlanesTile: function () {
             var subject=this;
@@ -451,6 +452,7 @@ sap.ui.define([
 
             }
             this.getView().getModel().getData().overviewTiles.push(this.planesTile);
+            this.getView().getModel().refresh(false);
         },
         _initTransmissionTile: function () {
             this.transmissionTile = {
@@ -463,6 +465,7 @@ sap.ui.define([
                     icon: "sap-icon://download-from-cloud"
                 };
             this.getView().getModel().getData().overviewTiles.push(this.transmissionTile);
+            this.getView().getModel().refresh(false);
         },
         _initDistanceTile: function () {
         	this.distanceTile = {
@@ -475,6 +478,7 @@ sap.ui.define([
                     icon: "sap-icon://marketing-campaign"
                 };
             this.getView().getModel().getData().overviewTiles.push(this.distanceTile);
+            this.getView().getModel().refresh(false);
         },
         /**
 		 * handle successful data loading for overview tiles
