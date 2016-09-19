@@ -298,6 +298,7 @@ sap.ui.define([
 			this.getView().getModel().refresh(false);
         },
         _initCameraTiles: function () {
+        	var subject=this;
             var cameras = [
                        	{
                        		window:null,
