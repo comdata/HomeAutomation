@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.persistence.EntityManager;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -26,6 +27,7 @@ import cm.homeautomation.services.base.BaseService;
 public class CameraService extends BaseService {
 
 	@Path("getAll")
+	@GET
 	public List<Camera> getAll() {
 		EntityManager em = EntityManagerService.getManager();
 
@@ -44,6 +46,7 @@ public class CameraService extends BaseService {
 	
 	@Path("getSnapshot/{id}")
 	@Produces("image/jpeg")
+	@GET
 	public Response getSnapshot(@PathParam("id") Long id) {
 		EntityManager em = EntityManagerService.getManager();
 		List<Camera> resultList = (List<Camera>)em.createQuery("select c from Camera c where c.id=:id")
