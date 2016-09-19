@@ -21,6 +21,8 @@ import javax.ws.rs.core.StreamingOutput;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Camera;
+import cm.homeautomation.eventbus.EventBusService;
+import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
 
 @Path("camera")
@@ -43,22 +45,22 @@ public class CameraService extends BaseService {
 		g.dispose();
 		return resized;
 	}
-	
+
 	@Path("getSnapshot/{id}")
 	@Produces("image/jpeg")
 	@GET
 	public Response getSnapshot(@PathParam("id") Long id) {
 		EntityManager em = EntityManagerService.getManager();
-		List<Camera> resultList = (List<Camera>)em.createQuery("select c from Camera c where c.id=:id")
+
+		List<Camera> resultList = (List<Camera>) em.createQuery("select c from Camera c where c.id=:id")
 				.setParameter("id", id).getResultList();
-		
+
 		for (Camera camera : resultList) {
 			final byte[] imageData = camera.getImageSnapshot();
 			StreamingOutput stream = new StreamingOutput() {
 
 				@Override
-				public void write(OutputStream output) throws IOException,
-						WebApplicationException {
+				public void write(OutputStream output) throws IOException, WebApplicationException {
 					try {
 						output.write(imageData);
 					} catch (Exception e) {
@@ -89,6 +91,13 @@ public class CameraService extends BaseService {
 					camera.setImageSnapshot(cameraSnapshot);
 					em.merge(camera);
 					em.getTransaction().commit();
+
+					CameraImageUpdateEvent cameraEvent = new CameraImageUpdateEvent();
+					cameraEvent.setCamera(camera);
+					EventObject event = new EventObject(cameraEvent);
+					
+
+					EventBusService.getEventBus().post(event);
 				}
 
 			} catch (IOException e) {
