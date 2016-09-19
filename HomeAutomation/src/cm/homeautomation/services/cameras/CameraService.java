@@ -18,7 +18,7 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Camera;
 import cm.homeautomation.services.base.BaseService;
 
-@Path("cameras")
+@Path("camera")
 public class CameraService extends BaseService {
 
 	@Path("getAll")
