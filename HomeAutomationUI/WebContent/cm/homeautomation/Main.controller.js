@@ -361,7 +361,7 @@ sap.ui.define([
             if (!camerasDisabled) {
 	            $.each(cameras, function (i, camera) {
 	            	camera.tile.info=moment().format('DD.MM.YYYY HH:mm:ss');
-	            	camera.tile.icon=camera.tile.icon+"&random=" + Math.random();
+	            	camera.tile.icon=camera.tile.icon+"?random=" + Math.random();
 	            	subject.getView().getModel().getData().overviewTiles.push(camera.tile);
 	            });
 	            
@@ -396,12 +396,12 @@ sap.ui.define([
 	            
 	            this.cameraTimer = window.setInterval(function () {
 	            	$.each(cameras, function (i, camera) {
-	            		 var parts=camera.tile.icon.split("&");
+	            		 var parts=camera.tile.icon.split("?");
 	            		 var newUrl="";
 	            		 
 	            		 for (var i=0; i<parts.length;i++) {
 	            			 if (parts[i].indexOf("random=")==-1) {
-	            				 newUrl+=parts[i]+"&";
+	            				 newUrl+=parts[i]+"?";
 	            			 }
 	            		 }
 	            		 var imageURL = newUrl+"random=" + Math.random();
