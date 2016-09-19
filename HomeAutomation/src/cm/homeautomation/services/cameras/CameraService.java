@@ -45,7 +45,7 @@ public class CameraService extends BaseService {
 	@Produces("image/jpg")
 	public byte[] getSnapshot(@PathParam("id") Long id) {
 		EntityManager em = EntityManagerService.getManager();
-		List<Camera> resultList = (List<Camera>)em.createQuery("select c from Camera c where id=:id")
+		List<Camera> resultList = (List<Camera>)em.createQuery("select c from Camera c where c.id=:id")
 				.setParameter("id", id).getResultList();
 		
 		for (Camera camera : resultList) {
@@ -56,7 +56,7 @@ public class CameraService extends BaseService {
 
 	public static void prepareCameraImage(String[] args) {
 		EntityManager em = EntityManagerService.getManager();
-		List<Camera> resultList = em.createQuery("select c from Camera c where id=:id")
+		List<Camera> resultList = em.createQuery("select c from Camera c where c.id=:id")
 				.setParameter("id", Long.parseLong(args[0])).getResultList();
 		if (resultList != null) {
 			try {
