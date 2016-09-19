@@ -3,7 +3,6 @@ package cm.homeautomation.services.cameras;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -14,8 +13,6 @@ import javax.persistence.EntityManager;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-
-import com.google.common.net.MediaType;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Camera;
