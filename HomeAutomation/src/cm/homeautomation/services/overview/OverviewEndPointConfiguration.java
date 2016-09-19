@@ -15,6 +15,7 @@ public class OverviewEndPointConfiguration extends Configurator {
 	}
 
 	public static void setOverviewEndpoint(OverviewWebSocket overviewEndpoint) {
+		System.out.println("adding overviewEndpoint");
 		OverviewEndPointConfiguration.overviewEndpoint = overviewEndpoint;
 	}
 	
