@@ -76,7 +76,7 @@ public class WindowBlindNotificationService {
 			notification.iconUrl=iconUrl;
 			// optional, drop the notification after this number of seconds if a
 			// device is offline
-			notification.ttl = 604800;
+			notification.ttl = 5*3600;
 
 			try {
 
