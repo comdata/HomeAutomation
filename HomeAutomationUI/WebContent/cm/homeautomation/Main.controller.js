@@ -75,6 +75,7 @@ sap.ui.define([
             };
             socket.onerror = function (evt) {
                 controller.wsOnError.apply(controller, [evt, uri, callback, socket, state])
+
             };
         },
         wsOnOpen: function (evt, state) {
@@ -95,11 +96,12 @@ sap.ui.define([
         	console.log("socket "+uri+" closed");
         	this.wsClose(socket, state);
             var that=this;
+            
             if (state=="DISCONNECTED") {
             	window.setTimeout(function () {
             		
             		that.initWebSocket(uri, callback, socket, state);
-            	}, 2000);
+            	}, 30000);
             }
         },
         handleSwitchEvent: function (data) {
@@ -189,14 +191,7 @@ sap.ui.define([
                 $(".sapMStdTileIconDiv > img[src='/HomeAutomation/cameraproxy']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
             }
         },
-        wsOnError: function (evt, uri, callback, socket) {
-        	console.log("socket "+uri+" errored");
-        	this.wsClose(socket);
-            var that=this;
-            window.setTimeout(function () {
-            that.initWebSocket(uri, callback, socket);
-            }, 2000);
-        },
+
         handleCameraEvent: function (data) {
         	console.log("got camera event: "+data);
         },

@@ -1,9 +1,6 @@
 package cm.homeautomation.services.overview;
 
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.websocket.OnClose;

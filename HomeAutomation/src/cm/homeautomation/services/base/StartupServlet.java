@@ -104,7 +104,12 @@ public class StartupServlet extends HttpServlet {
 
 		}
 
-		windowBlindNotificationService.destroy();
+		try {
+			windowBlindNotificationService.destroy();
+		} catch (Exception e) {
+
+		}
+		
 	}
 
 }

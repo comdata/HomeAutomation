@@ -50,7 +50,7 @@ public class CameraService extends BaseService {
 	@Produces("image/jpeg")
 	@GET
 	public Response getSnapshot(@PathParam("id") Long id) {
-		EntityManager em = EntityManagerService.getManager();
+		EntityManager em = EntityManagerService.getNewManager();
 
 		List<Camera> resultList = (List<Camera>) em.createQuery("select c from Camera c where c.id=:id")
 				.setParameter("id", id).getResultList();
@@ -76,7 +76,7 @@ public class CameraService extends BaseService {
 	}
 
 	public static void prepareCameraImage(String[] args) {
-		EntityManager em = EntityManagerService.getManager();
+		EntityManager em = EntityManagerService.getNewManager();
 		List<Camera> resultList = em.createQuery("select c from Camera c where c.id=:id")
 				.setParameter("id", Long.parseLong(args[0])).getResultList();
 		if (resultList != null) {

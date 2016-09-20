@@ -16,6 +16,7 @@ public class EventBusEndpointConfigurator extends Configurator {
 	}
 
 	public static void setEventBusEndpoint(EventBusEndpoint eventBusEndpoint) {
+		System.out.println("adding eventBusEndpoint");
 		EventBusEndpointConfigurator.eventBusEndpoint = eventBusEndpoint;
 	}
 }
