@@ -74,7 +74,7 @@ sap.ui.define([
                 callback.apply(controller, [evt])
             };
             socket.onerror = function (evt) {
-                controller.wsOnError.apply(controller, [evt, uri, callback, socket, state])
+                controller.wsOnClose.apply(controller, [evt, uri, callback, socket, state])
 
             };
         },
