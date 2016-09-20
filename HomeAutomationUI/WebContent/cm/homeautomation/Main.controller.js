@@ -217,14 +217,16 @@ sap.ui.define([
     				hostName: data.hostname,
     				mac: data.mac
     		};
-    		
+    		console.log("data.ip: "+data.ip+" element.ipAddress: "+element.ipAddress);
     		var foundElement = this._findInNetworkDeviceList(element);
+    		console.log("foundElement:"+foundElement);
     		
     		if (foundElement!=null) {
-    			foundElement.ipAddress=element.ipAddress;
+    			console.log("updating element")
     			foundElement.hostName=element.hostName;
     			foundElement.mac=element.mac;
     		} else {
+    			console.log("pushing new element");
     			this._networkDevicesList.push(element);
     		}
 
