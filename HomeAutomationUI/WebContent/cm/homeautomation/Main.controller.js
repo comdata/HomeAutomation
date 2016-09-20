@@ -56,46 +56,51 @@ sap.ui.define([
         _webOverviewSocket: null,
         _wsGuid: guid(),
         loadDataInProgress: false,
-        initWebSocket: function (uri, callback, socket) {
+        initWebSocket: function (uri, callback, socket, state) {
 
-            try {
-                if (socket != null) {
-                    socket.close();
-                }
-            } catch (e) {
-
-            }
-
+           
+            this.wsClose(socket, state);
+           
+            state="CONNECTING";
             socket = new WebSocket(uri+"/"+this._wsGuid);
             var controller = this;
-            socket.onopen = function (evt) {
-                controller.wsOnOpen.apply(controller, [evt])
+            socket.onopen = function (evt, state) {
+                controller.wsOnOpen.apply(controller, [evt, state])
             };
             socket.onclose = function (evt) {
-                controller.wsOnClose.apply(controller, [evt, uri, callback, socket])
+                controller.wsOnClose.apply(controller, [evt, uri, callback, socket, state])
             };
             socket.onmessage = function (evt) {
                 callback.apply(controller, [evt])
             };
             socket.onerror = function (evt) {
-                controller.wsOnError.apply(controller, [evt, uri, callback, socket])
+                controller.wsOnError.apply(controller, [evt, uri, callback, socket, state])
             };
         },
-        wsOnOpen: function (evt) {
+        wsOnOpen: function (evt, state) {
+        	state="CONNECTED";
+        },
+        wsClose: function(socket, state) {
+        	 try {
+	        	state="DISCONNECTED";
+	        	if (socket!=null && socket.readyState<3) {
+	        		socket.close();
+	        	}
+        	 } catch (e) {
 
+        	 }
+        	
         },
-        wsClose: function(socket ) {
-        	if (socket!=null && socket.readyState<3) {
-        		socket.close();
-        	}
-        },
-        wsOnClose: function (evt, uri, callback, socket) {
+        wsOnClose: function (evt, uri, callback, socket, state) {
         	console.log("socket "+uri+" closed");
-        	this.wsClose(socket);
+        	this.wsClose(socket, state);
             var that=this;
-            window.setTimeout(function () {
-                that.initWebSocket(uri, callback, socket);
-            }, 2000);
+            if (state=="DISCONNECTED") {
+            	window.setTimeout(function () {
+            		
+            		that.initWebSocket(uri, callback, socket, state);
+            	}, 2000);
+            }
         },
         handleSwitchEvent: function (data) {
             var eventModel = new JSONModel();
@@ -275,8 +280,8 @@ sap.ui.define([
 
             sap.ui.getCore().setModel(imageModel, "imageTile");
             
-            this.initWebSocket(this._wsEventBusUri, this.wsEventBusOnMessage, this._webEventBusSocket);
-            this.initWebSocket(this._wsOverviewUri, this.wsOverviewOnMessage, this._webOverviewSocket);
+            this.initWebSocket(this._wsEventBusUri, this.wsEventBusOnMessage, this._webEventBusSocket, this._webEventBusState);
+            this.initWebSocket(this._wsOverviewUri, this.wsOverviewOnMessage, this._webOverviewSocket, this._webOverviewState);
         },
 
         /**
