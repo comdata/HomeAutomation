@@ -194,6 +194,36 @@ sap.ui.define([
 
         handleCameraEvent: function (data) {
         	console.log("got camera event: "+data);
+        	
+        	$.each(this.cameras, function (i, camera) {
+        		if (camera.roomId==data.room) {
+    				var parts=camera.tile.icon.split("?");
+    				var newUrl="";
+ 
+        				for (var i=0; i<parts.length;i++) {
+        					if (parts[i].indexOf("random=")==-1) {
+    						newUrl+=parts[i]+"?";
+    					}
+    				}
+    				var imageURL = newUrl+"random=" + Math.random();
+ 
+        				var image = $(".sapMStdTileIconDiv > img[src*='"+newUrl+"']")[0];
+    				console.log("old image src: "+image.src);
+    				var downloadingImage = new Image();
+    				downloadingImage.onload = function(){
+    					console.log("new loaded image src: "+downloadingImage.src);
+    					image.src = this.src;   
+    					camera.tile.info=moment().format('DD.MM.YYYY HH:mm:ss');
+ 
+        					$(".sapMStdTileIconDiv > img").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
+    					$(".sapMStdTileIconDiv > img").parent().parent().parent().children().find('div[class="sapMStdTileTitle"]').css("position", "relative").css("top", "-120px");
+    					$(".sapMStdTileInfoNone").css("position", "relative").css("top", "-30px");
+    				};
+   		 
+    				downloadingImage.src=imageURL;
+        		} 
+        	});
+        	
         },
         handleDistanceSensor: function (data) {
         	if (this.distanceTile!=null) {
@@ -270,13 +300,19 @@ sap.ui.define([
             jQuery.sap.require("sap.m.MessageToast");
             this.messageToast = sap.m.MessageToast;
 
-
+            
             var imageModel = new sap.ui.model.json.JSONModel({
                 tiles: [""]
             });
 
             sap.ui.getCore().setModel(imageModel, "imageTile");
             
+            this.initializeAllWebsockets();
+        },
+        /**
+         * initialize the web sockets
+         */
+        initializeAllWebsockets: function () {
             this.initWebSocket(this._wsEventBusUri, this.wsEventBusOnMessage, this._webEventBusSocket, this._webEventBusState);
             this.initWebSocket(this._wsOverviewUri, this.wsOverviewOnMessage, this._webOverviewSocket, this._webOverviewState);
         },
@@ -309,12 +345,12 @@ sap.ui.define([
         },
         _initCameraTiles: function () {
         	var subject=this;
-            var cameras = [
+            this.cameras = [
                        	{
                        		window:null,
                        		tile: {
                                    tileType: "camera",
-                                   roomId: "camera",
+                                   roomId: 1,
                                    title: "Küche",
                                    info: "Kamera - Küche",
                                    eventHandler: "showCamera",
@@ -326,7 +362,7 @@ sap.ui.define([
                        		window:null,
                        		tile: {
                                    tileType: "camera",
-                                   roomId: "camera2",
+                                   roomId: 2,
                                    title: "Keller",
                                    info: "Kamera - Keller",
                                    eventHandler: "showCamera",
@@ -338,7 +374,7 @@ sap.ui.define([
                        		window:null,
                        		tile: {
                                    tileType: "camera",
-                                   roomId: "camera3",
+                                   roomId: 3,
                                    title: "Wohnzimmer",
                                    info: "Kamera - Wohnzimmer",
                                    eventHandler: "showCamera",
@@ -369,7 +405,7 @@ sap.ui.define([
             camerasDisabled=(camerasDisabled=="true") ? true: false;
             
             if (!camerasDisabled) {
-	            $.each(cameras, function (i, camera) {
+	            $.each(this.cameras, function (i, camera) {
 	            	camera.tile.info=moment().format('DD.MM.YYYY HH:mm:ss');
 	            	camera.tile.icon=camera.tile.icon+"?random=" + Math.random();
 	            	subject.getView().getModel().getData().overviewTiles.push(camera.tile);
@@ -377,23 +413,13 @@ sap.ui.define([
 	            
 	            this.getView().getModel().refresh(false);
 	            
-	            $.each(cameras, function (i, camera) {
+	            $.each(this.cameras, function (i, camera) {
 	            		$(".sapMStdTileIconDiv > img").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
 	            	});
 	            //
 	            $(".sapMStdTileIconDiv > img").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
 	            $(".sapMStdTileIconDiv > img").parent().parent().parent().children().find('div[class="sapMStdTileTitle"]').css("position", "relative").css("top", "-120px");
 	            $(".sapMStdTileInfoNone").css("position", "relative").css("top", "-30px");            
-	            
-	            /**
-	             * 
-	             * var canvas = document.createElement('canvas');
-	             * var context = canvas.getContext('2d');
-	             * var img = document.getElementById('myimg');
-	             * context.drawImage(img, 0, 0 );
-	             * var myData = context.getImageData(0, 0, img.width, img.height);
-	             * 
-	             */
 	            
 	            $.each($(".sapMStdTileIconDiv > img"), function(i, image) {
 	            	console.log("img:"+image.src);
@@ -405,7 +431,7 @@ sap.ui.define([
 	            });
 	            
 	            this.cameraTimer = window.setInterval(function () {
-	            	$.each(cameras, function (i, camera) {
+	            	$.each(this.cameras, function (i, camera) {
 	            		 var parts=camera.tile.icon.split("?");
 	            		 var newUrl="";
 	            		 
