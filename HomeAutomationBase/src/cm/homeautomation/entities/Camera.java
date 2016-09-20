@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlTransient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -29,6 +30,7 @@ public class Camera {
 	
 	private String icon;
 	private String stream;
+	@XmlTransient
 	private byte[] imageSnapshot;
 
 	public String getCameraName() {
@@ -74,6 +76,7 @@ public class Camera {
 		this.id = id;
 	}
 
+	@XmlTransient
 	public byte[] getImageSnapshot() {
 		return imageSnapshot;
 	}
