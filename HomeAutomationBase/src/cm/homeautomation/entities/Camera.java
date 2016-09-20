@@ -31,6 +31,7 @@ public class Camera {
 	private String icon;
 	private String stream;
 	@XmlTransient
+	@JsonIgnore
 	private byte[] imageSnapshot;
 
 	public String getCameraName() {
@@ -76,6 +77,7 @@ public class Camera {
 		this.id = id;
 	}
 
+	@JsonIgnore
 	@XmlTransient
 	public byte[] getImageSnapshot() {
 		return imageSnapshot;
