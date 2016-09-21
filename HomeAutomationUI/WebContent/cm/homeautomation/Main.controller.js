@@ -267,8 +267,8 @@ sap.ui.define([
     	},
     	_findInNetworkDeviceList: function (object) {
     		this._networkDevicesList.forEach(function (element, index, array) {
-    			if (object.ipAddress==element.ipAddress) {
-    				return element;
+    			if (object.ipAddress==array[index].ipAddress) {
+    				return array[index];
     			}
     		});
     		return null;
@@ -647,8 +647,6 @@ sap.ui.define([
 
         handleSwitchChanged: function (event) {
             var subject = this;
-
-
         },
         /**
 		 * load a room
@@ -661,7 +659,6 @@ sap.ui.define([
 
             var thermostatModel = new RESTService();
             switchesModel.loadDataAsync("/HomeAutomation/services/actor/thermostat/forroom/" + subject.selectedRoom, "", "GET", subject.handleThermostatsLoaded, null, subject);
-
 
             var windowBlindsModel = new RESTService();
             windowBlindsModel.loadDataAsync("/HomeAutomation/services/windowBlinds/forRoom/" + subject.selectedRoom, "", "GET", subject.handleWindowBlindsLoaded, null, subject);
@@ -681,13 +678,13 @@ sap.ui.define([
             }, 2000);
         },
 
+        /**
+         * show historic data
+         */
         expandHistoricData: function (oEvent) {
-            // window.setTimeout(function () {
             if (oEvent.getParameter("expand") == true) {
                 getHistoricalSensordata(this.selectedRoom);
             }
-            // }, 5000);
-
         },
 
         /**
@@ -707,9 +704,6 @@ sap.ui.define([
             var tileType = selectedElement.tileType;
             
             var currentRoomData={"roomName": roomName};
-            
-           
-            
             var currentRoomModel = new sap.ui.model.json.JSONModel();
 
             currentRoomModel.setData(currentRoomData);
@@ -804,6 +798,10 @@ sap.ui.define([
             }
         },
 
+        /**
+         * menu open pressed
+         * 
+         */
         handlePressOpenMenu: function (oEvent) {
             var oButton = oEvent.getSource();
 
@@ -819,8 +817,9 @@ sap.ui.define([
             var eDock = sap.ui.core.Popup.Dock;
             this._menu.open(this._bKeyboard, oButton, eDock.BeginTop, eDock.BeginBottom, oButton);
         },
-
-
+        /**
+         * handle menu item press
+         */
         handleMenuItemPress: function (oEvent) {
             if (oEvent.getParameter("item").getSubmenu()) {
                 return;
@@ -838,14 +837,21 @@ sap.ui.define([
                 this.messageToast.show(msg);
             }
         },
+        /**
+         * trigger a reload of the scheduler table
+         */
         _reloadScheduler: function () {
             var subject = this;
             var oModel = new RESTService();
             oModel.loadDataAsync("/HomeAutomation/services/scheduler/refresh", "", "GET", subject._handleSchedulerLoaded, null, subject);
         },
+        /**
+         * show a response when the scheduler has been reloaded
+         */
         _handleSchedulerLoaded: function (event) {
             this.messageToast.show("Scheduler reloaded");
         },
+        
         _openAdminDialog: function () {
             if (!this.adminView) {
                 this.adminView = sap.ui.xmlfragment("cm.homeautomation.Administration", this);
