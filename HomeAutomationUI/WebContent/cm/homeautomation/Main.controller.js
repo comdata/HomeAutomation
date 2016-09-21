@@ -266,12 +266,14 @@ sap.ui.define([
     		
     	},
     	_findInNetworkDeviceList: function (object) {
+    		var foundElement=null;
     		this._networkDevicesList.forEach(function (element, index, array) {
     			if (object.ipAddress==array[index].ipAddress) {
-    				return array[index];
+    				foundElement=array[index];
+    				return;
     			}
     		});
-    		return null;
+    		return foundElement;
     	},
 
         /**
