@@ -193,10 +193,10 @@ sap.ui.define([
         },
 
         handleCameraEvent: function (data) {
-        	console.log("got camera event: "+data);
+        	console.log("got camera event: "+data.camera + " - camera id: "+data.camera.id);
         	
         	$.each(this.cameras, function (i, camera) {
-        		if (camera.roomId==data.room) {
+        		if (camera.id==data.camera.id) {
     				var parts=camera.tile.icon.split("?");
     				var newUrl="";
  
@@ -348,6 +348,7 @@ sap.ui.define([
             this.cameras = [
                        	{
                        		window:null,
+                       		id: 1,
                        		tile: {
                                    tileType: "camera",
                                    roomId: 1,
@@ -360,6 +361,7 @@ sap.ui.define([
                        	},
                        	{
                        		window:null,
+                       		id: 2,
                        		tile: {
                                    tileType: "camera",
                                    roomId: 2,
@@ -372,6 +374,7 @@ sap.ui.define([
                        	},
                        	{
                        		window:null,
+                       		id: 3,
                        		tile: {
                                    tileType: "camera",
                                    roomId: 3,
