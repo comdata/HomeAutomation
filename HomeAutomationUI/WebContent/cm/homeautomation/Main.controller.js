@@ -532,7 +532,7 @@ sap.ui.define([
 	                        numberUnit: "Mails",
 	                        eventHandler: "none",
 	                        infoState: sap.ui.core.ValueState.Success,
-	                        icon: "sap-icon://mail"
+	                        icon: "sap-icon://email"
 	                    };
 	                subject._mailTiles.push(singleMailTile);
 	                subject.getView().getModel().getData().overviewTiles.push(singleMailTile);
