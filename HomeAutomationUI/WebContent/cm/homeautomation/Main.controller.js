@@ -504,7 +504,26 @@ sap.ui.define([
             this._initPlanesTile();
             this._initTransmissionTile();
             this._initDistanceTile();
- 
+            this._initMailTile();
+        },
+        _initMailTile: function() {
+        	var subject=this;
+        	
+            $.getJSON("/HomeAutomation/services/mail/get", function (result) {
+
+                /*this.mailTile = {
+                        tileType: "mail",
+                        roomId: "mail",
+                        title: "Flugzeuge",
+                        numberUnit: "Anzahl",
+                        eventHandler: "showPlanes",
+                        infoState: sap.ui.core.ValueState.Success,
+                        icon: "sap-icon://flight"
+                    };*/
+            	console.log(result);
+
+                subject.getView().getModel().refresh(false);
+            });
         },
         updatePlanesTile: function (subject, planesTile) {
             $.getJSON("/HomeAutomation/planesproxy", function (result) {
