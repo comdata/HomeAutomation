@@ -156,6 +156,10 @@ sap.ui.define([
             	this.handleCameraEvent(newData.data);
             }            
             
+            if (newData.clazz=="MailData") {
+            	this.handleMailEvent(newData.data);
+            }
+            	
             
             console.log(evt.data);
         },
@@ -192,6 +196,14 @@ sap.ui.define([
             }
         },
 
+        handleMailEvent: function (data) {
+        	$.each(this._mailTiles, function (index, value) {
+        		if (value.title==data.account) {
+        			value.info=data.unreadMessages+" - "+data.newMessages;        			
+        		}
+        	});
+        	
+        },
         handleCameraEvent: function (data) {
         	console.log("got camera event: "+data.camera + " - camera id: "+data.camera.id);
         	
@@ -509,19 +521,25 @@ sap.ui.define([
         _initMailTile: function() {
         	var subject=this;
         	
+        	this._mailTiles=[];
             $.getJSON("/HomeAutomation/services/mail/get", function (result) {
 
-                /*this.mailTile = {
-                        tileType: "mail",
-                        roomId: "mail",
-                        title: "Flugzeuge",
-                        numberUnit: "Anzahl",
-                        eventHandler: "showPlanes",
-                        infoState: sap.ui.core.ValueState.Success,
-                        icon: "sap-icon://flight"
-                    };*/
-            	console.log(result);
+            	$.each(result, function (index, mail) {
+	                var singleMailTile = {
+	                        tileType: "mail",
+	                        roomId: "mail",
+	                        title: mail.account,
+	                        numberUnit: "Mails",
+	                        eventHandler: "none",
+	                        infoState: sap.ui.core.ValueState.Success,
+	                        icon: "sap-icon://mail"
+	                    };
+	                this._mailTiles.push(singleMailTile);
+	                subject.getView().getModel().getData().overviewTiles.push(singleMailTile);
+	                singleMailTile.info=mail.unreadMessages+" - "+mail.newMessages;
+	            	console.log(mail);
 
+            	});
                 subject.getView().getModel().refresh(false);
             });
         },

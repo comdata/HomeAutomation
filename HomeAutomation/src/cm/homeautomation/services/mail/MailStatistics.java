@@ -1,6 +1,7 @@
 package cm.homeautomation.services.mail;
 
 import java.util.ArrayList;
+import java.util.EventObject;
 import java.util.List;
 import java.util.Properties;
 
@@ -12,6 +13,7 @@ import javax.mail.Store;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
+import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.services.base.BaseService;
 
 @Path("mail")
@@ -22,7 +24,7 @@ public class MailStatistics extends BaseService {
 	@GET
 	@Path("get")
 	public List<MailData> getMailboxStatus() {
-		return mailDataList;
+		return MailStatistics.mailDataList;
 	}
 
 	private static MailData findOrCreateMailEntryInList(String account) {
@@ -45,7 +47,6 @@ public class MailStatistics extends BaseService {
 		String account = args[0];
 		MailData mailData = findOrCreateMailEntryInList(account);
 		
-		List<MailData> mailDataList=new ArrayList<MailData>();
 		Properties props = System.getProperties();
 		props.setProperty("mail.store.protocol", "imaps");
 		try {
@@ -59,6 +60,8 @@ public class MailStatistics extends BaseService {
 		  System.out.println(folder.getNewMessageCount() + " - "+folder.getUnreadMessageCount());
 		  mailData.setNewMessages(folder.getNewMessageCount());
 		  mailData.setUnreadMessages(folder.getUnreadMessageCount());
+		  
+		  EventBusService.getEventBus().post(new EventObject(mailData));
 		} catch (NoSuchProviderException e) {
 		  e.printStackTrace();
 		  System.exit(1);
