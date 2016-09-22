@@ -534,7 +534,7 @@ sap.ui.define([
 	                        infoState: sap.ui.core.ValueState.Success,
 	                        icon: "sap-icon://mail"
 	                    };
-	                this._mailTiles.push(singleMailTile);
+	                subject._mailTiles.push(singleMailTile);
 	                subject.getView().getModel().getData().overviewTiles.push(singleMailTile);
 	                singleMailTile.info=mail.unreadMessages+" - "+mail.newMessages;
 	            	console.log(mail);
