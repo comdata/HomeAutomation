@@ -9,6 +9,7 @@ import javax.mail.MessagingException;
 import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import cm.homeautomation.services.base.BaseService;
@@ -18,6 +19,7 @@ public class MailStatistics extends BaseService {
 
 	private static List<MailData> mailDataList=new ArrayList<MailData>();
 
+	@GET
 	@Path("get")
 	public List<MailData> getMailboxStatus() {
 		return mailDataList;
