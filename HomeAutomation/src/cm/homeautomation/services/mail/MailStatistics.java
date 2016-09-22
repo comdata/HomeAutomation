@@ -1,7 +1,6 @@
 package cm.homeautomation.services.mail;
 
 import java.util.ArrayList;
-import java.util.EventObject;
 import java.util.List;
 import java.util.Properties;
 
@@ -14,6 +13,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import cm.homeautomation.eventbus.EventBusService;
+import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
 
 @Path("mail")
