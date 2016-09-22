@@ -64,10 +64,8 @@ public class MailStatistics extends BaseService {
 		  EventBusService.getEventBus().post(new EventObject(mailData));
 		} catch (NoSuchProviderException e) {
 		  e.printStackTrace();
-		  System.exit(1);
 		} catch (MessagingException e) {
 		  e.printStackTrace();
-		  System.exit(2);
 		}
 		
 	}
