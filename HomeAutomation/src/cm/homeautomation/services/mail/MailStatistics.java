@@ -60,8 +60,8 @@ public class MailStatistics extends BaseService {
 		  System.out.println(folder.getNewMessageCount() + " - "+folder.getUnreadMessageCount());
 		  mailData.setNewMessages(folder.getNewMessageCount());
 		  mailData.setUnreadMessages(folder.getUnreadMessageCount());
-		  
-		  EventBusService.getEventBus().post(new EventObject(mailData));
+		  EventObject eventObject=new EventObject(mailData);
+		  EventBusService.getEventBus().post(eventObject);
 		} catch (NoSuchProviderException e) {
 		  e.printStackTrace();
 		} catch (MessagingException e) {
