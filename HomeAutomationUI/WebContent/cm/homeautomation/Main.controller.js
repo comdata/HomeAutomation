@@ -435,39 +435,6 @@ sap.ui.define([
 	            	};
 	            });
 	            
-//	            this.cameraTimer = window.setInterval(function () {
-//	            	$.each(this.cameras, function (i, camera) {
-//	            		 var parts=camera.tile.icon.split("?");
-//	            		 var newUrl="";
-//	            		 
-//	            		 for (var i=0; i<parts.length;i++) {
-//	            			 if (parts[i].indexOf("random=")==-1) {
-//	            				 newUrl+=parts[i]+"?";
-//	            			 }
-//	            		 }
-//	            		 var imageURL = newUrl+"random=" + Math.random();
-//	            		 
-//	            		 var image = $(".sapMStdTileIconDiv > img[src*='"+newUrl+"']")[0];
-//	            		 console.log("old image src: "+image.src);
-//	            		 var downloadingImage = new Image();
-//	            		 downloadingImage.onload = function(){
-//	            			 console.log("new loaded image src: "+downloadingImage.src);
-//	            		     image.src = this.src;   
-//	            		     camera.tile.info=moment().format('DD.MM.YYYY HH:mm:ss');
-//	            		     
-//	            		     $(".sapMStdTileIconDiv > img").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
-//	                         $(".sapMStdTileIconDiv > img").parent().parent().parent().children().find('div[class="sapMStdTileTitle"]').css("position", "relative").css("top", "-120px");
-//	                         $(".sapMStdTileInfoNone").css("position", "relative").css("top", "-30px");
-//	         		     
-//	            		 };
-//	            		 
-//	            		 
-//	            		 
-//	            		 downloadingImage.src=imageURL;
-//	            	});
-//	            	
-//	
-//	            }, 60000);
             }
             this.getView().getModel().refresh(false);
         },
