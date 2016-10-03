@@ -50,18 +50,18 @@ public class TransmissionMonitor extends Thread {
 				System.out.println("Download speed: " + downloadSpeed);
 				System.out.println("Upload speed: " + uploadSpeed);
 				int numberOfTorrents = result.getTorrents().size();
-				int numberOfDoneTorrents=0;
+				int numberOfDoneTorrents = 0;
 				List<TorrentInfo> torrents = result.getTorrents();
 				for (TorrentInfo torrentInfo : torrents) {
 					Boolean finished = torrentInfo.getFinished();
-					
+
 					double percentDone = torrentInfo.getPercentDone().doubleValue();
-					System.out.println("Percent done: " +percentDone );
-					if (percentDone==1) {
+					System.out.println("Percent done: " + percentDone);
+					if (percentDone == 1) {
 						numberOfDoneTorrents++;
 					}
 				}
-				System.out.println("Done torrents: " + numberOfDoneTorrents);	
+				System.out.println("Done torrents: " + numberOfDoneTorrents);
 				System.out.println("Running torrents: " + numberOfTorrents);
 
 				TransmissionStatusData torrentData = new TransmissionStatusData();
@@ -71,7 +71,7 @@ public class TransmissionMonitor extends Thread {
 				torrentData.setDoneTorrents(numberOfDoneTorrents);
 				EventObject eventObject = new EventObject(torrentData);
 				EventBusService.getEventBus().post(eventObject);
-				
+
 				if (numberOfTorrents > 0) {
 					// something interesting is happening, query more often
 					Thread.sleep(10 * 1000);
@@ -81,10 +81,21 @@ public class TransmissionMonitor extends Thread {
 
 			} catch (RpcException e) {
 				e.printStackTrace();
+				try {
+					Thread.sleep(60 * 1000);
+				} catch (InterruptedException ie) {
+
+				}
+
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (Exception e) {
 				e.printStackTrace();
+				try {
+					Thread.sleep(60 * 1000);
+				} catch (InterruptedException ie) {
+
+				}
 			}
 		}
 	}
