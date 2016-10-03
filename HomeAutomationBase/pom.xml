@@ -98,6 +98,7 @@
 				<directory>src</directory>
 				<excludes>
 					<exclude>**/*.java</exclude>
+					<exclude>test/**</exclude>
 				</excludes>
 			</resource>
 		</resources>

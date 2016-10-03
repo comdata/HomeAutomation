@@ -9,6 +9,7 @@ import cm.homeautomation.eventbus.EventBusEndpoint;
 import cm.homeautomation.eventbus.EventBusEndpointConfigurator;
 import cm.homeautomation.hap.HAPService;
 import cm.homeautomation.jeromq.server.JeroMQServer;
+import cm.homeautomation.mdns.MDNSService;
 import cm.homeautomation.moquette.server.MoquetteServer;
 import cm.homeautomation.services.overview.OverviewEndPointConfiguration;
 import cm.homeautomation.services.overview.OverviewWebSocket;
@@ -33,6 +34,7 @@ public class StartupServlet extends HttpServlet {
 	private TransmissionMonitor transmissionMonitor;
 	private WindowBlindNotificationService windowBlindNotificationService;
 	private NetworkDeviceDatabaseUpdater networkDeviceDatabaseUpdater;
+	private MDNSService mdnsService;
 
 	public void init(ServletConfig config) throws ServletException {
 
@@ -63,6 +65,8 @@ public class StartupServlet extends HttpServlet {
 		transmissionMonitor = new TransmissionMonitor();
 		transmissionMonitor.start();
 
+		mdnsService = new MDNSService();
+		mdnsService.registerServices();
 	}
 
 	public void destroy() {
@@ -110,6 +114,13 @@ public class StartupServlet extends HttpServlet {
 
 		}
 		
+		try {
+			if (mdnsService != null) {
+				mdnsService.destroy();
+			}
+		} catch (Exception e) {
+
+		}
 	}
 
 }
