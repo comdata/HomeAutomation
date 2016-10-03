@@ -263,7 +263,7 @@ public class HAPService {
 			HomekitServer homekit = new HomekitServer(inetAddress, PORT);
 			// AuthInfoService authInfo = new AuthInfoService();
 			HomekitAuthInfo authInfo = new HomekitAuthInfoImpl("032-45-154");
-			bridge = homekit.createBridge(authInfo, "Haus", "CM, Inc.", "V1", "111a2222be2341");
+			bridge = homekit.createBridge(authInfo, "Haus", "CM, Inc.", "1.0", "111a2222be2341");
 			// bridge.allowUnauthenticatedRequests(true);
 			addLightsToBridge(bridge);
 			addSocketsToBridge(bridge);
