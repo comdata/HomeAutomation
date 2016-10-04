@@ -62,7 +62,7 @@ public class MDNSService {
 			registerService(serviceInfo);
 
 			ServiceInfo mqttService = ServiceInfo.create("_mqtt._tcp.local.", "HomeAutomation", 1883,
-					"path=index.html");
+					"/sensordata");
 			registerService(mqttService);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
