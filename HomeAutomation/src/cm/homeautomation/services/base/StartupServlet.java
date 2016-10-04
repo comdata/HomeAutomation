@@ -4,6 +4,8 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
+import org.eclipse.paho.client.mqttv3.logging.LoggerFactory;
+
 import cm.homeautomation.entities.NetworkDevice;
 import cm.homeautomation.eventbus.EventBusEndpoint;
 import cm.homeautomation.eventbus.EventBusEndpointConfigurator;
@@ -25,7 +27,6 @@ public class StartupServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 131323703998785803L;
 	private SchedulerThread schedulerThread;
-	// private Server webSocketServer;
 	private JeroMQServer jeroMQServer;
 	private OverviewWebSocket overviewEndpoint;
 	private MQTTReceiverClient moquetteClient;
@@ -67,6 +68,7 @@ public class StartupServlet extends HttpServlet {
 
 		mdnsService = new MDNSService();
 		mdnsService.registerServices();
+		
 	}
 
 	public void destroy() {
