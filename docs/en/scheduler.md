@@ -49,4 +49,10 @@ Perform a regular calibration of the window blinds by using a scheduler.
 0 0 1 * *	java:cm.homeautomation.windowblind.WindowBlindService#cronPerformCalibration <windowBlindId>
 ```
 
+## google mail checker
+
+```
+*/1 * * * *  java:cm.homeautomation.services.mail.MailStatistics#updateMailData <google mail adress> <password> 
+```
+
 ## actor changes
