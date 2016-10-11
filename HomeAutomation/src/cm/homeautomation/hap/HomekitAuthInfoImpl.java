@@ -162,7 +162,11 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
 	@Override
 	public boolean hasUser() {
 		Collection<String> keys = storage.getKeys();
-		return keys.stream().filter(k -> isUserKey(k)).count() > 0;
+		boolean hasUsers = keys.stream().filter(k -> isUserKey(k)).count() > 0;
+		
+		System.out.println("Has users: "+hasUsers);
+		
+		return hasUsers;
 	}
 
 	public void clear() {
