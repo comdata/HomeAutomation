@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -15,7 +16,8 @@ import cm.homeautomation.services.base.BaseService;
 public class LEDService extends BaseService {
 
 	@GET
-	public void setLed(int r, int g, int b) {
+	@Path("set/{r}/{g}/{b}")
+	public void setLed(@PathParam("r") int r, @PathParam("g") int g, @PathParam("b") int b) {
 
 		try {
 			String url = "http://192.168.1.38:80/?mode=SET&red=" + r + "&green=" + g + "&blue=" + b;
