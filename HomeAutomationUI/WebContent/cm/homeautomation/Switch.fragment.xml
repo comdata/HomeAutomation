@@ -57,7 +57,7 @@
                         </InputListItem>
                     </List>
 
-                   <!-- <commons:ColorPicker id="lampe" name="Wohnzimmer"/>-->
+                   <commons:ColorPicker id="lampe" name="Wohnzimmer"/>
                 </content>
             </Panel>
 
