@@ -16,7 +16,7 @@ import cm.homeautomation.services.base.BaseService;
 public class LEDService extends BaseService {
 
 	@GET
-	@Path("set/{r}/{g}/{b}")
+	@Path("set/{roomId}/{r}/{g}/{b}")
 	public void setLed(@PathParam("r") int r, @PathParam("g") int g, @PathParam("b") int b) {
 
 		try {

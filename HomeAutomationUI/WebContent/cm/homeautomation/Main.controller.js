@@ -19,8 +19,7 @@ function resize(element) {
         element.style.width = targetWidth + "px";
         /*
 		 * } else { imageFullScreen=false; element.style.height="324px";
-		 * element.style.width="576px";
-		 *  }
+		 * element.style.width="576px"; }
 		 */
 
     }
@@ -324,8 +323,8 @@ sap.ui.define([
             this.initializeAllWebsockets();
         },
         /**
-         * initialize the web sockets
-         */
+		 * initialize the web sockets
+		 */
         initializeAllWebsockets: function () {
             this.initWebSocket(this._wsEventBusUri, this.wsEventBusOnMessage, this._webEventBusSocket, this._webEventBusState);
             this.initWebSocket(this._wsOverviewUri, this.wsOverviewOnMessage, this._webOverviewSocket, this._webOverviewState);
@@ -400,19 +399,14 @@ sap.ui.define([
                                }
                        	}
                        	
-                       	/*,
-                       	{
-                       		window:null,
-                       		tile: {
-                                   tileType: "camera",
-                                   roomId: "camera4",
-                                   title: "Spielzimmer",
-                                   info: "Kamera - Spielzimmer",
-                                   eventHandler: "showCamera",
-                                   icon: "/HomeAutomation/newCameraProxy?_ip=33&_port=8090&_action=snapshot",
-                                   stream: "/HomeAutomation/newCameraProxy?_ip=336&_port=8090&_action=stream"
-                               }
-                       	}*/
+                       	/*
+						 * , { window:null, tile: { tileType: "camera", roomId:
+						 * "camera4", title: "Spielzimmer", info: "Kamera -
+						 * Spielzimmer", eventHandler: "showCamera", icon:
+						 * "/HomeAutomation/newCameraProxy?_ip=33&_port=8090&_action=snapshot",
+						 * stream:
+						 * "/HomeAutomation/newCameraProxy?_ip=336&_port=8090&_action=stream" } }
+						 */
                        	
                        	
                        ];
@@ -622,9 +616,9 @@ sap.ui.define([
                 + value+"/"+windowBlind.type+"/"+windowBlind.room, "", "GET", this.handleSwitchChanged, null, this);
             
             /**
-             * set value directly to all other window blinds
-             * 
-             */
+			 * set value directly to all other window blinds
+			 * 
+			 */
             if (windowBlind.type=="ALL_AT_ONCE") {
             	
             	var windowBlinds=windowBlindsModel.getProperty("/");
@@ -653,7 +647,21 @@ sap.ui.define([
             oModel.loadDataAsync("/HomeAutomation/services/thermostat/setValue/" + thermostat.id + "/"
                 + value, "", "GET", this.handleSwitchChanged, null, this);
         },
-
+        handleColorPickerChange: function (oEvent) {
+        	var colors = oEvent.getParameters();
+        	var r=colors.r;
+        	var g=colors.g;
+        	var b=colors.b;
+        	
+        	var roomId=0;
+        	 var oModel = new RESTService();
+             oModel.loadDataAsync("/HomeAutomation/services/led/set/" + roomId + "/"
+                 + r+"/"+g+"/"+b, "", "GET", this.handleColorChanged, null, this);
+        },
+        handleColorChanged: function (event) {
+            var subject = this;
+        },
+        
         handleSwitchChanged: function (event) {
             var subject = this;
         },
@@ -688,8 +696,8 @@ sap.ui.define([
         },
 
         /**
-         * show historic data
-         */
+		 * show historic data
+		 */
         expandHistoricData: function (oEvent) {
             if (oEvent.getParameter("expand") == true) {
                 getHistoricalSensordata(this.selectedRoom);
@@ -808,9 +816,9 @@ sap.ui.define([
         },
 
         /**
-         * menu open pressed
-         * 
-         */
+		 * menu open pressed
+		 * 
+		 */
         handlePressOpenMenu: function (oEvent) {
             var oButton = oEvent.getSource();
 
@@ -827,8 +835,8 @@ sap.ui.define([
             this._menu.open(this._bKeyboard, oButton, eDock.BeginTop, eDock.BeginBottom, oButton);
         },
         /**
-         * handle menu item press
-         */
+		 * handle menu item press
+		 */
         handleMenuItemPress: function (oEvent) {
             if (oEvent.getParameter("item").getSubmenu()) {
                 return;
@@ -847,16 +855,16 @@ sap.ui.define([
             }
         },
         /**
-         * trigger a reload of the scheduler table
-         */
+		 * trigger a reload of the scheduler table
+		 */
         _reloadScheduler: function () {
             var subject = this;
             var oModel = new RESTService();
             oModel.loadDataAsync("/HomeAutomation/services/scheduler/refresh", "", "GET", subject._handleSchedulerLoaded, null, subject);
         },
         /**
-         * show a response when the scheduler has been reloaded
-         */
+		 * show a response when the scheduler has been reloaded
+		 */
         _handleSchedulerLoaded: function (event) {
             this.messageToast.show("Scheduler reloaded");
         },
