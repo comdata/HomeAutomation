@@ -397,6 +397,19 @@ sap.ui.define([
                                    icon: "/HomeAutomation/services/camera/getSnapshot/3",
                                    stream: "/HomeAutomation/newCameraProxy?_ip=76&_port=8081&_action=stream"
                                }
+                       	},
+                       	{
+                       		window:null,
+                       		id: 4,
+                       		tile: {
+                                   tileType: "camera",
+                                   roomId: 6,
+                                   title: "Spielzimmer",
+                                   info: "Kamera - Spielzimmer",
+                                   eventHandler: "showCamera",
+                                   icon: "/HomeAutomation/services/camera/getSnapshot/4",
+                                   stream: "/HomeAutomation/newCameraProxy?_ip=77&_port=9080&_action=stream"
+                               }
                        	}
                        	
                        	/*
