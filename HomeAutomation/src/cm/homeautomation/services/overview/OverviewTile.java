@@ -14,6 +14,8 @@ public class OverviewTile {
 	private String infoState;
 	private String roomName;
 	private String eventHandler="handleSelect";
+	private String tileType;
+	
    /* "icon" : "inbox",
     "number" : "89",
     "title" : "Approve Leave Requests",
@@ -73,5 +75,11 @@ public class OverviewTile {
 	}
 	public void setEventHandler(String eventHandler) {
 		this.eventHandler = eventHandler;
+	}
+	public String getTileType() {
+		return tileType;
+	}
+	public void setTileType(String tileType) {
+		this.tileType = tileType;
 	}
 }

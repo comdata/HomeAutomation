@@ -122,6 +122,7 @@ public class OverviewService extends BaseService {
 		roomTile.setInfoState("Success");
 		roomTile.setRoomId(Long.toString(room.getId()));
 		roomTile.setIcon(icon);
+		roomTile.setTileType("room");
 		return roomTile;
 	}
 }
