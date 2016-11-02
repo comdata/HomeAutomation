@@ -408,7 +408,7 @@ sap.ui.define([
                                    info: "Kamera - Spielzimmer",
                                    eventHandler: "showCamera",
                                    icon: "/HomeAutomation/services/camera/getSnapshot/4",
-                                   stream: "/HomeAutomation/newCameraProxy?_ip=77&_port=9080&_action=stream"
+                                   stream: "/HomeAutomation/newCameraProxy?_ip=77&_port=8090&_action=stream"
                                }
                        	}
                        	
