@@ -659,9 +659,9 @@ sap.ui.define([
         },
         handleLightChange: function (event) {
         	var lightsModel = sap.ui.getCore().getModel("lights");
-            var light = lightsModel.getProperty(event.getSource().oPropagatedProperties.oBindingContexts.windowBlinds.sPath);
+            var light = lightsModel.getProperty(event.getSource().oPropagatedProperties.oBindingContexts.lights.sPath);
 
-            var value = light.dimValue;
+            var value = light.brightnessLevel;
             console.log("new value: " + value);
 
             var oModel = new RESTService();
