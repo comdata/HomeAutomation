@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -19,6 +20,7 @@ public class DimmableLight extends Light {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@JsonIgnore
 	private String dimUrl;
 	
 	@Column(name="BRIGHTNESS")
@@ -32,6 +34,7 @@ public class DimmableLight extends Light {
 		this.brightnessLevel = brightnessLevel;
 	}
 
+	@JsonIgnore
 	public String getDimUrl() {
 		return dimUrl;
 	}
