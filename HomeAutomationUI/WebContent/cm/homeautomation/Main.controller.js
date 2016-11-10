@@ -379,7 +379,7 @@ sap.ui.define([
                                    tileType: "camera",
                                    roomId: 2,
                                    title: "Keller",
-                                   info: "Kamera - Keller",
+                                   info: "Kamera - Gäste WC",
                                    eventHandler: "showCamera",
                                    icon: "/HomeAutomation/services/camera/getSnapshot/2",
                                    stream: "/HomeAutomation/newCameraProxy?_ip=34&_port=8080&_action=stream"
