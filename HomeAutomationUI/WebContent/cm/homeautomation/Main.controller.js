@@ -716,7 +716,7 @@ sap.ui.define([
             windowBlindsModel.loadDataAsync("/HomeAutomation/services/windowBlinds/forRoom/" + subject.selectedRoom, "", "GET", subject.handleWindowBlindsLoaded, null, subject);
             
             var lightModel = new RESTService();
-            lightModel.loadDataAsync("/HomeAutomation/services/ligths/get/" + subject.selectedRoom, "", "GET", subject.handleLightsLoaded, null, subject);
+            lightModel.loadDataAsync("/HomeAutomation/services/light/get/" + subject.selectedRoom, "", "GET", subject.handleLightsLoaded, null, subject);
         },
 
         /**
