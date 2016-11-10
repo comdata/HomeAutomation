@@ -412,14 +412,7 @@ sap.ui.define([
                                }
                        	}
                        	
-                       	/*
-						 * , { window:null, tile: { tileType: "camera", roomId:
-						 * "camera4", title: "Spielzimmer", info: "Kamera -
-						 * Spielzimmer", eventHandler: "showCamera", icon:
-						 * "/HomeAutomation/newCameraProxy?_ip=33&_port=8090&_action=snapshot",
-						 * stream:
-						 * "/HomeAutomation/newCameraProxy?_ip=336&_port=8090&_action=stream" } }
-						 */
+
                        	
                        	
                        ];
@@ -586,6 +579,20 @@ sap.ui.define([
 
             sap.ui.getCore().setModel(model, "windowBlinds");
         },
+        
+        handleLightsLoaded: function (event, model) {
+
+            var lightsList = sap.ui.getCore().byId("lights");
+            var switchPanel = sap.ui.getCore().byId("switchPanel");
+            if (model.getProperty("/lights").length > 0) {
+                windowBlindsList.setProperty("visible", true);
+                switchPanel.setProperty("expanded", true);
+            } else {
+                lightsList.setProperty("visible", false);
+            }
+
+            sap.ui.getCore().setModel(model, "lights");
+        },
 
         handleThermostatsLoaded: function (event, model) {
 
@@ -650,6 +657,21 @@ sap.ui.define([
             }
             
         },
+        handleLightChange: function (event) {
+        	var lightsModel = sap.ui.getCore().getModel("lights");
+            var light = lightsModel.getProperty(event.getSource().oPropagatedProperties.oBindingContexts.windowBlinds.sPath);
+
+            var value = light.dimValue;
+            console.log("new value: " + value);
+
+            var oModel = new RESTService();
+            var lightId=( light.id==null) ? 0 : light.id;
+            oModel.loadDataAsync("/HomeAutomation/services/light/dim/" + lightId + "/"
+                + value, "", "GET", this.handleSwitchChanged, null, this);
+            
+            
+        },        
+        
         handleThermostatChange: function (event) {
             var thermostat = sap.ui.getCore().getModel("thermostats").getProperty(event.getSource().oPropagatedProperties.oBindingContexts.thermostats.sPath);
 
@@ -692,6 +714,9 @@ sap.ui.define([
 
             var windowBlindsModel = new RESTService();
             windowBlindsModel.loadDataAsync("/HomeAutomation/services/windowBlinds/forRoom/" + subject.selectedRoom, "", "GET", subject.handleWindowBlindsLoaded, null, subject);
+            
+            var lightModel = new RESTService();
+            lightModel.loadDataAsync("/HomeAutomation/services/ligths/get/" + subject.selectedRoom, "", "GET", subject.handleLightsLoaded, null, subject);
         },
 
         /**
