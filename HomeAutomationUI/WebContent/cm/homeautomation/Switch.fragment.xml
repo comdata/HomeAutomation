@@ -36,8 +36,8 @@
 		}">
 						<InputListItem label="{lights>name}" description="{lights>name}"
 							icon="sap-icon://lightbulb" iconDensityAware="false" iconInset="false">
-							<Label text="{lights>dimValue}"></Label>
-							<Slider min="0" max="99" value="{lightsdimValue}" width="100px"
+							<Label text="{lights>brightnessLevel}"></Label>
+							<Slider min="0" max="99" value="{lights>brightnessLevel}" width="100px"
 								change="handleLightChange" />
 						</InputListItem>
 					</List>
