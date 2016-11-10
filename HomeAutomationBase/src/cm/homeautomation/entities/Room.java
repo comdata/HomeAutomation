@@ -88,6 +88,7 @@ public class Room {
 		this.devices = devices;
 	}
 
+	@XmlIDREF
 	public List<Light> getLights() {
 		if (lights==null) {
 			lights=new ArrayList<Light>();
