@@ -584,8 +584,8 @@ sap.ui.define([
 
             var lightsList = sap.ui.getCore().byId("lights");
             var switchPanel = sap.ui.getCore().byId("switchPanel");
-            if (model.getProperty("/lights").length > 0) {
-                windowBlindsList.setProperty("visible", true);
+            if (model.getProperty("/").length > 0) {
+            	lightsList.setProperty("visible", true);
                 switchPanel.setProperty("expanded", true);
             } else {
                 lightsList.setProperty("visible", false);

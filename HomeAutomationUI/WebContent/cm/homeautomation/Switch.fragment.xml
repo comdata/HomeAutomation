@@ -32,7 +32,7 @@
 					</List>
 
 					<List visible="false" id="lights" items="{
-			path: 'lights>/lights'
+			path: 'lights>/'
 		}">
 						<InputListItem label="{lights>name}" description="{lights>name}"
 							icon="sap-icon://lightbulb" iconDensityAware="false" iconInset="false">
