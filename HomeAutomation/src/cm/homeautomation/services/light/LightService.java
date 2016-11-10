@@ -80,7 +80,7 @@ public class LightService extends BaseService {
 	
 	@GET
 	@Path("get/{roomId}")
-	public List<Light> getLights(@PathParam("roomId") String roomId) {
+	public List<Light> getLights(@PathParam("roomId") Long roomId) {
 		
 		EntityManager em = EntityManagerService.getNewManager();
 		@SuppressWarnings("unchecked")
