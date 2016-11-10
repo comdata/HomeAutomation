@@ -12,6 +12,9 @@
 		<class>cm.homeautomation.entities.Switch</class>
 		<class>cm.homeautomation.entities.Camera</class>
 		<class>cm.homeautomation.entities.WindowBlind</class>
+		<class>cm.homeautomation.entities.Light</class>
+		<class>cm.homeautomation.entities.DimmableLight</class>
+		<class>cm.homeautomation.entities.RGBLight</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:mariadb://localhost:3306/HA" />

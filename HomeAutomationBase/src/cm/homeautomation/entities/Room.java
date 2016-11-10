@@ -34,6 +34,9 @@ public class Room {
 	
 	@OneToMany(mappedBy="room", cascade=CascadeType.ALL)
 	private List<Device> devices;
+
+	@OneToMany(mappedBy="room", cascade=CascadeType.ALL)
+	private List<Light> lights;
 	
 	public String getRoomName() {
 		return roomName;
@@ -83,5 +86,13 @@ public class Room {
 
 	public void setDevices(List<Device> devices) {
 		this.devices = devices;
+	}
+
+	public List<Light> getLights() {
+		return lights;
+	}
+
+	public void setLights(List<Light> lights) {
+		this.lights = lights;
 	}
 }
