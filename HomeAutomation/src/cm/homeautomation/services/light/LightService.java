@@ -1,5 +1,7 @@
 package cm.homeautomation.services.light;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -11,6 +13,7 @@ import cm.homeautomation.entities.Light;
 import cm.homeautomation.entities.RGBLight;
 import cm.homeautomation.entities.Room;
 import cm.homeautomation.services.base.BaseService;
+import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.base.HTTPHelper;
 
 @Path("light")
@@ -55,7 +58,7 @@ public class LightService extends BaseService {
 
 	@GET
 	@Path("dim/{lightId}/{dimValue}")
-	public void dimLight(@PathParam("lightId") long lightId, @PathParam("dimValue") int dimValue) {
+	public GenericStatus dimLight(@PathParam("lightId") long lightId, @PathParam("dimValue") int dimValue) {
 		EntityManager em = EntityManagerService.getNewManager();
 		em.getTransaction().begin();
 		DimmableLight light = (DimmableLight) em.createQuery("select l from Light l where l.id=:lightId")
@@ -71,6 +74,20 @@ public class LightService extends BaseService {
 		dimUrl = dimUrl.replace("{DIMVALUE}", Integer.toString(dimValue));
 		
 		HTTPHelper.performHTTPRequest(dimUrl);
+		
+		return new GenericStatus(true);
+	}
+	
+	@GET
+	@Path("get/{roomId}")
+	public List<Light> getLights(@PathParam("roomId") String roomId) {
+		
+		EntityManager em = EntityManagerService.getNewManager();
+		@SuppressWarnings("unchecked")
+		List<Light> resultList = (List<Light>)em.createQuery("select l from Light l where l.room=(select r from Room r where r.id=:roomId)")
+				.setParameter("roomId", roomId).getResultList();
+		
+		return resultList;
 	}
 
 }
