@@ -23,6 +23,7 @@ import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
+import cm.homeautomation.services.base.HTTPHelper;
 
 @Path("windowBlinds")
 public class WindowBlindService extends BaseService {
@@ -96,7 +97,7 @@ public class WindowBlindService extends BaseService {
 					.setParameter("id", windowBlindId).getSingleResult();
 			String dimUrl = singleWindowBlind.getDimUrl().replace("{DIMVALUE}", value);
 
-			performHTTPRequest(dimUrl);
+			HTTPHelper.performHTTPRequest(dimUrl);
 
 			singleWindowBlind.setCurrentValue(Float.parseFloat(value));
 
@@ -117,7 +118,7 @@ public class WindowBlindService extends BaseService {
 			for (WindowBlind singleWindowBlind : windowBlinds) {
 				String dimUrl = singleWindowBlind.getDimUrl().replace("{DIMVALUE}", value);
 
-				performHTTPRequest(dimUrl);
+				HTTPHelper.performHTTPRequest(dimUrl);
 
 				singleWindowBlind.setCurrentValue(Float.parseFloat(value));
 
@@ -149,26 +150,7 @@ public class WindowBlindService extends BaseService {
 		em.getTransaction().commit();
 	}
 
-	private void performHTTPRequest(String url) {
-		try {
-			HttpGet getMethod = new HttpGet(url);
-			HttpClientBuilder clientBuilder = HttpClientBuilder.create();
 
-			String[] userPassword = url.split("@")[0].replace("http://", "").split(":");
-
-			CredentialsProvider credsProvider = new BasicCredentialsProvider();
-			credsProvider.setCredentials(new AuthScope(getMethod.getURI().getHost(), getMethod.getURI().getPort()),
-					new UsernamePasswordCredentials(userPassword[0], userPassword[1]));
-			clientBuilder.setDefaultCredentialsProvider(credsProvider);
-			HttpClient httpClient = clientBuilder.build();
-
-			httpClient.execute(getMethod);
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * call this method to set a specific dim value
@@ -200,7 +182,7 @@ public class WindowBlindService extends BaseService {
 			String calibrationUrl = windowBlind.getCalibrationUrl();
 
 			if (calibrationUrl != null && !("".equals(calibrationUrl))) {
-				performHTTPRequest(calibrationUrl);
+				HTTPHelper.performHTTPRequest(calibrationUrl);
 			}
 		}
 
