@@ -30,6 +30,8 @@ public class Light {
 	@ManyToOne
 	@JoinColumn(name = "ROOM_ID")
 	private Room room;
+	
+	private String name;
 
 	public boolean isPowerState() {
 		return powerState;
@@ -48,6 +50,14 @@ public class Light {
 
 	public void setRoom(Room room) {
 		this.room = room;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 }

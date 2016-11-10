@@ -89,6 +89,10 @@ public class Room {
 	}
 
 	public List<Light> getLights() {
+		if (lights==null) {
+			lights=new ArrayList<Light>();
+		}
+		
 		return lights;
 	}
 
