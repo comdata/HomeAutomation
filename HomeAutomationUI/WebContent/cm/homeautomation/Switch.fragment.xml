@@ -34,12 +34,22 @@
 					<List visible="false" id="lights" items="{
 			path: 'lights>/'
 		}">
-						<InputListItem label="{lights>name}" description="{lights>name}"
-							icon="sap-icon://lightbulb" iconDensityAware="false" iconInset="false">
-							<Label text="{lights>brightnessLevel}"></Label>
-							<Slider min="0" max="99" value="{lights>brightnessLevel}" width="100px"
-								change="handleLightChange" />
-						</InputListItem>
+						<items>
+							<InputListItem label="{lights>name}" description="{lights>name}"
+								icon="sap-icon://lightbulb" iconDensityAware="false" iconInset="false">
+								<Label text="{lights>brightnessLevel}"></Label>
+								<Slider min="0" max="99" value="{lights>brightnessLevel}"
+									width="100px" change="handleLightChange" />
+							</InputListItem>
+						</items>
+
+						<headerToolbar>
+							<Toolbar>
+								<Title text="Lights" level="H2" />
+								<ToolbarSpacer />
+
+							</Toolbar>
+						</headerToolbar>
 					</List>
 
 					<List visible="false" id="thermostats"
