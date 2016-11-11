@@ -229,6 +229,8 @@ sap.ui.define([
     					camera.tile.info=moment().format('DD.MM.YYYY HH:mm:ss');
     					that.resizeCameraPictures();
     					window.setTimeout(function() {that.resizeCameraPictures();}, 1000);
+    					window.setTimeout(function() {that.resizeCameraPictures();}, 5000);
+    					window.setTimeout(function() {that.resizeCameraPictures();}, 10000);
         				
     				};
    		 
