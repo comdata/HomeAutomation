@@ -205,9 +205,11 @@ sap.ui.define([
         },
         handleCameraEvent: function (data) {
         	console.log("got camera event: "+data.camera + " - camera id: "+data.camera.id);
+        	var that=this;
         	
         	$.each(this.cameras, function (i, camera) {
         		if (camera.id==data.camera.id) {
+        			
     				var parts=camera.tile.icon.split("?");
     				var newUrl="";
  
@@ -225,10 +227,9 @@ sap.ui.define([
     					console.log("new loaded image src: "+downloadingImage.src);
     					image.src = this.src;   
     					camera.tile.info=moment().format('DD.MM.YYYY HH:mm:ss');
- 
-        					$(".sapMStdTileIconDiv > img").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
-    					$(".sapMStdTileIconDiv > img").parent().parent().parent().children().find('div[class="sapMStdTileTitle"]').css("position", "relative").css("top", "-120px");
-    					$(".sapMStdTileInfoNone").css("position", "relative").css("top", "-30px");
+    					that.resizeCameraPictures();
+    					window.setTimeout(function() {that.resizeCameraPictures();}, 1000);
+        				
     				};
    		 
     				downloadingImage.src=imageURL;
@@ -236,6 +237,12 @@ sap.ui.define([
         	});
         	
         },
+        resizeCameraPictures: function () {
+        	$(".sapMStdTileIconDiv > img").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
+			$(".sapMStdTileIconDiv > img").parent().parent().parent().children().find('div[class="sapMStdTileTitle"]').css("position", "relative").css("top", "-120px");
+			$(".sapMStdTileInfoNone").css("position", "relative").css("top", "-30px");
+        },
+        
         handleDistanceSensor: function (data) {
         	if (this.distanceTile!=null) {
         		console.log("distance:"+data.distance);
