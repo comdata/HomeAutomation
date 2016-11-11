@@ -38,6 +38,9 @@ public class Room {
 	@OneToMany(mappedBy="room", cascade=CascadeType.ALL)
 	private List<Light> lights;
 	
+	@Column(name="VISIBLE")
+	private boolean visible;
+	
 	public String getRoomName() {
 		return roomName;
 	}
@@ -99,5 +102,13 @@ public class Room {
 
 	public void setLights(List<Light> lights) {
 		this.lights = lights;
+	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 }

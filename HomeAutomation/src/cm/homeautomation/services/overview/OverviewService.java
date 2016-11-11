@@ -25,7 +25,7 @@ public class OverviewService extends BaseService {
 		EntityManager em = EntityManagerService.getNewManager();
 
 		em.getTransaction().begin();
-		List<Room> results = em.createQuery("select r FROM Room r").getResultList();
+		List<Room> results = (List<Room>)em.createQuery("select r FROM Room r where r.visible=true").getResultList();
 
 		for (Room room : results) {
 
