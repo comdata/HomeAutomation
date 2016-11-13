@@ -8,12 +8,21 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
@@ -29,7 +38,7 @@ import cm.homeautomation.services.base.BaseService;
  *
  */
 @Path("actor")
-public class ActorService extends BaseService {
+public class ActorService extends BaseService implements MqttCallback {
 
 	private int port = 5000;
 
@@ -79,10 +88,10 @@ public class ActorService extends BaseService {
 				.setParameter("room", Long.parseLong(room)).getResultList();
 
 		switchStatuses.getSwitchStatuses().addAll(switchList);
-		
+
 		return switchStatuses;
 	}
-	
+
 	/**
 	 * press a switch via cron
 	 * 
@@ -137,10 +146,49 @@ public class ActorService extends BaseService {
 		actorMessage.setStatus(status);
 		actorMessage.setSwitchNo(singleSwitch.getSwitchNo());
 
+		sendMQTTMessage(actorMessage);
 		sendMulticastUDP(actorMessage);
 		SwitchPressResponse switchPressResponse = new SwitchPressResponse();
 		switchPressResponse.setSuccess(true);
 		return switchPressResponse;
+	}
+
+	private void sendMQTTMessage(ActorMessage actorMessage) {
+		
+	
+		try {
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			String json = ow.writeValueAsString(actorMessage);
+
+			UUID uuid = UUID.randomUUID();
+			String randomUUIDString = uuid.toString();
+
+			MqttClient client;
+			
+			client = new MqttClient("tcp://localhost:1883", "HomeAutomation/" + randomUUIDString);
+
+			client.setCallback(this);
+
+			MqttConnectOptions connOpt = new MqttConnectOptions();
+			connOpt.setAutomaticReconnect(true);
+			connOpt.setCleanSession(true);
+			connOpt.setKeepAliveInterval(60);
+			connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
+			// connOpt.setUserName(M2MIO_USERNAME);
+			// connOpt.setPassword(M2MIO_PASSWORD_MD5.toCharArray());
+
+			client.connect(connOpt);
+			
+			MqttMessage message=new MqttMessage();
+			message.setPayload(json.getBytes());
+			client.publish("/switch", message);
+		} catch (MqttException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -154,7 +202,7 @@ public class ActorService extends BaseService {
 		try {
 			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 			String json = ow.writeValueAsString(message);
-
+			
 			DatagramSocket socket = new DatagramSocket();
 
 			byte[] buf = new byte[4096];
@@ -203,6 +251,24 @@ public class ActorService extends BaseService {
 	 */
 	public static void setInstance(ActorService instance) {
 		ActorService.instance = instance;
+	}
+
+	@Override
+	public void connectionLost(Throwable arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deliveryComplete(IMqttDeliveryToken arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void messageArrived(String arg0, MqttMessage arg1) throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
