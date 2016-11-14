@@ -679,7 +679,28 @@ sap.ui.define([
                 + value, "", "GET", this.handleSwitchChanged, null, this);
             
             
-        },        
+        },
+        
+        handleLightSwitchChange: function(event) {
+        	var state=event.getSource().oPropagatedProperties.state;
+        	
+        	var lightsModel = sap.ui.getCore().getModel("lights");
+            var light = lightsModel.getProperty(event.getSource().oPropagatedProperties.oBindingContexts.lights.sPath);
+
+            if (state == true) {
+            	light.brightnessLevel=99;
+            } else {
+            	light.brightnessLevel=0;
+            }
+            
+            var value = light.brightnessLevel;
+            console.log("new value: " + value);
+
+            var oModel = new RESTService();
+            var lightId=( light.id==null) ? 0 : light.id;
+            oModel.loadDataAsync("/HomeAutomation/services/light/dim/" + lightId + "/"
+                + value, "", "GET", this.handleSwitchChanged, null, this);
+        },
         
         handleThermostatChange: function (event) {
             var thermostat = sap.ui.getCore().getModel("thermostats").getProperty(event.getSource().oPropagatedProperties.oBindingContexts.thermostats.sPath);

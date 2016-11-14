@@ -36,9 +36,10 @@
 							<InputListItem label="{windowBlinds>name}"
 								description="{windowBlinds>name}" icon="sap-icon://lightbulb"
 								iconDensityAware="false" iconInset="false">
-								<Label text="{windowBlinds>currentValue}"></Label>
+								
 								<Slider min="0" max="99" value="{windowBlinds>currentValue}"
 									width="100px" change="handleBlindChange" />
+								<Label text="{windowBlinds>currentValue}"></Label>
 							</InputListItem>
 						</items>
 						<headerToolbar>
@@ -56,9 +57,10 @@
 						<items>
 							<InputListItem label="{lights>name}" description="{lights>name}"
 								icon="sap-icon://lightbulb" iconDensityAware="false" iconInset="false">
-								<Label text="{lights>brightnessLevel}"></Label>
+								
 								<Switch state="{= ${lights>brightnessLevel}>0}" change="handleLightSwitchChange" /><Slider min="0" max="99" value="{lights>brightnessLevel}"
 									width="100px" change="handleLightChange" />
+								<Label text="{lights>brightnessLevel}"></Label>
 							</InputListItem>
 						</items>
 
