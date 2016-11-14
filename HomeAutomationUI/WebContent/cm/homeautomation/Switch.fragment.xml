@@ -12,10 +12,20 @@
 						items="{
 			path: 'switches>/switchStatuses'
 		}">
-						<InputListItem label="{switches>name}" description="{switches>name}"
-							icon="sap-icon://lightbulb" iconDensityAware="false" iconInset="false">
-							<Switch state="{switches>switchState}" change="handleSwitchChange" />
-						</InputListItem>
+						<items>
+							<InputListItem label="{switches>name}" description="{switches>name}"
+								icon="sap-icon://lightbulb" iconDensityAware="false" iconInset="false">
+								<Switch state="{switches>switchState}" change="handleSwitchChange" />
+							</InputListItem>
+						</items>
+						<headerToolbar>
+							<Toolbar>
+								<Title text="Schalter" level="H2" />
+								<ToolbarSpacer />
+
+							</Toolbar>
+						</headerToolbar>
+
 					</List>
 					<List visible="false" id="windowBlinds"
 
@@ -65,16 +75,18 @@
 
 						items="{
 			path: 'thermostats>/switchStatuses'
-		}"><items>
-						<InputListItem label="{thermostats>name}"
-							description="{thermostats>name}" icon="sap-icon://lightbulb"
-							iconDensityAware="false" iconInset="false">
-							<Label text="{thermostats>latestStatus}"></Label>
-							<Slider min="16" max="28" step="0.5"
-								value="{thermostats>latestStatus}" width="100px"
-								change="handleThermostatChange" progress="true"
-								showHandleTooltip="true" />
-						</InputListItem></items>
+		}">
+						<items>
+							<InputListItem label="{thermostats>name}"
+								description="{thermostats>name}" icon="sap-icon://lightbulb"
+								iconDensityAware="false" iconInset="false">
+								<Label text="{thermostats>latestStatus}"></Label>
+								<Slider min="16" max="28" step="0.5"
+									value="{thermostats>latestStatus}" width="100px"
+									change="handleThermostatChange" progress="true"
+									showHandleTooltip="true" />
+							</InputListItem>
+						</items>
 						<headerToolbar>
 							<Toolbar>
 								<Title text="Thermostat" level="H2" />
@@ -84,8 +96,8 @@
 						</headerToolbar>
 					</List>
 
-				<!-- 	<commons:ColorPicker id="lampe" name="Wohnzimmer"
-						change="handleColorPickerChange" /> -->
+					<!-- <commons:ColorPicker id="lampe" name="Wohnzimmer" change="handleColorPickerChange" 
+						/> -->
 				</content>
 			</Panel>
 
