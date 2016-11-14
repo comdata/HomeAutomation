@@ -682,7 +682,7 @@ sap.ui.define([
         },
         
         handleLightSwitchChange: function(event) {
-        	var state=event.getSource().oPropagatedProperties.state;
+        	var state=event.getSource().getProperty("state");
         	
         	var lightsModel = sap.ui.getCore().getModel("lights");
             var light = lightsModel.getProperty(event.getSource().oPropagatedProperties.oBindingContexts.lights.sPath);
