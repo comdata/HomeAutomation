@@ -693,6 +693,8 @@ sap.ui.define([
             	light.brightnessLevel=0;
             }
             
+            sap.ui.getCore().getModel("lights").refresh(false);
+            
             var value = light.brightnessLevel;
             console.log("new value: " + value);
 
