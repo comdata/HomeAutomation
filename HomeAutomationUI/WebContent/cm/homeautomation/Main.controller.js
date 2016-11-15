@@ -507,7 +507,7 @@ sap.ui.define([
                     infoState: sap.ui.core.ValueState.Success,
                     icon: "sap-icon://marketing-campaign"
                 };
-            this.getView().getModel().getData().overviewTiles.push(this.distanceTile);
+            //this.getView().getModel().getData().overviewTiles.push(this.distanceTile);
             this.getView().getModel().refresh(false);
         },
         /**
