@@ -58,7 +58,8 @@
 							<InputListItem label="{lights>name}" description="{lights>name}"
 								icon="sap-icon://lightbulb" iconDensityAware="false" iconInset="false">
 								
-								<Switch state="{= ${lights>brightnessLevel}>0}" change="handleLightSwitchChange" /><Slider min="0" max="99" value="{lights>brightnessLevel}"
+								<Switch state="{= ${lights>brightnessLevel}>0}" change="handleLightSwitchChange" />
+								<Slider min="0" max="99" value="{lights>brightnessLevel}"
 									width="100px" change="handleLightChange" />
 								<Label text="{lights>brightnessLevel}"></Label>
 							</InputListItem>
