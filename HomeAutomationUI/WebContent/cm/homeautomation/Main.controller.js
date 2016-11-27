@@ -904,6 +904,24 @@ sap.ui.define([
             var eDock = sap.ui.core.Popup.Dock;
             this._menu.open(this._bKeyboard, oButton, eDock.BeginTop, eDock.BeginBottom, oButton);
         },
+        _fullscreen: false,
+        toggleFullscreen: function (oEvent) {
+            var isFullscreen=this._fullscreen;
+
+            try {
+            	var mainDiv=document.getElementById("content");
+	            if (isFullscreen) {
+	            	this._fullscreen=false;
+	            	document.exitFullscreen()
+	            } else {
+	            	this._fullscreen=true;
+	            	mainDiv.requestFullscreen();
+	            }
+            } catch (e) {
+            	
+            }
+            
+        },
         /**
 		 * handle menu item press
 		 */

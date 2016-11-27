@@ -34,6 +34,7 @@
                 <ToolbarSpacer/>
                 <Text id="idMenuClock" text="Uhrzeit" />
                 <ToolbarSpacer/>
+                <Button id="fullscreen" icon="sap-icon://full-screen" press="toggleFullscreen" />
                 <Button id="openMenu" icon="sap-icon://menu" press="handlePressOpenMenu" />
                 <Button icon="sap-icon://refresh" press="loadData" />
 
