@@ -1,0 +1,12 @@
+{
+  "name": "HomeAutomation",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.html",
+  "author": "Christoph Mertins",
+  "license": "Not specified",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-openui5": "^0.10.0"
+   }
+ }
