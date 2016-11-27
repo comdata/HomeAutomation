@@ -911,6 +911,7 @@ sap.ui.define([
             try {
 	            if (isFullscreen) {
 	            	this._fullscreen=false;
+	            	document.webkitExitFullscreen();
 	            	document.exitFullscreen()
 	            } else {
 	            	this._fullscreen=true;
