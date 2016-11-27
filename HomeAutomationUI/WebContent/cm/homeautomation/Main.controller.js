@@ -904,7 +904,14 @@ sap.ui.define([
             var eDock = sap.ui.core.Popup.Dock;
             this._menu.open(this._bKeyboard, oButton, eDock.BeginTop, eDock.BeginBottom, oButton);
         },
+        /**
+         * full screen toggle state
+         */
         _fullscreen: false,
+        
+        /**
+         * toggle full screen view on button press
+         */
         toggleFullscreen: function (oEvent) {
             var isFullscreen=this._fullscreen;
 
