@@ -909,13 +909,12 @@ sap.ui.define([
             var isFullscreen=this._fullscreen;
 
             try {
-            	var mainDiv=document.getElementById("content");
 	            if (isFullscreen) {
 	            	this._fullscreen=false;
 	            	document.exitFullscreen()
 	            } else {
 	            	this._fullscreen=true;
-	            	mainDiv.requestFullscreen();
+	            	document.getElementsByTagName("body")[0].webkitRequestFullscreen();
 	            }
             } catch (e) {
             	
