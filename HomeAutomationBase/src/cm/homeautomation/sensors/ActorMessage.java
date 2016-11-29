@@ -8,6 +8,8 @@ public class ActorMessage {
 	private String houseCode;
 	private String switchNo;
 	private String status;
+	private int statusBool;
+	
 	public String getMessageType() {
 		return messageType;
 	}
@@ -31,5 +33,13 @@ public class ActorMessage {
 	}
 	public void setStatus(String status) {
 		this.status = status;
+		
+		setStatusBool((status.equals("ON") ? 1: 0));
+	}
+	public int getStatusBool() {
+		return statusBool;
+	}
+	public void setStatusBool(int statusBool) {
+		this.statusBool = statusBool;
 	}
 }
