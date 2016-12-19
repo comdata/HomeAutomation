@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
@@ -80,8 +81,9 @@ public class CameraService extends BaseService {
 		List<Camera> resultList = em.createQuery("select c from Camera c where c.id=:id")
 				.setParameter("id", Long.parseLong(args[0])).getResultList();
 		if (resultList != null) {
-			try {
-				for (Camera camera : resultList) {
+
+			for (Camera camera : resultList) {
+				try {
 					em.getTransaction().begin();
 					ByteArrayOutputStream bos = new ByteArrayOutputStream();
 					final BufferedImage image = resize(new URL(camera.getIcon()),
@@ -95,14 +97,28 @@ public class CameraService extends BaseService {
 					CameraImageUpdateEvent cameraEvent = new CameraImageUpdateEvent();
 					cameraEvent.setCamera(camera);
 					EventObject event = new EventObject(cameraEvent);
-					
 
 					EventBusService.getEventBus().post(event);
-				}
+				} catch (IOException e) {
+					try {
+						em.getTransaction().begin();
+						ByteArrayOutputStream bos = new ByteArrayOutputStream();
+						final BufferedImage image = resize(new File("resource/noimage.png").toURI().toURL(),
+								new Dimension(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
+						ImageIO.write(image, "jpg", bos);
+						byte[] cameraSnapshot = bos.toByteArray();
 
-			} catch (IOException e) {
-				e.printStackTrace();
+						camera.setImageSnapshot(cameraSnapshot);
+						em.merge(camera);
+						em.getTransaction().commit();
+
+						e.printStackTrace();
+					} catch (IOException ee) {
+
+					}
+				}
 			}
+
 		}
 	}
 
