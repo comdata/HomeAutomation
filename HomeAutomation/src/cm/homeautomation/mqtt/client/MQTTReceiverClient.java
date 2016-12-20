@@ -69,7 +69,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 
 		MqttConnectOptions connOpt = new MqttConnectOptions();
 		connOpt.setAutomaticReconnect(true);
-		connOpt.setCleanSession(true);
+		//connOpt.setCleanSession(true);
 		connOpt.setKeepAliveInterval(60);
 		connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
 		// connOpt.setUserName(M2MIO_USERNAME);
