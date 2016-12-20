@@ -158,7 +158,10 @@ sap.ui.define([
             if (newData.clazz=="MailData") {
             	this.handleMailEvent(newData.data);
             }
-            	
+
+            if (newData.clazz=="PowerMeterIntervalData") {
+            	this.handlePowerEvent(newData.data);
+            }   
             
             console.log(evt.data);
         },
@@ -194,7 +197,10 @@ sap.ui.define([
                 $(".sapMStdTileIconDiv > img[src='/HomeAutomation/cameraproxy']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
             }
         },
-
+        handlePowerEvent: function (data) {
+        		this.powerMeterTile.info=data.oneMinute+"/"+data.fiveMinutes+"/"+data.sixtyMinutes;
+        		 this.getView().getModel().refresh(false);
+        },
         handleMailEvent: function (data) {
         	$.each(this._mailTiles, function (index, value) {
         		if (value.title==data.account) {
@@ -510,6 +516,17 @@ sap.ui.define([
             //this.getView().getModel().getData().overviewTiles.push(this.distanceTile);
             this.getView().getModel().refresh(false);
         },
+        _initPowerMeterTile: function() {
+        	this.powerMeterTile = {
+                    tileType: "powermeter",
+                    roomId: "meter",
+                    title: "power",
+                    numberUnit: "kWh",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://energy-saving-lightbulb"
+                };
+        },
         /**
 		 * handle successful data loading for overview tiles
 		 * 
@@ -525,6 +542,7 @@ sap.ui.define([
             this._initPlanesTile();
             this._initTransmissionTile();
             this._initDistanceTile();
+            this._initPowerMeterTile();
             this._initMailTile();
         },
         _initMailTile: function() {
