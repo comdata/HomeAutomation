@@ -523,7 +523,7 @@ sap.ui.define([
         	this.powerMeterTileOneMinute = {
                     tileType: "powermeter",
                     roomId: "meter",
-                    title: "1Minute",
+                    title: "1 Minute",
                     numberUnit: "kWh",
                     eventHandler: null,
                     infoState: sap.ui.core.ValueState.Success,
