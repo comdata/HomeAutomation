@@ -51,23 +51,23 @@ public class PowerMeterSensor {
 			em.merge(powerMeterPing);
 			em.getTransaction().commit();
 
-			BigDecimal[] oneMinute = (BigDecimal[]) em
+			BigDecimal oneMinute = (BigDecimal) em
 					.createNativeQuery(
 							"select count(*)/1000*60 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 1 MINUTE;")
 					.getSingleResult();
-			BigDecimal[] fiveMinute = (BigDecimal[]) em
+			BigDecimal fiveMinute = (BigDecimal) em
 					.createNativeQuery(
 							"select count(*)/1000*12 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 5 MINUTE;")
 					.getSingleResult();
-			BigDecimal[] sixtyMinute = (BigDecimal[]) em
+			BigDecimal sixtyMinute = (BigDecimal) em
 					.createNativeQuery(
 							"select count(*)/1000 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 60 MINUTE;")
 					.getSingleResult();
 
 			PowerMeterIntervalData powerMeterIntervalData = new PowerMeterIntervalData();
-			powerMeterIntervalData.setOneMinute(oneMinute[0].floatValue());
-			powerMeterIntervalData.setFiveMinute(fiveMinute[0].floatValue());
-			powerMeterIntervalData.setSixtyMinute(sixtyMinute[0].floatValue());
+			powerMeterIntervalData.setOneMinute(oneMinute.floatValue());
+			powerMeterIntervalData.setFiveMinute(fiveMinute.floatValue());
+			powerMeterIntervalData.setSixtyMinute(sixtyMinute.floatValue());
 
 			EventObject intervalEventObject = new EventObject(powerMeterIntervalData);
 			EventBusService.getEventBus().post(intervalEventObject);
