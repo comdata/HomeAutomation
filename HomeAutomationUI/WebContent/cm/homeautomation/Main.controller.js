@@ -579,7 +579,7 @@ sap.ui.define([
                     icon: "sap-icon://energy-saving-lightbulb"
                 };
         	
-            this.getView().getModel().getData().overviewTiles.push(this.powerMeterTileLastSevenDayss);
+            this.getView().getModel().getData().overviewTiles.push(this.powerMeterTileLastSevenDays);
             this.getView().getModel().refresh(false);
         },
         /**
