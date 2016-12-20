@@ -198,7 +198,8 @@ sap.ui.define([
             }
         },
         handlePowerEvent: function (data) {
-        		this.powerMeterTile.info=data.oneMinute+"/"+data.fiveMinute+"/"+data.sixtyMinute;
+        		this.powerMeterTile.number=data.oneMinute+"/"+data.fiveMinute+"/"+data.sixtyMinute;
+        		this.powerMeterTile.info="1 / 5 / 60 minutes";
         		 this.getView().getModel().refresh(false);
         },
         handleMailEvent: function (data) {
