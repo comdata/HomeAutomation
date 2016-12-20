@@ -559,7 +559,7 @@ sap.ui.define([
         	this.powerMeterTileYesterday = {
                     tileType: "powermeter",
                     roomId: "meter",
-                    title: "Gestern Gesamt"",
+                    title: "Gestern Gesamt",
                     numberUnit: "kWh",
                     eventHandler: null,
                     infoState: sap.ui.core.ValueState.Success,
