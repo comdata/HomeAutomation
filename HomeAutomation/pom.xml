@@ -47,7 +47,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<sapui5.version>1.38.4</sapui5.version>
-		<version.jersey>2.22.2</version.jersey>
+		<version.jersey>2.25</version.jersey>
 		<version.servlet.api>4.0.0-b01</version.servlet.api>
 	</properties>
 
