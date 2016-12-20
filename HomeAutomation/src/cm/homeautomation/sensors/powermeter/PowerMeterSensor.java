@@ -71,6 +71,12 @@ public class PowerMeterSensor {
 			BigDecimal lastSevenDays = (BigDecimal) em
 					.createNativeQuery("select count(*)/1000 from POWERMETERPING where date(TIMESTAMP)=CURDATE() - 7;")
 					.getSingleResult();
+			
+			oneMinute.setScale(2);
+			fiveMinute.setScale(2);
+			sixtyMinute.setScale(2);
+			yesterday.setScale(2);
+			lastSevenDays.setScale(2);
 
 			PowerMeterIntervalData powerMeterIntervalData = new PowerMeterIntervalData();
 			powerMeterIntervalData.setOneMinute(oneMinute.floatValue());
