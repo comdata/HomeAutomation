@@ -198,8 +198,10 @@ sap.ui.define([
             }
         },
         handlePowerEvent: function (data) {
-        		this.powerMeterTile.number=data.oneMinute+"/"+data.fiveMinute+"/"+data.sixtyMinute;
-        		this.powerMeterTile.info="1 / 5 / 60 minutes";
+        		this.powerMeterTileOneMinute.number=data.oneMinute;
+        		this.powerMeterTileFiveMinute.number=data.fiveMinute;
+        		this.powerMeterTileSixtyMinute.number=data.sixtyMinute;
+        		//this.powerMeterTile.info="1 / 5 / 60 minutes";
         		 this.getView().getModel().refresh(false);
         },
         handleMailEvent: function (data) {
@@ -518,16 +520,37 @@ sap.ui.define([
             this.getView().getModel().refresh(false);
         },
         _initPowerMeterTile: function() {
-        	this.powerMeterTile = {
+        	this.powerMeterTileOneMinute = {
                     tileType: "powermeter",
                     roomId: "meter",
-                    title: "power",
+                    title: "1Minute",
                     numberUnit: "kWh",
                     eventHandler: null,
                     infoState: sap.ui.core.ValueState.Success,
                     icon: "sap-icon://energy-saving-lightbulb"
                 };
-            this.getView().getModel().getData().overviewTiles.push(this.powerMeterTile);
+            this.getView().getModel().getData().overviewTiles.push(this.powerMeterTileOneMinute);
+
+        	this.powerMeterTileFiveMinute = {
+                    tileType: "powermeter",
+                    roomId: "meter",
+                    title: "5 Minuten",
+                    numberUnit: "kWh",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://energy-saving-lightbulb"
+                };
+            this.getView().getModel().getData().overviewTiles.push(this.powerMeterTileFiveMinute);
+        	this.powerMeterTileSixtyMinute = {
+                    tileType: "powermeter",
+                    roomId: "meter",
+                    title: "60 Minuten",
+                    numberUnit: "kWh",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://energy-saving-lightbulb"
+                };
+            this.getView().getModel().getData().overviewTiles.push(this.powerMeterTileSixtyMinute);
             this.getView().getModel().refresh(false);
         },
         /**
