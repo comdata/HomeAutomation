@@ -514,7 +514,7 @@ sap.ui.define([
                     infoState: sap.ui.core.ValueState.Success,
                     icon: "sap-icon://marketing-campaign"
                 };
-            //this.getView().getModel().getData().overviewTiles.push(this.distanceTile);
+            // this.getView().getModel().getData().overviewTiles.push(this.distanceTile);
             this.getView().getModel().refresh(false);
         },
         _initPowerMeterTile: function() {
@@ -836,7 +836,7 @@ sap.ui.define([
                 }
                 this.planesView.open();
                 $(".sapMDialogScrollCont").css("height", "100%");
-            } else {
+            } else if (tileType=="room") {
                 if (roomId != null && roomId) {
 
                     this.loadRoom();
@@ -926,13 +926,13 @@ sap.ui.define([
             this._menu.open(this._bKeyboard, oButton, eDock.BeginTop, eDock.BeginBottom, oButton);
         },
         /**
-         * full screen toggle state
-         */
+		 * full screen toggle state
+		 */
         _fullscreen: false,
         
         /**
-         * toggle full screen view on button press
-         */
+		 * toggle full screen view on button press
+		 */
         toggleFullscreen: function (oEvent) {
             var isFullscreen=this._fullscreen;
 
