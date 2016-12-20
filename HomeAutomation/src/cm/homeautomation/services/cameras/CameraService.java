@@ -100,8 +100,10 @@ public class CameraService extends BaseService {
 
 					EventBusService.getEventBus().post(event);
 				} catch (IOException e) {
+					em.getTransaction().rollback();
 					loadNoImage(args, em, camera);
 				} catch (RuntimeException e) {
+					em.getTransaction().rollback();
 					loadNoImage(args, em, camera);
 				}
 			}
