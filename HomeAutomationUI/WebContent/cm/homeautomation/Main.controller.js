@@ -198,7 +198,7 @@ sap.ui.define([
             }
         },
         handlePowerEvent: function (data) {
-        		this.powerMeterTile.info=data.oneMinute+"/"+data.fiveMinutes+"/"+data.sixtyMinutes;
+        		this.powerMeterTile.info=data.oneMinute+"/"+data.fiveMinute+"/"+data.sixtyMinute;
         		 this.getView().getModel().refresh(false);
         },
         handleMailEvent: function (data) {
@@ -526,6 +526,8 @@ sap.ui.define([
                     infoState: sap.ui.core.ValueState.Success,
                     icon: "sap-icon://energy-saving-lightbulb"
                 };
+            this.getView().getModel().getData().overviewTiles.push(this.powerMeterTile);
+            this.getView().getModel().refresh(false);
         },
         /**
 		 * handle successful data loading for overview tiles
