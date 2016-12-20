@@ -100,24 +100,28 @@ public class CameraService extends BaseService {
 
 					EventBusService.getEventBus().post(event);
 				} catch (IOException e) {
-					try {
-						em.getTransaction().begin();
-						ByteArrayOutputStream bos = new ByteArrayOutputStream();
-						final BufferedImage image = resize(new File("resource/noimage.png").toURI().toURL(),
-								new Dimension(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
-						ImageIO.write(image, "jpg", bos);
-						byte[] cameraSnapshot = bos.toByteArray();
-
-						camera.setImageSnapshot(cameraSnapshot);
-						em.merge(camera);
-						em.getTransaction().commit();
-
-						e.printStackTrace();
-					} catch (IOException ee) {
-
-					}
+					loadNoImage(args, em, camera);
+				} catch (RuntimeException e) {
+					loadNoImage(args, em, camera);
 				}
 			}
+
+		}
+	}
+
+	private static void loadNoImage(String[] args, EntityManager em, Camera camera) {
+		try {
+			em.getTransaction().begin();
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			final BufferedImage image = resize(new File("resource/noimage.png").toURI().toURL(),
+					new Dimension(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
+			ImageIO.write(image, "jpg", bos);
+			byte[] cameraSnapshot = bos.toByteArray();
+
+			camera.setImageSnapshot(cameraSnapshot);
+			em.merge(camera);
+			em.getTransaction().commit();
+		} catch (IOException ee) {
 
 		}
 	}
