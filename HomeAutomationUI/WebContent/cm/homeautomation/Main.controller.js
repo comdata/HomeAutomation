@@ -201,6 +201,10 @@ sap.ui.define([
         		this.powerMeterTileOneMinute.number=data.oneMinute;
         		this.powerMeterTileFiveMinute.number=data.fiveMinute;
         		this.powerMeterTileSixtyMinute.number=data.sixtyMinute;
+        		this.powerMeterTileSixtyMinute.number=data.sixtyMinute;
+        		this.powerMeterTileYesterday.number=data.yesterday;
+        		this.powerMeterTileLastSevenDays.number=data.lastSevenDays;
+        		
         		//this.powerMeterTile.info="1 / 5 / 60 minutes";
         		 this.getView().getModel().refresh(false);
         },
@@ -550,7 +554,32 @@ sap.ui.define([
                     infoState: sap.ui.core.ValueState.Success,
                     icon: "sap-icon://energy-saving-lightbulb"
                 };
-            this.getView().getModel().getData().overviewTiles.push(this.powerMeterTileSixtyMinute);
+        	this.getView().getModel().getData().overviewTiles.push(this.powerMeterTileSixtyMinute);
+        	
+        	this.powerMeterTileYesterday = {
+                    tileType: "powermeter",
+                    roomId: "meter",
+                    title: "Gestern Gesamt"",
+                    numberUnit: "kWh",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://energy-saving-lightbulb"
+                };
+        	
+            this.getView().getModel().getData().overviewTiles.push(this.powerMeterTileYesterday);
+
+            
+        	this.powerMeterTileLastSevenDays = {
+                    tileType: "powermeter",
+                    roomId: "meter",
+                    title: "Letzte 7 Tage"",
+                    numberUnit: "kWh",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://energy-saving-lightbulb"
+                };
+        	
+            this.getView().getModel().getData().overviewTiles.push(this.powerMeterTileLastSevenDayss);
             this.getView().getModel().refresh(false);
         },
         /**

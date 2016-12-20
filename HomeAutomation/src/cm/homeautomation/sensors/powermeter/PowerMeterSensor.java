@@ -64,11 +64,23 @@ public class PowerMeterSensor {
 							"select count(*)/1000 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 60 MINUTE;")
 					.getSingleResult();
 
+			BigDecimal yesterday = (BigDecimal) em
+					.createNativeQuery("select count(*)/1000 from POWERMETERPING where date(TIMESTAMP)=CURDATE() - 1;")
+					.getSingleResult();
+
+			BigDecimal lastSevenDays = (BigDecimal) em
+					.createNativeQuery("select count(*)/1000 from POWERMETERPING where date(TIMESTAMP)=CURDATE() - 7;")
+					.getSingleResult();
+
 			PowerMeterIntervalData powerMeterIntervalData = new PowerMeterIntervalData();
 			powerMeterIntervalData.setOneMinute(oneMinute.floatValue());
 			powerMeterIntervalData.setFiveMinute(fiveMinute.floatValue());
 			powerMeterIntervalData.setSixtyMinute(sixtyMinute.floatValue());
+			powerMeterIntervalData.setYesterday(yesterday.floatValue());
+			powerMeterIntervalData.setLastSevenDays(lastSevenDays.floatValue());
 
+			
+			
 			EventObject intervalEventObject = new EventObject(powerMeterIntervalData);
 			EventBusService.getEventBus().post(intervalEventObject);
 
