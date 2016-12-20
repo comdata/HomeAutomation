@@ -121,8 +121,10 @@ public class CameraService extends BaseService {
 			camera.setImageSnapshot(cameraSnapshot);
 			em.merge(camera);
 			em.getTransaction().commit();
-		} catch (IOException ee) {
-
+		} catch (IOException e) {
+			e.printStackTrace();
+		}catch (RuntimeException e) {
+			e.printStackTrace();
 		}
 	}
 
