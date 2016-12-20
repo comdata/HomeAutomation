@@ -572,7 +572,7 @@ sap.ui.define([
         	this.powerMeterTileLastSevenDays = {
                     tileType: "powermeter",
                     roomId: "meter",
-                    title: "Letzte 7 Tage"",
+                    title: "Letzte 7 Tage",
                     numberUnit: "kWh",
                     eventHandler: null,
                     infoState: sap.ui.core.ValueState.Success,
