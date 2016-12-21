@@ -57,9 +57,9 @@ sap.ui.define([
         loadDataInProgress: false,
         initWebSocket: function (uri, callback, socket, state) {
 
-           
+
             this.wsClose(socket, state);
-           
+
             state="CONNECTING";
             socket = new WebSocket(uri+"/"+this._wsGuid);
             var controller = this;
@@ -89,16 +89,16 @@ sap.ui.define([
         	 } catch (e) {
 
         	 }
-        	
+
         },
         wsOnClose: function (evt, uri, callback, socket, state) {
         	console.log("socket "+uri+" closed");
         	this.wsClose(socket, state);
             var that=this;
-            
+
             if (state=="DISCONNECTED") {
             	window.setTimeout(function () {
-            		
+
             		that.initWebSocket(uri, callback, socket, state);
             	}, 30000);
             }
@@ -129,40 +129,44 @@ sap.ui.define([
                 sap.ui.getCore().setModel(switchModel, "switches");
             }
         },
-        
+
         wsEventBusOnMessage: function (evt) {
             var newData = JSON.parse(evt.data);
             if (newData.clazz=="TransmissionStatusData") {
             	this.handleTransmissionStatus(newData.data);
             }
-            
+
             if (newData.clazz=="DistanceSensorData") {
-            	
+
             	this.handleDistanceSensor(newData.data);
             }
-            
+
             if (newData.clazz=="NetworkScannerHostFoundMessage") {
-            	
+
             	this.handleNetworkMonitor(newData.data.host);
             }
-            
+
             if  (newData.clazz=="SwitchEvent") {
-            	
+
             	this.handleSwitchEvent(newData.data.host);
             }
             if  (newData.clazz=="CameraImageUpdateEvent") {
-            	
+
             	this.handleCameraEvent(newData.data);
-            }            
-            
+            }
+
             if (newData.clazz=="MailData") {
             	this.handleMailEvent(newData.data);
             }
 
             if (newData.clazz=="PowerMeterIntervalData") {
             	this.handlePowerEvent(newData.data);
-            }   
-            
+            }
+
+            if (newData.clazz=="WindowStateData") {
+              this.handleWindowStateEvent(newData.data);
+            }
+
             console.log(evt.data);
         },
         wsOverviewOnMessage: function (evt) {
@@ -197,6 +201,17 @@ sap.ui.define([
                 $(".sapMStdTileIconDiv > img[src='/HomeAutomation/cameraproxy']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
             }
         },
+        handleWindowStateEvent: function (data) {
+          data={"state":0,"mac":"5c:cf:7f:88:e8:91","room":{"id":14,"roomName":"Flur","sensors":[],"switches":[],"devices":[{"id":6,"mac":"5c:cf:7f:88:e8:91","name":"Haustür"}],"lights":[],"visible":false}};
+
+        	   var state=data.state;
+             console.log("Window State changed: "+state+" for room "+data.room.roomName);
+
+
+        		//this.powerMeterTile.info="1 / 5 / 60 minutes";
+        		 this.getView().getModel().refresh(false);
+        },
+
         handlePowerEvent: function (data) {
         		this.powerMeterTileOneMinute.number=data.oneMinute;
         		this.powerMeterTileFiveMinute.number=data.fiveMinute;
@@ -204,65 +219,65 @@ sap.ui.define([
         		this.powerMeterTileSixtyMinute.number=data.sixtyMinute;
         		this.powerMeterTileYesterday.number=data.yesterday;
         		this.powerMeterTileLastSevenDays.number=data.lastSevenDays;
-        		
+
         		//this.powerMeterTile.info="1 / 5 / 60 minutes";
         		 this.getView().getModel().refresh(false);
         },
         handleMailEvent: function (data) {
         	$.each(this._mailTiles, function (index, value) {
         		if (value.title==data.account) {
-        			value.info=data.unreadMessages+" - "+data.newMessages;        			
+        			value.info=data.unreadMessages+" - "+data.newMessages;
         		}
         	});
-        	
+
         },
         handleCameraEvent: function (data) {
         	console.log("got camera event: "+data.camera + " - camera id: "+data.camera.id);
         	var that=this;
-        	
+
         	$.each(this.cameras, function (i, camera) {
         		if (camera.id==data.camera.id) {
-        			
+
     				var parts=camera.tile.icon.split("?");
     				var newUrl="";
- 
+
         				for (var i=0; i<parts.length;i++) {
         					if (parts[i].indexOf("random=")==-1) {
     						newUrl+=parts[i]+"?";
     					}
     				}
     				var imageURL = newUrl+"random=" + Math.random();
- 
+
         				var image = $(".sapMStdTileIconDiv > img[src*='"+newUrl+"']")[0];
     				console.log("old image src: "+image.src);
     				var downloadingImage = new Image();
     				downloadingImage.onload = function(){
     					console.log("new loaded image src: "+downloadingImage.src);
-    					image.src = this.src;   
+    					image.src = this.src;
     					camera.tile.info=moment().format('DD.MM.YYYY HH:mm:ss');
     					that.resizeCameraPictures();
     					window.setTimeout(function() {that.resizeCameraPictures();}, 1000);
     					window.setTimeout(function() {that.resizeCameraPictures();}, 5000);
     					window.setTimeout(function() {that.resizeCameraPictures();}, 10000);
-        				
+
     				};
-   		 
+
     				downloadingImage.src=imageURL;
-        		} 
+        		}
         	});
-        	
+
         },
         resizeCameraPictures: function () {
         	$(".sapMStdTileIconDiv > img").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
 			$(".sapMStdTileIconDiv > img").parent().parent().parent().children().find('div[class="sapMStdTileTitle"]').css("position", "relative").css("top", "-120px");
 			$(".sapMStdTileInfoNone").css("position", "relative").css("top", "-30px");
         },
-        
+
         handleDistanceSensor: function (data) {
         	if (this.distanceTile!=null) {
         		console.log("distance:"+data.distance);
         		this.distanceTile.number=Number(parseFloat(data.distance)).toFixed(2);
-      
+
         		this.getView().getModel().refresh(false);
         	}
         },
@@ -272,7 +287,7 @@ sap.ui.define([
         		this.transmissionTile.info=Math.round(data.downloadSpeed/1024*100)/100+" / "+Math.round(data.uploadSpeed/1024*100)/100 + " kb";
         	}
         },
-        
+
     	handleNetworkMonitor: function(data) {
     		// create array if required
     		var element = {
@@ -283,7 +298,7 @@ sap.ui.define([
     		console.log("data.ip: "+data.ip+" element.ipAddress: "+element.ipAddress);
     		var foundElement = this._findInNetworkDeviceList(element);
     		console.log("foundElement:"+foundElement);
-    		
+
     		if (foundElement!=null) {
     			console.log("updating element")
     			foundElement.hostName=element.hostName;
@@ -294,9 +309,9 @@ sap.ui.define([
     		}
 
     		this._networkDevicesTile.number=this._networkDevicesList.length;
-    		
+
     		this.getView().getModel().refresh(false);
-    		
+
     	},
     	_findInNetworkDeviceList: function (object) {
     		var foundElement=null;
@@ -311,7 +326,7 @@ sap.ui.define([
 
         /**
 		 * initialize
-		 * 
+		 *
 		 * @param evt
 		 */
         onInit: function (evt) {
@@ -335,13 +350,13 @@ sap.ui.define([
             jQuery.sap.require("sap.m.MessageToast");
             this.messageToast = sap.m.MessageToast;
 
-            
+
             var imageModel = new sap.ui.model.json.JSONModel({
                 tiles: [""]
             });
 
             sap.ui.getCore().setModel(imageModel, "imageTile");
-            
+
             this.initializeAllWebsockets();
         },
         /**
@@ -354,7 +369,7 @@ sap.ui.define([
 
         /**
 		 * perform data loading
-		 * 
+		 *
 		 */
         loadData: function () {
 
@@ -372,9 +387,9 @@ sap.ui.define([
                     numberUnit: "Anzahl",
                     eventHandler: null,
                     infoState: sap.ui.core.ValueState.Success,
-                    icon: "sap-icon://laptop"	
+                    icon: "sap-icon://laptop"
 			};
-			
+
 			this.getView().getModel().getData().overviewTiles.push(this._networkDevicesTile);
 			this.getView().getModel().refresh(false);
         },
@@ -433,33 +448,33 @@ sap.ui.define([
                                    stream: "/HomeAutomation/newCameraProxy?_ip=77&_port=8090&_action=stream"
                                }
                        	}
-                       	
 
-                       	
-                       	
+
+
+
                        ];
 
             var camerasDisabled=jQuery.sap.getUriParameters().get("disableCamera");
-            
+
             camerasDisabled=(camerasDisabled=="true") ? true: false;
-            
+
             if (!camerasDisabled) {
 	            $.each(this.cameras, function (i, camera) {
 	            	camera.tile.info=moment().format('DD.MM.YYYY HH:mm:ss');
 	            	camera.tile.icon=camera.tile.icon+"?random=" + Math.random();
 	            	subject.getView().getModel().getData().overviewTiles.push(camera.tile);
 	            });
-	            
+
 	            this.getView().getModel().refresh(false);
-	            
+
 	            $.each(this.cameras, function (i, camera) {
 	            		$(".sapMStdTileIconDiv > img").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
 	            	});
 	            //
 	            $(".sapMStdTileIconDiv > img").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
 	            $(".sapMStdTileIconDiv > img").parent().parent().parent().children().find('div[class="sapMStdTileTitle"]').css("position", "relative").css("top", "-120px");
-	            $(".sapMStdTileInfoNone").css("position", "relative").css("top", "-30px");            
-	            
+	            $(".sapMStdTileInfoNone").css("position", "relative").css("top", "-30px");
+
 	            $.each($(".sapMStdTileIconDiv > img"), function(i, image) {
 	            	console.log("img:"+image.src);
 	            	image.onload=function () {
@@ -468,13 +483,13 @@ sap.ui.define([
 	                 	$(".sapMStdTileInfoNone").css("position", "relative").css("top", "-30px");
 	            	};
 	            });
-	            
+
             }
             this.getView().getModel().refresh(false);
         },
         _initPlanesTile: function () {
             var subject=this;
-            
+
             this.planesTile = {
                     tileType: "planes",
                     roomId: "planes",
@@ -486,7 +501,7 @@ sap.ui.define([
                 };
             var planesTile = this.planesTile;
             this.planesTimer=null;
-            
+
             if (this.planesTimer == null) {
                 this.updatePlanesTile.apply(this, [subject, planesTile]);
                 this.planesTimer = window.setInterval(function () {
@@ -555,7 +570,7 @@ sap.ui.define([
                     icon: "sap-icon://energy-saving-lightbulb"
                 };
         	this.getView().getModel().getData().overviewTiles.push(this.powerMeterTileSixtyMinute);
-        	
+
         	this.powerMeterTileYesterday = {
                     tileType: "powermeter",
                     roomId: "meter",
@@ -565,10 +580,10 @@ sap.ui.define([
                     infoState: sap.ui.core.ValueState.Success,
                     icon: "sap-icon://energy-saving-lightbulb"
                 };
-        	
+
             this.getView().getModel().getData().overviewTiles.push(this.powerMeterTileYesterday);
 
-            
+
         	this.powerMeterTileLastSevenDays = {
                     tileType: "powermeter",
                     roomId: "meter",
@@ -578,20 +593,20 @@ sap.ui.define([
                     infoState: sap.ui.core.ValueState.Success,
                     icon: "sap-icon://energy-saving-lightbulb"
                 };
-        	
+
             this.getView().getModel().getData().overviewTiles.push(this.powerMeterTileLastSevenDays);
             this.getView().getModel().refresh(false);
         },
         /**
 		 * handle successful data loading for overview tiles
-		 * 
+		 *
 		 * @param event
 		 * @param model
 		 */
         handleDataLoaded: function (event, model, jsonModelData) {
             this.getView().setModel(model);
             this.overviewData = jsonModelData;
-            
+
             this._initNetworkTile();
             this._initCameraTiles();
             this._initPlanesTile();
@@ -602,7 +617,7 @@ sap.ui.define([
         },
         _initMailTile: function() {
         	var subject=this;
-        	
+
         	this._mailTiles=[];
             $.getJSON("/HomeAutomation/services/mail/get", function (result) {
 
@@ -661,7 +676,7 @@ sap.ui.define([
 
             sap.ui.getCore().setModel(model, "windowBlinds");
         },
-        
+
         handleLightsLoaded: function (event, model) {
 
             var lightsList = sap.ui.getCore().byId("lights");
@@ -716,28 +731,28 @@ sap.ui.define([
             var windowBlindId=( windowBlind.id==null) ? 0 : windowBlind.id;
             oModel.loadDataAsync("/HomeAutomation/services/windowBlinds/setDim/" + windowBlindId + "/"
                 + value+"/"+windowBlind.type+"/"+windowBlind.room, "", "GET", this.handleSwitchChanged, null, this);
-            
+
             /**
 			 * set value directly to all other window blinds
-			 * 
+			 *
 			 */
             if (windowBlind.type=="ALL_AT_ONCE") {
-            	
+
             	var windowBlinds=windowBlindsModel.getProperty("/");
-            	
+
             	for(var i = 0; i < windowBlinds.windowBlinds.length; i++) {
-            		
+
             		var singleWindowBlind=windowBlinds.windowBlinds[i];
-            		
+
             		if (singleWindowBlind.type=="SINGLE") {
             			singleWindowBlind.currentValue=value;
             		}
             	}
             	windowBlindsModel.setData(windowBlinds);
             	sap.ui.getCore().setModel(windowBlindsModel, "windowBlinds");
-            	
+
             }
-            
+
         },
         handleLightChange: function (event) {
         	var lightsModel = sap.ui.getCore().getModel("lights");
@@ -750,13 +765,13 @@ sap.ui.define([
             var lightId=( light.id==null) ? 0 : light.id;
             oModel.loadDataAsync("/HomeAutomation/services/light/dim/" + lightId + "/"
                 + value, "", "GET", this.handleSwitchChanged, null, this);
-            
-            
+
+
         },
-        
+
         handleLightSwitchChange: function(event) {
         	var state=event.getSource().getProperty("state");
-        	
+
         	var lightsModel = sap.ui.getCore().getModel("lights");
             var light = lightsModel.getProperty(event.getSource().oPropagatedProperties.oBindingContexts.lights.sPath);
 
@@ -765,9 +780,9 @@ sap.ui.define([
             } else {
             	light.brightnessLevel=0;
             }
-            
+
             sap.ui.getCore().getModel("lights").refresh(false);
-            
+
             var value = light.brightnessLevel;
             console.log("new value: " + value);
 
@@ -776,7 +791,7 @@ sap.ui.define([
             oModel.loadDataAsync("/HomeAutomation/services/light/dim/" + lightId + "/"
                 + value, "", "GET", this.handleSwitchChanged, null, this);
         },
-        
+
         handleThermostatChange: function (event) {
             var thermostat = sap.ui.getCore().getModel("thermostats").getProperty(event.getSource().oPropagatedProperties.oBindingContexts.thermostats.sPath);
 
@@ -792,7 +807,7 @@ sap.ui.define([
         	var r=colors.r;
         	var g=colors.g;
         	var b=colors.b;
-        	
+
         	var roomId=0;
         	 var oModel = new RESTService();
              oModel.loadDataAsync("/HomeAutomation/services/led/set/" + roomId + "/"
@@ -801,7 +816,7 @@ sap.ui.define([
         handleColorChanged: function (event) {
             var subject = this;
         },
-        
+
         handleSwitchChanged: function (event) {
             var subject = this;
         },
@@ -819,14 +834,14 @@ sap.ui.define([
 
             var windowBlindsModel = new RESTService();
             windowBlindsModel.loadDataAsync("/HomeAutomation/services/windowBlinds/forRoom/" + subject.selectedRoom, "", "GET", subject.handleWindowBlindsLoaded, null, subject);
-            
+
             var lightModel = new RESTService();
             lightModel.loadDataAsync("/HomeAutomation/services/light/get/" + subject.selectedRoom, "", "GET", subject.handleLightsLoaded, null, subject);
         },
 
         /**
 		 * trigger a reload if something goes wrong
-		 * 
+		 *
 		 */
         _loadDataFailed: function (event) {
             this.loadDataInProgress = false;
@@ -849,7 +864,7 @@ sap.ui.define([
 
         /**
 		 * handle selection, triggering navigation
-		 * 
+		 *
 		 * @param event
 		 */
         handleSelect: function (event) {
@@ -862,12 +877,12 @@ sap.ui.define([
             this.selectedRoom = selectedElement.roomId;
             var roomName = selectedElement.roomName;
             var tileType = selectedElement.tileType;
-            
+
             var currentRoomData={"roomName": roomName};
             var currentRoomModel = new sap.ui.model.json.JSONModel();
 
             currentRoomModel.setData(currentRoomData);
-            
+
             sap.ui.getCore().setModel(currentRoomModel, "currentRoom");
 
             var roomId = this.selectedRoom;
@@ -896,8 +911,8 @@ sap.ui.define([
                     if (!this._oDialog) {
                         this._oDialog = sap.ui.xmlfragment("cm.homeautomation.Switch", this);
                         this._oDialog.setModel(this.getView().getModel());
-                        
-                        
+
+
                     }
 
                     // toggle compact style
@@ -960,7 +975,7 @@ sap.ui.define([
 
         /**
 		 * menu open pressed
-		 * 
+		 *
 		 */
         handlePressOpenMenu: function (oEvent) {
             var oButton = oEvent.getSource();
@@ -981,7 +996,7 @@ sap.ui.define([
 		 * full screen toggle state
 		 */
         _fullscreen: false,
-        
+
         /**
 		 * toggle full screen view on button press
 		 */
@@ -998,9 +1013,9 @@ sap.ui.define([
 	            	document.getElementsByTagName("body")[0].webkitRequestFullscreen();
 	            }
             } catch (e) {
-            	
+
             }
-            
+
         },
         /**
 		 * handle menu item press
@@ -1036,7 +1051,7 @@ sap.ui.define([
         _handleSchedulerLoaded: function (event) {
             this.messageToast.show("Scheduler reloaded");
         },
-        
+
         _openAdminDialog: function () {
             if (!this.adminView) {
                 this.adminView = sap.ui.xmlfragment("cm.homeautomation.Administration", this);
@@ -1133,10 +1148,10 @@ sap.ui.define([
         administrationReloadRoom: function () {
         	var subject = this;
             var roomModel = new RESTService();
-           
-            roomModel.loadDataAsync("/HomeAutomation/services/admin/room/getAll", "", "GET", function (event, model) { 
+
+            roomModel.loadDataAsync("/HomeAutomation/services/admin/room/getAll", "", "GET", function (event, model) {
             		subject.handleAdminRoomsLoaded(event, model);
-            		
+
             		subject.administrationSelectedRoom=sap.ui.getCore().getModel("rooms").getProperty(subject.administrationSelectedRoomPath);
                     subject._administrationShowRoomDetails(this.administrationSelectedRoom);
 
@@ -1144,23 +1159,23 @@ sap.ui.define([
         },
         handleAddSensorButtonPress: function (event) {
         	var model = new JSONModel();
-        	
+
         	console.log("pressed add sensor");
 
             this.sensorAdminDialogShow("ADD", model);
         },
         administrationDevicePressed: function(oEvent) {
         	console.log("device pressed");
-        	
+
         	var device=sap.ui.getCore().getModel("administrationRoomDetail").getProperty(oEvent.getParameter("listItem").oBindingContexts.administrationRoomDetail.sPath);
-        
+
         	this.adminDeviceForEditMac=device.mac;
         	console.log("device mac:" +device.mac);
-        	
+
         	 var model = new JSONModel();
         	 device.mode="EDIT";
         	 model.setData(device);
-        	 
+
              if (!this.deviceAdminView) {
                  this.deviceAdminView = sap.ui.xmlfragment("cm.homeautomation.DeviceAdmin", this);
              }
@@ -1169,10 +1184,10 @@ sap.ui.define([
 
              sap.ui.getCore().setModel(model, "deviceAdminDetail");
         },
-        
+
         handleAddDeviceButtonPress: function (event) {
             var model = new JSONModel();
-    	 
+
          if (!this.deviceAdminView) {
              this.deviceAdminView = sap.ui.xmlfragment("cm.homeautomation.DeviceAdmin", this);
          }
@@ -1180,62 +1195,62 @@ sap.ui.define([
          this.deviceAdminMode="ADD";
 
          sap.ui.getCore().setModel(model, "deviceAdminDetail");
-         
+
             console.log("pressed add device");
 
         },
-        
+
         deviceAdminValidate: function () {
 
             var validator = new Validator();
-            
+
             // Validate input fields against root page with id 'somePage'
             if (validator.validate(sap.ui.getCore().byId("DeviceAdminForm"))) {
                 return true;
             }
             return false;
         },
-        
+
         deviceAdminDialogOk: function (event) {
-        	
+
         	if (this.deviceAdminValidate()) {
 	            var model = sap.ui.getCore().getModel("deviceAdminDetail");
-	
+
 	            var name = model.getProperty("/name");
 	            var mac = model.getProperty("/mac");
 	            var roomId=this.administrationSelectedRoom.id;
-	
+
 	            var url = "";
-	
+
 	            if (this.deviceAdminMode == "ADD") {
 	                url = "/HomeAutomation/services/admin/device/create/"+roomId+ "/" + name+ "/" +mac;
 	            } else if (this.deviceAdminMode == "EDIT") {
 	            	var oldMac=this.adminDeviceForEditMac
 	                url = "/HomeAutomation/services/admin/device/update/"+roomId+"/" + name + "/"+oldMac+"/"+mac;
 	            }
-	
+
 	            var deviceUpdate = new RESTService();
 	            var subject=this;
 	            deviceUpdate.loadDataAsync(url, "", "GET", function() {subject.administrationReloadRoom(); this.deviceAdminView.close();}, null, this);
         	}
         },
         deviceAdminDialogDelete: function (event) {
-        	
+
             var model = sap.ui.getCore().getModel("deviceAdminDetail");
 
             var mac = model.getProperty("/mac");
             var url = "/HomeAutomation/services/admin/device/delete/" +mac;
-           
+
             var deviceUpdate = new RESTService();
             var subject=this;
             deviceUpdate.loadDataAsync(url, "", "GET", function() {subject.administrationReloadRoom(); this.deviceAdminView.close(); }, null, this);
-        	
+
         },
-        
+
         deviceAdminDialogCancel: function (event) {
             this.deviceAdminView.close();
         },
-        
+
         sensorAdminDialogShow: function (mode, model) {
             if (!this.sensorAdminView) {
                 this.sensorAdminView = sap.ui.xmlfragment("cm.homeautomation.SensorAdmin", this);
