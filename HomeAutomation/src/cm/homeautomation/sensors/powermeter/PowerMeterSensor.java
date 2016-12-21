@@ -34,7 +34,7 @@ public class PowerMeterSensor {
 	}
 
 	@Subscribe
-	public void handleWindowBlindChange(EventObject eventObject) {
+	public void handlePowerMeterData(EventObject eventObject) {
 
 		Object data = eventObject.getData();
 		if (data instanceof PowerMeterData) {
