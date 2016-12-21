@@ -202,7 +202,7 @@ sap.ui.define([
             }
         },
         handleWindowStateEvent: function (data) {
-          data={"state":0,"mac":"5c:cf:7f:88:e8:91","room":{"id":14,"roomName":"Flur","sensors":[],"switches":[],"devices":[{"id":6,"mac":"5c:cf:7f:88:e8:91","name":"Haustür"}],"lights":[],"visible":false}};
+          //data={"state":0,"mac":"5c:cf:7f:88:e8:91","room":{"id":14,"roomName":"Flur","sensors":[],"switches":[],"devices":[{"id":6,"mac":"5c:cf:7f:88:e8:91","name":"Haustür"}],"lights":[],"visible":false}};
 
         	   var state=data.state;
              console.log("Window State changed: "+state+" for room "+data.room.roomName);
