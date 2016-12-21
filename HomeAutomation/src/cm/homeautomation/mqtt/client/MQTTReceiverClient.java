@@ -79,6 +79,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 
 		client.subscribe("/sensordata");
 		client.subscribe("/distanceSensor");
+		client.subscribe("/switch");
 		System.out.println("Started MQTT client");
 	}
 
