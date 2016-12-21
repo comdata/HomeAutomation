@@ -14,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.device.DeviceService;
 import cm.homeautomation.entities.Device;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
@@ -145,14 +146,11 @@ public class Sensors extends BaseService {
 		String mac = request.getMac();
 		if (roomID==null && mac!=null) {
 			
-			Device device = (Device) em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac).getSingleResult();
-			
-			if (device==null) {
-				
+			roomID=DeviceService.getRoomIdForMac(mac) ;
+			if (roomID==null) {
+				// mac given but no room found
 				return new GenericStatus(false);
 			}
-			
-			roomID=device.getRoom().getId();
 		}
 	
 		
