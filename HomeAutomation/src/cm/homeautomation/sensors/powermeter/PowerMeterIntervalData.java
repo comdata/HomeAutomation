@@ -7,19 +7,20 @@ public class PowerMeterIntervalData {
 	private float fiveMinute;
 	private float yesterday;
 	private float lastSevenDays;
+	private float today;
 
 	public void setOneMinute(float oneMinute) {
 		this.oneMinute = oneMinute;
 	}
-	
+
 	public float getOneMinute() {
 		return oneMinute;
 	}
 
 	public void setFiveMinute(float fiveMinute) {
-		this.fiveMinute = fiveMinute;		
+		this.fiveMinute = fiveMinute;
 	}
-	
+
 	public float getFiveMinute() {
 		return fiveMinute;
 	}
@@ -27,7 +28,7 @@ public class PowerMeterIntervalData {
 	public void setSixtyMinute(float sixtyMinute) {
 		this.sixtyMinute = sixtyMinute;
 	}
-	
+
 	public float getSixtyMinute() {
 		return sixtyMinute;
 	}
@@ -35,7 +36,7 @@ public class PowerMeterIntervalData {
 	public void setYesterday(float yesterday) {
 		this.yesterday = yesterday;
 	}
-	
+
 	public float getYesterday() {
 		return yesterday;
 	}
@@ -47,5 +48,14 @@ public class PowerMeterIntervalData {
 	public float getLastSevenDays() {
 		return lastSevenDays;
 	}
-	
+
+	public void setToday(float today) {
+		this.today = today;
+
+	}
+
+	public float getToday() {
+		return today;
+	}
+
 }

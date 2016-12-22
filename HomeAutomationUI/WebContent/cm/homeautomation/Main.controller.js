@@ -217,6 +217,7 @@ sap.ui.define([
         		this.powerMeterTileFiveMinute.number=data.fiveMinute;
         		this.powerMeterTileSixtyMinute.number=data.sixtyMinute;
         		this.powerMeterTileSixtyMinute.number=data.sixtyMinute;
+            this.powerMeterTileToday.number=data.today;
         		this.powerMeterTileYesterday.number=data.yesterday;
         		this.powerMeterTileLastSevenDays.number=data.lastSevenDays;
 
@@ -571,6 +572,19 @@ sap.ui.define([
                 };
         	this.getView().getModel().getData().overviewTiles.push(this.powerMeterTileSixtyMinute);
 
+          this.powerMeterTileToday = {
+                    tileType: "powermeter",
+                    roomId: "meter",
+                    title: "Heute Gesamt",
+                    numberUnit: "kWh",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://energy-saving-lightbulb"
+                };
+
+            this.getView().getModel().getData().overviewTiles.push(this.powerMeterTileToday);
+
+
         	this.powerMeterTileYesterday = {
                     tileType: "powermeter",
                     roomId: "meter",
@@ -587,6 +601,21 @@ sap.ui.define([
         	this.powerMeterTileLastSevenDays = {
                     tileType: "powermeter",
                     roomId: "meter",
+                    title: "Letzte 7 Tage",
+                    numberUnit: "kWh",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://energy-saving-lightbulb"
+                };
+
+            this.getView().getModel().getData().overviewTiles.push(this.powerMeterTileLastSevenDays);
+            this.getView().getModel().refresh(false);
+        },
+        _initWindowTile: function() {
+
+        	this.windowStateTile = {
+                    tileType: "windowState",
+                    roomId: "windowsState",
                     title: "Letzte 7 Tage",
                     numberUnit: "kWh",
                     eventHandler: null,
