@@ -674,13 +674,13 @@ sap.ui.define([
               url: "/HomeAutomation/services/window/readAll",
               contentType: "application/json",
               dataType: "json",
-            },
+
             success: function(response) {
               response.forEach(function (element, index, array) {
                 this.handleWindowStateEvent(element);
               }, this);
               console.log(response);
-            });
+            }});
         /**
 		 * handle successful data loading for overview tiles
 		 *
