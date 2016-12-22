@@ -202,14 +202,54 @@ sap.ui.define([
             }
         },
         handleWindowStateEvent: function (data) {
-          //data={"state":0,"mac":"5c:cf:7f:88:e8:91","room":{"id":14,"roomName":"Flur","sensors":[],"switches":[],"devices":[{"id":6,"mac":"5c:cf:7f:88:e8:91","name":"Haustür"}],"lights":[],"visible":false}};
+          var state=data.state;
+          var roomName=data.room.roomName;
+          var roomId=data.room.id;
+          var translatedState;
 
-        	   var state=data.state;
-             console.log("Window State changed: "+state+" for room "+data.room.roomName);
+          if (state==0) {
+            translatedState="CLOSED";
+          } else {
+            translatedState="OPEN";
+          }
+
+          MessageToast.show("Fenster/Tuer in "+roomName+((translatedState=="CLOSED")?"geschlossen":"geoeffnet"), {
+              duration: 10000                  // default
+          }
+          );
+
+          // find existing entry for update
+          var found=false;
+
+          this._openWindows.forEach(function (element, index, array) {
+            if (element.mac==data.mac) {
+              element.state=translatedState;
+              found=true;
+            }
+          }, this );
+
+          // add new entry
+          if (found==false) {
+            var newOpenWindow={"mac":data.mac, "state": translatedState, "roomName":roomName, "roomId": roomId};
+            this._openWindows.push(newOpenWindow);
+          }
 
 
-        		//this.powerMeterTile.info="1 / 5 / 60 minutes";
-        		 this.getView().getModel().refresh(false);
+          // do an update on the tile
+          var numberOpen=0;
+
+          this._openWindows.forEach(function (element, index, array) {
+            if (element.state=="OPEN") {
+              numberOpen++;
+            }
+          }, this );
+
+          this.windowStateTile.number=numberOpen;
+          this.windowStateTile.info=(numberOpen>0)?"Offen":"alle geschlossen";
+
+
+        	//this.powerMeterTile.info="1 / 5 / 60 minutes";
+          this.getView().getModel().refresh(false);
         },
 
         handlePowerEvent: function (data) {
@@ -613,17 +653,19 @@ sap.ui.define([
         },
         _initWindowTile: function() {
 
-        	this.windowStateTile = {
+            this._openWindows=[];
+
+        	  this.windowStateTile = {
                     tileType: "windowState",
                     roomId: "windowsState",
-                    title: "Letzte 7 Tage",
-                    numberUnit: "kWh",
+                    title: "Fenster",
+                    numberUnit: "",
                     eventHandler: null,
                     infoState: sap.ui.core.ValueState.Success,
-                    icon: "sap-icon://energy-saving-lightbulb"
+                    icon: "sap-icon://windows-doors"
                 };
 
-            this.getView().getModel().getData().overviewTiles.push(this.powerMeterTileLastSevenDays);
+            this.getView().getModel().getData().overviewTiles.push(this.windowStateTile);
             this.getView().getModel().refresh(false);
         },
         /**
@@ -641,6 +683,7 @@ sap.ui.define([
             this._initPlanesTile();
             this._initTransmissionTile();
             this._initDistanceTile();
+            this._initWindowTile();
             this._initPowerMeterTile();
             this._initMailTile();
         },
