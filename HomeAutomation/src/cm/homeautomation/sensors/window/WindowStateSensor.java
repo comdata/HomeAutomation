@@ -60,6 +60,7 @@ public class WindowStateSensor {
 			windowStateData.setMac(windowSensorData.getMac());
 			windowStateData.setState(windowSensorData.getState());
 			windowStateData.setRoom(room);
+			windowStateData.setMac(windowSensorData.getMac());
 
 			EventObject intervalEventObject = new EventObject(windowStateData);
 			EventBusService.getEventBus().post(intervalEventObject);
