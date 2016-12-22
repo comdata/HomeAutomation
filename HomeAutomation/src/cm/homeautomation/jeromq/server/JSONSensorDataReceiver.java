@@ -26,9 +26,6 @@ public class JSONSensorDataReceiver {
 			
 			ObjectMapper mapper = new ObjectMapper();
 			
-			// TODO fix
-			messageContent=messageContent.replaceAll("cm.homeautomation.sensors.WindowSensorData", "cm.homeautomation.sensors.window.WindowSensorData");
-
 			JSONSensorDataBase sensorData = mapper.readValue(messageContent, JSONSensorDataBase.class);
 
 			if (sensorData instanceof SensorDataSaveRequest) {
