@@ -668,6 +668,7 @@ sap.ui.define([
             this.getView().getModel().getData().overviewTiles.push(this.windowStateTile);
             this.getView().getModel().refresh(false);
 
+            var subject=this;
             $.ajax({
 
               type: "GET",
@@ -677,8 +678,8 @@ sap.ui.define([
 
             success: function(response) {
               response.forEach(function (element, index, array) {
-                this.handleWindowStateEvent(element);
-              }, this);
+                subject.handleWindowStateEvent(element);
+              }, subject);
               console.log(response);
             }});
         },
