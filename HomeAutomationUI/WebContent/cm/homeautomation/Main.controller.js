@@ -207,7 +207,7 @@ sap.ui.define([
           var roomId=data.room.id;
           var translatedState;
 
-          if (state==0) {
+          if (state==1) {
             translatedState="CLOSED";
           } else {
             translatedState="OPEN";
@@ -652,7 +652,7 @@ sap.ui.define([
             this.getView().getModel().refresh(false);
         },
         _initWindowTile: function() {
-
+            // TODO initial data loading
             this._openWindows=[];
 
         	  this.windowStateTile = {
@@ -667,7 +667,20 @@ sap.ui.define([
 
             this.getView().getModel().getData().overviewTiles.push(this.windowStateTile);
             this.getView().getModel().refresh(false);
-        },
+
+            $.ajax({
+
+              type: "GET",
+              url: "/HomeAutomation/services/window/readAll",
+              contentType: "application/json",
+              dataType: "json",
+            },
+            success: function(response) {
+              response.forEach(function (element, index, array) {
+                this.handleWindowStateEvent(element);
+              }, this);
+              console.log(response);
+            });
         /**
 		 * handle successful data loading for overview tiles
 		 *
