@@ -681,6 +681,7 @@ sap.ui.define([
               }, this);
               console.log(response);
             }});
+        },
         /**
 		 * handle successful data loading for overview tiles
 		 *
