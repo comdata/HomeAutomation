@@ -213,7 +213,7 @@ sap.ui.define([
             translatedState="OPEN";
           }
 
-          this.messageToast.show("Fenster/Tuer in "+roomName+((translatedState=="CLOSED")?"geschlossen":"geoeffnet"), {
+          this.messageToast.show("Fenster/Tuer in "+roomName+" "+((translatedState=="CLOSED")?"geschlossen":"geoeffnet"), {
               duration: 10000                  // default
           }
           );
