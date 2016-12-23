@@ -678,7 +678,7 @@ sap.ui.define([
 
             success: function(response) {
               response.forEach(function (element, index, array) {
-                if (element!=null && data.room!=null) {
+                if (element!=null && element.room!=null) {
 			subject.handleWindowStateEvent(element);
 		}
               }, subject);
