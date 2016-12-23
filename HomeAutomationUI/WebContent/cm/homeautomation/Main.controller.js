@@ -207,7 +207,7 @@ sap.ui.define([
           var roomId=data.room.id;
           var translatedState;
 
-          if (state==1) {
+          if (state==0) {
             translatedState="CLOSED";
           } else {
             translatedState="OPEN";
