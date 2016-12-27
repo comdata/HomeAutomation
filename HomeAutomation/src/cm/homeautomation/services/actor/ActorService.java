@@ -183,6 +183,8 @@ public class ActorService extends BaseService implements MqttCallback {
 			MqttMessage message=new MqttMessage();
 			message.setPayload(json.getBytes());
 			client.publish("/switch", message);
+			client.disconnect();
+			client.close();
 		} catch (MqttException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
