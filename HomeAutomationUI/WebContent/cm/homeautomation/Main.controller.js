@@ -967,6 +967,16 @@ sap.ui.define([
             }
         },
 
+        handleTrainSpeedChange: funcion(oEvent) {
+
+        },
+        trainEmergencyStop: function(oEvent) {
+          var subject=this;
+          var train = new RESTService();
+          train.loadDataAsync("/HomeAutomation/services/train/emergencyStop", "", "GET", null, null, subject);
+
+        },
+
         /**
 		 * handle selection, triggering navigation
 		 *
