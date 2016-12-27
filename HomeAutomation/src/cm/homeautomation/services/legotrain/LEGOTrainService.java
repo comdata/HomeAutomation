@@ -130,6 +130,8 @@ public class LEGOTrainService extends BaseService {
 			MqttMessage message = new MqttMessage();
 			message.setPayload(jsonMessage.getBytes());
 			client.publish("/lego", message);
+			client.disconnect();
+			client.close();
 		} catch (MqttException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
