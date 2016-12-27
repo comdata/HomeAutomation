@@ -651,8 +651,23 @@ sap.ui.define([
             this.getView().getModel().getData().overviewTiles.push(this.powerMeterTileLastSevenDays);
             this.getView().getModel().refresh(false);
         },
+        _initLegoTrainTile: function() {
+
+
+        	  this.legoTrainTile = {
+                    tileType: "legotrain",
+                    roomId: "train",
+                    title: "Lego Train",
+                    numberUnit: "",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://passenger-train"
+                };
+
+            this.getView().getModel().getData().overviewTiles.push(this.legoTrainTile);
+            this.getView().getModel().refresh(false);
+        },
         _initWindowTile: function() {
-            // TODO initial data loading
             this._openWindows=[];
 
         	  this.windowStateTile = {
@@ -703,6 +718,7 @@ sap.ui.define([
             this._initWindowTile();
             this._initPowerMeterTile();
             this._initMailTile();
+            this._initLegoTrainTile();
         },
         _initMailTile: function() {
         	var subject=this;
@@ -976,7 +992,17 @@ sap.ui.define([
 
             var roomId = this.selectedRoom;
 
-            if (tileType == "camera") {
+            if (tileType == "legotrain") {
+                if (!this.trainDialog) {
+                    this.trainDialog = sap.ui.xmlfragment("cm.homeautomation.Train", this);
+                    this.trainDialog.setModel(this.getView().getModel());
+                    jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.trainDialog);
+                    this.trainDialog.open();
+
+                }
+            }
+
+            else if (tileType == "camera") {
                 if (!this.camera) {
                     this.camera = sap.ui.xmlfragment("cm.homeautomation.Camera", this);
                     var stream = selectedElement.stream;
@@ -1017,6 +1043,9 @@ sap.ui.define([
         cameraDialogClose: function () {
             this.camera.close();
         },
+        trainDialogClose: function () {
+            this.trainDialog.close();
+        },
         planesDialogClose: function () {
             this.planesView.close();
         },
@@ -1032,6 +1061,10 @@ sap.ui.define([
         afterPlanesDialogClose: function () {
             this.planesView.destroy();
             this.planesView = null;
+        },
+        afterTrainDialogClose: function () {
+            this.trainDialog.destroy();
+            this.trainDialog = null;
         },
         handleClose: function (oEvent) {
 
