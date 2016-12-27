@@ -967,7 +967,7 @@ sap.ui.define([
             }
         },
 
-        handleTrainSpeedChange: funcion(oEvent) {
+        handleTrainSpeedChange: function(oEvent) {
 
         },
         trainEmergencyStop: function(oEvent) {
