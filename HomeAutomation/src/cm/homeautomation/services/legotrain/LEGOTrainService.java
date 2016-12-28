@@ -5,6 +5,7 @@ import java.util.UUID;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -87,11 +88,15 @@ import cm.homeautomation.services.base.BaseService;
 @Path("lego")
 public class LEGOTrainService extends BaseService {
 
-	@POST
-	@Path("control")
-	public void controlTrain(TrainControlMessage message) {
+	@GET
+	@Path("control/{train}/{speed}/{light}")
+	public void controlTrain(@PathParam("train") String train, @PathParam("speed") int speed, @PathParam("light") int light) {
 		//{mode: 0, step: 0, output: 0, channel:0}
-		String jsonMessage="{mode: 0, step: "+message.getSpeed()+", output: "+message.getTrain()+", channel:"+message.getChannel()+"}";
+		
+		String jsonMessage="{mode: 0, step: "+speed+", output: "+train+", channel:0}";
+		sendMQTTMessage(jsonMessage);
+		
+		jsonMessage="{mode: 0, step: "+light+", output: "+train+", channel:1}";
 		sendMQTTMessage(jsonMessage);
 	}
 	
