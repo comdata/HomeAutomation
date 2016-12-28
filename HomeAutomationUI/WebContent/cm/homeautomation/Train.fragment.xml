@@ -10,9 +10,8 @@
               		headerText="Fernsteuerung" width="100%"
               		 >
                    <items>
-                     <CustomListItem>
-			                    <HBox width="100%">
-                            <Label text="Zug" width="100%"/>
+                    <InputListItem label="Zug">
+
                             <SegmentedButton selectedKey="1">
                     					<items>
                     						<SegmentedButtonItem text="1" key="1" />
@@ -21,31 +20,21 @@
                                 <SegmentedButtonItem text="4" key="4" />
                     					</items>
                     				</SegmentedButton>
-                  			  </HBox>
-                  		</CustomListItem>
+                  		</InputListItem>
 
-                      <CustomListItem>
- 			                    <HBox width="100%">
-                             <Label text="Licht" width="100%"/>
-
+                      <InputListItem label="Licht">
                              <Slider min="-8" max="8" value="{train>light}"
                                 width="200px" change="handleTrainLightChange" />
-                          </HBox>
-                  		</CustomListItem>
-                      <CustomListItem>
-                          <HBox width="100%">
-                             <Label text="Geschwindigkeit" width="100%"/>
+                  		</InputListItem>
+                      <InputListItem label="Geschwindigkeit">
                              <Slider min="-8" max="8" value="{train>speed}"
                                 width="200px" change="handleTrainSpeedChange" />
-                          </HBox>
-                      </CustomListItem>
+                      </InputListItem>
 
-                      <CustomListItem>
-                          <HBox width="100%">
-                             <Label text="Sonstiges" width="100%"/>
+                      <InputListItem label="Sonstiges">
                              <Button text="Alle Stopp" press="trainEmergencyStop"/>
                           </HBox>
-                      </CustomListItem>
+                      </InputListItem>
                   </items>
               	</List>
 
