@@ -1012,8 +1012,8 @@ sap.ui.define([
                 if (!this.trainDialog) {
 
                     this._trainModel = new sap.ui.model.json.JSONModel();
-                    this._trainModel.setProperty("speed", 0);
-                    this._trainModel.setProperty("light", 0);
+                    this._trainModel.setProperty("speed", 8);
+                    this._trainModel.setProperty("light", 8);
                     sap.ui.getCore().setModel(this._trainModel, "train");
                     this.trainDialog = sap.ui.xmlfragment("cm.homeautomation.Train", this);
                     this.trainDialog.setModel(this.getView().getModel());
