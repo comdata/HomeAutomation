@@ -976,8 +976,8 @@ sap.ui.define([
           train.loadDataAsync("/HomeAutomation/services/lego/emergencyStop", "", "GET", null, null, subject);
 
         },
-        handleTrainSelected: function(button, id, key) {
-          this._trainModel.setProperty("train", key);
+        handleTrainSelected: function(event) {
+          this._trainModel.setProperty("train", event.getSource().getSelectedKey());
         },
 
         /**
