@@ -93,10 +93,10 @@ public class LEGOTrainService extends BaseService {
 	public void controlTrain(@PathParam("train") String train, @PathParam("speed") int speed, @PathParam("light") int light) {
 		//{mode: 0, step: 0, output: 0, channel:0}
 		
-		String jsonMessage="{mode: 0, step: "+speed+", output: "+train+", channel:0}";
+		String jsonMessage="{mode: 0, step: "+speed+", output: 0, channel:"+train+"}";
 		sendMQTTMessage(jsonMessage);
 		
-		jsonMessage="{mode: 0, step: "+light+", output: "+train+", channel:1}";
+		jsonMessage="{mode: 0, step: "+light+", output: 1, channel:"+train+"}";
 		sendMQTTMessage(jsonMessage);
 	}
 	
