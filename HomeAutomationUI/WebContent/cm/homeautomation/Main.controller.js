@@ -1033,7 +1033,7 @@ sap.ui.define([
             if (tileType == "legotrain") {
                 if (!this.trainDialog) {
 
-                    this._trainModelData={train:1, speed:0, light:0};
+                    this._trainModelData={train:0, speed:0, light:0};
                     this._trainModel = new sap.ui.model.json.JSONModel();
                     this._trainModel.setData(this._trainModelData);
                     sap.ui.getCore().setModel(this._trainModel, "train");
