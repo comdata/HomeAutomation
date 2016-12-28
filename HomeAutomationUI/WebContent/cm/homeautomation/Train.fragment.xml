@@ -3,15 +3,15 @@
         xmlns:core="sap.ui.core">
     <Dialog title="Züge" afterClose="afterTrainDialogClose" stretch="true" horizontalScrolling="false" verticalScrolling="false" contentHeight="100%">
         <content>
-          <Panel expandable="true" expanded="false" headerText="Fernsteuerung"
-    				width="auto" class="sapUiResponsiveMargin" id="remoteControl">
+          <!--<Panel expandable="true" expanded="true" headerText="Fernsteuerung"
+    				width="auto" class="sapUiResponsiveMargin" id="remoteControl">-->
             <content>
               <List
-              		headerText="Products"
+              		headerText="Fernsteuerung" width="100%"
               		 >
                    <items>
                      <CustomListItem>
-			                    <HBox>
+			                    <HBox width="100%">
                             <Label text="Zug"/>
                             <SegmentedButton selectedKey="1">
                     					<items>
@@ -25,7 +25,7 @@
                   		</CustomListItem>
 
                       <CustomListItem>
- 			                    <HBox>
+ 			                    <HBox width="100%">
                              <Label text="Licht"/>
 
                              <Slider min="-8" max="8" value="{train>light}"
@@ -33,7 +33,7 @@
                           </HBox>
                   		</CustomListItem>
                       <CustomListItem>
-                          <HBox>
+                          <HBox width="100%">
                              <Label text="Geschwindigkeit"/>
                              <Slider min="-8" max="8" value="{train>speed}"
                                 width="200px" change="handleTrainSpeedChange" />
@@ -41,7 +41,7 @@
                       </CustomListItem>
 
                       <CustomListItem>
-                          <HBox>
+                          <HBox width="100%">
                              <Label text="Sonstiges"/>
                              <Button text="Alle Stopp" press="trainEmergencyStop"/>
                           </HBox>
@@ -52,8 +52,8 @@
 
 
 
-            </content>
-          </Panel>
+        <!--    </content>
+      </Panel>-->
 
 
         </content>
