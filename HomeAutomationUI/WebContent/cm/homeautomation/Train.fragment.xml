@@ -12,7 +12,7 @@
                    <items>
                      <CustomListItem>
 			                    <HBox width="100%">
-                            <Label text="Zug"/>
+                            <Label text="Zug" width="100%"/>
                             <SegmentedButton selectedKey="1">
                     					<items>
                     						<SegmentedButtonItem text="1" key="1" />
@@ -26,7 +26,7 @@
 
                       <CustomListItem>
  			                    <HBox width="100%">
-                             <Label text="Licht"/>
+                             <Label text="Licht" width="100%"/>
 
                              <Slider min="-8" max="8" value="{train>light}"
                                 width="200px" change="handleTrainLightChange" />
@@ -34,7 +34,7 @@
                   		</CustomListItem>
                       <CustomListItem>
                           <HBox width="100%">
-                             <Label text="Geschwindigkeit"/>
+                             <Label text="Geschwindigkeit" width="100%"/>
                              <Slider min="-8" max="8" value="{train>speed}"
                                 width="200px" change="handleTrainSpeedChange" />
                           </HBox>
@@ -42,7 +42,7 @@
 
                       <CustomListItem>
                           <HBox width="100%">
-                             <Label text="Sonstiges"/>
+                             <Label text="Sonstiges" width="100%"/>
                              <Button text="Alle Stopp" press="trainEmergencyStop"/>
                           </HBox>
                       </CustomListItem>
