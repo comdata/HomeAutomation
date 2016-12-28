@@ -1021,6 +1021,7 @@ sap.ui.define([
                 if (!this.trainDialog) {
 
                     this._trainModel = new sap.ui.model.json.JSONModel();
+                    this._trainModel.setProperty("speed", 1);
                     this._trainModel.setProperty("speed", 0);
                     this._trainModel.setProperty("light", 0);
                     sap.ui.getCore().setModel(this._trainModel, "train");
