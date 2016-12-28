@@ -4,8 +4,8 @@
     <Dialog title="Züge" afterClose="afterTrainDialogClose" stretch="true" horizontalScrolling="false" verticalScrolling="false" contentHeight="100%">
         <content>
           <!--<Panel expandable="true" expanded="true" headerText="Fernsteuerung"
-    				width="auto" class="sapUiResponsiveMargin" id="remoteControl">-->
-            <content>
+    				width="auto" class="sapUiResponsiveMargin" id="remoteControl">
+            <content>-->
               <List
               		headerText="Fernsteuerung" width="100%"
               		 >
