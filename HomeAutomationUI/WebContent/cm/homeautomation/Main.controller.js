@@ -983,7 +983,13 @@ sap.ui.define([
             speed=8; // brake
           } else if (speed<0) {
             speed=(9+(8+speed));
-        }
+          }
+
+          if (light==0) {
+            light=8; // brake
+          } else if (light<0) {
+            light=(9+(8+light));
+          }
           var subject=this;
           var trainRESTModel = new RESTService();
           trainRESTModel.loadDataAsync("/HomeAutomation/services/lego/control/"+train+"/"+speed+"/"+light, "", "GET", null, null, subject);
