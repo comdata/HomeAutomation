@@ -979,14 +979,14 @@ sap.ui.define([
           }
 
           var subject=this;
-          var train = new RESTService();
-          train.loadDataAsync("/HomeAutomation/services/lego/control/"+train+"/"+speed+"/"+light, "", "GET", null, null, subject);
+          var trainRESTModel = new RESTService();
+          trainRESTModel.loadDataAsync("/HomeAutomation/services/lego/control/"+train+"/"+speed+"/"+light, "", "GET", null, null, subject);
 
         },
         trainEmergencyStop: function(oEvent) {
           var subject=this;
-          var train = new RESTService();
-          train.loadDataAsync("/HomeAutomation/services/lego/emergencyStop", "", "GET", null, null, subject);
+          var trainRESTModel = new RESTService();
+          trainRESTModel.loadDataAsync("/HomeAutomation/services/lego/emergencyStop", "", "GET", null, null, subject);
 
         },
         handleTrainSelected: function(event) {
