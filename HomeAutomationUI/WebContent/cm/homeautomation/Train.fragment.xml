@@ -9,36 +9,43 @@
               <List
               		headerText="Products"
               		 >
-
                    <items>
-              		<StandardListItem
-              			title="Zug"
-              			>  <SegmentedButton selectedKey="1">
-        					<items>
-        						<SegmentedButtonItem text="1" key="1" />
-        						<SegmentedButtonItem text="2" key="2" />
-        						<SegmentedButtonItem text="3" key="3" />
-                    <SegmentedButtonItem text="4" key="4" />
-        					</items>
-        				</SegmentedButton></StandardListItem>
-        				  <StandardListItem
-        				    title="Licht"
-        				     >
-                     <Slider min="-8" max="8" value="{train>light}"
-                       width="200px" change="handleTrainLightChange" />
-                     </StandardListItem>
-                     <StandardListItem
-                       title="Geschwindigleit"
-                        >
-                        <Slider min="-8" max="8" value="{train>speed}"
-                          width="200px" change="handleTrainSpeedChange" />
-                        </StandardListItem>
+                     <CustomListItem>
+			                    <HBox>
+                            <Label text="Zug"/>
+                            <SegmentedButton selectedKey="1">
+                    					<items>
+                    						<SegmentedButtonItem text="1" key="1" />
+                    						<SegmentedButtonItem text="2" key="2" />
+                    						<SegmentedButtonItem text="3" key="3" />
+                                <SegmentedButtonItem text="4" key="4" />
+                    					</items>
+                    				</SegmentedButton>
+                  			  </HBox>
+                  		</CustomListItem>
 
-                        <StandardListItem
-              				    title=""
-              				     >
-<Button text="Alle Stopp" press="trainEmergencyStop"/>
-                           </StandardListItem>
+                      <CustomListItem>
+ 			                    <HBox>
+                             <Label text="Licht"/>
+
+                             <Slider min="-8" max="8" value="{train>light}"
+                                width="200px" change="handleTrainLightChange" />
+                          </HBox>
+                  		</CustomListItem>
+                      <CustomListItem>
+                          <HBox>
+                             <Label text="Geschwindigkeit"/>
+                             <Slider min="-8" max="8" value="{train>speed}"
+                                width="200px" change="handleTrainSpeedChange" />
+                          </HBox>
+                      </CustomListItem>
+
+                      <CustomListItem>
+                          <HBox>
+                             <Label text="Sonstiges"/>
+                             <Button text="Alle Stopp" press="trainEmergencyStop"/>
+                          </HBox>
+                      </CustomListItem>
                   </items>
               	</List>
 
