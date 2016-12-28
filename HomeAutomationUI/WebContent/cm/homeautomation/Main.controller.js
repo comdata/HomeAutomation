@@ -998,6 +998,7 @@ sap.ui.define([
         trainEmergencyStop: function(oEvent) {
           this._trainModelData.speed=0;
           this._trainModelData.light=0;
+          this._trainModel.setData(this._trainModelData);
           var subject=this;
           var trainRESTModel = new RESTService();
           trainRESTModel.loadDataAsync("/HomeAutomation/services/lego/emergencyStop", "", "GET", null, null, subject);
