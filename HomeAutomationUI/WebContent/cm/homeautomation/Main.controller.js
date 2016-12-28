@@ -968,9 +968,10 @@ sap.ui.define([
         },
 
         handleTrainSpeedLightChange: function(event) {
-          var train=this._trainModel.getProperty("train");
-          var speed=this._trainModel.getProperty("speed");
-          var light=this._trainModel.getProperty("light");
+          var trainModel=sap.ui.getCore().getModel("train");
+          var train=trainModel.getProperty("train");
+          var speed=trainModel.getProperty("speed");
+          var light=trainModel.getProperty("light");
 
           if (speed==0) {
             speed=8; // brake
@@ -989,7 +990,8 @@ sap.ui.define([
 
         },
         handleTrainSelected: function(event) {
-          this._trainModel.setProperty("train", event.getSource().getSelectedKey());
+          var trainModel=sap.ui.getCore().getModel("train");
+          trainModel.setProperty("train", event.getSource().getSelectedKey());
         },
 
         /**
@@ -1021,9 +1023,7 @@ sap.ui.define([
                 if (!this.trainDialog) {
 
                     this._trainModel = new sap.ui.model.json.JSONModel();
-                    this._trainModel.setProperty("speed", 1);
-                    this._trainModel.setProperty("speed", 0);
-                    this._trainModel.setProperty("light", 0);
+                    this._trainModel.setData({train:1, speed:0, light:0});
                     sap.ui.getCore().setModel(this._trainModel, "train");
                     this.trainDialog = sap.ui.xmlfragment("cm.homeautomation.Train", this);
                     this.trainDialog.setModel(this.getView().getModel());
