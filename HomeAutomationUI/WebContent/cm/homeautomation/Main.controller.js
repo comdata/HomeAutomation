@@ -1004,6 +1004,11 @@ sap.ui.define([
 
             if (tileType == "legotrain") {
                 if (!this.trainDialog) {
+
+                    this._trainModel = new sap.ui.model.json.JSONModel();
+                    this._trainModel.setProperty("speed", 0);
+                    this._trainModel.setProperty("light", 0);
+                    sap.ui.getCore().setModel(this._trainModel, "train");
                     this.trainDialog = sap.ui.xmlfragment("cm.homeautomation.Train", this);
                     this.trainDialog.setModel(this.getView().getModel());
                     jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.trainDialog);
