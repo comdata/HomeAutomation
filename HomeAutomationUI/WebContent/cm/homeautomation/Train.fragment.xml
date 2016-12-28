@@ -33,7 +33,6 @@
 
                       <InputListItem label="Sonstiges">
                              <Button text="Alle Stopp" press="trainEmergencyStop"/>
-                          </HBox>
                       </InputListItem>
                   </items>
               	</List>
