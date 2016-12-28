@@ -966,7 +966,11 @@ sap.ui.define([
                 getHistoricalSensordata(this.selectedRoom);
             }
         },
-
+        handleTrainSpeedChange:function(event){
+          var trainModel=sap.ui.getCore().getModel("train");
+          trainModel.setProperty("speed", event.getSource().getValue());
+          this.handleTrainSpeedLightChange();
+        },
         handleTrainSpeedLightChange: function(event) {
           var trainModel=sap.ui.getCore().getModel("train");
           var train=trainModel.getProperty("train");
