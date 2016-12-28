@@ -975,7 +975,7 @@ sap.ui.define([
           if (speed==0) {
             speed=8; // brake
           } else if (speed<0)
-            speed=(9+(8+speed))
+            speed=(9+(8+speed));
           }
 
           var subject=this;
