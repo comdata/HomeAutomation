@@ -89,14 +89,20 @@ import cm.homeautomation.services.base.BaseService;
 public class LEGOTrainService extends BaseService {
 
 	@GET
-	@Path("control/{train}/{speed}/{light}")
-	public void controlTrain(@PathParam("train") String train, @PathParam("speed") int speed, @PathParam("light") int light) {
+	@Path("control/speed/{train}/{speed}")
+	public void controlTrainSpeed(@PathParam("train") String train, @PathParam("speed") int speed) {
 		//{mode: 0, step: 0, output: 0, channel:0}
 		
 		String jsonMessage="{mode: 0, step: "+speed+", output: 0, channel:"+train+"}";
 		sendMQTTMessage(jsonMessage);
+	}
+	
+	@GET
+	@Path("control/light/{train}/{light}")
+	public void controlTrainLight(@PathParam("train") String train, @PathParam("light") int light) {
+		//{mode: 0, step: 0, output: 0, channel:0}
 		
-		jsonMessage="{mode: 0, step: "+light+", output: 1, channel:"+train+"}";
+		String jsonMessage="{mode: 0, step: "+light+", output: 1, channel:"+train+"}";
 		sendMQTTMessage(jsonMessage);
 	}
 	
@@ -104,9 +110,8 @@ public class LEGOTrainService extends BaseService {
 	@Path("emergencyStop")
 	public void stopAllTrains() {
 		
-		for(int i=0;i<4;i++) { 
-		
-			for(int a=0;a<2;a++) {
+		for(int a=0;a<2;a++) {
+			for(int i=0;i<4;i++) { 
 				String jsonMessage="{mode: 0, step: 8, output: "+a+", channel:"+i+"}";
 				sendMQTTMessage(jsonMessage);
 			}

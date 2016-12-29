@@ -968,16 +968,17 @@ sap.ui.define([
         },
         handleTrainSpeedChange:function(event){
           this._trainModelData.speed= event.getSource().getValue();
-          this.handleTrainSpeedLightChange();
+          this.handleTrainSpeedLightChange("speed");
         },
         handleTrainLightChange:function(event){
           this._trainModelData.light= event.getSource().getValue();
-          this.handleTrainSpeedLightChange();
+          this.handleTrainSpeedLightChange("light");
         },
-        handleTrainSpeedLightChange: function(event) {
+        handleTrainSpeedLightChange: function(mode) {
           var train=this._trainModelData.train;
           var speed=this._trainModelData.speed;
           var light=this._trainModelData.light;
+          var value=0;
 
           if (speed==0) {
             speed=8; // brake
@@ -990,22 +991,40 @@ sap.ui.define([
           } else if (light<0) {
             light=(9+(8+light));
           }
+
+          if (mode=="speed") {
+            value=speed;
+          } else if (mode=="light") {
+            value=light;
+          }
+
           var subject=this;
           var trainRESTModel = new RESTService();
-          trainRESTModel.loadDataAsync("/HomeAutomation/services/lego/control/"+train+"/"+speed+"/"+light, "", "GET", null, null, subject);
+          trainRESTModel.loadDataAsync("/HomeAutomation/services/lego/control/"+mode+"/"+train+"/"+value, "", "GET", null, null, subject);
 
         },
         trainEmergencyStop: function(oEvent) {
-          this._trainModelData.speed=0;
-          this._trainModelData.light=0;
-          this._trainModel.setData(this._trainModelData);
+
           var subject=this;
           var trainRESTModel = new RESTService();
           trainRESTModel.loadDataAsync("/HomeAutomation/services/lego/emergencyStop", "", "GET", null, null, subject);
-          this.getView().getModel().refresh(false);
+          this._resetTrainModel();
+
         },
         handleTrainSelected: function(event) {
           this._trainModelData.train=event.getSource().getSelectedKey();
+          this._resetTrainModel();
+        },
+        _resetTrainModel: function() {
+          if (this._trainModel==null) {
+            this._trainModelData={train:0, speed:0, light:0};
+            this._trainModel = new sap.ui.model.json.JSONModel();
+          }
+          this._trainModelData.speed=0;
+          this._trainModelData.light=0;
+          this._trainModel.setData(this._trainModelData);
+          sap.ui.getCore().setModel(this._trainModel, "train");
+          sap.ui.getCore().getModel("train").refresh(false);
         },
 
         /**
@@ -1036,10 +1055,7 @@ sap.ui.define([
             if (tileType == "legotrain") {
                 if (!this.trainDialog) {
 
-                    this._trainModelData={train:0, speed:0, light:0};
-                    this._trainModel = new sap.ui.model.json.JSONModel();
-                    this._trainModel.setData(this._trainModelData);
-                    sap.ui.getCore().setModel(this._trainModel, "train");
+                    this._resetTrainModel();
                     this.trainDialog = sap.ui.xmlfragment("cm.homeautomation.Train", this);
                     this.trainDialog.setModel(this.getView().getModel());
                     jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.trainDialog);
