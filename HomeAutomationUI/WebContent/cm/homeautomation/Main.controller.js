@@ -769,6 +769,9 @@ sap.ui.define([
 
             sap.ui.getCore().setModel(model, "switches");
         },
+        handleNetworkDevicesLoaded: function(event, model) {
+          sap.ui.getCore().setModel(model, "networkDevices");
+        },
         handleWindowBlindsLoaded: function (event, model) {
 
             var windowBlindsList = sap.ui.getCore().byId("windowBlinds");
@@ -1051,6 +1054,12 @@ sap.ui.define([
           sap.ui.getCore().setModel(this._trainModel, "train");
           sap.ui.getCore().getModel("train").refresh(false);
         },
+        networkDevicesLoad: function() {
+          var subject = this;
+          var networkDeviceModel = new RESTService();
+          networkDeviceModel.loadDataAsync("/HomeAutomation/services/networkdevices/getAll/", "", "GET", subject.handleNetworkDevicesLoaded, null, subject);
+
+        },
 
         /**
 		 * handle selection, triggering navigation
@@ -1093,6 +1102,7 @@ sap.ui.define([
                   this._dialogs["networkDevices"] = sap.ui.xmlfragment("cm.homeautomation.NetworkDevices", this);
               }
               this._dialogs["networkDevices"].open();
+              this._networkDevicesLoad();
               // TODO load data
             }
             else if (tileType == "camera") {
@@ -1144,6 +1154,7 @@ sap.ui.define([
         },
         networkDialogClose: function() {
             this._dialogs["networkDevices"].close();
+            sap.ui.getCore().setModel(new JSONModel(), "networkDevices");
         },
         afterDialogClose: function () {
             this._oDialog.destroy();

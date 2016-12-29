@@ -8,10 +8,15 @@
             <content>-->
               <List
               		headerText="Devices" width="100%"
-              		 >
-                   <items>
-
-                  </items>
+                  items="{
+      			path: 'networkDevices>/'
+      		}">
+      						<items>
+      							<InputListItem label="{networkDevices>hostname}" description="{networkDevices>ip} - {networkDevices>mac}"
+      								iconDensityAware="false" iconInset="false">
+      								<Switch state="{switches>switchState}" change="handleSwitchChange" />
+      							</InputListItem>
+      						</items>
               	</List>
 
 
