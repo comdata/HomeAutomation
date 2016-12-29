@@ -89,6 +89,8 @@ import cm.homeautomation.services.base.GenericStatus;
 @Path("lego")
 public class LEGOTrainService extends BaseService {
 
+	private MqttClient client;
+
 	@GET
 	@Path("control/speed/{train}/{speed}")
 	public GenericStatus controlTrainSpeed(@PathParam("train") String train, @PathParam("speed") int speed) {
@@ -124,28 +126,30 @@ public class LEGOTrainService extends BaseService {
 	
 	private void sendMQTTMessage(String jsonMessage) {
 		try {
-			UUID uuid = UUID.randomUUID();
-			String randomUUIDString = uuid.toString();
-
-			MqttClient client;
-
-			client = new MqttClient("tcp://localhost:1883", "HomeAutomation/" + randomUUIDString);
-
-			MqttConnectOptions connOpt = new MqttConnectOptions();
-			connOpt.setAutomaticReconnect(true);
-			connOpt.setCleanSession(true);
-			connOpt.setKeepAliveInterval(60);
-			connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
-			// connOpt.setUserName(M2MIO_USERNAME);
-			// connOpt.setPassword(M2MIO_PASSWORD_MD5.toCharArray());
-
-			client.connect(connOpt);
+			
+			if (client==null || !client.isConnected()) {
+			
+				UUID uuid = UUID.randomUUID();
+				String randomUUIDString = uuid.toString();
+	
+				client = new MqttClient("tcp://localhost:1883", "HomeAutomation/" + randomUUIDString);
+	
+				MqttConnectOptions connOpt = new MqttConnectOptions();
+				connOpt.setAutomaticReconnect(true);
+				connOpt.setCleanSession(true);
+				connOpt.setKeepAliveInterval(60);
+				connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
+				// connOpt.setUserName(M2MIO_USERNAME);
+				// connOpt.setPassword(M2MIO_PASSWORD_MD5.toCharArray());
+	
+				client.connect(connOpt);
+			}
 
 			MqttMessage message = new MqttMessage();
 			message.setPayload(jsonMessage.getBytes());
 			client.publish("/lego", message);
-			client.disconnect();
-			client.close();
+			/*client.disconnect();
+			client.close();*/
 		} catch (MqttException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
