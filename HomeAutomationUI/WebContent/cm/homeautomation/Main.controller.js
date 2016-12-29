@@ -1054,10 +1054,10 @@ sap.ui.define([
           sap.ui.getCore().setModel(this._trainModel, "train");
           sap.ui.getCore().getModel("train").refresh(false);
         },
-        networkDevicesLoad: function() {
+        _networkDevicesLoad: function() {
           var subject = this;
           var networkDeviceModel = new RESTService();
-          networkDeviceModel.loadDataAsync("/HomeAutomation/services/networkdevices/getAll/", "", "GET", subject.handleNetworkDevicesLoaded, null, subject);
+          networkDeviceModel.loadDataAsync("/HomeAutomation/services/networkdevices/getAll", "", "GET", subject.handleNetworkDevicesLoaded, null, subject);
 
         },
 
