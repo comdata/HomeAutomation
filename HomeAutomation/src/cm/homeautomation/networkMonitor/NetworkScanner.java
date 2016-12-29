@@ -25,7 +25,7 @@ public class NetworkScanner {
 	 * @return
 	 */
 	public HashMap<String, NetworkDevice> checkHosts(String subnet) {
-		availableHosts = new HashMap<String, NetworkDevice>();
+		setAvailableHosts(new HashMap<String, NetworkDevice>());
 
 		int timeout = 1000;
 		for (int i = 1; i < 255; i++) {
@@ -38,7 +38,7 @@ public class NetworkScanner {
 					String macFromArpCache = getMacFromArpCache(host);
 
 					String key = host+"-"+macFromArpCache;
-					if (!availableHosts.keySet().contains(key)) {
+					if (!getAvailableHosts().keySet().contains(key)) {
 
 						NetworkDevice device = new NetworkDevice();
 						device.setIp(host);
@@ -46,7 +46,7 @@ public class NetworkScanner {
 
 						device.setMac(macFromArpCache);
 
-						availableHosts.put(key, device);
+						getAvailableHosts().put(key, device);
 
 						NetworkScannerHostFoundMessage newHostMessage = new NetworkScannerHostFoundMessage();
 						newHostMessage.setHost(device);
@@ -58,7 +58,7 @@ public class NetworkScanner {
 			}
 		}
 
-		return availableHosts;
+		return getAvailableHosts();
 	}
 
 	/**
@@ -133,6 +133,14 @@ public class NetworkScanner {
 		NetworkScanResult data = new NetworkScanResult();
 		data.setHosts(checkHosts);
 		EventBusService.getEventBus().post(new EventObject(data));
+	}
+
+	public HashMap<String, NetworkDevice> getAvailableHosts() {
+		return availableHosts;
+	}
+
+	public void setAvailableHosts(HashMap<String, NetworkDevice> availableHosts) {
+		this.availableHosts = availableHosts;
 	}
 
 }
