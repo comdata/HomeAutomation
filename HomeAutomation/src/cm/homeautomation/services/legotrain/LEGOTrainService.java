@@ -13,6 +13,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import cm.homeautomation.services.base.BaseService;
+import cm.homeautomation.services.base.GenericStatus;
 
 /**
  * name of the class is just here for describing what it does and not to have any claim on that name
@@ -90,25 +91,27 @@ public class LEGOTrainService extends BaseService {
 
 	@GET
 	@Path("control/speed/{train}/{speed}")
-	public void controlTrainSpeed(@PathParam("train") String train, @PathParam("speed") int speed) {
+	public GenericStatus controlTrainSpeed(@PathParam("train") String train, @PathParam("speed") int speed) {
 		//{mode: 0, step: 0, output: 0, channel:0}
 		
 		String jsonMessage="{mode: 0, step: "+speed+", output: 0, channel:"+train+"}";
 		sendMQTTMessage(jsonMessage);
+		return new GenericStatus(true);
 	}
 	
 	@GET
 	@Path("control/light/{train}/{light}")
-	public void controlTrainLight(@PathParam("train") String train, @PathParam("light") int light) {
+	public GenericStatus controlTrainLight(@PathParam("train") String train, @PathParam("light") int light) {
 		//{mode: 0, step: 0, output: 0, channel:0}
 		
 		String jsonMessage="{mode: 0, step: "+light+", output: 1, channel:"+train+"}";
 		sendMQTTMessage(jsonMessage);
+		return new GenericStatus(true);
 	}
 	
 	@GET
 	@Path("emergencyStop")
-	public void stopAllTrains() {
+	public GenericStatus stopAllTrains() {
 		
 		for(int a=0;a<2;a++) {
 			for(int i=0;i<4;i++) { 
@@ -116,6 +119,7 @@ public class LEGOTrainService extends BaseService {
 				sendMQTTMessage(jsonMessage);
 			}
 		}
+		return new GenericStatus(true);
 	}
 	
 	private void sendMQTTMessage(String jsonMessage) {
