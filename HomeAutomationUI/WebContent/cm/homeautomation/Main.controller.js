@@ -55,6 +55,7 @@ sap.ui.define([
         _webOverviewSocket: null,
         _wsGuid: guid(),
         loadDataInProgress: false,
+        _dialogs: [],
         initWebSocket: function (uri, callback, socket, state) {
 
 
@@ -1087,7 +1088,13 @@ sap.ui.define([
 
                 }
             }
-
+            else if (tileType =="networkDevices") {
+              if (!this._dialogs["networkDevices"]) {
+                  this._dialogs["networkDevices"] = sap.ui.xmlfragment("cm.homeautomation.NetworkDevices", this);
+              }
+              this._dialogs["networkDevices"].open();
+              // TODO load data
+            },
             else if (tileType == "camera") {
                 if (!this.camera) {
                     this.camera = sap.ui.xmlfragment("cm.homeautomation.Camera", this);
