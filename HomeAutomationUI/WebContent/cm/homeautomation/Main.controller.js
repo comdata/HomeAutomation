@@ -1142,6 +1142,9 @@ sap.ui.define([
         planesDialogClose: function () {
             this.planesView.close();
         },
+        networkDialogClose: function() {
+            this._dialogs["networkDevices"].close();
+        },
         afterDialogClose: function () {
             this._oDialog.destroy();
             this._oDialog = null;
@@ -1149,6 +1152,9 @@ sap.ui.define([
         afterCameraDialogClose: function () {
             this.camera.destroy();
             this.camera = null;
+        },
+        afterNetworkDialogClose: function () {
+          // TODO add cleanup
         },
 
         afterPlanesDialogClose: function () {
