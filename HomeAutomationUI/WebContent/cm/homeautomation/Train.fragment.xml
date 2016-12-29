@@ -23,11 +23,11 @@
                   		</InputListItem>
 
                       <InputListItem label="Licht">
-                             <Slider min="-7" max="7" step="1" value="{train>light}"
+                             <Slider min="-7" max="7" step="1" value="{train>/light}"
                                 width="200px" change="handleTrainLightChange" />
                   		</InputListItem>
                       <InputListItem label="Geschwindigkeit">
-                             <Slider min="-7" max="7" step="1" value="{train>speed}"
+                             <Slider min="-7" max="7" step="1" value="{train>/speed}"
                                 width="200px" change="handleTrainSpeedChange" />
                       </InputListItem>
 
