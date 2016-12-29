@@ -1094,7 +1094,7 @@ sap.ui.define([
               }
               this._dialogs["networkDevices"].open();
               // TODO load data
-            },
+            }
             else if (tileType == "camera") {
                 if (!this.camera) {
                     this.camera = sap.ui.xmlfragment("cm.homeautomation.Camera", this);
