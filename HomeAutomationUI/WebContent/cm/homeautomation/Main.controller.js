@@ -1003,6 +1003,15 @@ sap.ui.define([
           trainRESTModel.loadDataAsync("/HomeAutomation/services/lego/control/"+mode+"/"+train+"/"+value, "", "GET", null, null, subject);
 
         },
+        trainStop: function(oEvent) {
+          handleTrainSpeedLightChange: function(mode) {
+            var train=this._trainModelData.train;
+            var subject=this;
+            var trainRESTModel = new RESTService();
+            trainRESTModel.loadDataAsync("/HomeAutomation/services/lego/control/speed/"+train+"/8", "", "GET", null, null, subject);
+
+            this._resetTrainModel();
+        },
         trainEmergencyStop: function(oEvent) {
 
           var subject=this;

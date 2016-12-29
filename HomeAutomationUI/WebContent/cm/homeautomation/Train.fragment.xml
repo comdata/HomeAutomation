@@ -25,14 +25,18 @@
                       <InputListItem label="Licht">
                              <Slider min="-7" max="7" step="1" value="{train>/light}"
                                 width="200px" change="handleTrainLightChange" />
+                             <Label text="{train>/light}"></Label>
                   		</InputListItem>
                       <InputListItem label="Geschwindigkeit">
                              <Slider min="-7" max="7" step="1" value="{train>/speed}"
                                 width="200px" change="handleTrainSpeedChange" />
+                                <Label text="{train>/speed}"></Label>
                       </InputListItem>
-
-                      <InputListItem label="Sonstiges">
-                             <Button text="Alle Stopp" press="trainEmergencyStop"/>
+                      <InputListItem label="aktueller Zug">
+                             <Button text="Stopp" press="trainStop"/>
+                      </InputListItem>
+                      <InputListItem label="Alle Züge">
+                             <Button text="Stopp" press="trainEmergencyStop"/>
                       </InputListItem>
                   </items>
               	</List>
