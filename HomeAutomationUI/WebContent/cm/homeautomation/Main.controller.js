@@ -1004,7 +1004,6 @@ sap.ui.define([
 
         },
         trainStop: function(oEvent) {
-          handleTrainSpeedLightChange: function(mode) {
             var train=this._trainModelData.train;
             var subject=this;
             var trainRESTModel = new RESTService();
