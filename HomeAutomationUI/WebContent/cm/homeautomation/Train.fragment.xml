@@ -12,7 +12,7 @@
                    <items>
                     <InputListItem label="Zug">
 
-                            <SegmentedButton selectedKey="{train>train}" select="handleTrainSelected">
+                            <SegmentedButton selectedKey="{train>/train}" select="handleTrainSelected">
                     					<items>
                     						<SegmentedButtonItem text="1" key="0" />
                     						<SegmentedButtonItem text="2" key="1" />
