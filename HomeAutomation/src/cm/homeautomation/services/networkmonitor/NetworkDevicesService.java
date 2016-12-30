@@ -16,6 +16,7 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.NetworkDevice;
 import cm.homeautomation.networkMonitor.NetworkScanner;
 import cm.homeautomation.services.base.BaseService;
+import cm.homeautomation.services.base.GenericStatus;
 
 /** 
  * service to get all hosts from the {@link NetworkScanner} internal list
@@ -46,7 +47,7 @@ public class NetworkDevicesService extends BaseService {
 
     @GET
     @Path("wake/{mac}")
-    public void wakeUp(@PathParam("mac") String macStr) {
+    public GenericStatus wakeUp(@PathParam("mac") String macStr) {
         try {
             byte[] macBytes = getMacBytes(macStr);
             byte[] bytes = new byte[6 + 16 * macBytes.length];
@@ -64,9 +65,11 @@ public class NetworkDevicesService extends BaseService {
             socket.close();
             
             System.out.println("Wake-on-LAN packet sent.");
+            return new GenericStatus(true);
         }
         catch (Exception e) {
             System.out.println("Failed to send Wake-on-LAN packet: + e");
+            return new GenericStatus(false);
         }
         
     }
