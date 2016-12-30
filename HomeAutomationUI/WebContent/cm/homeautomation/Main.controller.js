@@ -813,7 +813,11 @@ sap.ui.define([
 
             sap.ui.getCore().setModel(model, "thermostats");
         },
-
+        networkDeviceWakeUp: function (event) {
+            var networkDevice = sap.ui.getCore().getModel("networkDevices").getProperty(event.getSource().oPropagatedProperties.oBindingContexts.networkDevices.sPath);
+            var oModel = new RESTService();
+            oModel.loadDataAsync("/HomeAutomation/services/networkdevices/wake/" + networkDevice.mac, "", "GET", null, null, this);
+        },
         handleSwitchChange: function (event) {
             var singleSwitch = sap.ui.getCore().getModel("switches").getProperty(event.getSource().oPropagatedProperties.oBindingContexts.switches.sPath);
 
