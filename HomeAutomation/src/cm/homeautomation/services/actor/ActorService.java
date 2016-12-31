@@ -143,7 +143,7 @@ public class ActorService extends BaseService implements MqttCallback {
 
 		ActorMessage actorMessage = new ActorMessage();
 		actorMessage.setHouseCode(singleSwitch.getHouseCode());
-		actorMessage.setStatus((status.equals("ON") ? "1" : "0"));
+		actorMessage.setStatus((targetStatus.equals("ON") ? "1" : "0"));
 		actorMessage.setSwitchNo(singleSwitch.getSwitchNo());
 
 		sendMulticastUDP(actorMessage);
