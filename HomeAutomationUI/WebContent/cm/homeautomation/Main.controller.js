@@ -1058,7 +1058,7 @@ sap.ui.define([
           sap.ui.getCore().setModel(this._trainModel, "train");
           sap.ui.getCore().getModel("train").refresh(false);
         },
-        _networkDevicesLoad: function() {
+        networkDevicesLoad: function() {
           var subject = this;
           var networkDeviceModel = new RESTService();
           networkDeviceModel.loadDataAsync("/HomeAutomation/services/networkdevices/getAll", "", "GET", subject.handleNetworkDevicesLoaded, null, subject);
@@ -1106,7 +1106,7 @@ sap.ui.define([
                   this._dialogs["networkDevices"] = sap.ui.xmlfragment("cm.homeautomation.NetworkDevices", this);
               }
               this._dialogs["networkDevices"].open();
-              this._networkDevicesLoad();
+              this.networkDevicesLoad();
               // TODO load data
             }
             else if (tileType == "camera") {
