@@ -28,7 +28,7 @@
 
         </content>
         <beginButton>
-        	<Button test="Aktualisieren" press="networkDevicesLoad" />
+        	<Button text="Aktualisieren" press="networkDevicesLoad" />
             <Button text="Schliessen" press="networkDialogClose"/>
         </beginButton>
     </Dialog>
