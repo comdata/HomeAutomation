@@ -35,7 +35,7 @@ public class NetworkDeviceDatabaseUpdater {
 			if (mac!=null) {
 				resultList = em.createQuery("select n from NetworkDevice n where n.mac=:mac").setParameter("mac", mac).getResultList();
 			} else {
-				resultList = em.createQuery("select n from NetworkDevice n where n.ip=:ip").setParameter("ip", networkDevice.getIp()).getResultList();
+				resultList = em.createQuery("select n from NetworkDevice n where n.hostname=:hostname").setParameter("host", networkDevice.getHostname()()).getResultList();
 			}
 			
 			if (resultList!=null && !resultList.isEmpty()) {
