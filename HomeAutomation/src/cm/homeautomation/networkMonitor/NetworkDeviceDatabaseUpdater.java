@@ -28,8 +28,15 @@ public class NetworkDeviceDatabaseUpdater {
 			NetworkDevice networkDevice = foundHostMessage.getHost();
 			
 			EntityManager em = EntityManagerService.getNewManager();
+			List<NetworkDevice> resultList = null; 
 			
-			List<NetworkDevice> resultList = em.createQuery("select n from NetworkDevice n where n.mac=:mac").setParameter("mac", networkDevice.getMac()).getResultList();
+			String mac = networkDevice.getMac();
+			
+			if (mac!=null) {
+				resultList = em.createQuery("select n from NetworkDevice n where n.mac=:mac").setParameter("mac", mac).getResultList();
+			} else {
+				resultList = em.createQuery("select n from NetworkDevice n where n.ip=:ip").setParameter("ip", networkDevice.getIp()).getResultList();
+			}
 			
 			if (resultList!=null && !resultList.isEmpty()) {
 				
