@@ -29,7 +29,11 @@
         </content>
         <beginButton>
         	<Button text="Aktualisieren" press="networkDevicesLoad" />
-            <Button text="Schliessen" press="networkDialogClose"/>
+            
         </beginButton>
+        <endButton>
+        	<Button text="Schliessen" press="networkDialogClose"/>
+        </endButton>
+        
     </Dialog>
 </core:FragmentDefinition>
