@@ -284,17 +284,17 @@ sap.ui.define([
         	if (!this._cameraRefreshDisabled) {
 	        	$.each(this.cameras, function (i, camera) {
 	        		if (camera.id==data.camera.id) {
-	
+
 	    				var parts=camera.tile.icon.split("?");
 	    				var newUrl="";
-	
+
 	        				for (var i=0; i<parts.length;i++) {
 	        					if (parts[i].indexOf("random=")==-1) {
 	    						newUrl+=parts[i]+"?";
 	    					}
 	    				}
 	    				var imageURL = newUrl+"random=" + Math.random();
-	
+
 	        				var image = $(".sapMStdTileIconDiv > img[src*='"+newUrl+"']")[0];
 	    				console.log("old image src: "+image.src);
 	    				var downloadingImage = new Image();
@@ -306,9 +306,9 @@ sap.ui.define([
 	    					window.setTimeout(function() {that.resizeCameraPictures();}, 1000);
 	    					window.setTimeout(function() {that.resizeCameraPictures();}, 5000);
 	    					window.setTimeout(function() {that.resizeCameraPictures();}, 10000);
-	
+
 	    				};
-	
+
 	    				downloadingImage.src=imageURL;
 	        		}
 	        	});
@@ -1182,6 +1182,10 @@ sap.ui.define([
             this._dialogs["networkDevices"].close();
             sap.ui.getCore().setModel(new JSONModel(), "networkDevices");
         },
+        doorWindowDialogClose: function() {
+            this._dialogs["doorWindow"].close();
+            sap.ui.getCore().setModel(new JSONModel(), "doorWindow");
+        }
         afterDialogClose: function () {
             this._oDialog.destroy();
             this._oDialog = null;
