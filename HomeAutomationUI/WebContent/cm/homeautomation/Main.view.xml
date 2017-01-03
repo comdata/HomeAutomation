@@ -31,6 +31,11 @@
 
         <footer>
             <Toolbar>
+            	<Switch state="true">
+					<layoutData>
+						<FlexItemData growFactor="1" />
+					</layoutData>
+				</Switch>
                 <ToolbarSpacer/>
                 <Text id="idMenuClock" text="Uhrzeit" />
                 <ToolbarSpacer/>
