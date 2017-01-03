@@ -37,6 +37,7 @@ public class DeviceService {
 				
 
 			} catch (NoResultException e) {
+				System.out.println("Mac: "+mac);
 				e.printStackTrace();
 				return null;
 			}
