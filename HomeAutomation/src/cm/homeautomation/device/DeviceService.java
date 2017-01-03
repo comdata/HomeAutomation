@@ -13,8 +13,8 @@ public class DeviceService {
 		Long roomId = null;
 
 		Room room = getRoomForMac(mac);
-		if (room!=null) {
-			roomId=room.getId();
+		if (room != null) {
+			roomId = room.getId();
 		}
 		return roomId;
 	}
@@ -25,23 +25,29 @@ public class DeviceService {
 
 			return device.getRoom();
 		} catch (NoResultException e) {
-			System.out.println("Mac: "+mac);
+			System.out.println("Mac: " + mac);
 			e.printStackTrace();
 			return null;
 		}
 	}
 
 	public static Device getDeviceForMac(String mac) {
-		EntityManager em = EntityManagerService.getNewManager();
-		System.out.println("Mac: "+mac);
-		Device device = (Device) em.createQuery("select d from Device d where d.mac=:mac")
-				.setParameter("mac", mac).getSingleResult();
+		try {
+			EntityManager em = EntityManagerService.getNewManager();
+			System.out.println("Mac: " + mac);
+			Device device = (Device) em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac)
+					.getSingleResult();
 
-		if (device == null) {
+			if (device == null) {
 
+				return null;
+			}
+			return device;
+		} catch (NoResultException e) {
+			System.out.println("Mac: " + mac);
+			e.printStackTrace();
 			return null;
 		}
-		return device;
 	}
 
 }
