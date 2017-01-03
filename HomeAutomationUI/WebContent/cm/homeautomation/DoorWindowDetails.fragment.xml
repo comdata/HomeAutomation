@@ -9,10 +9,10 @@
               <List
               		 width="100%"
                   items="{
-      			path: 'doorWindowDevices>/'
+      			path: 'doorWindow>/'
       		}">
       						<items>
-      							<InputListItem label="{doorWindowDevices>name} - {doorWindowDevices>state}" description="{doorWindowDevices>name} - {doorWindowDevices>state}"
+      							<InputListItem label="{doorWindow>name} - {doorWindow>state}" description="{doorWindow>name} - {doorWindow>state}"
       								iconDensityAware="false" iconInset="false">
       							</InputListItem>
       						</items>
@@ -27,11 +27,11 @@
 
         </content>
         <beginButton>
-        	<Button text="Aktualisieren" press="networkDevicesLoad" />
+
 
         </beginButton>
         <endButton>
-        	<Button text="Schliessen" press="networkDialogClose"/>
+        	<Button text="Schliessen" press="doorWindowDialogClose"/>
         </endButton>
 
     </Dialog>
