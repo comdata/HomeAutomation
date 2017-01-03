@@ -77,13 +77,20 @@ public class PowerMeterSensor {
 					.createNativeQuery("select count(*)/1000 from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 7 day);")
 					.getSingleResult();
 			
+			BigDecimal lastEightDaysBeforeTillYesterday = (BigDecimal) em
+					.createNativeQuery("select count(*)/1000 from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 8 day) and date(TIMESTAMP)<CURDATE();")
+					.getSingleResult();
+			
 			oneMinute=oneMinute.setScale(2, BigDecimal.ROUND_HALF_UP);
 			fiveMinute=fiveMinute.setScale(2, BigDecimal.ROUND_HALF_UP);
 			sixtyMinute=sixtyMinute.setScale(2, BigDecimal.ROUND_HALF_UP);
 			today=today.setScale(2, BigDecimal.ROUND_HALF_UP);
 			yesterday=yesterday.setScale(2, BigDecimal.ROUND_HALF_UP);
 			lastSevenDays=lastSevenDays.setScale(2, BigDecimal.ROUND_HALF_UP);
-
+			lastEightDaysBeforeTillYesterday=lastEightDaysBeforeTillYesterday.setScale(2, BigDecimal.ROUND_HALF_UP);
+			
+			
+			
 			PowerMeterIntervalData powerMeterIntervalData = new PowerMeterIntervalData();
 			powerMeterIntervalData.setOneMinute(oneMinute.floatValue());
 			powerMeterIntervalData.setFiveMinute(fiveMinute.floatValue());
@@ -91,7 +98,7 @@ public class PowerMeterSensor {
 			powerMeterIntervalData.setToday(today.floatValue());
 			powerMeterIntervalData.setYesterday(yesterday.floatValue());
 			powerMeterIntervalData.setLastSevenDays(lastSevenDays.floatValue());
-
+			powerMeterIntervalData.setLastSevenDaysTrend(lastSevenDays.compareTo(lastEightDaysBeforeTillYesterday));
 			
 			
 			EventObject intervalEventObject = new EventObject(powerMeterIntervalData);
