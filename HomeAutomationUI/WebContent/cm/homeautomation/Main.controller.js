@@ -1185,8 +1185,8 @@ sap.ui.define([
         doorWindowDialogClose: function() {
             this._dialogs["doorWindow"].close();
             sap.ui.getCore().setModel(new JSONModel(), "doorWindow");
-        }
-        afterDialogClose: function () {
+        },
+        afterDoorWindowDialogClose: function () {
             this._oDialog.destroy();
             this._oDialog = null;
         },
