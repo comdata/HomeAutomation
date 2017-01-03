@@ -70,11 +70,11 @@ public class PowerMeterSensor {
 
 			
 			BigDecimal yesterday = (BigDecimal) em
-					.createNativeQuery("select count(*)/1000 from POWERMETERPING where date(TIMESTAMP)=CURDATE() - 1;")
+					.createNativeQuery("select count(*)/1000 from POWERMETERPING where date(TIMESTAMP)=date(now()- interval 1 day);")
 					.getSingleResult();
 
 			BigDecimal lastSevenDays = (BigDecimal) em
-					.createNativeQuery("select count(*)/1000 from POWERMETERPING where date(TIMESTAMP)>=CURDATE() - 7;")
+					.createNativeQuery("select count(*)/1000 from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 7 day);")
 					.getSingleResult();
 			
 			oneMinute=oneMinute.setScale(2, BigDecimal.ROUND_HALF_UP);
