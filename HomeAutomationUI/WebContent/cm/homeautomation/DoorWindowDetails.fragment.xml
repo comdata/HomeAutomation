@@ -12,7 +12,7 @@
       			path: 'doorWindow>/'
       		}">
       						<items>
-      							<InputListItem label="{doorWindow>device/name} - {=${doorWindow>state} === '0' ? 'geschlossen': 'offen' }" description="{doorWindow>device/name} - {=${doorWindow>state} == '0' ? 'geschlossen': 'offen' }"
+      							<InputListItem label="{doorWindow>device/name} - {=${doorWindow>state} === '0' ? 'geschlossen': 'offen' }" description="{doorWindow>device/name} - {=(${doorWindow>state} == '0' ? 'geschlossen': 'offen') }"
       								iconDensityAware="false" iconInset="false">
       							</InputListItem>
       						</items>
