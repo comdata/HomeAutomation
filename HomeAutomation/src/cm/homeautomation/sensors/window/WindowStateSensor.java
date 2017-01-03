@@ -44,12 +44,14 @@ public class WindowStateSensor {
 		if (data instanceof WindowSensorData) {
 
 			WindowSensorData windowSensorData = (WindowSensorData) data;
-			Room room = DeviceService.getRoomForMac(windowSensorData.getMac());
+			String mac = windowSensorData.getMac();
+			Room room = DeviceService.getRoomForMac(mac);
 
 			WindowState windowState = new WindowState();
 			windowState.setRoom(room);
 			windowState.setState(windowSensorData.getState());
 			windowState.setTimestamp(new Date());
+			windowState.setMac(mac);
 
 			synchronized (this) {
 				em.getTransaction().begin();
@@ -58,10 +60,9 @@ public class WindowStateSensor {
 			}
 
 			WindowStateData windowStateData = new WindowStateData();
-			windowStateData.setMac(windowSensorData.getMac());
+			windowStateData.setMac(mac);
 			windowStateData.setState(windowSensorData.getState());
 			windowStateData.setRoom(room);
-			windowStateData.setMac(windowSensorData.getMac());
 
 			EventObject intervalEventObject = new EventObject(windowStateData);
 			EventBusService.getEventBus().post(intervalEventObject);

@@ -12,7 +12,7 @@
       			path: 'doorWindow>/'
       		}">
       						<items>
-      							<InputListItem label="{doorWindow>name} - {doorWindow>state}" description="{doorWindow>name} - {doorWindow>state}"
+      							<InputListItem label="{doorWindow>room/name} - {doorWindow>state}" description="{doorWindow>room/name} - {doorWindow>state}"
       								iconDensityAware="false" iconInset="false">
       							</InputListItem>
       						</items>
