@@ -28,13 +28,15 @@ public class WindowStateService extends BaseService {
 		List<WindowState> results = em.createQuery("select ws from WindowState ws where ws.id in (select max(w.id) from WindowState w group by w.mac)").getResultList();
 		
 		for (WindowState windowState : results) {
-			
+			String mac = windowState.getMac();			
 			
 			WindowStateData windowStateData=new WindowStateData();
 			
 			windowStateData.setMac(windowState.getMac());
 			windowStateData.setState(windowState.getState());
-			windowStateData.setRoom(DeviceService.getRoomForMac(windowState.getMac()));
+
+			windowStateData.setRoom(DeviceService.getRoomForMac(mac));
+			windowStateData.setDevice(DeviceService.getDeviceForMac(mac));
 			
 			windowStateList.add(windowStateData);
 		}
