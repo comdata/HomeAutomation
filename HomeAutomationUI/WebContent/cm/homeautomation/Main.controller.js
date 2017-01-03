@@ -56,6 +56,10 @@ sap.ui.define([
         _wsGuid: guid(),
         loadDataInProgress: false,
         _dialogs: [],
+        _cameraRefreshDisabled: false,
+        cameraRefreshToggle: function(oEvent) {
+        	oEvent.getSource();
+        },
         initWebSocket: function (uri, callback, socket, state) {
 
 
