@@ -32,6 +32,8 @@ public class JSONSensorDataReceiver {
 			
 			messageContent=messageContent.replace("cm.homeautomation.transmission.TransmissionStatusData", ".TransmissionStatusData");
 			
+			System.out.println("message for deserialization: "+messageContent);
+			
 			JSONSensorDataBase sensorData = mapper.readValue(messageContent, JSONSensorDataBase.class);
 
 			if (sensorData instanceof SensorDataSaveRequest) {
