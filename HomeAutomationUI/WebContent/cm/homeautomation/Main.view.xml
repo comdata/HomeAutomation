@@ -31,9 +31,15 @@
 
         <footer>
             <Toolbar>
+            	
                 <ToolbarSpacer/>
                 <Text id="idMenuClock" text="Uhrzeit" />
                 <ToolbarSpacer/>
+                <Switch state="true" change="cameraRefreshToggle">
+					<layoutData>
+						<FlexItemData growFactor="1" />
+					</layoutData>
+				</Switch>
                 <Button id="fullscreen" icon="sap-icon://full-screen" press="toggleFullscreen" />
                 <Button id="openMenu" icon="sap-icon://menu" press="handlePressOpenMenu" />
                 <Button icon="sap-icon://refresh" press="loadData" />

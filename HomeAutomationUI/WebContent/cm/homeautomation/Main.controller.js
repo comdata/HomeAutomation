@@ -56,6 +56,10 @@ sap.ui.define([
         _wsGuid: guid(),
         loadDataInProgress: false,
         _dialogs: [],
+        _cameraRefreshDisabled: false,
+        cameraRefreshToggle: function(oEvent) {
+        	this._cameraRefreshDisabled=!oEvent.getParameter("state");
+        },
         initWebSocket: function (uri, callback, socket, state) {
 
 
@@ -277,36 +281,38 @@ sap.ui.define([
         	console.log("got camera event: "+data.camera + " - camera id: "+data.camera.id);
         	var that=this;
 
-        	$.each(this.cameras, function (i, camera) {
-        		if (camera.id==data.camera.id) {
-
-    				var parts=camera.tile.icon.split("?");
-    				var newUrl="";
-
-        				for (var i=0; i<parts.length;i++) {
-        					if (parts[i].indexOf("random=")==-1) {
-    						newUrl+=parts[i]+"?";
-    					}
-    				}
-    				var imageURL = newUrl+"random=" + Math.random();
-
-        				var image = $(".sapMStdTileIconDiv > img[src*='"+newUrl+"']")[0];
-    				console.log("old image src: "+image.src);
-    				var downloadingImage = new Image();
-    				downloadingImage.onload = function(){
-    					console.log("new loaded image src: "+downloadingImage.src);
-    					image.src = this.src;
-    					camera.tile.info=moment().format('DD.MM.YYYY HH:mm:ss');
-    					that.resizeCameraPictures();
-    					window.setTimeout(function() {that.resizeCameraPictures();}, 1000);
-    					window.setTimeout(function() {that.resizeCameraPictures();}, 5000);
-    					window.setTimeout(function() {that.resizeCameraPictures();}, 10000);
-
-    				};
-
-    				downloadingImage.src=imageURL;
-        		}
-        	});
+        	if (!this._cameraRefreshDisabled) {
+	        	$.each(this.cameras, function (i, camera) {
+	        		if (camera.id==data.camera.id) {
+	
+	    				var parts=camera.tile.icon.split("?");
+	    				var newUrl="";
+	
+	        				for (var i=0; i<parts.length;i++) {
+	        					if (parts[i].indexOf("random=")==-1) {
+	    						newUrl+=parts[i]+"?";
+	    					}
+	    				}
+	    				var imageURL = newUrl+"random=" + Math.random();
+	
+	        				var image = $(".sapMStdTileIconDiv > img[src*='"+newUrl+"']")[0];
+	    				console.log("old image src: "+image.src);
+	    				var downloadingImage = new Image();
+	    				downloadingImage.onload = function(){
+	    					console.log("new loaded image src: "+downloadingImage.src);
+	    					image.src = this.src;
+	    					camera.tile.info=moment().format('DD.MM.YYYY HH:mm:ss');
+	    					that.resizeCameraPictures();
+	    					window.setTimeout(function() {that.resizeCameraPictures();}, 1000);
+	    					window.setTimeout(function() {that.resizeCameraPictures();}, 5000);
+	    					window.setTimeout(function() {that.resizeCameraPictures();}, 10000);
+	
+	    				};
+	
+	    				downloadingImage.src=imageURL;
+	        		}
+	        	});
+        	}
 
         },
         resizeCameraPictures: function () {
