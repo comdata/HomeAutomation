@@ -121,6 +121,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 		try {
 			JSONSensorDataReceiver.receiveSensorData(messageContent);
 		} catch (Exception e) {
+			e.printStackTrace();
 			System.out.println("Got an exception while saving data.");
 		}
 		client.messageArrivedComplete(message.getId(), message.getQos());
