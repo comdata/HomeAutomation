@@ -1,0 +1,38 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+    <Dialog title="Fenster und Türen" afterClose="afterDoorWindowDialogClose" stretch="true" horizontalScrolling="false" verticalScrolling="true" contentHeight="100%">
+        <content>
+          <Panel expandable="true" expanded="true" headerText=""
+    				width="auto" class="sapUiResponsiveMargin" id="remoteControl">
+            <content>
+              <List
+              		 width="100%"
+                  items="{
+      			path: 'doorWindowDevices>/'
+      		}">
+      						<items>
+      							<InputListItem label="{doorWindowDevices>name} - {doorWindowDevices>state}" description="{doorWindowDevices>name} - {doorWindowDevices>state}"
+      								iconDensityAware="false" iconInset="false">
+      							</InputListItem>
+      						</items>
+              	</List>
+
+
+
+
+        </content>
+      </Panel>
+
+
+        </content>
+        <beginButton>
+        	<Button text="Aktualisieren" press="networkDevicesLoad" />
+
+        </beginButton>
+        <endButton>
+        	<Button text="Schliessen" press="networkDialogClose"/>
+        </endButton>
+
+    </Dialog>
+</core:FragmentDefinition>

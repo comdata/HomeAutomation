@@ -678,7 +678,7 @@ sap.ui.define([
             this._openWindows=[];
 
         	  this.windowStateTile = {
-                    tileType: "windowState",
+                    tileType: "doorWindow",
                     roomId: "windowsState",
                     title: "Fenster",
                     numberUnit: "",
@@ -777,6 +777,9 @@ sap.ui.define([
         },
         handleNetworkDevicesLoaded: function(event, model) {
           sap.ui.getCore().setModel(model, "networkDevices");
+        },
+        handleDoorWindowLoaded: function(event, model) {
+          sap.ui.getCore().setModel(model, "doorWindow");
         },
         handleWindowBlindsLoaded: function (event, model) {
 
@@ -1070,7 +1073,12 @@ sap.ui.define([
           networkDeviceModel.loadDataAsync("/HomeAutomation/services/networkdevices/getAll", "", "GET", subject.handleNetworkDevicesLoaded, null, subject);
 
         },
+        doorWindowLoad: function() {
+          var subject = this;
+          var doorWindowModel = new RESTService();
+          doorWindowModel.loadDataAsync("/HomeAutomation/services/window/readAll", "", "GET", subject.handleDoorWindowLoaded, null, subject);
 
+        },
         /**
 		 * handle selection, triggering navigation
 		 *
@@ -1113,6 +1121,14 @@ sap.ui.define([
               }
               this._dialogs["networkDevices"].open();
               this.networkDevicesLoad();
+              // TODO load data
+            }
+            else if (tileType =="doorWindow") {
+              if (!this._dialogs["doorWindow"]) {
+                  this._dialogs["doorWindow"] = sap.ui.xmlfragment("cm.homeautomation.DoorWindowDetails", this);
+              }
+              this._dialogs["doorWindow"].open();
+              this.doorWindowLoad();
               // TODO load data
             }
             else if (tileType == "camera") {
