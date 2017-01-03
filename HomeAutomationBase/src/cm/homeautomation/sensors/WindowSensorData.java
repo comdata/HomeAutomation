@@ -1,8 +1,10 @@
-package cm.homeautomation.sensors.window;
+package cm.homeautomation.sensors;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import cm.homeautomation.entities.Room;
-import cm.homeautomation.sensors.JSONSensorDataBase;
 
+@JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include=JsonTypeInfo.As.PROPERTY, property="@c")
 public class WindowSensorData extends JSONSensorDataBase {
 
 	private int state;

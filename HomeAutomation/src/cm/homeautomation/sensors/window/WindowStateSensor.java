@@ -15,6 +15,7 @@ import cm.homeautomation.entities.WindowState;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.PowerMeterData;
+import cm.homeautomation.sensors.WindowSensorData;
 
 /**
  * receiver power meter data and save it to the database

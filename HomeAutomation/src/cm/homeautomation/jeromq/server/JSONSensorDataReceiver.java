@@ -11,7 +11,7 @@ import cm.homeautomation.sensors.JSONSensorDataBase;
 import cm.homeautomation.sensors.PowerMeterData;
 import cm.homeautomation.sensors.SensorDataRoomSaveRequest;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
-import cm.homeautomation.sensors.window.WindowSensorData;
+import cm.homeautomation.sensors.WindowSensorData;
 import cm.homeautomation.services.sensors.Sensors;
 
 public class JSONSensorDataReceiver {
