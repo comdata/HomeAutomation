@@ -37,6 +37,7 @@ public class DeviceService {
 				
 
 			} catch (NoResultException e) {
+				e.printStackTrace();
 				return null;
 			}
 	}
