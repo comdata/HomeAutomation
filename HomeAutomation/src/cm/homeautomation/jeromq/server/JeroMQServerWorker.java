@@ -47,6 +47,14 @@ public class JeroMQServerWorker implements Runnable {
 
 			try {
 
+				messageContent=messageContent.replace("@class", "@c");
+				
+				messageContent=messageContent.replace("cm.homeautomation.sensors", "");
+				
+				messageContent=messageContent.replace("cm.homeautomation.transmission.TransmissionStatusData", ".TransmissionStatusData");
+				
+				System.out.println("message for deserialization: "+messageContent);
+				
 				JSONSensorDataBase sensorData = mapper.readValue(messageContent, JSONSensorDataBase.class);
 
 				if (sensorData instanceof SensorDataSaveRequest) {
