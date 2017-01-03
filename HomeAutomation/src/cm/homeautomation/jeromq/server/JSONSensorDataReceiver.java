@@ -26,6 +26,10 @@ public class JSONSensorDataReceiver {
 			
 			ObjectMapper mapper = new ObjectMapper();
 			
+			messageContent=messageContent.replace("@class", "@c");
+			
+			messageContent=messageContent.replace("cm.homeautomation.sensors", "");
+			
 			JSONSensorDataBase sensorData = mapper.readValue(messageContent, JSONSensorDataBase.class);
 
 			if (sensorData instanceof SensorDataSaveRequest) {

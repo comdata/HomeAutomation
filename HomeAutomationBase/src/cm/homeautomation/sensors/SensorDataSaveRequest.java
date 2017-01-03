@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import cm.homeautomation.entities.SensorData;
 
-@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
 public class SensorDataSaveRequest extends JSONSensorDataBase {
 	private Long sensorId;
 	private SensorData sensorData;

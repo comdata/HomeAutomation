@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import cm.homeautomation.entities.Room;
 
-@JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include=JsonTypeInfo.As.PROPERTY, property="@c")
 public class WindowSensorData extends JSONSensorDataBase {
 
 	private int state;
