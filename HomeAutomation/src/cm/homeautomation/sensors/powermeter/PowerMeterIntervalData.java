@@ -8,6 +8,7 @@ public class PowerMeterIntervalData {
 	private float yesterday;
 	private float lastSevenDays;
 	private float today;
+	private int lastSevenDaysTrend;
 
 	public void setOneMinute(float oneMinute) {
 		this.oneMinute = oneMinute;
@@ -56,6 +57,14 @@ public class PowerMeterIntervalData {
 
 	public float getToday() {
 		return today;
+	}
+
+	public void setLastSevenDaysTrend(int lastSevenDaysTrend) {
+		this.lastSevenDaysTrend = lastSevenDaysTrend;
+	}
+	
+	public int getLastSevenDaysTrend() {
+		return lastSevenDaysTrend;
 	}
 
 }
