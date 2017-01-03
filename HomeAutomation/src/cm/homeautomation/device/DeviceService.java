@@ -23,6 +23,10 @@ public class DeviceService {
 		try {
 			Device device = getDeviceForMac(mac);
 
+			if (device==null) {
+				return null;
+			}
+			
 			return device.getRoom();
 		} catch (NoResultException e) {
 			System.out.println("Mac: " + mac);
