@@ -20,27 +20,28 @@ public class DeviceService {
 	}
 
 	public static Room getRoomForMac(String mac) {
+		try {
+			Device device = getDeviceForMac(mac);
 
-			EntityManager em = EntityManagerService.getNewManager();
+			return device.getRoom();
+		} catch (NoResultException e) {
+			System.out.println("Mac: "+mac);
+			e.printStackTrace();
+			return null;
+		}
+	}
 
-			try {
-				System.out.println("Mac: "+mac);
-				Device device = (Device) em.createQuery("select d from Device d where d.mac=:mac")
-						.setParameter("mac", mac).getSingleResult();
+	public static Device getDeviceForMac(String mac) {
+		EntityManager em = EntityManagerService.getNewManager();
+		System.out.println("Mac: "+mac);
+		Device device = (Device) em.createQuery("select d from Device d where d.mac=:mac")
+				.setParameter("mac", mac).getSingleResult();
 
-				if (device == null) {
+		if (device == null) {
 
-					return null;
-				}
-
-				return device.getRoom();
-				
-
-			} catch (NoResultException e) {
-				System.out.println("Mac: "+mac);
-				e.printStackTrace();
-				return null;
-			}
+			return null;
+		}
+		return device;
 	}
 
 }
