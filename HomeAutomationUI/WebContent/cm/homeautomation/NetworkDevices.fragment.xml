@@ -10,9 +10,9 @@
 
 					<Table
 						items="{
-			path: 'networkDevices',
+			path: 'networkDevices>/',
 			sorter: {
-				path: 'hostname'
+				path: 'networkDevices>hostname'
 			}
 		}"
 						title="Devices" selectionMode="MultiToggle">
