@@ -4,7 +4,7 @@
 		stretch="true" horizontalScrolling="false" verticalScrolling="true"
 		contentHeight="100%">
 		<content>
-			<Panel expandable="true" expanded="true"
+			<Panel expandable="false" expanded="true"
 				width="auto" class="sapUiResponsiveMargin" id="network">
 				<content>
 
