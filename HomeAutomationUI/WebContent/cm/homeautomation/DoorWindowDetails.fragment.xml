@@ -1,38 +1,52 @@
-<core:FragmentDefinition
-        xmlns="sap.m"
-        xmlns:core="sap.ui.core">
-    <Dialog title="Fenster und Türen" afterClose="afterDoorWindowDialogClose" stretch="true" horizontalScrolling="false" verticalScrolling="true" contentHeight="100%">
-        <content>
-          <Panel expandable="true" expanded="true" headerText=""
-    				width="auto" class="sapUiResponsiveMargin" id="remoteControl">
-            <content>
-              <List
-              		 width="100%"
-                  items="{
-      			path: 'doorWindow>/'
-      		}">
-      						<items>
-      							<InputListItem label="{doorWindow>device/name} - {=${doorWindow>state} === 0 ? 'geschlossen': 'offen' }" description="{doorWindow>device/name} - {=${doorWindow>state} === 0 ? 'geschlossen': 'offen' }"
-      								iconDensityAware="false" iconInset="false">
-      							</InputListItem>
-      						</items>
-              	</List>
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<Dialog title="Fenster und Türen" afterClose="afterDoorWindowDialogClose"
+		stretch="true" horizontalScrolling="false" verticalScrolling="true"
+		contentHeight="100%">
+		<content>
+			<Panel expandable="true" expanded="true" headerText="" width="auto"
+				class="sapUiResponsiveMargin" id="remoteControl">
+				<content>
+
+					<Table
+						items="{
+			path: 'doorWindow>/',
+			sorter: {
+				path: 'doorWindow>device/name'
+			}
+		}"
+						title="Devices" selectionMode="MultiToggle">
+						<columns>
+							<Column>
+								<Text text="Name" />
+							</Column>
+							<Column>
+								<Text text="Zustand" />
+							</Column>
+						</columns>
+
+						<items>
+							<ColumnListItem>
+								<cells>
+									<Text text="{doorWindow>device/name}" />
+									<Text text="{=${doorWindow>state} === 0 ? 'geschlossen': 'offen' }" />
+
+								</cells>
+							</ColumnListItem>
+						</items>
+					</Table>
+				</content>
+			</Panel>
 
 
+		</content>
+		<beginButton>
 
 
-        </content>
-      </Panel>
+		</beginButton>
+		<endButton>
+			<Button text="Schliessen" press="doorWindowDialogClose" />
+		</endButton>
 
-
-        </content>
-        <beginButton>
-
-
-        </beginButton>
-        <endButton>
-        	<Button text="Schliessen" press="doorWindowDialogClose"/>
-        </endButton>
-
-    </Dialog>
+	</Dialog>
 </core:FragmentDefinition>
