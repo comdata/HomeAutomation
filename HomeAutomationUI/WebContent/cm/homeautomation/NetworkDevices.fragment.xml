@@ -6,18 +6,37 @@
           <Panel expandable="true" expanded="true" headerText="Devices"
     				width="auto" class="sapUiResponsiveMargin" id="remoteControl">
             <content>
-              <List
-              		 width="100%"
-                  items="{
-      			path: 'networkDevices>/'
-      		}">
-      						<items>
-      							<InputListItem label="{networkDevices>hostname} - {networkDevices>ip} - {networkDevices>mac}" description="{networkDevices>ip} - {networkDevices>mac}"
-      								iconDensityAware="false" iconInset="false">
-                      <Button text="Wake-Up" press="networkDeviceWakeUp"/>
-      							</InputListItem>
-      						</items>
-              	</List>
+              <Table
+				rows="{/networkDevices}"
+				title="Devices"
+				selectionMode="MultiToggle"
+			    >
+				<columns>
+          <Column width="11rem">
+						<m:Label text="Hostname" />
+						<template>
+							<m:Text text="{networkDevices>hostname}"/>
+						</template>
+					</Column>
+          <Column width="11rem">
+						<m:Label text="IP" />
+						<template>
+							<m:Text text="{networkDevices>ip}"/>
+						</template>
+					</Column>
+          <Column width="11rem">
+            <m:Label text="MAC" />
+            <template>
+              <m:Text text="{networkDevices>mac}"/>
+            </template>
+          </Column>
+          <Column width="11rem">
+            <template>
+              <Button text="Wake-Up" press="networkDeviceWakeUp"/>
+            </template>
+          </Column>
+        </columns>
+      </Table>
 
 
 
@@ -29,11 +48,11 @@
         </content>
         <beginButton>
         	<Button text="Aktualisieren" press="networkDevicesLoad" />
-            
+
         </beginButton>
         <endButton>
         	<Button text="Schliessen" press="networkDialogClose"/>
         </endButton>
-        
+
     </Dialog>
 </core:FragmentDefinition>
