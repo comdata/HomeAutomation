@@ -7,33 +7,39 @@
 			<Panel expandable="true" expanded="true" headerText="Devices"
 				width="auto" class="sapUiResponsiveMargin" id="remoteControl">
 				<content>
-					<Table rows="{/networkDevices}" title="Devices"
-						selectionMode="MultiToggle">
+
+					<Table
+						items="{
+			path: '/networkDevices',
+			sorter: {
+				path: 'hostname'
+			}
+		}"
+						title="Devices" selectionMode="MultiToggle">
 						<columns>
-							<Column width="11rem">
-								<Label text="Hostname" />
-								<template>
-									<Text text="{networkDevices>hostname}" />
-								</template>
+							<Column>
+								<Text text="Hostname" />
 							</Column>
-							<Column width="11rem">
-								<Label text="IP" />
-								<template>
-									<Text text="{networkDevices>ip}" />
-								</template>
+							<Column>
+								<Text text="IP" />
 							</Column>
-							<Column width="11rem">
-								<Label text="MAC" />
-								<template>
-									<Text text="{networkDevices>mac}" />
-								</template>
+							<Column>
+								<Text text="MAC" />
 							</Column>
-							<Column width="11rem">
-								<template>
-									<Button text="Wake-Up" press="networkDeviceWakeUp" />
-								</template>
+							<Column>
 							</Column>
 						</columns>
+
+						<items>
+							<ColumnListItem>
+								<cells>
+									<Text text="{networkDevices>hostname}" />
+									<Text text="{networkDevices>ip}" />
+									<Text text="{networkDevices>mac}" />
+									<Button text="Wake-Up" press="networkDeviceWakeUp" />
+								</cells>
+							</ColumnListItem>
+						</items>
 					</Table>
 
 
