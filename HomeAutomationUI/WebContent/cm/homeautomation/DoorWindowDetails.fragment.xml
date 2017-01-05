@@ -36,7 +36,7 @@
 									<Text
 										text="{path: 'doorWindow>date', type: 'sap.ui.model.type.DateTime', formatOptions: {
 					style: 'long'
-				}" />
+				}}" />
 								</cells>
 							</ColumnListItem>
 						</items>
