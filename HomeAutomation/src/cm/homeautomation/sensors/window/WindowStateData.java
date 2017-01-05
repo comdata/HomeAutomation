@@ -1,5 +1,7 @@
 package cm.homeautomation.sensors.window;
 
+import java.util.Date;
+
 import javax.persistence.Transient;
 
 import cm.homeautomation.entities.Device;
@@ -12,6 +14,7 @@ public class WindowStateData {
 	
 	@Transient
 	private Device device;
+	private Date date;
 
 	public int getState() {
 		return state;
@@ -43,6 +46,15 @@ public class WindowStateData {
 
 	public void setDevice(Device device) {
 		this.device = device;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+
+	}
+	
+	public Date getDate() {
+		return date;
 	}
 	
 }
