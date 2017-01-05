@@ -12,7 +12,7 @@
 						items="{
 			path: 'doorWindow>/',
 			sorter: {
-				path: 'doorWindow>device/name'
+				path: 'device/name'
 			}
 		}"
 						title="Devices" selectionMode="MultiToggle">
