@@ -37,6 +37,7 @@ public class WindowStateService extends BaseService {
 
 			windowStateData.setRoom(DeviceService.getRoomForMac(mac));
 			windowStateData.setDevice(DeviceService.getDeviceForMac(mac));
+			windowStateData.setDate(windowState.getTimestamp());
 			
 			windowStateList.add(windowStateData);
 		}
