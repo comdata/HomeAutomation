@@ -1654,8 +1654,8 @@ sap.ui.define([
             this.switchAdminView.close();
         },
         dateTimeFormatter: function(sDate) {
-						return new Date(sDate);
-				}
+        	return moment(new Date(sDate)).format('DD.MM.YYYY HH:mm:ss');
+		}
 
     });
 
