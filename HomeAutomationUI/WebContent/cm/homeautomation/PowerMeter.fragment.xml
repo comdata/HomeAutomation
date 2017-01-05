@@ -2,7 +2,7 @@
 	xmlns:core="sap.ui.core" xmlns:commons="sap.ui.commons"
 	xmlns:agraebe.custom="agraebe.custom.control">
 	<Dialog title="{i18n>powerMeterTitle}" afterClose="afterPowerMeterDialogClose"
-		stretch="true">
+		stretch="true" verticalScrolling="false" horizontalScrolling="false">
 		<content>
 
 
