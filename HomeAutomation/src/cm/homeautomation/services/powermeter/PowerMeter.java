@@ -25,7 +25,7 @@ public class PowerMeter extends BaseService {
 
 		List<PowerIntervalData> results = em.createNativeQuery(
 				"select count(*)/1000 as KWH, FROM_UNIXTIME(ROUND(UNIX_TIMESTAMP(TIMESTAMP)/(15 * 60))*15*60) as TIMESLICE from POWERMETERPING GROUP BY ROUND(UNIX_TIMESTAMP(TIMESTAMP)/(15 * 60));",
-				"PowerIntervalMapping").getResultList();
+				PowerIntervalData.class).getResultList();
 		return results;
 	}
 
