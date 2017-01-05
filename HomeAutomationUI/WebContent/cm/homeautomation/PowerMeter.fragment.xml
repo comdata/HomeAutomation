@@ -12,7 +12,7 @@
 
 		</content>
 		<beginButton>
-			<Button text="Schliessen" press="powerMeterDialogClose" />
+			<Button text="{i18n>close}" press="powerMeterDialogClose" />
 		</beginButton>
 	</Dialog>
 </core:FragmentDefinition>
