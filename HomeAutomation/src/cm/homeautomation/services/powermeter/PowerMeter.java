@@ -9,6 +9,7 @@ import javax.persistence.ColumnResult;
 import javax.persistence.ConstructorResult;
 import javax.persistence.EntityManager;
 import javax.persistence.SqlResultSetMapping;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import cm.homeautomation.db.EntityManagerService;
@@ -17,6 +18,8 @@ import cm.homeautomation.services.base.BaseService;
 @Path("power")
 public class PowerMeter extends BaseService {
 
+	@GET
+	@Path("readInterval")
 	public List<PowerIntervalData> getPowerDataForIntervals() {
 		EntityManager em = EntityManagerService.getNewManager();
 
