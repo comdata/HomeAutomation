@@ -40,7 +40,8 @@ sap.ui.define([
     'sap/ui/model/json/JSONModel',
     'cm/webservice/RESTService',
     'cm/homeautomation/Validator',
-], function (jQuery, Controller, JSONModel, RESTService, Validator) {
+    "sap/ui/model/resource/ResourceModel"
+], function (jQuery, Controller, JSONModel, RESTService, Validator,ResourceModel) {
     "use strict";
 
     return Controller.extend("cm.homeautomation.Main", {
@@ -378,6 +379,12 @@ sap.ui.define([
 		 * @param evt
 		 */
         onInit: function (evt) {
+            var i18nModel = new ResourceModel({
+                bundleName: "cm.homeautomation.i18n.i18n"
+             });
+             this.getView().setModel(i18nModel, "i18n")
+             sap.ui.getCore().setModel(i18nModel, "i18n");
+        	
             this.loadData();
             var subject = this;
 
@@ -454,7 +461,7 @@ sap.ui.define([
                                    info: "Kamera - Küche",
                                    eventHandler: "showCamera",
                                    icon: "/HomeAutomation/services/camera/getSnapshot/1",
-                                   stream: "/HomeAutomation/newCameraProxy?_ip=57&_port=8080&_action=stream"
+                                   stream: "/HomeAutomation/newCameraProxy?_ip=45&_port=8080&_action=stream"
                                }
                        	},
                        	{
@@ -1116,6 +1123,13 @@ sap.ui.define([
 
                 }
             }
+            else if (tileType =="powermeter") {
+                if (!this._dialogs["powermeter"]) {
+                    this._dialogs["powermeter"] = sap.ui.xmlfragment("cm.homeautomation.PowerMeter", this);
+                }
+                this._dialogs["powermeter"].open();
+                this.powerMeterLoad();
+              }            
             else if (tileType =="networkDevices") {
               if (!this._dialogs["networkDevices"]) {
                   this._dialogs["networkDevices"] = sap.ui.xmlfragment("cm.homeautomation.NetworkDevices", this);
@@ -1167,6 +1181,45 @@ sap.ui.define([
             }
 
         },
+        _getRandomInt: function (min, max) {
+        	  min = Math.ceil(min);
+        	  max = Math.floor(max);
+        	  return Math.floor(Math.random() * (max - min)) + min;
+        	},
+        powerMeterLoad: function () {
+        	var c3jsData={
+        			  "data1": [30, 200, 100, 400, 150, 250],
+        			  "data2": [50, 20, 10, 40, 15, 25]
+        			};
+
+			var chartJSData={
+        				 "barData": {
+        				    "labels": ["January", "February", "March", "April", "May", "June", "July"],
+        				    "datasets": [{
+        				      "label": "My First dataset",
+        				      "fillColor": "rgba(220,220,220,0.5)",
+        				      "strokeColor": "rgba(220,220,220,0.8)",
+        				      "highlightFill": "rgba(220,220,220,0.75)",
+        				      "highlightStroke": "rgba(220,220,220,1)",
+        				      "data": [this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100)]
+        				    }, {
+        				      "label": "My Second dataset",
+        				      "fillColor": "rgba(151,187,205,0.5)",
+        				      "strokeColor": "rgba(151,187,205,0.8)",
+        				      "highlightFill": "rgba(151,187,205,0.75)",
+        				      "highlightStroke": "rgba(151,187,205,1)",
+        				      "data": [this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100)]
+        				    }]
+        				  }
+        				};
+        	
+            var chartJSModel = new JSONModel();
+            var c3jsModel = new JSONModel();
+            chartJSModel.setData(chartJSData);
+            c3jsModel.setData(c3jsData);
+            sap.ui.getCore().setModel(chartJSModel, "chartjsData");
+            sap.ui.getCore().setModel(c3jsModel, "c3jsData");
+        },
         dialogClose: function () {
             this._oDialog.close();
         },
@@ -1183,6 +1236,10 @@ sap.ui.define([
             this._dialogs["networkDevices"].close();
             sap.ui.getCore().setModel(new JSONModel(), "networkDevices");
         },
+        powerMeterDialogClose: function() {
+            this._dialogs["powermeter"].close();
+            
+        },        
         doorWindowDialogClose: function() {
             this._dialogs["doorWindow"].close();
             sap.ui.getCore().setModel(new JSONModel(), "doorWindow");
@@ -1198,6 +1255,9 @@ sap.ui.define([
         afterNetworkDialogClose: function () {
           // TODO add cleanup
         },
+        afterPowerMeterDialogClose: function () {
+        	sap.ui.getCore().setModel(new JSONModel(), "powermeter");
+          },        
 
         afterPlanesDialogClose: function () {
             this.planesView.destroy();
