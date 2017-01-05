@@ -33,7 +33,16 @@
 								<cells>
 									<Text text="{doorWindow>device/name}" />
 									<Text text="{=${doorWindow>state} === 0 ? 'geschlossen': 'offen' }" />
-									<Text text="{doorWindow>date}" />
+									<Text
+										text="{
+											path: 'doorWindow>date', 
+											type: 'sap.ui.model.type.DateTime', 
+											formatter: function(sDate) {
+												return new Date(sDate);
+											},
+											formatOptions: {
+												style: 'long'
+											}}" />
 								</cells>
 							</ColumnListItem>
 						</items>
