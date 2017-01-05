@@ -1298,8 +1298,8 @@ sap.ui.define([
             var c3jsModel = new JSONModel();
             chartJSModel.setData(chartJSData);
             c3jsModel.setData(chartJSData);
-            this.setModel(chartJSModel, "chartjsData");
-            this.setModel(c3jsModel, "c3jsData");
+            this.getView().setModel(chartJSModel, "chartjsData");
+            this.getView().setModel(c3jsModel, "c3jsData");
         },
         dialogClose: function () {
             this._oDialog.close();
