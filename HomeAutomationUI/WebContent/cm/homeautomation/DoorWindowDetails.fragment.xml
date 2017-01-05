@@ -35,7 +35,7 @@
 									<Text text="{=${doorWindow>state} === 0 ? 'geschlossen': 'offen' }" />
 									<Text
 										text="{
-											parts:[{doorWindow>date'}],
+											parts:[{path: 'doorWindow>date'}],
 											formatter: '.dateTimeFormatter'
 }" />
 								</cells>
