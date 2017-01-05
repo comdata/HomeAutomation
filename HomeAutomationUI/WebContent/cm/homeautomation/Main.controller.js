@@ -40,7 +40,8 @@ sap.ui.define([
     'sap/ui/model/json/JSONModel',
     'cm/webservice/RESTService',
     'cm/homeautomation/Validator',
-], function (jQuery, Controller, JSONModel, RESTService, Validator) {
+    "sap/ui/model/resource/ResourceModel"
+], function (jQuery, Controller, JSONModel, RESTService, Validator,ResourceModel) {
     "use strict";
 
     return Controller.extend("cm.homeautomation.Main", {
@@ -378,6 +379,11 @@ sap.ui.define([
 		 * @param evt
 		 */
         onInit: function (evt) {
+            var i18nModel = new ResourceModel({
+                bundleName: "cm.homeautomation.i18n"
+             });
+             this.getView().setModel(i18nModel, "i18n")
+        	
             this.loadData();
             var subject = this;
 
