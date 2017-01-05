@@ -34,6 +34,11 @@ function guid() {
 	return s4() + s4() + '-' + s4() + '-' + s4() + '-' +s4() + '-' + s4() + s4() + s4();
 }
 
+function dateTimeFormatter(sDate) {
+	return moment(new Date(sDate)).format('DD.MM.YYYY HH:mm:ss');
+}
+
+
 sap.ui.define([
     'jquery.sap.global',
     'sap/ui/core/mvc/Controller',
@@ -1652,10 +1657,7 @@ sap.ui.define([
         },
         switchAdminDialogCancel: function (event) {
             this.switchAdminView.close();
-        },
-        dateTimeFormatter: function(sDate) {
-        	return moment(new Date(sDate)).format('DD.MM.YYYY HH:mm:ss');
-		}
+        }
 
     });
 
