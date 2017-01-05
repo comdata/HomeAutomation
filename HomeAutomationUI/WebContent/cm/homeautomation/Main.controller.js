@@ -1181,13 +1181,18 @@ sap.ui.define([
             }
 
         },
+        _getRandomInt: function (min, max) {
+        	  min = Math.ceil(min);
+        	  max = Math.floor(max);
+        	  return Math.floor(Math.random() * (max - min)) + min;
+        	},
         powerMeterLoad: function () {
         	var c3jsData={
         			  "data1": [30, 200, 100, 400, 150, 250],
         			  "data2": [50, 20, 10, 40, 15, 25]
         			};
-        	
-        	var chartJSData={
+
+			var chartJSData={
         				 "barData": {
         				    "labels": ["January", "February", "March", "April", "May", "June", "July"],
         				    "datasets": [{
@@ -1196,14 +1201,14 @@ sap.ui.define([
         				      "strokeColor": "rgba(220,220,220,0.8)",
         				      "highlightFill": "rgba(220,220,220,0.75)",
         				      "highlightStroke": "rgba(220,220,220,1)",
-        				      "data": [Math.randon(1,100), Math.randon(1,100), Math.randon(1,100), Math.randon(1,100), Math.randon(1,100), Math.randon(1,100), Math.randon(1,100)]
+        				      "data": [this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100)]
         				    }, {
         				      "label": "My Second dataset",
         				      "fillColor": "rgba(151,187,205,0.5)",
         				      "strokeColor": "rgba(151,187,205,0.8)",
         				      "highlightFill": "rgba(151,187,205,0.75)",
         				      "highlightStroke": "rgba(151,187,205,1)",
-        				      "data": [Math.randon(1,100), Math.randon(1,100), Math.randon(1,100), Math.randon(1,100), Math.randon(1,100), Math.randon(1,100), Math.randon(1,100)]
+        				      "data": [this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100)]
         				    }]
         				  }
         				};
