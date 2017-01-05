@@ -5,12 +5,10 @@
 		stretch="true">
 		<content>
 
-			<Panel expandable="false" expanded="true" headerText="Historic Data"
-				width="auto" height="400" class="sapUiResponsiveMargin">
+			
 				<content>
 					<agraebe.custom:ChartJSControl width="400" height="200" responsive="true" chartType="Bar" data="{chartjsData>/barData}" />
 				</content>
-			</Panel>
 
 		</content>
 		<beginButton>
