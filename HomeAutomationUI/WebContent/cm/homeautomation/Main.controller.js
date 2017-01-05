@@ -726,6 +726,7 @@ sap.ui.define([
             this._initPowerMeterTile();
             this._initMailTile();
             this._initLegoTrainTile();
+            this._initMenu();
         },
         _initMailTile: function() {
         	var subject=this;
@@ -1234,15 +1235,8 @@ sap.ui.define([
                 this.byId("idMenuClock").setText(date + " - " + time.replace("MESZ", ""));
             }
         },
-
-        /**
-		 * menu open pressed
-		 *
-		 */
-        handlePressOpenMenu: function (oEvent) {
-            var oButton = oEvent.getSource();
-
-            // create menu only once
+        _initMenu: function () {
+        	 // create menu only once
             if (!this._menu) {
                 this._menu = sap.ui.xmlfragment(
                     "cm.homeautomation.Menu",
@@ -1250,9 +1244,20 @@ sap.ui.define([
                 );
                 this.getView().addDependent(this._menu);
             }
+        },
+        /**
+		 * menu open pressed
+		 *
+		 */
+        handlePressOpenMenu: function (oEvent) {
+            var oButton = oEvent.getSource();
 
-            var eDock = sap.ui.core.Popup.Dock;
-            this._menu.open(this._bKeyboard, oButton, eDock.BeginTop, eDock.BeginBottom, oButton);
+            if (this._menu!=null) {
+	            var eDock = sap.ui.core.Popup.Dock;
+	            this._menu.open(this._bKeyboard, oButton, eDock.BeginTop, eDock.BeginBottom, oButton);
+            } else {
+            	console.log("menu not initialized");
+            }
         },
         /**
 		 * full screen toggle state
