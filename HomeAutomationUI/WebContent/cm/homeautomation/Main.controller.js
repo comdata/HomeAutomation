@@ -34,7 +34,8 @@ function guid() {
 	return s4() + s4() + '-' + s4() + '-' + s4() + '-' +s4() + '-' + s4() + s4() + s4();
 }
 
-function dateTimeFormatter(sDate) {
+var formatter = {};
+formatter.dateTimeFormatter=function(sDate) {
 	return moment(new Date(sDate)).format('DD.MM.YYYY HH:mm:ss');
 }
 
