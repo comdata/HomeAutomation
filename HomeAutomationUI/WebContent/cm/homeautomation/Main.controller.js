@@ -1190,6 +1190,10 @@ sap.ui.define([
             this._dialogs["networkDevices"].close();
             sap.ui.getCore().setModel(new JSONModel(), "networkDevices");
         },
+        powerMeterDialogClose: function() {
+            this._dialogs["powermeter"].close();
+            
+        },        
         doorWindowDialogClose: function() {
             this._dialogs["doorWindow"].close();
             sap.ui.getCore().setModel(new JSONModel(), "doorWindow");
@@ -1205,6 +1209,9 @@ sap.ui.define([
         afterNetworkDialogClose: function () {
           // TODO add cleanup
         },
+        afterPowerMeterDialogClose: function () {
+        	sap.ui.getCore().setModel(new JSONModel(), "powermeter");
+          },        
 
         afterPlanesDialogClose: function () {
             this.planesView.destroy();
