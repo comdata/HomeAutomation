@@ -383,7 +383,7 @@ sap.ui.define([
                 bundleName: "cm.homeautomation.i18n"
              });
              this.getView().setModel(i18nModel, "i18n")
-             sap.ui5.getCore().setModel(i18nModel, "i18n");
+             sap.ui.getCore().setModel(i18nModel, "i18n");
         	
             this.loadData();
             var subject = this;
