@@ -1652,7 +1652,11 @@ sap.ui.define([
         },
         switchAdminDialogCancel: function (event) {
             this.switchAdminView.close();
-        }
+        },
+        dateTimeFormatter: function(sDate) {
+						return new Date(sDate);
+				}
+
     });
 
 });
