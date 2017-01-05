@@ -12,7 +12,7 @@
 						items="{
 			path: 'doorWindow>/',
 			sorter: {
-				path: 'doorWindow>device/name'
+				path: 'device/name'
 			}
 		}"
 						title="Devices" selectionMode="MultiToggle">
@@ -34,9 +34,10 @@
 									<Text text="{doorWindow>device/name}" />
 									<Text text="{=${doorWindow>state} === 0 ? 'geschlossen': 'offen' }" />
 									<Text
-										text="{path: 'doorWindow>date', type: 'sap.ui.model.type.DateTime', formatOptions: {
-					style: 'long'
-				}}" />
+										text="{
+											path: 'doorWindow>date',
+											formatter: 'formatter.dateTimeFormatter'
+}" />
 								</cells>
 							</ColumnListItem>
 						</items>
