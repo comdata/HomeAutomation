@@ -1116,6 +1116,13 @@ sap.ui.define([
 
                 }
             }
+            else if (tileType =="powermeter") {
+                if (!this._dialogs["powermeter"]) {
+                    this._dialogs["powermeter"] = sap.ui.xmlfragment("cm.homeautomation.PowerMeter", this);
+                }
+                this._dialogs["powermeter"].open();
+                this.powerMeterLoad();
+              }            
             else if (tileType =="networkDevices") {
               if (!this._dialogs["networkDevices"]) {
                   this._dialogs["networkDevices"] = sap.ui.xmlfragment("cm.homeautomation.NetworkDevices", this);
