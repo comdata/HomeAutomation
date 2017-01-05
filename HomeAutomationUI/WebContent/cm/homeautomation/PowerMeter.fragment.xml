@@ -1,14 +1,14 @@
 <core:FragmentDefinition xmlns="sap.m"
 	xmlns:core="sap.ui.core" xmlns:commons="sap.ui.commons"
-	xmlns:agraebe.custom="agraebe.custom.control" >
+	xmlns:agraebe.custom="agraebe.custom.control">
 	<Dialog title="{powermeter>/name}" afterClose="afterPowerMeterDialogClose"
 		stretch="true">
 		<content>
 
-			
-				<content>
-					<agraebe.custom:ChartJSControl width="400" height="200" responsive="true" chartType="Bar" data="{chartjsData>/barData}" />
-				</content>
+
+			<agraebe.custom:ChartJSControl width="400"
+				height="200" responsive="true" chartType="Bar" data="{chartjsData>/barData}" />
+
 
 		</content>
 		<beginButton>
