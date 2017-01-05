@@ -8,8 +8,7 @@
 			<Panel expandable="false" expanded="true" headerText="Historic Data"
 				width="auto" class="sapUiResponsiveMargin" expand="">
 				<content>
-
-					<agraebe.custom:ChartJSControl width="400" height="200" responsive="true" chartType="Line" data="{c3jsData>/lineData}"/>
+					<agraebe.custom:ChartJSControl width="400" height="200" responsive="true" chartType="Line" data="{chartjsData>/lineData}" />
 				</content>
 			</Panel>
 
