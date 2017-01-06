@@ -41,7 +41,7 @@ formatter.dateTimeFormatter=function(sDate) {
 
 formatter.dateTimeHourFormatter=function(sDate) {
 	if (sDate==null) {
-		return null;
+		return "";
 	}
 	return moment(new Date(sDate)).format('DD.MM.YYYY HH')+':00';
 }
@@ -1235,7 +1235,14 @@ sap.ui.define([
         				          "hover": {
         				              // Overrides the global setting
         				              "mode": "index"
-        				          },"scales": {
+        				          }
+
+        				      }}]
+        				  }
+        				};
+        	/**
+        	 * 
+        	 *         				    		,"scales": {
         				              "xAxes": [{
         				                  "type": "time",
         				                  "time": {
@@ -1249,10 +1256,7 @@ sap.ui.define([
         				                  }
         				              }]
         				          }
-        				      }}]
-        				  }
-        				};
-        	
+        	 */
             var chartJSModel = new JSONModel();
             chartJSModel.setData(chartJSData);
             sap.ui.getCore().setModel(chartJSModel, "chartjsData");
