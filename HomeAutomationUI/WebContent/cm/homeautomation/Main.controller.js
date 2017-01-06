@@ -1234,7 +1234,8 @@ sap.ui.define([
         				                  "time": {
         				                      "displayFormats": {
         				                          "quarter": "DD.MM.YYYY HH:mm"
-        				                      }
+        				                      },
+        				                   "unitStepSize": 10
         				                  }
         				              }]
         				          }
