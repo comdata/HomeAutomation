@@ -2,12 +2,12 @@
 	xmlns:core="sap.ui.core" xmlns:commons="sap.ui.commons"
 	xmlns:agraebe.custom="agraebe.custom.control">
 	<Dialog title="{i18n>powerMeterTitle}" afterClose="afterPowerMeterDialogClose"
-		stretch="true" verticalScrolling="false" horizontalScrolling="false">
+		stretch="true" verticalScrolling="true" horizontalScrolling="false">
 		<content>
 
 
-			<agraebe.custom:ChartJSControl width="100%"
-				height="100%" responsive="false" chartType="Bar" data="{chartjsData>/barData}" />
+			<agraebe.custom:ChartJSControl width="200"
+				height="200" responsive="true" chartType="Bar" data="{chartjsData>/barData}" />
 
 
 		</content>
