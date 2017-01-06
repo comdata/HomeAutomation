@@ -40,6 +40,9 @@ formatter.dateTimeFormatter=function(sDate) {
 }
 
 formatter.dateTimeHourFormatter=function(sDate) {
+	if (sDate==null) {
+		return null;
+	}
 	return moment(new Date(sDate)).format('DD.MM.YYYY HH')+':00';
 }
 
