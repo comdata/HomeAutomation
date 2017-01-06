@@ -1235,7 +1235,10 @@ sap.ui.define([
         				                      "displayFormats": {
         				                          "quarter": "DD.MM.YYYY HH:mm"
         				                      },
-        				                   "unitStepSize": 30
+        				                   "unitStepSize": 30,
+        				                   "ticks": {
+        				                	   "maxTicksLimit": 12
+        				                   }
         				                  }
         				              }]
         				          }
