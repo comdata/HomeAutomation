@@ -1236,7 +1236,12 @@ sap.ui.define([
         				              // Overrides the global setting
         				              "mode": "index"
         				          }
-        				    		,"scales": {
+        				    		
+        				      }}]
+        				  }
+        				};
+			/*
+			 ,"scales": {
         				              "xAxes": [{
         				                  "type": "time",
         				                  "time": {
@@ -1250,9 +1255,7 @@ sap.ui.define([
         				                  }
         				              }]
         				          }
-        				      }}]
-        				  }
-        				};
+			 */
         	
             var chartJSModel = new JSONModel();
             chartJSModel.setData(chartJSData);
