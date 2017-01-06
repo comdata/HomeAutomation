@@ -1208,9 +1208,13 @@ sap.ui.define([
         	
         	var labels=new Array(); 
         	var dataseries=new Array(); 
-        	$.each(data, function(array, element) {
+        	$.each(data, function(i, element) {
         
-        		labels.push(formatter.dateTimeHourFormatter(element.timeslice));
+        		if (i%12==0) {
+        			labels.push(formatter.dateTimeHourFormatter(element.timeslice));
+        		} else {
+        			labels.push(null);
+        		}
         		dataseries.push(element.kwh);
         		});
 
