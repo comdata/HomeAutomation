@@ -1235,13 +1235,7 @@ sap.ui.define([
         				          "hover": {
         				              // Overrides the global setting
         				              "mode": "index"
-        				          }
-        				    		
-        				      }}]
-        				  }
-        				};
-			/*
-			 ,"scales": {
+        				          },"scales": {
         				              "xAxes": [{
         				                  "type": "time",
         				                  "time": {
@@ -1250,11 +1244,18 @@ sap.ui.define([
         				                      },
         				                   "unitStepSize": 30,
         				                   "ticks": {
-        				                	   "maxTicksLimit": 12
+        				                	   "maxTicksLimit": 12,
+        				                	   autoSkipPadding: 10
         				                   }
         				                  }
         				              }]
         				          }
+        				    		
+        				      }}]
+        				  }
+        				};
+			/*
+			 
 			 */
         	
             var chartJSModel = new JSONModel();
