@@ -6,8 +6,8 @@
 		<content>
 
 
-			<agraebe.custom:ChartJSControl width="400"
-				height="200" responsive="true" chartType="Bar" data="{chartjsData>/barData}" />
+			<agraebe.custom:ChartJSControl width="100%"
+				height="100%" responsive="false" chartType="Bar" data="{chartjsData>/barData}" />
 
 
 		</content>
