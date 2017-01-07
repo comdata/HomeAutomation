@@ -1244,8 +1244,11 @@ sap.ui.define([
         				                      },
         				                   "unitStepSize": 30,
         				                   "ticks": {
-        				                	   "maxTicksLimit": 12,
-        				                	   autoSkipPadding: 10
+        				                          callback: function(dataLabel, index) {
+        				                                // Hide the label of every 2nd dataset. return null to hide the grid line too
+        				                                return index % 12 === 0 ? dataLabel : '';
+        				                            }
+        				                       
         				                   }
         				                  }
         				              }]
