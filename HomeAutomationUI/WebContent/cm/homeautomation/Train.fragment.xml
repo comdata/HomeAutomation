@@ -1,7 +1,7 @@
 <core:FragmentDefinition xmlns="sap.m"
 	xmlns:core="sap.ui.core">
 	<Dialog title="Züge" afterClose="afterTrainDialogClose"
-		contentWidth="550" contentHeight="300" resizable="true" stretch="false"
+		contentWidth="550px" contentHeight="300px" resizable="true" stretch="false"
 		horizontalScrolling="false" verticalScrolling="false">
 		<content>
 			<!--<Panel expandable="true" expanded="true" headerText="Fernsteuerung" 
