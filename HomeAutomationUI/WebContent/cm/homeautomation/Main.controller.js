@@ -1222,36 +1222,29 @@ sap.ui.define([
         		});
 
 			var chartJSData={
-        				 "barData": {
-        				    "labels": labels,
-        				    "datasets": [{
-        				      "label": "Power Data",
-        				      "fillColor": "rgba(220,220,220,0.5)",
-        				      "strokeColor": "rgba(220,220,220,0.8)",
-        				      "highlightFill": "rgba(220,220,220,0.75)",
-        				      "highlightStroke": "rgba(220,220,220,1)",
-        				      "data": dataseries,
-        				      "options": {
-        				          "hover": {
+        				 barData: {
+        				    labels: labels,
+        				    datasets: [{
+        				      label: "Power Data",
+        				      fillColor: "rgba(220,220,220,0.5)",
+        				      strokeColor: "rgba(220,220,220,0.8)",
+        				      highlightFill: "rgba(220,220,220,0.75)",
+        				      highlightStroke: "rgba(220,220,220,1)",
+        				      data: dataseries,
+        				      options: {
+        				          hover: {
         				              // Overrides the global setting
-        				              "mode": "index"
-        				          },"scales": {
-        				              "xAxes": [{
-        				                  "type": "time",
-        				                  "time": {
-        				                      "displayFormats": {
-        				                          "quarter": "DD.MM.YYYY HH:mm"
-        				                      },
-        				                   "unitStepSize": 30,
-        				                   "ticks": {
+        				              mode: "index"
+        				          },scales: {
+        				              xAxes: [{
+        				            	   display: true,
+        				                   ticks: {
         				                          callback: function(dataLabel, index) {
         				                                // Hide the label of every 2nd dataset. return null to hide the grid line too
         				                                return index % 12 === 0 ? dataLabel : '';
         				                            }
-        				                       
-        				                   }
-        				                  }
-        				              }]
+
+        				              }}]
         				          }
         				    		
         				      }}]
