@@ -1213,11 +1213,11 @@ sap.ui.define([
         	var dataseries=new Array(); 
         	$.each(data, function(i, element) {
         
-        		if (i%12==0) {
+        		//if (i%12==0) {
         			labels.push(formatter.dateTimeHourFormatter(element.timeslice));
-        		} else {
-        			labels.push(null);
-        		}
+        		//} else {
+        		//	labels.push(null);
+        		//}
         		dataseries.push(element.kwh);
         		});
 
