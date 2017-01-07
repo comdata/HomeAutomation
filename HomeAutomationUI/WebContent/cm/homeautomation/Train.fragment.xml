@@ -2,7 +2,7 @@
 	xmlns:core="sap.ui.core">
 	<Dialog title="Züge" afterClose="afterTrainDialogClose"
 		contentHeight="400px" resizable="true" stretch="false"
-		horizontalScrolling="false" verticalScrolling="false">
+		horizontalScrolling="false" verticalScrolling="false" draggable="true">
 		<content>
 			<!--<Panel expandable="true" expanded="true" headerText="Fernsteuerung" 
 				width="auto" class="sapUiResponsiveMargin" id="remoteControl"> <content> -->
