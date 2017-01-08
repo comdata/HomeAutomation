@@ -463,8 +463,34 @@ sap.ui.define([
 			
 			this.networkDevicesLoad();
         },
-        _initCameraTiles: function () {
+        _initCameraTiles: function() {
+        	var oModel = new RESTService();
+            oModel.loadDataAsync("/HomeAutomation/services/camera/getAll", "", "GET", this._handleCamerasLoaded, null, this);
+        	
+        },
+        	
+        _handleCamerasLoaded:	function (event, camerasModel, cameraData) {
         	var subject=this;
+        	this.cameras= [];
+        	
+        	$.each(cameraData, function (i, element) {
+        		var singleCamera={
+                   		window:null,
+                   		id: element.id,
+                   		tile: {
+                               tileType: "camera",
+                               roomId: i,
+                               title: element.cameraName,
+                               info: element.cameraName,
+                               eventHandler: "showCamera",
+                               icon: element.icon,
+                               stream: element.stream
+                           }
+                   	};
+        		subject.cameras.push(singleCamera);
+        	});
+        	
+        	/*
             this.cameras = [
                        	{
                        		window:null,
@@ -522,7 +548,7 @@ sap.ui.define([
 
 
 
-                       ];
+                       ];*/
 
             var camerasDisabled=jQuery.sap.getUriParameters().get("disableCamera");
 
