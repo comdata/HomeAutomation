@@ -27,7 +27,7 @@
 								<Text text="MAC" />
 							</Column>
 							<Column>
-								<Text text="{i18n>since}" />
+								<Text text="{i18n>lastSeen}" />
 							</Column>
 							<Column>
 							</Column>
