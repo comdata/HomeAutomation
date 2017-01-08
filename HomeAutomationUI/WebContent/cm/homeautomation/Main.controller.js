@@ -483,7 +483,7 @@ sap.ui.define([
                                title: element.cameraName,
                                info: element.cameraName,
                                eventHandler: "showCamera",
-                               icon: element.icon,
+                               icon: "/HomeAutomation/services/camera/getSnapshot/"+element.id,
                                stream: element.stream
                            }
                    	};
