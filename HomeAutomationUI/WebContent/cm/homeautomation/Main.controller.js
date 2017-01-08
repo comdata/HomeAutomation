@@ -267,7 +267,7 @@ sap.ui.define([
           this.windowStateTile.info=(numberOpen>0)?"Offen":"alle geschlossen";
 
 
-        	//this.powerMeterTile.info="1 / 5 / 60 minutes";
+        	// this.powerMeterTile.info="1 / 5 / 60 minutes";
           this.getView().getModel().refresh(false);
         },
 
@@ -280,7 +280,7 @@ sap.ui.define([
         		this.powerMeterTileYesterday.number=data.yesterday;
         		this.powerMeterTileLastSevenDays.number=data.lastSevenDays;
 
-        		//this.powerMeterTile.info="1 / 5 / 60 minutes";
+        		// this.powerMeterTile.info="1 / 5 / 60 minutes";
         		 this.getView().getModel().refresh(false);
         },
         handleMailEvent: function (data) {
@@ -388,7 +388,7 @@ sap.ui.define([
 
         /**
 		 * initialize
-		 *
+		 * 
 		 * @param evt
 		 */
         onInit: function (evt) {
@@ -437,7 +437,7 @@ sap.ui.define([
 
         /**
 		 * perform data loading
-		 *
+		 * 
 		 */
         loadData: function () {
 
@@ -460,6 +460,8 @@ sap.ui.define([
 
 			this.getView().getModel().getData().overviewTiles.push(this._networkDevicesTile);
 			this.getView().getModel().refresh(false);
+			
+			this.networkDevicesLoad();
         },
         _initCameraTiles: function () {
         	var subject=this;
@@ -729,7 +731,7 @@ sap.ui.define([
         },
         /**
 		 * handle successful data loading for overview tiles
-		 *
+		 * 
 		 * @param event
 		 * @param model
 		 */
@@ -798,6 +800,20 @@ sap.ui.define([
         },
         handleNetworkDevicesLoaded: function(event, model) {
           sap.ui.getCore().setModel(model, "networkDevices");
+          
+          var modelData=model.odata;
+          var subject=this;
+          
+          $.each(modelData, function(i, data) {
+          
+		        var element = {
+		  				ipAddress: data.ip,
+		  				hostName: data.hostname,
+		  				mac: data.mac
+		  		}
+		        subject.handleNetworkMonitor(data);
+          });
+          
         },
         handleDoorWindowLoaded: function(event, model) {
           sap.ui.getCore().setModel(model, "doorWindow");
@@ -877,7 +893,7 @@ sap.ui.define([
 
             /**
 			 * set value directly to all other window blinds
-			 *
+			 * 
 			 */
             if (windowBlind.type=="ALL_AT_ONCE") {
 
@@ -984,7 +1000,7 @@ sap.ui.define([
 
         /**
 		 * trigger a reload if something goes wrong
-		 *
+		 * 
 		 */
         _loadDataFailed: function (event) {
             this.loadDataInProgress = false;
@@ -1102,7 +1118,7 @@ sap.ui.define([
         },
         /**
 		 * handle selection, triggering navigation
-		 *
+		 * 
 		 * @param event
 		 */
         handleSelect: function (event) {
@@ -1218,11 +1234,11 @@ sap.ui.define([
         	var dataseries=new Array(); 
         	$.each(data, function(i, element) {
         
-        		//if (i%12==0) {
+        		// if (i%12==0) {
         			labels.push(formatter.dateTimeHourFormatter(element.timeslice));
-        		//} else {
-        		//	labels.push(null);
-        		//}
+        		// } else {
+        		// labels.push(null);
+        		// }
         		dataseries.push(element.kwh);
         		});
 
@@ -1248,7 +1264,10 @@ sap.ui.define([
         				            	   display: true,
         				                   ticks: {
         				                          callback: function(dataLabel, index) {
-        				                                // Hide the label of every 2nd dataset. return null to hide the grid line too
+        				                                // Hide the label of
+														// every 2nd dataset.
+														// return null to hide
+														// the grid line too
         				                                return index % 12 === 0 ? dataLabel : '';
         				                            }
 
@@ -1259,7 +1278,7 @@ sap.ui.define([
         				  }
         				};
 			/*
-			 
+			 * 
 			 */
         	
             var chartJSModel = new JSONModel();
@@ -1361,7 +1380,7 @@ sap.ui.define([
         },
         /**
 		 * menu open pressed
-		 *
+		 * 
 		 */
         handlePressOpenMenu: function (oEvent) {
             var oButton = oEvent.getSource();
