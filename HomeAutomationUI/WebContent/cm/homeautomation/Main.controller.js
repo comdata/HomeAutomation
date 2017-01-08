@@ -272,16 +272,18 @@ sap.ui.define([
         },
 
         handlePowerEvent: function (data) {
+        	if (this.powerMeterTileOneMinute) {
         		this.powerMeterTileOneMinute.number=data.oneMinute;
         		this.powerMeterTileFiveMinute.number=data.fiveMinute;
         		this.powerMeterTileSixtyMinute.number=data.sixtyMinute;
         		this.powerMeterTileSixtyMinute.number=data.sixtyMinute;
-            this.powerMeterTileToday.number=data.today;
+        		this.powerMeterTileToday.number=data.today;
         		this.powerMeterTileYesterday.number=data.yesterday;
         		this.powerMeterTileLastSevenDays.number=data.lastSevenDays;
 
         		// this.powerMeterTile.info="1 / 5 / 60 minutes";
         		 this.getView().getModel().refresh(false);
+        	}
         },
         handleMailEvent: function (data) {
         	$.each(this._mailTiles, function (index, value) {
