@@ -801,7 +801,7 @@ sap.ui.define([
         handleNetworkDevicesLoaded: function(event, model) {
           sap.ui.getCore().setModel(model, "networkDevices");
           
-          var modelData=model.odata;
+          var modelData=model.oData;
           var subject=this;
           
           $.each(modelData, function(i, data) {
