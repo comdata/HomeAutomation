@@ -1149,7 +1149,6 @@ sap.ui.define([
               }
               this._dialogs["networkDevices"].open();
               this.networkDevicesLoad();
-              // TODO load data
             }
             else if (tileType =="doorWindow") {
               if (!this._dialogs["doorWindow"]) {
@@ -1157,8 +1156,13 @@ sap.ui.define([
               }
               this._dialogs["doorWindow"].open();
               this.doorWindowLoad();
-              // TODO load data
             }
+            else if (tileType =="transmission") {
+                if (!this._dialogs["downloads"]) {
+                    this._dialogs["downloads"] = sap.ui.xmlfragment("cm.homeautomation.Downloads", this);
+                }
+                this._dialogs["downloads"].open();
+              }
             else if (tileType == "camera") {
                 if (!this.camera) {
                     this.camera = sap.ui.xmlfragment("cm.homeautomation.Camera", this);
@@ -1287,6 +1291,10 @@ sap.ui.define([
             this._dialogs["doorWindow"].close();
             sap.ui.getCore().setModel(new JSONModel(), "doorWindow");
         },
+        downloadsDialogClose: function() {
+            this._dialogs["downloads"].close();
+            
+        },
         afterDoorWindowDialogClose: function () {
             this._oDialog.destroy();
             this._oDialog = null;
@@ -1301,7 +1309,10 @@ sap.ui.define([
         afterPowerMeterDialogClose: function () {
         	sap.ui.getCore().setModel(new JSONModel(), "powermeter");
           },        
-
+        afterDownloadDialogClose: function () {
+        	this._dialogs["downloads"].destroy();
+        	this._dialogs["downloads"] = null;
+        },
         afterPlanesDialogClose: function () {
             this.planesView.destroy();
             this.planesView = null;
