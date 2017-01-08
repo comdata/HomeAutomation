@@ -1200,6 +1200,7 @@ sap.ui.define([
         	  return Math.floor(Math.random() * (max - min)) + min;
         	},
         powerMeterLoad: function () {
+        	sap.ui.getCore().setModel(new JSONModel(), "chartjsData");
         	var subject=this;
             var powerMeterModel = new RESTService();
             powerMeterModel.loadDataAsync("/HomeAutomation/services/power/readInterval", "", "GET", subject.powerDataLoaded, null, subject);
