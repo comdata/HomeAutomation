@@ -438,6 +438,7 @@ public class PackageTracking {
 				trackedPackage.setPackageName(packageName);
 				trackedPackage.setDateAdded(dateAdded);
 				trackedPackage.setDateModified(dateChanged);
+				trackedPackage.setDelivered(delivered);
 				
 				mergeTrackedPackage(trackedPackage);
 				
@@ -458,6 +459,7 @@ public class PackageTracking {
 		} else {
 			Package existingPackage = results.get(0);
 			existingPackage.setDateModified(trackedPackage.getDateModified());
+			existingPackage.setDelivered(trackedPackage.isDelivered());
 			em.merge(existingPackage);
 		}
 		
