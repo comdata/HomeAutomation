@@ -447,7 +447,7 @@ public class PackageTracking {
 				trackedPackage.setDateModified(dateChanged);
 				trackedPackage.setDelivered(delivered);
 				
-				//mergeTrackedPackage(trackedPackage);
+				mergeTrackedPackage(trackedPackage);
 				
 				System.out.println("Tracking No:"+trackingNumber+" Delivered: "+ delivered+ " sCarrier: "+carrierFullname+" Name: "+packageName);
 			}
