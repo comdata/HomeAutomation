@@ -651,11 +651,11 @@ sap.ui.define([
             this.getView().getModel().refresh(false);
             
             subject._updatePackageTile.apply(subject, [subject, this.packageTile]);
-            this.planesTimer = window.setInterval(function () {
+            this.packageTimer = window.setInterval(function () {
                 subject._updatePackageTile.apply(subject, [subject, this.packageTile]);
             }, 60000);
         },
-        _updatePackageTile: function(tile) {
+        _updatePackageTile: function(subject, tile) {
         	
             $.getJSON("/HomeAutomation/services/packages/getAllOpen", function (result) {
 
