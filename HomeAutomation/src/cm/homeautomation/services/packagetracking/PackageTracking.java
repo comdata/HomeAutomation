@@ -17,6 +17,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.persistence.EntityManager;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -38,6 +40,7 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Package;
 import cm.homeautomation.entities.PackagePK;
 
+@Path("packages")
 public class PackageTracking {
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
 	private static final String acceptHeader = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
@@ -445,7 +448,15 @@ public class PackageTracking {
 				System.out.println("Tracking No:"+trackingNumber+" Delivered: "+ delivered+ " sCarrier: "+carrierFullname+" Name: "+packageName);
 			}
 		}
-
+	}
+	
+	@Path("getAllOpen")
+	@GET
+	public List<Package> getAllOpen() {
+		EntityManager em = EntityManagerService.getNewManager();
+		
+		
+		return (List<Package>)em.createQuery("select p from Package p where p.delivered=false").getResultList(); 
 	}
 
 	private static void mergeTrackedPackage(Package trackedPackage) {
