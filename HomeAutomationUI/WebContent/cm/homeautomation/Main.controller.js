@@ -39,6 +39,13 @@ formatter.dateTimeFormatter=function(sDate) {
 	return moment(new Date(sDate)).format('DD.MM.YYYY HH:mm:ss');
 }
 
+formatter.dateTimeHourFormatter=function(sDate) {
+	if (sDate==null) {
+		return "";
+	}
+	return moment(new Date(sDate)).format('DD.MM.YYYY HH')+':00';
+}
+
 
 sap.ui.define([
     'jquery.sap.global',
@@ -260,21 +267,23 @@ sap.ui.define([
           this.windowStateTile.info=(numberOpen>0)?"Offen":"alle geschlossen";
 
 
-        	//this.powerMeterTile.info="1 / 5 / 60 minutes";
+        	// this.powerMeterTile.info="1 / 5 / 60 minutes";
           this.getView().getModel().refresh(false);
         },
 
         handlePowerEvent: function (data) {
+        	if (this.powerMeterTileOneMinute) {
         		this.powerMeterTileOneMinute.number=data.oneMinute;
         		this.powerMeterTileFiveMinute.number=data.fiveMinute;
         		this.powerMeterTileSixtyMinute.number=data.sixtyMinute;
         		this.powerMeterTileSixtyMinute.number=data.sixtyMinute;
-            this.powerMeterTileToday.number=data.today;
+        		this.powerMeterTileToday.number=data.today;
         		this.powerMeterTileYesterday.number=data.yesterday;
         		this.powerMeterTileLastSevenDays.number=data.lastSevenDays;
 
-        		//this.powerMeterTile.info="1 / 5 / 60 minutes";
+        		// this.powerMeterTile.info="1 / 5 / 60 minutes";
         		 this.getView().getModel().refresh(false);
+        	}
         },
         handleMailEvent: function (data) {
         	$.each(this._mailTiles, function (index, value) {
@@ -381,7 +390,7 @@ sap.ui.define([
 
         /**
 		 * initialize
-		 *
+		 * 
 		 * @param evt
 		 */
         onInit: function (evt) {
@@ -430,7 +439,7 @@ sap.ui.define([
 
         /**
 		 * perform data loading
-		 *
+		 * 
 		 */
         loadData: function () {
 
@@ -453,9 +462,37 @@ sap.ui.define([
 
 			this.getView().getModel().getData().overviewTiles.push(this._networkDevicesTile);
 			this.getView().getModel().refresh(false);
+			
+			this.networkDevicesLoad();
         },
-        _initCameraTiles: function () {
+        _initCameraTiles: function() {
+        	var oModel = new RESTService();
+            oModel.loadDataAsync("/HomeAutomation/services/camera/getAll", "", "GET", this._handleCamerasLoaded, null, this);
+        	
+        },
+        	
+        _handleCamerasLoaded:	function (event, camerasModel, cameraData) {
         	var subject=this;
+        	this.cameras= [];
+        	
+        	$.each(cameraData, function (i, element) {
+        		var singleCamera={
+                   		window:null,
+                   		id: element.id,
+                   		tile: {
+                               tileType: "camera",
+                               roomId: i,
+                               title: element.cameraName,
+                               info: element.cameraName,
+                               eventHandler: "showCamera",
+                               icon: "/HomeAutomation/services/camera/getSnapshot/"+element.id,
+                               stream: element.stream
+                           }
+                   	};
+        		subject.cameras.push(singleCamera);
+        	});
+        	
+        	/*
             this.cameras = [
                        	{
                        		window:null,
@@ -513,7 +550,7 @@ sap.ui.define([
 
 
 
-                       ];
+                       ];*/
 
             var camerasDisabled=jQuery.sap.getUriParameters().get("disableCamera");
 
@@ -722,7 +759,7 @@ sap.ui.define([
         },
         /**
 		 * handle successful data loading for overview tiles
-		 *
+		 * 
 		 * @param event
 		 * @param model
 		 */
@@ -791,6 +828,20 @@ sap.ui.define([
         },
         handleNetworkDevicesLoaded: function(event, model) {
           sap.ui.getCore().setModel(model, "networkDevices");
+          
+          var modelData=model.oData;
+          var subject=this;
+          
+          $.each(modelData, function(i, data) {
+          
+		        var element = {
+		  				ipAddress: data.ip,
+		  				hostName: data.hostname,
+		  				mac: data.mac
+		  		}
+		        subject.handleNetworkMonitor(data);
+          });
+          
         },
         handleDoorWindowLoaded: function(event, model) {
           sap.ui.getCore().setModel(model, "doorWindow");
@@ -870,7 +921,7 @@ sap.ui.define([
 
             /**
 			 * set value directly to all other window blinds
-			 *
+			 * 
 			 */
             if (windowBlind.type=="ALL_AT_ONCE") {
 
@@ -977,7 +1028,7 @@ sap.ui.define([
 
         /**
 		 * trigger a reload if something goes wrong
-		 *
+		 * 
 		 */
         _loadDataFailed: function (event) {
             this.loadDataInProgress = false;
@@ -1095,7 +1146,7 @@ sap.ui.define([
         },
         /**
 		 * handle selection, triggering navigation
-		 *
+		 * 
 		 * @param event
 		 */
         handleSelect: function (event) {
@@ -1142,7 +1193,6 @@ sap.ui.define([
               }
               this._dialogs["networkDevices"].open();
               this.networkDevicesLoad();
-              // TODO load data
             }
             else if (tileType =="doorWindow") {
               if (!this._dialogs["doorWindow"]) {
@@ -1150,8 +1200,13 @@ sap.ui.define([
               }
               this._dialogs["doorWindow"].open();
               this.doorWindowLoad();
-              // TODO load data
             }
+            else if (tileType =="transmission") {
+                if (!this._dialogs["downloads"]) {
+                    this._dialogs["downloads"] = sap.ui.xmlfragment("cm.homeautomation.Downloads", this);
+                }
+                this._dialogs["downloads"].open();
+              }
             else if (tileType == "camera") {
                 if (!this.camera) {
                     this.camera = sap.ui.xmlfragment("cm.homeautomation.Camera", this);
@@ -1193,38 +1248,71 @@ sap.ui.define([
         	  return Math.floor(Math.random() * (max - min)) + min;
         	},
         powerMeterLoad: function () {
-        	var c3jsData={
-        			  "data1": [30, 200, 100, 400, 150, 250],
-        			  "data2": [50, 20, 10, 40, 15, 25]
-        			};
+        	sap.ui.getCore().setModel(new JSONModel(), "chartjsData");
+        	var subject=this;
+            var powerMeterModel = new RESTService();
+            powerMeterModel.loadDataAsync("/HomeAutomation/services/power/readInterval", "", "GET", subject.powerDataLoaded, null, subject);
+
+        },
+        
+        powerDataLoaded: function(event, model, data) {
+        	
+        	
+        	var labels=new Array(); 
+        	var dataseries=new Array(); 
+        	$.each(data, function(i, element) {
+        
+        		// if (i%12==0) {
+        			labels.push(formatter.dateTimeHourFormatter(element.timeslice));
+        		// } else {
+        		// labels.push(null);
+        		// }
+        		dataseries.push(element.kwh);
+        		});
 
 			var chartJSData={
-        				 "barData": {
-        				    "labels": ["January", "February", "March", "April", "May", "June", "July"],
-        				    "datasets": [{
-        				      "label": "My First dataset",
-        				      "fillColor": "rgba(220,220,220,0.5)",
-        				      "strokeColor": "rgba(220,220,220,0.8)",
-        				      "highlightFill": "rgba(220,220,220,0.75)",
-        				      "highlightStroke": "rgba(220,220,220,1)",
-        				      "data": [this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100)]
-        				    }, {
-        				      "label": "My Second dataset",
-        				      "fillColor": "rgba(151,187,205,0.5)",
-        				      "strokeColor": "rgba(151,187,205,0.8)",
-        				      "highlightFill": "rgba(151,187,205,0.75)",
-        				      "highlightStroke": "rgba(151,187,205,1)",
-        				      "data": [this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100), this._getRandomInt(1,100)]
-        				    }]
+        				 barData: {
+        				    labels: labels,
+        				    datasets: [{
+        				      label: "kWh",
+        				      fillColor: "rgba(220,220,220,0.5)",
+        				      strokeColor: "rgba(220,220,220,0.8)",
+        				      highlightFill: "rgba(220,220,220,0.75)",
+        				      highlightStroke: "rgba(220,220,220,1)",
+        				      data: dataseries,
+        				      options: {
+        				    	  legend: {
+        				              display: false,
+        				    	  },
+        				          hover: {
+        				              // Overrides the global setting
+        				              mode: "index"
+        				          },scales: {
+        				              xAxes: [{
+        				            	   display: true,
+        				                   ticks: {
+        				                          callback: function(dataLabel, index) {
+        				                                // Hide the label of
+														// every 2nd dataset.
+														// return null to hide
+														// the grid line too
+        				                                return index % 12 === 0 ? dataLabel : '';
+        				                            }
+
+        				              }}]
+        				          }
+        				    		
+        				      }}]
         				  }
         				};
+			/*
+			 * 
+			 */
         	
             var chartJSModel = new JSONModel();
-            var c3jsModel = new JSONModel();
             chartJSModel.setData(chartJSData);
-            c3jsModel.setData(c3jsData);
             sap.ui.getCore().setModel(chartJSModel, "chartjsData");
-            sap.ui.getCore().setModel(c3jsModel, "c3jsData");
+
         },
         dialogClose: function () {
             this._oDialog.close();
@@ -1250,6 +1338,10 @@ sap.ui.define([
             this._dialogs["doorWindow"].close();
             sap.ui.getCore().setModel(new JSONModel(), "doorWindow");
         },
+        downloadsDialogClose: function() {
+            this._dialogs["downloads"].close();
+            
+        },
         afterDoorWindowDialogClose: function () {
             this._oDialog.destroy();
             this._oDialog = null;
@@ -1264,7 +1356,10 @@ sap.ui.define([
         afterPowerMeterDialogClose: function () {
         	sap.ui.getCore().setModel(new JSONModel(), "powermeter");
           },        
-
+        afterDownloadDialogClose: function () {
+        	this._dialogs["downloads"].destroy();
+        	this._dialogs["downloads"] = null;
+        },
         afterPlanesDialogClose: function () {
             this.planesView.destroy();
             this.planesView = null;
@@ -1313,7 +1408,7 @@ sap.ui.define([
         },
         /**
 		 * menu open pressed
-		 *
+		 * 
 		 */
         handlePressOpenMenu: function (oEvent) {
             var oButton = oEvent.getSource();

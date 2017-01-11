@@ -1,4 +1,4 @@
-package cm.homeautomation.services.powermeter;
+package cm.homeautomation.entities;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -6,17 +6,21 @@ import java.util.Date;
 
 import javax.persistence.ColumnResult;
 import javax.persistence.ConstructorResult;
+import javax.persistence.Entity;
 import javax.persistence.SqlResultSetMapping;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@SqlResultSetMapping(name = "PowerIntervalMapping", classes = @ConstructorResult(targetClass = PowerIntervalData.class, columns = {
-		@ColumnResult(name = "KWH", type = BigDecimal.class), @ColumnResult(name = "TIMESLICE", type = Timestamp.class), }))
 @XmlRootElement
 public class PowerIntervalData {
 
 	private BigDecimal kwh;
 	private Timestamp timeslice;
 
+	public PowerIntervalData(BigDecimal kwh, Timestamp timeslice) {
+		this.kwh = kwh;
+		this.timeslice = timeslice;
+	}
+	
 	public BigDecimal getKwh() {
 		return kwh;
 	}

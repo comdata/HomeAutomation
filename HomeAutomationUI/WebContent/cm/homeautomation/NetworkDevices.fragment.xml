@@ -27,6 +27,9 @@
 								<Text text="MAC" />
 							</Column>
 							<Column>
+								<Text text="{i18n>lastSeen}" />
+							</Column>
+							<Column>
 							</Column>
 						</columns>
 
@@ -36,6 +39,11 @@
 									<Text text="{networkDevices>hostname}" />
 									<Text text="{networkDevices>ip}" />
 									<Text text="{networkDevices>mac}" />
+									<Text
+										text="{
+											path: 'networkDevices>lastSeen',
+											formatter: 'formatter.dateTimeFormatter'
+}" />
 									<Button text="Wake-Up" press="networkDeviceWakeUp" />
 								</cells>
 							</ColumnListItem>
