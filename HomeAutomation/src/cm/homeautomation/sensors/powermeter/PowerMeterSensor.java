@@ -91,7 +91,7 @@ public class PowerMeterSensor {
 					.getSingleResult();
 
 			BigDecimal lastSevenDays = (BigDecimal) em
-					.createNativeQuery("select count(*)/1000 from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 7 day);")
+					.createNativeQuery("select count(*)/1000 from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 8 day) and date(TIMESTAMP)<=date(now()- interval 1 day);")
 					.getSingleResult();
 			
 			BigDecimal lastEightDaysBeforeTillYesterday = (BigDecimal) em
