@@ -422,18 +422,22 @@ public class PackageTracking {
 			JsonNode jsonNode = field.getValue().get(0);
 			
 			for (int i = 0; i < jsonNode.size(); i++) {
+				
 				Package trackedPackage = new Package();
 				
 				JsonNode singleShipment = jsonNode.get(i);
 				
+				System.out.println(singleShipment);
+				
 				String trackingNumber=singleShipment.get(0).asText();
 				String packageName=singleShipment.get(1).asText();
 				String carrier=singleShipment.get(2).asText();
-				boolean delivered=(singleShipment.get(3).asText().equals("no"))?false: true;
+				boolean delivered=(singleShipment.get(3).asText().equals("no"))?true: false;
 				
 				JsonNode steps=singleShipment.get(4);
 				String dateAdded=singleShipment.get(6).asText();
 				String dateChanged=singleShipment.get(7).asText();
+				System.out.println("Status: "+singleShipment.get(8).asText());
 				
 				String carrierFullname = carrierMap.get(carrier);
 				
@@ -443,7 +447,7 @@ public class PackageTracking {
 				trackedPackage.setDateModified(dateChanged);
 				trackedPackage.setDelivered(delivered);
 				
-				mergeTrackedPackage(trackedPackage);
+				//mergeTrackedPackage(trackedPackage);
 				
 				System.out.println("Tracking No:"+trackingNumber+" Delivered: "+ delivered+ " sCarrier: "+carrierFullname+" Name: "+packageName);
 			}
