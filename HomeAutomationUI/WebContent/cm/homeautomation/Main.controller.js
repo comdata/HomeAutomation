@@ -650,13 +650,14 @@ sap.ui.define([
             this.getView().getModel().getData().overviewTiles.push(this.packageTile);
             this.getView().getModel().refresh(false);
             
+            subject._updatePackageTile.apply(subject, [subject, this.packageTile]);
             this.planesTimer = window.setInterval(function () {
                 subject._updatePackageTile.apply(subject, [subject, this.packageTile]);
             }, 60000);
         },
         _updatePackageTile: function(tile) {
         	
-            $.getJSON("/HomeAutomation/services/packages/getAll", function (result) {
+            $.getJSON("/HomeAutomation/services/packages/getAllOpen", function (result) {
 
                 console.log("Anzahl " + result.length);
                 tile.number = result.length;
