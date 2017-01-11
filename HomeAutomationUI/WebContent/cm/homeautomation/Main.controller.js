@@ -636,6 +636,35 @@ sap.ui.define([
             // this.getView().getModel().getData().overviewTiles.push(this.distanceTile);
             this.getView().getModel().refresh(false);
         },
+        _initPackageTile: function() {
+        	var subject=this;
+        	this.packageTile = {
+                    tileType: "package",
+                    roomId: "package",
+                    title: "",
+                    numberUnit: "unterwegs",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://shipping-status"
+                };
+            this.getView().getModel().getData().overviewTiles.push(this.packageTile);
+            this.getView().getModel().refresh(false);
+            
+            this.planesTimer = window.setInterval(function () {
+                subject._updatePackageTile.apply(subject, [subject, this.packageTile]);
+            }, 60000);
+        },
+        _updatePackageTile: function(tile) {
+        	
+            $.getJSON("/HomeAutomation/services/packages/getAll", function (result) {
+
+                console.log("Anzahl " + result.length);
+                tile.number = result.length;
+                tile.info = $.format.date(new Date(), "dd.MM.yyyy HH:mm:ss");
+                subject.getView().getModel().refresh(false);
+            });
+        	
+        },
         _initPowerMeterTile: function() {
         	this.powerMeterTileOneMinute = {
                     tileType: "powermeter",
@@ -777,6 +806,7 @@ sap.ui.define([
             this._initMailTile();
             this._initLegoTrainTile();
             this._initMenu();
+            this._initPackageTile();
         },
         _initMailTile: function() {
         	var subject=this;
