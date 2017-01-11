@@ -456,7 +456,7 @@ public class PackageTracking {
 		EntityManager em = EntityManagerService.getNewManager();
 		
 		
-		return (List<Package>)em.createQuery("select p from Package p where p.delivered=false").getResultList(); 
+		return (List<Package>)em.createQuery("select p from Package p where p.delivered=0").getResultList(); 
 	}
 
 	private static void mergeTrackedPackage(Package trackedPackage) {
