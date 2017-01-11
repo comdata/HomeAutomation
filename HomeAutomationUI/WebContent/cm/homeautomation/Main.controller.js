@@ -657,13 +657,15 @@ sap.ui.define([
         },
         _updatePackageTile: function(subject, tile) {
         	
-            $.getJSON("/HomeAutomation/services/packages/getAllOpen", function (result) {
-
-                console.log("Anzahl " + result.length);
-                tile.number = result.length;
-                tile.info = $.format.date(new Date(), "dd.MM.yyyy HH:mm:ss");
-                subject.getView().getModel().refresh(false);
-            });
+        	if (tile!=null) {
+	            $.getJSON("/HomeAutomation/services/packages/getAllOpen", function (result) {
+	
+	                console.log("Anzahl Packete" + result.length);
+	                tile.number = result.length;
+	                tile.info = $.format.date(new Date(), "dd.MM.yyyy HH:mm:ss");
+	                subject.getView().getModel().refresh(false);
+	            });
+        	}
         	
         },
         _initPowerMeterTile: function() {
