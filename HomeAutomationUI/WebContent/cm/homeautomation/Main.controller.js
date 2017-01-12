@@ -1235,11 +1235,8 @@ sap.ui.define([
         	var dataseries=new Array(); 
         	$.each(data, function(i, element) {
         
-        		// if (i%12==0) {
-        			labels.push(formatter.dateTimeHourFormatter(element.timeslice));
-        		// } else {
-        		// labels.push(null);
-        		// }
+       			labels.push(formatter.dateTimeHourFormatter(element.timeslice));
+
         		dataseries.push(element.kwh);
         		});
 
@@ -1259,13 +1256,16 @@ sap.ui.define([
         				              display: false,
         				              position: "bottom", 
         				              labels: {
-        				                  fontColor: 'rgb(255, 99, 132)'
+        				            	  filter: function (item, data) {
+        				            		  return false;  
+        				            	  }
         				              }
         				    	  },
         				          hover: {
         				              // Overrides the global setting
         				              mode: "index"
-        				          },scales: {
+        				          },
+        				          scales: {
         				              xAxes: [{
         				            	   display: true,
         				                   ticks: {
