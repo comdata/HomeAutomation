@@ -492,66 +492,6 @@ sap.ui.define([
         		subject.cameras.push(singleCamera);
         	});
         	
-        	/*
-            this.cameras = [
-                       	{
-                       		window:null,
-                       		id: 1,
-                       		tile: {
-                                   tileType: "camera",
-                                   roomId: 1,
-                                   title: "Küche",
-                                   info: "Kamera - Küche",
-                                   eventHandler: "showCamera",
-                                   icon: "/HomeAutomation/services/camera/getSnapshot/1",
-                                   stream: "/HomeAutomation/newCameraProxy?_ip=45&_port=8080&_action=stream"
-                               }
-                       	},
-                       	{
-                       		window:null,
-                       		id: 2,
-                       		tile: {
-                                   tileType: "camera",
-                                   roomId: 2,
-                                   title: "Auffahrt",
-                                   info: "Kamera - Auffahrt",
-                                   eventHandler: "showCamera",
-                                   icon: "/HomeAutomation/services/camera/getSnapshot/2",
-                                   stream: "/HomeAutomation/newCameraProxy?_ip=34&_port=8080&_action=stream"
-                               }
-                       	},
-                       	{
-                       		window:null,
-                       		id: 3,
-                       		tile: {
-                                   tileType: "camera",
-                                   roomId: 3,
-                                   title: "Wohnzimmer",
-                                   info: "Kamera - Wohnzimmer",
-                                   eventHandler: "showCamera",
-                                   icon: "/HomeAutomation/services/camera/getSnapshot/3",
-                                   stream: "/HomeAutomation/newCameraProxy?_ip=76&_port=8081&_action=stream"
-                               }
-                       	},
-                       	{
-                       		window:null,
-                       		id: 4,
-                       		tile: {
-                                   tileType: "camera",
-                                   roomId: 6,
-                                   title: "Spielzimmer",
-                                   info: "Kamera - Spielzimmer",
-                                   eventHandler: "showCamera",
-                                   icon: "/HomeAutomation/services/camera/getSnapshot/4",
-                                   stream: "/HomeAutomation/newCameraProxy?_ip=77&_port=8090&_action=stream"
-                               }
-                       	}
-
-
-
-
-                       ];*/
-
             var camerasDisabled=jQuery.sap.getUriParameters().get("disableCamera");
 
             camerasDisabled=(camerasDisabled=="true") ? true: false;
