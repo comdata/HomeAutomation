@@ -1248,10 +1248,11 @@ sap.ui.define([
         				    labels: labels,
         				    datasets: [{
         				      label: "kWh",
-        				      fillColor: "rgba(220,220,0,0.5)",
-        				      strokeColor: "rgba(220,220,0,0.8)",
-        				      highlightFill: "rgba(220,220,0,0.75)",
-        				      highlightStroke: "rgba(220,220,0,1)",
+        				      backgroundColor: "rgba(220,0,0,0.5)",
+        				      fillColor: "rgba(220,0,0,0.5)",
+        				      strokeColor: "rgba(220,0,0,0.8)",
+        				      highlightFill: "rgba(220,0,0,0.75)",
+        				      highlightStroke: "rgba(220,0,0,1)",
         				      data: dataseries,
         				      options: {
         				    	  legend: {
