@@ -1257,6 +1257,10 @@ sap.ui.define([
         				      options: {
         				    	  legend: {
         				              display: false,
+        				              position: "bottom", 
+        				              labels: {
+        				                  fontColor: 'rgb(255, 99, 132)'
+        				              }
         				    	  },
         				          hover: {
         				              // Overrides the global setting
