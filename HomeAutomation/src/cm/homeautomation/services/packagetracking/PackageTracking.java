@@ -522,7 +522,9 @@ public class PackageTracking {
 					.setParameter("trackingNumber", singlePackage.getId().getTrackingNumber())
 					.setParameter("carrier", singlePackage.getId().getCarrier()).getResultList();
 
-			singlePackage.setPackageHistory(phList);
+			if (phList!=null && !phList.isEmpty()) {
+				singlePackage.setPackageHistory(phList);
+			}
 		}
 		
 		return resultList;
