@@ -525,7 +525,7 @@ public class PackageTracking {
 			if (phList!=null && !phList.isEmpty()) {
 				singlePackage.setPackageHistory(phList);
 				
-				System.out.println(singlePackage.getPackageHistory().size());
+				System.out.println("steps: "+singlePackage.getPackageHistory().size());
 			}
 			newPackageList.add(singlePackage);
 		}

@@ -8,10 +8,12 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
@@ -50,6 +52,9 @@ public class PackageHistory {
 		return locationText;
 	}
 
+	@XmlTransient
+	@JsonIgnore
+	@JsonBackReference("package")
 	public Package getTrackedPackage() {
 		return trackedPackage;
 	}
