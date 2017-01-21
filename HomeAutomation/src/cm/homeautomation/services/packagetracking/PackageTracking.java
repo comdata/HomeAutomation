@@ -487,6 +487,7 @@ public class PackageTracking {
 					if (!hashCodes.contains(id)) {
 
 						historyEntry.setId(id);
+						historyEntry.setTrackedPackage(trackedPackage);
 
 						historyEntry.setLocationText(step.get(3).asText());
 						// historyEntry.setTrackedPackage(trackedPackage);

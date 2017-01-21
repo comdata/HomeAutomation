@@ -14,6 +14,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @XmlRootElement
 public class Package {
@@ -320,12 +322,14 @@ public class Package {
 	private String packageName;
 	private String dateAdded;
 	private String dateModified;
+	
 	@OneToMany(orphanRemoval = true)
 	@JoinColumns({
 			@JoinColumn(updatable = false, insertable = false, name = "carrier", referencedColumnName = "carrier"),
 			@JoinColumn(updatable = false, insertable = false, name = "trackingNumber", referencedColumnName = "trackingNumber"),
 
 	})
+	@JsonManagedReference("package")
 	private List<PackageHistory> packageHistory;
 
 	@Transient
