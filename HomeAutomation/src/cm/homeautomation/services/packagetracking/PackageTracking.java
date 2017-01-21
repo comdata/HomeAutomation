@@ -513,7 +513,7 @@ public class PackageTracking {
 		EntityManager em = EntityManagerService.getNewManager();
 
 		List<Package> resultList = (List<Package>) em.createQuery("select p from Package p where p.delivered=0").getResultList();
-		
+		List<Package> newPackageList=new ArrayList<Package>();
 		for (Package singlePackage : resultList) {
 			
 			List<PackageHistory> phList = (List<PackageHistory>) em
@@ -524,10 +524,13 @@ public class PackageTracking {
 
 			if (phList!=null && !phList.isEmpty()) {
 				singlePackage.setPackageHistory(phList);
+				
+				System.out.println(singlePackage.getPackageHistory().size());
 			}
+			newPackageList.add(singlePackage);
 		}
 		
-		return resultList;
+		return newPackageList;
 	}
 
 	private static void mergeTrackedPackage(Package trackedPackage) {
