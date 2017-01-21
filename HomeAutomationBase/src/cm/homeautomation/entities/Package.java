@@ -1,10 +1,16 @@
 package cm.homeautomation.entities;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.persistence.CascadeType;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -314,6 +320,13 @@ public class Package {
 	private String packageName;
 	private String dateAdded;
 	private String dateModified;
+	@OneToMany(orphanRemoval = true)
+	@JoinColumns({
+			@JoinColumn(updatable = false, insertable = false, name = "carrier", referencedColumnName = "carrier"),
+			@JoinColumn(updatable = false, insertable = false, name = "trackingNumber", referencedColumnName = "trackingNumber"),
+
+	})
+	private List<PackageHistory> packageHistory;
 
 	@Transient
 	private String carrierName;
@@ -369,6 +382,17 @@ public class Package {
 
 	public boolean isDelivered() {
 		return delivered;
+	}
+
+	public List<PackageHistory> getPackageHistory() {
+		if (packageHistory == null) {
+			packageHistory = new ArrayList<PackageHistory>();
+		}
+		return packageHistory;
+	}
+
+	public void setPackageHistory(List<PackageHistory> packageHistory) {
+		this.packageHistory = packageHistory;
 	}
 
 }

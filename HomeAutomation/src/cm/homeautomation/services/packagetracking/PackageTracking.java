@@ -479,7 +479,7 @@ public class PackageTracking {
 					Date timestamp = parseDate(knownPatterns, step.get(1).asText());
 
 					if (timestamp == null) {
-						timestamp = new Date();
+						timestamp = new Date(0);
 					}
 					String statusText = step.get(0).asText().trim();
 					PackageHistoryPK id = new PackageHistoryPK(trackingNumber, carrier, timestamp, statusText);

@@ -15,13 +15,15 @@
 		<class>cm.homeautomation.entities.Light</class>
 		<class>cm.homeautomation.entities.DimmableLight</class>
 		<class>cm.homeautomation.entities.RGBLight</class>
-				<class>cm.homeautomation.entities.PowerMeterPing</class>
-				<class>cm.homeautomation.entities.WindowState</class>
-				<class>cm.homeautomation.entities.Package</class>
-				<class>cm.homeautomation.entities.PackagePK</class>
+		<class>cm.homeautomation.entities.PowerMeterPing</class>
+		<class>cm.homeautomation.entities.WindowState</class>
+		<class>cm.homeautomation.entities.Package</class>
+		<class>cm.homeautomation.entities.PackagePK</class>
+		<class>cm.homeautomation.entities.PackageHistory</class>
+		<class>cm.homeautomation.entities.PackageHistoryPK</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" />
-			<property name="javax.persistence.jdbc.url" value="jdbc:mariadb://localhost:3306/HA" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:mariadb://localhost:3306/HA?characterEncoding=utf8" />
 			<property name="javax.persistence.jdbc.user" value="root" />
 			<property name="javax.persistence.jdbc.password" value="" />
 
