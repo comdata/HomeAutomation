@@ -512,7 +512,20 @@ public class PackageTracking {
 	public List<Package> getAllOpen() {
 		EntityManager em = EntityManagerService.getNewManager();
 
-		return (List<Package>) em.createQuery("select p from Package p where p.delivered=0").getResultList();
+		List<Package> resultList = (List<Package>) em.createQuery("select p from Package p where p.delivered=0").getResultList();
+		
+		for (Package singlePackage : resultList) {
+			
+			List<PackageHistory> phList = (List<PackageHistory>) em
+					.createQuery("select p from PackageHistory p where p.id.trackingNumber=:trackingNumber and p.id.carrier=:carrier")
+
+					.setParameter("trackingNumber", singlePackage.getId().getTrackingNumber())
+					.setParameter("carrier", singlePackage.getId().getCarrier()).getResultList();
+
+			singlePackage.setPackageHistory(phList);
+		}
+		
+		return resultList;
 	}
 
 	private static void mergeTrackedPackage(Package trackedPackage) {
