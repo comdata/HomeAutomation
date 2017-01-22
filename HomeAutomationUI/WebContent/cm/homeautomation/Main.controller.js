@@ -1045,44 +1045,45 @@ sap.ui.define([
               highlightFill: "rgba(220,0,0,0.75)",
               highlightStroke: "rgba(220,0,0,1)",*/
               data: dataseries,
-              options: {
-                legend: {
-                      display: false,
-                      position: "bottom",
-                      labels: {
-                        filter: function (item, data) {
-                          return false;
-                        }
-                      }
-                },
-                  hover: {
-                      // Overrides the global setting
-                      mode: "index"
-                  },
-                  scales: {
-                      xAxes: [{
-                         display: true,
-                           ticks: {
-                                  callback: function(dataLabel, index) {
-                                        // Hide the label of
-                    // every 2nd dataset.
-                    // return null to hide
-                    // the grid line too
-                                        return index % 12 === 0 ? dataLabel : '';
-                                    }
-
-                      }}]
-                  }
-
-              }};
+              };
               datasets.push(singleDataSet);
 
           });
 
             var chartJSData={
                  barData: {
-
                     datasets: datasets
+
+                  },
+                  options: {
+                    legend: {
+                          display: false,
+                          position: "bottom",
+                          labels: {
+                            filter: function (item, data) {
+                              return false;
+                            }
+                          }
+                    },
+                      hover: {
+                          // Overrides the global setting
+                          mode: "index"
+                      },
+                      scales: {
+                          xAxes: [{
+                             display: true,
+                               ticks: {
+                                      callback: function(dataLabel, index) {
+                                            // Hide the label of
+                        // every 2nd dataset.
+                        // return null to hide
+                        // the grid line too
+                                            return index % 12 === 0 ? dataLabel : '';
+                                        }
+
+                          }}]
+                      }
+
                   }
                 };
       /*
