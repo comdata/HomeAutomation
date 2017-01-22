@@ -7,7 +7,7 @@
 
 
 			<agraebe.custom:ChartJSControl width="600"
-				height="200" responsive="true" chartType="Bar" data="{chartjsData>/barData}" />
+				height="200" responsive="true" chartType="Bar" data="{powerdata>/barData}" />
 
 
 		</content>
