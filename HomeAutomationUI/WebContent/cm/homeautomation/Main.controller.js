@@ -1034,7 +1034,8 @@ sap.ui.define([
           $.each(data.sensorData, function(i, element) {
             var dataseries=new Array();
             $.each(element.values, function(a, elem) {
-              dataseries.push({x:elem.dateTime, y:elem.value});
+              labels.push(formatter.dateTimeHourFormatter(elem.dateTime));
+              dataseries.push({x:elem.dateTime, y:parseFloat(elem.value.replace(",", ".")});
             });
 
             var singleDataSet={
