@@ -1053,6 +1053,7 @@ sap.ui.define([
 
             var chartJSData={
                  barData: {
+                    labels: labels,
                     datasets: datasets
 
                   },
