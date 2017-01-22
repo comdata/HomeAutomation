@@ -1023,6 +1023,74 @@ sap.ui.define([
             }
         },
         _getHistoricalData: function(selectedRoom) {
+          var historicalDataRest = new RESTService();
+          historicalDataRest.loadDataAsync("/HomeAutomation/services/sensors/forroom/" + selectedRoom, "", "GET", this._historicalDataLoaded, null, this);
+        },
+        _historicalDataLoaded: function(event, model, data) {
+
+          var labels=new Array();
+          var datasets=new Array();
+
+          $.each(data.sensorData, function(i, element) {
+            var dataseries=new Array();
+            $.each(element.values, function(a, elem) {
+              dataseries.push({x:elem.dateTime, y:elem.value});
+            });
+
+            var singleDataSet={
+              label: element.sensorName,
+              /*backgroundColor: "rgba(220,0,0,0.5)",
+              fillColor: "rgba(220,0,0,0.5)",
+              strokeColor: "rgba(220,0,0,0.8)",
+              highlightFill: "rgba(220,0,0,0.75)",
+              highlightStroke: "rgba(220,0,0,1)",*/
+              data: dataseries,
+              options: {
+                legend: {
+                      display: false,
+                      position: "bottom",
+                      labels: {
+                        filter: function (item, data) {
+                          return false;
+                        }
+                      }
+                },
+                  hover: {
+                      // Overrides the global setting
+                      mode: "index"
+                  },
+                  scales: {
+                      xAxes: [{
+                         display: true,
+                           ticks: {
+                                  callback: function(dataLabel, index) {
+                                        // Hide the label of
+                    // every 2nd dataset.
+                    // return null to hide
+                    // the grid line too
+                                        return index % 12 === 0 ? dataLabel : '';
+                                    }
+
+                      }}]
+                  }
+
+              }};
+
+          });
+
+            var chartJSData={
+                 barData: {
+
+                    datasets: datasets
+                  }
+                };
+      /*
+       *
+       */
+
+            var chartJSModel = new JSONModel();
+            chartJSModel.setData(chartJSData);
+            sap.ui.getCore().setModel(chartJSModel, "historicalData");
 
         },
         handleTrainSpeedChange:function(event){
