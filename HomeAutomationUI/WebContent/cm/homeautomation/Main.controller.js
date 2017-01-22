@@ -1075,6 +1075,7 @@ sap.ui.define([
                   }
 
               }};
+              datasets.push(singleDataSet);
 
           });
 
