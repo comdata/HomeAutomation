@@ -394,7 +394,7 @@ sap.ui.define([
 
         /**
 		 * initialize
-		 *
+		 * 
 		 * @param evt
 		 */
         onInit: function (evt) {
@@ -443,7 +443,7 @@ sap.ui.define([
 
         /**
 		 * perform data loading
-		 *
+		 * 
 		 */
         loadData: function () {
 
@@ -735,7 +735,7 @@ sap.ui.define([
         },
         /**
 		 * handle successful data loading for overview tiles
-		 *
+		 * 
 		 * @param event
 		 * @param model
 		 */
@@ -898,7 +898,7 @@ sap.ui.define([
 
             /**
 			 * set value directly to all other window blinds
-			 *
+			 * 
 			 */
             if (windowBlind.type=="ALL_AT_ONCE") {
 
@@ -1005,7 +1005,7 @@ sap.ui.define([
 
         /**
 		 * trigger a reload if something goes wrong
-		 *
+		 * 
 		 */
         _loadDataFailed: function (event) {
             this.loadDataInProgress = false;
@@ -1022,7 +1022,7 @@ sap.ui.define([
 		 */
         expandHistoricData: function (oEvent) {
             if (oEvent.getParameter("expand") == true) {
-                //getHistoricalSensordata(this.selectedRoom);
+                // getHistoricalSensordata(this.selectedRoom);
                 this._getHistoricalData(this.selectedRoom);
             }
         },
@@ -1047,11 +1047,12 @@ sap.ui.define([
             var singleDataSet={
               label: element.sensorName,
               backgroundColor: colors[i%(colors.length-1)],
-             /* backgroundColor: "rgba(220,0,0,0.5)",
-              fillColor: "rgba(220,0,0,0.5)",
-              strokeColor: "rgba(220,0,0,0.8)",
-              highlightFill: "rgba(220,0,0,0.75)",
-              highlightStroke: "rgba(220,0,0,1)",*/
+             /*
+				 * backgroundColor: "rgba(220,0,0,0.5)", fillColor:
+				 * "rgba(220,0,0,0.5)", strokeColor: "rgba(220,0,0,0.8)",
+				 * highlightFill: "rgba(220,0,0,0.75)", highlightStroke:
+				 * "rgba(220,0,0,1)",
+				 */
               data: dataseries,
               };
               datasets.push(singleDataSet);
@@ -1060,7 +1061,7 @@ sap.ui.define([
 
             var chartJSData={
                  lineData: {
-                    //labels: labels,
+                    // labels: labels,
                     datasets: datasets
 
                   },
@@ -1068,11 +1069,10 @@ sap.ui.define([
                     legend: {
                           display: true,
                           position: "bottom",
-                          /*labels: {
-                            filter: function (item, data) {
-                              return false;
-                            }
-                          }*/
+                          /*
+							 * labels: { filter: function (item, data) { return
+							 * false; } }
+							 */
                     },
                       hover: {
                           // Overrides the global setting
@@ -1092,14 +1092,40 @@ sap.ui.define([
                                             return index % 12 === 0 ? dataLabel : '';
                                         }
 
-                          }}]
+                          }},{
+                              display: true,
+                              type: 'linear',
+                              position: 'bottom',
+                                ticks: {
+                                       callback: function(dataLabel, index) {
+                                             // Hide the label of
+                         // every 2nd dataset.
+                         // return null to hide
+                         // the grid line too
+                                             return index % 12 === 0 ? dataLabel : '';
+                                         }
+
+                           }},{
+                               display: true,
+                               type: 'linear',
+                               position: 'bottom',
+                                 ticks: {
+                                        callback: function(dataLabel, index) {
+                                              // Hide the label of
+                          // every 2nd dataset.
+                          // return null to hide
+                          // the grid line too
+                                              return index % 12 === 0 ? dataLabel : '';
+                                          }
+
+                            }}]
                       }
 
                   }
                 };
       /*
-       *
-       */
+		 * 
+		 */
 
             var chartJSModel = new JSONModel();
             chartJSModel.setData(chartJSData);
@@ -1204,7 +1230,7 @@ sap.ui.define([
         },
         /**
 		 * handle selection, triggering navigation
-		 *
+		 * 
 		 * @param event
 		 */
         handleSelect: function (event) {
@@ -1369,7 +1395,7 @@ sap.ui.define([
         				  }
         				};
 			/*
-			 *
+			 * 
 			 */
 
             var chartJSModel = new JSONModel();
@@ -1471,7 +1497,7 @@ sap.ui.define([
         },
         /**
 		 * menu open pressed
-		 *
+		 * 
 		 */
         handlePressOpenMenu: function (oEvent) {
             var oButton = oEvent.getSource();
