@@ -108,7 +108,7 @@
 				width="auto" class="sapUiResponsiveMargin" expand="expandHistoricData">
 				<content>
 					<agraebe.custom:ChartJSControl width="600"
-						height="200" responsive="true" chartType="Bar" data="{historicalData>/barData}" options="{historicalData>/options}"/>
+						height="200" responsive="true" chartType="Line" data="{historicalData>/lineData}" options="{historicalData>/options}"/>
 			<!--		<core:HTML
 						content="&lt;div id='chart'&gt;
     &lt;svg style='height:300px; width:100%;'&gt;&lt;/svg&gt;
