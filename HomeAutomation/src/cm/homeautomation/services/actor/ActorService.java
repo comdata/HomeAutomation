@@ -151,7 +151,7 @@ public class ActorService extends BaseService implements MqttCallback {
 		sendMQTTMessage(actorMessage);
 		
 		em.getTransaction().begin();
-		singleSwitch.setLatestStatus(status);
+		singleSwitch.setLatestStatus(targetStatus);
 		singleSwitch.setLatestStatusFrom(new Date());
 		em.merge(singleSwitch);
 		em.getTransaction().commit();
