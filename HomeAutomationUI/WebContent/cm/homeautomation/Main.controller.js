@@ -1046,7 +1046,7 @@ sap.ui.define([
 
             var singleDataSet={
               label: element.sensorName,
-              backgroundColor: colors[i%colors.length],
+              backgroundColor: colors[i%(colors.length-1)],
              /* backgroundColor: "rgba(220,0,0,0.5)",
               fillColor: "rgba(220,0,0,0.5)",
               strokeColor: "rgba(220,0,0,0.8)",
