@@ -1035,7 +1035,7 @@ sap.ui.define([
             var dataseries=new Array();
             $.each(element.values, function(a, elem) {
               labels.push(formatter.dateTimeHourFormatter(elem.dateTime));
-              dataseries.push({x:elem.dateTime, y:parseFloat(elem.value.replace(",", ".")});
+              dataseries.push({x:elem.dateTime, y:parseFloat(elem.value.replace(",", "."))});
             });
 
             var singleDataSet={
