@@ -137,7 +137,7 @@ sap.ui.define([
 
                 switches.switchStatuses.forEach(function (singleSwitch) {
                     if (singleSwitch.id == switchId) {
-                        singleSwitch.switchState = (status == "ON") ? true : false;
+                        singleSwitch.switchState = (status == "1") ? true : false;
                     }
                 });
 
@@ -390,7 +390,7 @@ sap.ui.define([
 
         /**
 		 * initialize
-		 * 
+		 *
 		 * @param evt
 		 */
         onInit: function (evt) {
@@ -399,7 +399,7 @@ sap.ui.define([
              });
              this.getView().setModel(i18nModel, "i18n")
              sap.ui.getCore().setModel(i18nModel, "i18n");
-        	
+
             this.loadData();
             var subject = this;
 
@@ -439,7 +439,7 @@ sap.ui.define([
 
         /**
 		 * perform data loading
-		 * 
+		 *
 		 */
         loadData: function () {
 
@@ -462,19 +462,19 @@ sap.ui.define([
 
 			this.getView().getModel().getData().overviewTiles.push(this._networkDevicesTile);
 			this.getView().getModel().refresh(false);
-			
+
 			this.networkDevicesLoad();
         },
         _initCameraTiles: function() {
         	var oModel = new RESTService();
             oModel.loadDataAsync("/HomeAutomation/services/camera/getAll", "", "GET", this._handleCamerasLoaded, null, this);
-        	
+
         },
-        	
+
         _handleCamerasLoaded:	function (event, camerasModel, cameraData) {
         	var subject=this;
         	this.cameras= [];
-        	
+
         	$.each(cameraData, function (i, element) {
         		var singleCamera={
                    		window:null,
@@ -491,7 +491,7 @@ sap.ui.define([
                    	};
         		subject.cameras.push(singleCamera);
         	});
-        	
+
             var camerasDisabled=jQuery.sap.getUriParameters().get("disableCamera");
 
             camerasDisabled=(camerasDisabled=="true") ? true: false;
@@ -589,24 +589,24 @@ sap.ui.define([
                 };
             this.getView().getModel().getData().overviewTiles.push(this.packageTile);
             this.getView().getModel().refresh(false);
-            
+
             subject._updatePackageTile.apply(subject, [subject, this.packageTile]);
             this.packageTimer = window.setInterval(function () {
                 subject._updatePackageTile.apply(subject, [subject, this.packageTile]);
             }, 60000);
         },
         _updatePackageTile: function(subject, tile) {
-        	
+
         	if (tile!=null) {
 	            $.getJSON("/HomeAutomation/services/packages/getAllOpen", function (result) {
-	
+
 	                console.log("Anzahl Packete" + result.length);
 	                tile.number = result.length;
 	                tile.info = $.format.date(new Date(), "dd.MM.yyyy HH:mm:ss");
 	                subject.getView().getModel().refresh(false);
 	            });
         	}
-        	
+
         },
         _initPowerMeterTile: function() {
         	this.powerMeterTileOneMinute = {
@@ -731,7 +731,7 @@ sap.ui.define([
         },
         /**
 		 * handle successful data loading for overview tiles
-		 * 
+		 *
 		 * @param event
 		 * @param model
 		 */
@@ -801,12 +801,12 @@ sap.ui.define([
         },
         handleNetworkDevicesLoaded: function(event, model) {
           sap.ui.getCore().setModel(model, "networkDevices");
-          
+
           var modelData=model.oData;
           var subject=this;
-          
+
           $.each(modelData, function(i, data) {
-          
+
 		        var element = {
 		  				ipAddress: data.ip,
 		  				hostName: data.hostname,
@@ -814,7 +814,7 @@ sap.ui.define([
 		  		}
 		        subject.handleNetworkMonitor(data);
           });
-          
+
         },
         handleDoorWindowLoaded: function(event, model) {
           sap.ui.getCore().setModel(model, "doorWindow");
@@ -894,7 +894,7 @@ sap.ui.define([
 
             /**
 			 * set value directly to all other window blinds
-			 * 
+			 *
 			 */
             if (windowBlind.type=="ALL_AT_ONCE") {
 
@@ -1001,7 +1001,7 @@ sap.ui.define([
 
         /**
 		 * trigger a reload if something goes wrong
-		 * 
+		 *
 		 */
         _loadDataFailed: function (event) {
             this.loadDataInProgress = false;
@@ -1119,7 +1119,7 @@ sap.ui.define([
         },
         /**
 		 * handle selection, triggering navigation
-		 * 
+		 *
 		 * @param event
 		 */
         handleSelect: function (event) {
@@ -1159,7 +1159,7 @@ sap.ui.define([
                 }
                 this._dialogs["powermeter"].open();
                 this.powerMeterLoad();
-              }            
+              }
             else if (tileType =="networkDevices") {
               if (!this._dialogs["networkDevices"]) {
                   this._dialogs["networkDevices"] = sap.ui.xmlfragment("cm.homeautomation.NetworkDevices", this);
@@ -1227,14 +1227,14 @@ sap.ui.define([
             powerMeterModel.loadDataAsync("/HomeAutomation/services/power/readInterval", "", "GET", subject.powerDataLoaded, null, subject);
 
         },
-        
+
         powerDataLoaded: function(event, model, data) {
-        	
-        	
-        	var labels=new Array(); 
-        	var dataseries=new Array(); 
+
+
+        	var labels=new Array();
+        	var dataseries=new Array();
         	$.each(data, function(i, element) {
-        
+
        			labels.push(formatter.dateTimeHourFormatter(element.timeslice));
 
         		dataseries.push(element.kwh);
@@ -1254,10 +1254,10 @@ sap.ui.define([
         				      options: {
         				    	  legend: {
         				              display: false,
-        				              position: "bottom", 
+        				              position: "bottom",
         				              labels: {
         				            	  filter: function (item, data) {
-        				            		  return false;  
+        				            		  return false;
         				            	  }
         				              }
         				    	  },
@@ -1279,14 +1279,14 @@ sap.ui.define([
 
         				              }}]
         				          }
-        				    		
+
         				      }}]
         				  }
         				};
 			/*
-			 * 
+			 *
 			 */
-        	
+
             var chartJSModel = new JSONModel();
             chartJSModel.setData(chartJSData);
             sap.ui.getCore().setModel(chartJSModel, "chartjsData");
@@ -1310,15 +1310,15 @@ sap.ui.define([
         },
         powerMeterDialogClose: function() {
             this._dialogs["powermeter"].close();
-            
-        },        
+
+        },
         doorWindowDialogClose: function() {
             this._dialogs["doorWindow"].close();
             sap.ui.getCore().setModel(new JSONModel(), "doorWindow");
         },
         downloadsDialogClose: function() {
             this._dialogs["downloads"].close();
-            
+
         },
         afterDoorWindowDialogClose: function () {
             this._oDialog.destroy();
@@ -1333,7 +1333,7 @@ sap.ui.define([
         },
         afterPowerMeterDialogClose: function () {
         	sap.ui.getCore().setModel(new JSONModel(), "powermeter");
-          },        
+          },
         afterDownloadDialogClose: function () {
         	this._dialogs["downloads"].destroy();
         	this._dialogs["downloads"] = null;
@@ -1386,7 +1386,7 @@ sap.ui.define([
         },
         /**
 		 * menu open pressed
-		 * 
+		 *
 		 */
         handlePressOpenMenu: function (oEvent) {
             var oButton = oEvent.getSource();
