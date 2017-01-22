@@ -1022,7 +1022,7 @@ sap.ui.define([
                 this._getHistoricalData(this.selectedRoom);
             }
         },
-        _getHistoricalData: function(this.selectedRoom) {
+        _getHistoricalData: function(selectedRoom) {
 
         },
         handleTrainSpeedChange:function(event){
