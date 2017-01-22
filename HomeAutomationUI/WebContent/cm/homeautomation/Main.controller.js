@@ -1370,7 +1370,7 @@ sap.ui.define([
 
             var chartJSModel = new JSONModel();
             chartJSModel.setData(chartJSData);
-            sap.ui.getCore().setModel(chartJSModel, "chartjsData");
+            sap.ui.getCore().setModel(chartJSModel, "powerdata");
 
         },
         dialogClose: function () {
