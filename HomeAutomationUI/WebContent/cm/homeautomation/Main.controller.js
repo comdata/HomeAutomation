@@ -1045,11 +1045,11 @@ sap.ui.define([
 
             var singleDataSet={
               label: element.sensorName,
-              backgroundColor: "rgba(220,0,0,0.5)",
+             /* backgroundColor: "rgba(220,0,0,0.5)",
               fillColor: "rgba(220,0,0,0.5)",
               strokeColor: "rgba(220,0,0,0.8)",
               highlightFill: "rgba(220,0,0,0.75)",
-              highlightStroke: "rgba(220,0,0,1)",
+              highlightStroke: "rgba(220,0,0,1)",*/
               data: dataseries,
               };
               datasets.push(singleDataSet);
@@ -1058,19 +1058,19 @@ sap.ui.define([
 
             var chartJSData={
                  lineData: {
-                    labels: labels,
+                    //labels: labels,
                     datasets: datasets
 
                   },
                   options: {
                     legend: {
-                          display: false,
+                          display: true,
                           position: "bottom",
-                          labels: {
+                          /*labels: {
                             filter: function (item, data) {
                               return false;
                             }
-                          }
+                          }*/
                     },
                       hover: {
                           // Overrides the global setting
