@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -146,8 +147,14 @@ public class ActorService extends BaseService implements MqttCallback {
 		actorMessage.setStatus((targetStatus.equals("ON") ? "1" : "0"));
 		actorMessage.setSwitchNo(singleSwitch.getSwitchNo());
 
-		sendMulticastUDP(actorMessage);
+		//sendMulticastUDP(actorMessage);
 		sendMQTTMessage(actorMessage);
+		
+		em.getTransaction().begin();
+		singleSwitch.setLatestStatus(status);
+		singleSwitch.setLatestStatusFrom(new Date());
+		em.merge(singleSwitch);
+		em.getTransaction().commit();
 		
 		SwitchPressResponse switchPressResponse = new SwitchPressResponse();
 		switchPressResponse.setSuccess(true);
