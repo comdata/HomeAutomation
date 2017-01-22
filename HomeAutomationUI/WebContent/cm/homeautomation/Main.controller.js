@@ -311,21 +311,25 @@ sap.ui.define([
 	    				}
 	    				var imageURL = newUrl+"random=" + Math.random();
 
-	        				var image = $(".sapMStdTileIconDiv > img[src*='"+newUrl+"']")[0];
-	    				console.log("old image src: "+image.src);
-	    				var downloadingImage = new Image();
-	    				downloadingImage.onload = function(){
-	    					console.log("new loaded image src: "+downloadingImage.src);
-	    					image.src = this.src;
-	    					camera.tile.info=moment().format('DD.MM.YYYY HH:mm:ss');
-	    					that.resizeCameraPictures();
-	    					window.setTimeout(function() {that.resizeCameraPictures();}, 1000);
-	    					window.setTimeout(function() {that.resizeCameraPictures();}, 5000);
-	    					window.setTimeout(function() {that.resizeCameraPictures();}, 10000);
+        				var image = $(".sapMStdTileIconDiv > img[src*='"+newUrl+"']")[0];
+        				if (image!=null) {
+	    					console.log("old image src: "+image.src);
+	    				
+	    					var downloadingImage = new Image();
+	    					downloadingImage.onload = function(){
+		    					console.log("new loaded image src: "+downloadingImage.src);
+		    					image.src = this.src;
+		    					camera.tile.info=moment().format('DD.MM.YYYY HH:mm:ss');
+		    					that.resizeCameraPictures();
+		    					window.setTimeout(function() {that.resizeCameraPictures();}, 1000);
+		    					window.setTimeout(function() {that.resizeCameraPictures();}, 5000);
+		    					window.setTimeout(function() {that.resizeCameraPictures();}, 10000);
+	    					
+	    					};
+	    					downloadingImage.src=imageURL;
+        				}
 
-	    				};
-
-	    				downloadingImage.src=imageURL;
+	    				
 	        		}
 	        	});
         	}
@@ -1034,17 +1038,18 @@ sap.ui.define([
           $.each(data.sensorData, function(i, element) {
             var dataseries=new Array();
             $.each(element.values, function(a, elem) {
-              labels.push(formatter.dateTimeHourFormatter(elem.dateTime));
+              //formatter.dateTimeHourFormatter(
+              labels.push(elem.dateTime);
               dataseries.push({x:elem.dateTime, y:parseFloat(elem.value.replace(",", "."))});
             });
 
             var singleDataSet={
               label: element.sensorName,
-              /*backgroundColor: "rgba(220,0,0,0.5)",
+              backgroundColor: "rgba(220,0,0,0.5)",
               fillColor: "rgba(220,0,0,0.5)",
               strokeColor: "rgba(220,0,0,0.8)",
               highlightFill: "rgba(220,0,0,0.75)",
-              highlightStroke: "rgba(220,0,0,1)",*/
+              highlightStroke: "rgba(220,0,0,1)",
               data: dataseries,
               };
               datasets.push(singleDataSet);
