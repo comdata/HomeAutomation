@@ -137,7 +137,7 @@ sap.ui.define([
 
                 switches.switchStatuses.forEach(function (singleSwitch) {
                     if (singleSwitch.id == switchId) {
-                        singleSwitch.switchState = (status == "1") ? true : false;
+                        singleSwitch.switchState = (status == "ON") ? true : false;
                     }
                 });
 
@@ -1018,8 +1018,12 @@ sap.ui.define([
 		 */
         expandHistoricData: function (oEvent) {
             if (oEvent.getParameter("expand") == true) {
-                getHistoricalSensordata(this.selectedRoom);
+                //getHistoricalSensordata(this.selectedRoom);
+                this._getHistoricalData(this.selectedRoom);
             }
+        },
+        _getHistoricalData: function(this.selectedRoom) {
+
         },
         handleTrainSpeedChange:function(event){
           this._trainModelData.speed= event.getSource().getValue();
