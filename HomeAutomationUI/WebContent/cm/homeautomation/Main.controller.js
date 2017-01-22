@@ -1081,6 +1081,8 @@ sap.ui.define([
                       scales: {
                           xAxes: [{
                              display: true,
+                             type: 'linear',
+                             position: 'bottom',
                                ticks: {
                                       callback: function(dataLabel, index) {
                                             // Hide the label of
