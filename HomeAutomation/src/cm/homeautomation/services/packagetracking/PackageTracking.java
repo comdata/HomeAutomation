@@ -547,7 +547,7 @@ public class PackageTracking {
 		for (Package singlePackage : resultList) {
 			
 			List<PackageHistory> phList = (List<PackageHistory>) em
-					.createQuery("select p from PackageHistory p where p.id.trackingNumber=:trackingNumber and p.id.carrier=:carrier order by p.id.timestamp")
+					.createQuery("select p from PackageHistory p where p.id.trackingNumber=:trackingNumber and p.id.carrier=:carrier order by p.id.timestamp desc")
 
 					.setParameter("trackingNumber", singlePackage.getId().getTrackingNumber())
 					.setParameter("carrier", singlePackage.getId().getCarrier()).getResultList();
