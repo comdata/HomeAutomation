@@ -314,7 +314,7 @@ sap.ui.define([
         				var image = $(".sapMStdTileIconDiv > img[src*='"+newUrl+"']")[0];
         				if (image!=null) {
 	    					console.log("old image src: "+image.src);
-	    				
+
 	    					var downloadingImage = new Image();
 	    					downloadingImage.onload = function(){
 		    					console.log("new loaded image src: "+downloadingImage.src);
@@ -324,12 +324,12 @@ sap.ui.define([
 		    					window.setTimeout(function() {that.resizeCameraPictures();}, 1000);
 		    					window.setTimeout(function() {that.resizeCameraPictures();}, 5000);
 		    					window.setTimeout(function() {that.resizeCameraPictures();}, 10000);
-	    					
+
 	    					};
 	    					downloadingImage.src=imageURL;
         				}
 
-	    				
+
 	        		}
 	        	});
         	}
@@ -394,7 +394,7 @@ sap.ui.define([
 
         /**
 		 * initialize
-		 * 
+		 *
 		 * @param evt
 		 */
         onInit: function (evt) {
@@ -443,7 +443,7 @@ sap.ui.define([
 
         /**
 		 * perform data loading
-		 * 
+		 *
 		 */
         loadData: function () {
 
@@ -735,7 +735,7 @@ sap.ui.define([
         },
         /**
 		 * handle successful data loading for overview tiles
-		 * 
+		 *
 		 * @param event
 		 * @param model
 		 */
@@ -898,7 +898,7 @@ sap.ui.define([
 
             /**
 			 * set value directly to all other window blinds
-			 * 
+			 *
 			 */
             if (windowBlind.type=="ALL_AT_ONCE") {
 
@@ -1005,7 +1005,7 @@ sap.ui.define([
 
         /**
 		 * trigger a reload if something goes wrong
-		 * 
+		 *
 		 */
         _loadDataFailed: function (event) {
             this.loadDataInProgress = false;
@@ -1124,7 +1124,7 @@ sap.ui.define([
                   }
                 };
       /*
-		 * 
+		 *
 		 */
 
             var chartJSModel = new JSONModel();
@@ -1230,7 +1230,7 @@ sap.ui.define([
         },
         /**
 		 * handle selection, triggering navigation
-		 * 
+		 *
 		 * @param event
 		 */
         handleSelect: function (event) {
@@ -1291,6 +1291,12 @@ sap.ui.define([
                 }
                 this._dialogs["downloads"].open();
               }
+              else if (tileType =="package") {
+                  if (!this._dialogs["package"]) {
+                      this._dialogs["package"] = sap.ui.xmlfragment("cm.homeautomation.Package", this);
+                  }
+                  this._dialogs["downloads"].open();
+                }
             else if (tileType == "camera") {
                 if (!this.camera) {
                     this.camera = sap.ui.xmlfragment("cm.homeautomation.Camera", this);
@@ -1395,7 +1401,7 @@ sap.ui.define([
         				  }
         				};
 			/*
-			 * 
+			 *
 			 */
 
             var chartJSModel = new JSONModel();
@@ -1423,6 +1429,10 @@ sap.ui.define([
             this._dialogs["powermeter"].close();
 
         },
+        packageDialogClose: function() {
+            this._dialogs["package"].close();
+
+        },
         doorWindowDialogClose: function() {
             this._dialogs["doorWindow"].close();
             sap.ui.getCore().setModel(new JSONModel(), "doorWindow");
@@ -1448,6 +1458,10 @@ sap.ui.define([
         afterDownloadDialogClose: function () {
         	this._dialogs["downloads"].destroy();
         	this._dialogs["downloads"] = null;
+        },
+        afterPackageDialogClose: function () {
+          this._dialogs["package"].destroy();
+          this._dialogs["package"] = null;
         },
         afterPlanesDialogClose: function () {
             this.planesView.destroy();
@@ -1497,7 +1511,7 @@ sap.ui.define([
         },
         /**
 		 * menu open pressed
-		 * 
+		 *
 		 */
         handlePressOpenMenu: function (oEvent) {
             var oButton = oEvent.getSource();
