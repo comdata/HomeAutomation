@@ -43,7 +43,7 @@
 									<Text text="{packages>carrierName}" />
 									<Text text="{packages>packageName}" />
 									<Text text="{packages>delivered}" />
-									<Text text="{packages>packageHistory/id/statusText}" />
+									<Text text="{packages>packageHistory/0/id/statusText}" />
 
 								</cells>
 							</ColumnListItem>
