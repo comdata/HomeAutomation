@@ -539,6 +539,8 @@ public class PackageTracking {
 	@GET
 	public List<Package> getAllOpen() {
 		EntityManager em = EntityManagerService.getNewManager();
+		
+		Map<String, String> createCarrierMap = createCarrierMap();
 
 		List<Package> resultList = (List<Package>) em.createQuery("select p from Package p where p.delivered=0").getResultList();
 		List<Package> newPackageList=new ArrayList<Package>();
@@ -555,6 +557,8 @@ public class PackageTracking {
 				
 				System.out.println("steps: "+singlePackage.getPackageHistory().size());
 			}
+			singlePackage.setCarrierName(createCarrierMap.get(singlePackage.getId().getCarrier()));
+			
 			newPackageList.add(singlePackage);
 		}
 		

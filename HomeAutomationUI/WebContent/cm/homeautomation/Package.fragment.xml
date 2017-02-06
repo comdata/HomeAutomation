@@ -37,7 +37,7 @@
 							<ColumnListItem>
 								<cells>
 									<Text text="{packages>id/trackingNumber}" />
-									<Text text="{packages>id/carrier}" />
+									<Text text="{packages>carrierName}" />
 									<Text text="{packages>packageName}" />
 									<Text text="{packages>delivered}" />
 
