@@ -437,6 +437,7 @@ public class PackageTracking {
 		JsonNode rootNode = om.readTree(resultString);
 
 		Iterator<Map.Entry<String, JsonNode>> fieldsIterator = rootNode.fields();
+		List<Package> trackedPackages=new ArrayList<Package>();
 		while (fieldsIterator.hasNext()) {
 
 			Map.Entry<String, JsonNode> field = fieldsIterator.next();
@@ -500,11 +501,38 @@ public class PackageTracking {
 				}
 
 				mergeTrackedPackage(trackedPackage);
+				
+				trackedPackages.add(trackedPackage);
 
 				System.out.println("Tracking No:" + trackingNumber + " Delivered: " + delivered + " sCarrier: "
 						+ carrierFullname + " Name: " + packageName);
 			}
 		}
+		
+		List<Package> allOpenPackages = new PackageTracking().getAllOpen();
+		EntityManager em = EntityManagerService.getNewManager();
+		
+		em.getTransaction().begin();
+		for (Package openPackage : allOpenPackages) {
+			
+			
+			if (!isPackageTracked(openPackage, trackedPackages)) {
+				System.out.println("Package deleted: "+openPackage.getId().getTrackingNumber());
+				openPackage.setDelivered(true);
+				em.merge(openPackage);
+			}
+		}
+		em.getTransaction().commit();
+	}
+
+	private static boolean isPackageTracked(Package openPackage, List<Package> trackedPackages) {
+		for (Package trackedPackage : trackedPackages) {
+			if (openPackage.getId().getCarrier().equals(trackedPackage.getId().getCarrier()) && openPackage.getId().getTrackingNumber().equals(trackedPackage.getId().getTrackingNumber())) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	@Path("getAllOpen")
