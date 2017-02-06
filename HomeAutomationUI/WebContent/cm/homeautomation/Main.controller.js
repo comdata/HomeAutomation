@@ -823,6 +823,10 @@ sap.ui.define([
         handleDoorWindowLoaded: function(event, model) {
           sap.ui.getCore().setModel(model, "doorWindow");
         },
+        handlePackageListLoaded: function(event, model) {
+            sap.ui.getCore().setModel(model, "packages");
+        },
+
         handleWindowBlindsLoaded: function (event, model) {
 
             var windowBlindsList = sap.ui.getCore().byId("windowBlinds");
@@ -1228,6 +1232,12 @@ sap.ui.define([
           doorWindowModel.loadDataAsync("/HomeAutomation/services/window/readAll", "", "GET", subject.handleDoorWindowLoaded, null, subject);
 
         },
+        packageListLoad: function() {
+          var subject = this;
+          var packageModel = new RESTService();
+          packageModel.loadDataAsync("/HomeAutomation/services/packages/getAllOpen", "", "GET", subject.handlePackageListLoaded, null, subject);
+
+        },
         /**
 		 * handle selection, triggering navigation
 		 *
@@ -1296,6 +1306,7 @@ sap.ui.define([
                       this._dialogs["package"] = sap.ui.xmlfragment("cm.homeautomation.Package", this);
                   }
                   this._dialogs["package"].open();
+                  this.packageListLoad();
                 }
             else if (tileType == "camera") {
                 if (!this.camera) {
