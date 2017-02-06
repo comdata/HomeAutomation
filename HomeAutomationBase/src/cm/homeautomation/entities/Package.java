@@ -380,7 +380,7 @@ public class Package {
 
 	@Transient
 	public void setCarrierName(String carrierName) {
-
+		this.carrierName=carrierName;
 	}
 
 	public void setDelivered(boolean delivered) {
