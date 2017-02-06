@@ -1295,7 +1295,7 @@ sap.ui.define([
                   if (!this._dialogs["package"]) {
                       this._dialogs["package"] = sap.ui.xmlfragment("cm.homeautomation.Package", this);
                   }
-                  this._dialogs["downloads"].open();
+                  this._dialogs["package"].open();
                 }
             else if (tileType == "camera") {
                 if (!this.camera) {
