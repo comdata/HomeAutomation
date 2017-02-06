@@ -33,6 +33,7 @@
 								<Text text="Latest Status" />
 							</Column>
 							<Column>
+								<Text text="Timestamp" />
 							</Column>
 						</columns>
 
@@ -44,6 +45,11 @@
 									<Text text="{packages>packageName}" />
 									<Text text="{packages>delivered}" />
 									<Text text="{packages>packageHistory/0/id/statusText}" />
+									<Text
+										text="{
+											path: 'packages>packageHistory/0/id/timestamp',
+											formatter: 'formatter.dateTimeFormatter'
+}" />
 
 								</cells>
 							</ColumnListItem>
