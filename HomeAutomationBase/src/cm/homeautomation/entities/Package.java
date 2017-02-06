@@ -15,6 +15,8 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
 @XmlRootElement
@@ -333,6 +335,8 @@ public class Package {
 	private List<PackageHistory> packageHistory;
 
 	@Transient
+	@JsonSerialize
+	@JsonDeserialize 
 	private String carrierName;
 
 	private boolean delivered;
