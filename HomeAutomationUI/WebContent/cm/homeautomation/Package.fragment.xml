@@ -30,6 +30,9 @@
 								<Text text="Delivered" />
 							</Column>
 							<Column>
+								<Text text="Latest Status" />
+							</Column>
+							<Column>
 							</Column>
 						</columns>
 
@@ -40,6 +43,7 @@
 									<Text text="{packages>carrierName}" />
 									<Text text="{packages>packageName}" />
 									<Text text="{packages>delivered}" />
+									<Text text="{packages>packageHistory/id/statusText}" />
 
 								</cells>
 							</ColumnListItem>
