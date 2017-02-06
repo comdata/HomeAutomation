@@ -12,7 +12,7 @@
 						items="{
 			path: 'packages>/',
 			sorter: {
-				path: 'packages>id/trackingNumber'
+				path: 'id/trackingNumber'
 			}
 		}"
 						title="Packages" selectionMode="MultiToggle">
@@ -21,9 +21,14 @@
 								<Text text="Tracking Number" />
 							</Column>
 							<Column>
+								<Text text="Carrier" />
+							</Column>
+							<Column>
 								<Text text="Name" />
 							</Column>
-
+							<Column>
+								<Text text="Delivered" />
+							</Column>
 							<Column>
 							</Column>
 						</columns>
@@ -32,7 +37,9 @@
 							<ColumnListItem>
 								<cells>
 									<Text text="{packages>id/trackingNumber}" />
+									<Text text="{packages>id/carrier}" />
 									<Text text="{packages>packageName}" />
+									<Text text="{packages>delivered}" />
 
 								</cells>
 							</ColumnListItem>
