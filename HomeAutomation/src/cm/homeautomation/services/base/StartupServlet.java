@@ -5,6 +5,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
 import org.eclipse.paho.client.mqttv3.logging.LoggerFactory;
+import org.springframework.boot.SpringApplication;
+
+import com.armzilla.ha.SpringbootEntry;
 
 import cm.homeautomation.entities.NetworkDevice;
 import cm.homeautomation.eventbus.EventBusEndpoint;
@@ -68,6 +71,8 @@ public class StartupServlet extends HttpServlet {
 
 		mdnsService = new MDNSService();
 		mdnsService.registerServices();
+		
+		 SpringApplication.run(SpringbootEntry.class, new String[1]);
 		
 	}
 
