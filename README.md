@@ -3,6 +3,7 @@
 
 [![Build Status](https://travis-ci.org/comdata/HomeAutomation.svg?branch=master)](https://travis-ci.org/comdata/HomeAutomation)
 [![Stories in Ready](https://badge.waffle.io/comdata/HomeAutomation.png?label=ready&title=Ready)](https://waffle.io/comdata/HomeAutomation)
+[![buddy pipeline](https://app.buddy.works/cmertins/homeautomation/pipelines/pipeline/41420/badge.svg?token=749a9b557f3f7c1d1501841a45579947928dd2762c51f6343db062c8503fcdde "buddy pipeline")](https://app.buddy.works/cmertins/homeautomation/pipelines/pipeline/41420)
 
 This is my first approach to automate my home.
 
