@@ -49,6 +49,8 @@
 		<sapui5.version>1.38.4</sapui5.version>
 		<version.jersey>2.22.2</version.jersey>
 		<version.servlet.api>3.1.0</version.servlet.api>
+        <httpcompontents.version>4.5.2</httpcompontents.version>
+        <telegrambots.version>2.4.2</telegrambots.version>
 	</properties>
 
 	<distributionManagement>
@@ -60,6 +62,12 @@
 
 
 	<dependencies>
+		<dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots</artifactId>
+            <version>${telegrambots.version}</version>
+        </dependency>
+	
 	<!--  	<dependency>
 		<groupId>com.armzilla.ha</groupId>
    		 <artifactId>amazon-echo-bridge</artifactId>
@@ -156,12 +164,12 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
-			<version>4.4.5</version>
+			<version>${httpcompontents.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcomponents-core</artifactId>
-			<version>4.4.5</version>
+			<version>${httpcompontents.version}</version>
 			<type>pom</type>
 		</dependency>
 
@@ -181,7 +189,7 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.5.2</version>
+			<version>${httpcompontents.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>it.sauronsoftware.cron4j</groupId>

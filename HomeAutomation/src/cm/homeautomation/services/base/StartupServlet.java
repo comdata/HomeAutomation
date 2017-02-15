@@ -15,6 +15,7 @@ import cm.homeautomation.mdns.MDNSService;
 import cm.homeautomation.moquette.server.MoquetteServer;
 import cm.homeautomation.services.overview.OverviewEndPointConfiguration;
 import cm.homeautomation.services.overview.OverviewWebSocket;
+import cm.homeautomation.telegram.TelegramBotService;
 import cm.homeautomation.transmission.TransmissionMonitor;
 import cm.homeautomation.mqtt.client.MQTTReceiverClient;
 import cm.homeautomation.networkMonitor.NetworkDeviceDatabaseUpdater;
@@ -36,6 +37,7 @@ public class StartupServlet extends HttpServlet {
 	private WindowBlindNotificationService windowBlindNotificationService;
 	private NetworkDeviceDatabaseUpdater networkDeviceDatabaseUpdater;
 	private MDNSService mdnsService;
+	private TelegramBotService telegramBotService;
 
 	public void init(ServletConfig config) throws ServletException {
 
@@ -69,8 +71,7 @@ public class StartupServlet extends HttpServlet {
 		mdnsService = new MDNSService();
 		mdnsService.registerServices();
 		
-		// SpringApplication.run(SpringbootEntry.class, new String[1]);
-		
+		telegramBotService = TelegramBotService.getInstance();
 	}
 
 	public void destroy() {
