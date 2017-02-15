@@ -75,6 +75,7 @@ public class StartupServlet extends HttpServlet {
 		Runnable telegramRunnable = new Runnable() {
 			public void run() {
 				telegramBotService = TelegramBotService.getInstance();
+				telegramBotService.init();
 			}
 		};
 		
