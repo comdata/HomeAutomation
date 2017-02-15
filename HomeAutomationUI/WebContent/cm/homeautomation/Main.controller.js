@@ -1068,7 +1068,7 @@ sap.ui.define([
 
             var chartJSData={
                  lineData: {
-                    // labels: labels,
+                    labels: labels,
                     datasets: datasets
 
                   },
