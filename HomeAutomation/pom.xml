@@ -62,11 +62,7 @@
 
 
 	<dependencies>
-		<dependency>
-			<groupId>org.telegram</groupId>
-			<artifactId>telegrambots</artifactId>
-			<version>${telegrambots.version}</version>
-		</dependency>
+
 
 		<!-- <dependency> <groupId>com.armzilla.ha</groupId> <artifactId>amazon-echo-bridge</artifactId> 
 			<version>0.4.0</version> </dependency> -->
@@ -277,6 +273,11 @@
 			<groupId>com.beowulfe.hap</groupId>
 			<artifactId>hap</artifactId>
 			<version>1.1.4-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.telegram</groupId>
+			<artifactId>telegrambots</artifactId>
+			<version>${telegrambots.version}</version>
 		</dependency>
 	</dependencies>
 
