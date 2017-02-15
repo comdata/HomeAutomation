@@ -97,7 +97,7 @@ public class TelegramBotService {
 		TelegramBotService.user = user;
 	}
 
-	@Subscribe
+	//@Subscribe
 	public void handleEvent(EventObject eventObject) {
 		try {
 
