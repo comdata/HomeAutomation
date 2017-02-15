@@ -154,7 +154,7 @@ public class ActorService extends BaseService implements MqttCallback {
 	 */
 	@GET
 	@Path("updateBackend/{switch}/{status}")
-	private Switch updateBackendSwitchState(@PathParam("switch") String switchId,
+	public Switch updateBackendSwitchState(@PathParam("switch") String switchId,
 			@PathParam("status") String targetStatus) {
 		
 		targetStatus=targetStatus.toUpperCase();
