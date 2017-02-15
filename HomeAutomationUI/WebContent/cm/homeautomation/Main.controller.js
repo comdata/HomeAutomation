@@ -1045,7 +1045,10 @@ sap.ui.define([
             $.each(element.values, function(a, elem) {
               //
               labels.push(formatter.dateTimeHourFormatter(elem.dateTime));
-              dataseries.push({x:formatter.dateTimeHourFormatter(elem.dateTime), y:parseFloat(elem.value.replace(",", "."))});
+              //{x:formatter.dateTimeHourFormatter(elem.dateTime), y:
+              // }
+              
+              dataseries.push(parseFloat(elem.value.replace(",", ".")));
             });
 
             var singleDataSet={
@@ -1090,7 +1093,7 @@ sap.ui.define([
                                ticks: {
                                       callback: function(dataLabel, index) {
                                             // Hide the label of
-                        // every 2nd dataset.
+                        // every 12th dataset.
                         // return null to hide
                         // the grid line too
                                             return index % 12 === 0 ? dataLabel : '';
