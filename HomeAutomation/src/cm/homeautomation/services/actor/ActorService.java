@@ -149,6 +149,7 @@ public class ActorService extends BaseService implements MqttCallback {
 		actorMessage.setHouseCode(singleSwitch.getHouseCode());
 		actorMessage.setStatus((targetStatus.equals("ON") ? "1" : "0"));
 		actorMessage.setSwitchNo(singleSwitch.getSwitchNo());
+		
 		return actorMessage;
 	}
 
@@ -180,8 +181,10 @@ public class ActorService extends BaseService implements MqttCallback {
 		/**
 		 * post a switch information event
 		 */
-		ActorMessage actorMessage = createActorMessage(targetStatus, singleSwitch);
-		EventBusService.getEventBus().post(new EventObject(actorMessage));
+		SwitchEvent switchEvent = new SwitchEvent();
+		switchEvent.setStatus(targetStatus);
+		switchEvent.setSwitchId(switchId);
+		EventBusService.getEventBus().post(new EventObject(switchEvent));
 		
 		return singleSwitch;
 	}
