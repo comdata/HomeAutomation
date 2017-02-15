@@ -21,6 +21,7 @@
 		<class>cm.homeautomation.entities.PackagePK</class>
 		<class>cm.homeautomation.entities.PackageHistory</class>
 		<class>cm.homeautomation.entities.PackageHistoryPK</class>
+		<class>cm.homeautomation.entities.TelegramUser</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:mariadb://localhost:3306/HA?characterEncoding=utf8" />

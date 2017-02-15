@@ -59,6 +59,11 @@ public class LightService extends BaseService {
 	@GET
 	@Path("dim/{lightId}/{dimValue}")
 	public GenericStatus dimLight(@PathParam("lightId") long lightId, @PathParam("dimValue") int dimValue) {
+
+		if (dimValue>99) {
+			dimValue=99;
+		}
+		
 		EntityManager em = EntityManagerService.getNewManager();
 		em.getTransaction().begin();
 		DimmableLight light = (DimmableLight) em.createQuery("select l from Light l where l.id=:lightId")

@@ -69,6 +69,8 @@ public class StartupServlet extends HttpServlet {
 		mdnsService = new MDNSService();
 		mdnsService.registerServices();
 		
+		// SpringApplication.run(SpringbootEntry.class, new String[1]);
+		
 	}
 
 	public void destroy() {

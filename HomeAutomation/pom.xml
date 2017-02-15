@@ -60,6 +60,11 @@
 
 
 	<dependencies>
+	<!--  	<dependency>
+		<groupId>com.armzilla.ha</groupId>
+   		 <artifactId>amazon-echo-bridge</artifactId>
+    <version>0.4.0</version>
+		</dependency>-->
 		<dependency>
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-calendar</artifactId>
