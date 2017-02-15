@@ -18,7 +18,7 @@ public class EventTranscoder implements Encoder.Text<EventObject>, Decoder.Text<
 	@Override
 	public void init(EndpointConfig config) {
 		mapper = new ObjectMapper();
-		mapper.setSerializationInclusion(Include.NON_NULL);
+		//mapper.setSerializationInclusion(Include.NON_NULL);
 	}
 
 	@Override
