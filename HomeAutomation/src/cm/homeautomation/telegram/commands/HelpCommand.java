@@ -1,6 +1,5 @@
 package cm.homeautomation.telegram.commands;
 
-import org.telegram.database.DatabaseManager;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Chat;
 import org.telegram.telegrambots.api.objects.User;
@@ -28,10 +27,6 @@ public class HelpCommand extends BotCommand {
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] strings) {
-
-        if (!DatabaseManager.getInstance().getUserStateForCommandsBot(user.getId())) {
-            return;
-        }
 
         StringBuilder helpMessageBuilder = new StringBuilder("<b>Help</b>\n");
         helpMessageBuilder.append("These are the registered commands for this Bot:\n\n");
