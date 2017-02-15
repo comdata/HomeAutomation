@@ -1099,33 +1099,7 @@ sap.ui.define([
                                             return index % 12 === 0 ? dataLabel : '';
                                         }
 
-                          }},{
-                              display: true,
-                              type: 'linear',
-                              position: 'bottom',
-                                ticks: {
-                                       callback: function(dataLabel, index) {
-                                             // Hide the label of
-                         // every 2nd dataset.
-                         // return null to hide
-                         // the grid line too
-                                             return index % 12 === 0 ? dataLabel : '';
-                                         }
-
-                           }},{
-                               display: true,
-                               type: 'linear',
-                               position: 'bottom',
-                                 ticks: {
-                                        callback: function(dataLabel, index) {
-                                              // Hide the label of
-                          // every 2nd dataset.
-                          // return null to hide
-                          // the grid line too
-                                              return index % 12 === 0 ? dataLabel : '';
-                                          }
-
-                            }}]
+                          }}]
                       }
 
                   }
