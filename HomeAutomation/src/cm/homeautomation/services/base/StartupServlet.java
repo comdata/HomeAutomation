@@ -38,6 +38,7 @@ public class StartupServlet extends HttpServlet {
 	private NetworkDeviceDatabaseUpdater networkDeviceDatabaseUpdater;
 	private MDNSService mdnsService;
 	private TelegramBotService telegramBotService;
+	private Thread telegramThread;
 
 	public void init(ServletConfig config) throws ServletException {
 
@@ -71,12 +72,14 @@ public class StartupServlet extends HttpServlet {
 		mdnsService = new MDNSService();
 		mdnsService.registerServices();
 
-		Runnable telegramThread = new Runnable() {
+		Runnable telegramRunnable = new Runnable() {
 			public void run() {
 				telegramBotService = TelegramBotService.getInstance();
 			}
 		};
 		
+		telegramThread = new Thread(telegramRunnable);
+		telegramThread.start();
 	}
 
 	public void destroy() {
