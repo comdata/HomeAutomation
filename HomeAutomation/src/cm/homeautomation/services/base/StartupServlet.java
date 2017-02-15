@@ -70,8 +70,13 @@ public class StartupServlet extends HttpServlet {
 
 		mdnsService = new MDNSService();
 		mdnsService.registerServices();
+
+		Runnable telegramThread = new Runnable() {
+			public void run() {
+				telegramBotService = TelegramBotService.getInstance();
+			}
+		};
 		
-		telegramBotService = TelegramBotService.getInstance();
 	}
 
 	public void destroy() {
