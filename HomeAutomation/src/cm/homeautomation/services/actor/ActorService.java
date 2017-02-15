@@ -29,6 +29,8 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Switch;
+import cm.homeautomation.eventbus.EventBusService;
+import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.ActorMessage;
 import cm.homeautomation.services.base.BaseService;
 
@@ -132,10 +134,7 @@ public class ActorService extends BaseService implements MqttCallback {
 		
 		Switch singleSwitch = updateBackendSwitchState(switchId, targetStatus);
 		
-		ActorMessage actorMessage = new ActorMessage();
-		actorMessage.setHouseCode(singleSwitch.getHouseCode());
-		actorMessage.setStatus((targetStatus.equals("ON") ? "1" : "0"));
-		actorMessage.setSwitchNo(singleSwitch.getSwitchNo());
+		ActorMessage actorMessage = createActorMessage(targetStatus, singleSwitch);
 
 		//sendMulticastUDP(actorMessage);
 		sendMQTTMessage(actorMessage);
@@ -143,6 +142,14 @@ public class ActorService extends BaseService implements MqttCallback {
 		SwitchPressResponse switchPressResponse = new SwitchPressResponse();
 		switchPressResponse.setSuccess(true);
 		return switchPressResponse;
+	}
+
+	private ActorMessage createActorMessage(String targetStatus, Switch singleSwitch) {
+		ActorMessage actorMessage = new ActorMessage();
+		actorMessage.setHouseCode(singleSwitch.getHouseCode());
+		actorMessage.setStatus((targetStatus.equals("ON") ? "1" : "0"));
+		actorMessage.setSwitchNo(singleSwitch.getSwitchNo());
+		return actorMessage;
 	}
 
 	/**
@@ -164,12 +171,18 @@ public class ActorService extends BaseService implements MqttCallback {
 		Switch singleSwitch = (Switch) em.createQuery("select sw from Switch sw where sw.id=:switchId")
 				.setParameter("switchId", Float.parseFloat(switchId)).getSingleResult();
 
-	
 		em.getTransaction().begin();
 		singleSwitch.setLatestStatus(targetStatus);
 		singleSwitch.setLatestStatusFrom(new Date());
 		em.merge(singleSwitch);
 		em.getTransaction().commit();
+		
+		/**
+		 * post a switch information event
+		 */
+		ActorMessage actorMessage = createActorMessage(targetStatus, singleSwitch);
+		EventBusService.getEventBus().post(new EventObject(actorMessage));
+		
 		return singleSwitch;
 	}
 
