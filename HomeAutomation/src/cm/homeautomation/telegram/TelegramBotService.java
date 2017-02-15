@@ -30,8 +30,6 @@ public class TelegramBotService {
 	public TelegramBotService() {
 		token = ConfigurationService.getConfigurationProperty("telegram", "token");
 		user = ConfigurationService.getConfigurationProperty("telegram", "user");
-
-		init();
 	}
 
 	public static TelegramBotService getInstance() {
