@@ -61,8 +61,8 @@
 <script src="/customchart/control/c3.min.js"></script>
 
 
-<script src="nv.d3.js"></script>
-<link rel="stylesheet" href="nv.d3.css">
+<!--<script src="nv.d3.js"></script>
+<link rel="stylesheet" href="nv.d3.css">-->
 <link rel="stylesheet"
 	href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css">
 <script id='sap-ui-bootstrap'
@@ -74,7 +74,7 @@
                 "cm.homeautomation": "./cm/homeautomation",
                 "cm.webservice": "./cm/webservice",
                 "agraebe.custom": "/customchart"
-                
+
             }'>
 
     </script>
@@ -147,95 +147,6 @@
 			id : "app"
 		}).placeAt("content");
 	});
-
-
-	function getHistoricalSensordata(sensor) {
-		var soapServiceHistDataUrl = "/HomeAutomation/services/sensors/forroom/";
-
-		if (dataQueryRunning && dataQuery != null) {
-			dataQuery.abort();
-		}
-
-
-
-		dataQueryRunning = true;
-		dataQuery = $.ajax({
-			url : soapServiceHistDataUrl + sensor
-		}).then(function(data) {
-			dataQueryRunning = false;
-			var chartData = [];
-			data.sensorData.forEach(function(elem) {
-				var color = elem.sensorName == 'Temperature' ? '#A4C4E8' : elem.sensorName == 'Humidity' ? '#FCDAB0' : '#336600';
-
-				color = elem.sensorName == 'Luftfeuchtigkeit' ? '#aa0000' : color;
-				color = elem.sensorName == 'Luftdruck' ? '#00aa00' : color;
-				color = elem.sensorName == 'Flugzeuge' ? '#00a000' : color;
-
-				chartData.push({
-					key : elem.sensorName,
-					area : true,
-					color : color,
-					values : elem.values
-				});
-			});
-			drawChart(chartData);
-
-		});
-	}
-
-	function drawChart(tempHumidData) {
-		nv.addGraph(function() {
-			// For other chart types see: https://nvd3.org/examples/index.html
-			// API documentation: https://github.com/novus/nvd3/wiki/API-Documentation
-			var chart = nv.models.lineChart()
-				.margin({
-					left : 100
-				})
-				.margin({
-					bottom : 130
-				})
-				//        .useInteractiveGuideline(true)
-
-
-				.showLegend(true);
-				//.transitionDuration(300)
-				//chart.yRange([0,40], [0, 80] );
-
-			chart.tooltip.enabled(true);
-			/*chart.tooltip.contentGenerator(function(data) {
-			 return 'this is my custom content';
-			 });*/
-
-			chart.x(function(d) {
-				return moment.utc(d.dateTime);
-			})
-				//adjusting, 100% is 1.00, not 100 as it is in the data
-				.y(function(d) {
-					return parseFloat(d.value.replace(",", "."));
-				});
-
-			chart.xAxis
-				.rotateLabels(-45)
-				.tickFormat(function(d) {
-
-					return moment(d.dateTime).format('DD.MM.YYYY HH:mm:ss');
-				})
-			;
-
-			chart.yAxis
-				.axisLabel('Temperature in C / Humidity %')
-				.tickFormat(d3.format('.02f'));
-
-			d3.select('#chart svg')
-				.datum(tempHumidData)
-				.call(chart);
-
-			nv.utils.windowResize(function() {
-				chart.update();
-			});
-			return chart;
-		});
-	}
 </script>
 
 </head>

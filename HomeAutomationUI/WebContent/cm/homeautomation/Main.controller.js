@@ -311,21 +311,25 @@ sap.ui.define([
 	    				}
 	    				var imageURL = newUrl+"random=" + Math.random();
 
-	        				var image = $(".sapMStdTileIconDiv > img[src*='"+newUrl+"']")[0];
-	    				console.log("old image src: "+image.src);
-	    				var downloadingImage = new Image();
-	    				downloadingImage.onload = function(){
-	    					console.log("new loaded image src: "+downloadingImage.src);
-	    					image.src = this.src;
-	    					camera.tile.info=moment().format('DD.MM.YYYY HH:mm:ss');
-	    					that.resizeCameraPictures();
-	    					window.setTimeout(function() {that.resizeCameraPictures();}, 1000);
-	    					window.setTimeout(function() {that.resizeCameraPictures();}, 5000);
-	    					window.setTimeout(function() {that.resizeCameraPictures();}, 10000);
+        				var image = $(".sapMStdTileIconDiv > img[src*='"+newUrl+"']")[0];
+        				if (image!=null) {
+	    					console.log("old image src: "+image.src);
 
-	    				};
+	    					var downloadingImage = new Image();
+	    					downloadingImage.onload = function(){
+		    					console.log("new loaded image src: "+downloadingImage.src);
+		    					image.src = this.src;
+		    					camera.tile.info=moment().format('DD.MM.YYYY HH:mm:ss');
+		    					that.resizeCameraPictures();
+		    					window.setTimeout(function() {that.resizeCameraPictures();}, 1000);
+		    					window.setTimeout(function() {that.resizeCameraPictures();}, 5000);
+		    					window.setTimeout(function() {that.resizeCameraPictures();}, 10000);
 
-	    				downloadingImage.src=imageURL;
+	    					};
+	    					downloadingImage.src=imageURL;
+        				}
+
+
 	        		}
 	        	});
         	}
@@ -819,6 +823,10 @@ sap.ui.define([
         handleDoorWindowLoaded: function(event, model) {
           sap.ui.getCore().setModel(model, "doorWindow");
         },
+        handlePackageListLoaded: function(event, model) {
+            sap.ui.getCore().setModel(model, "packages");
+        },
+
         handleWindowBlindsLoaded: function (event, model) {
 
             var windowBlindsList = sap.ui.getCore().byId("windowBlinds");
@@ -1018,11 +1026,91 @@ sap.ui.define([
 		 */
         expandHistoricData: function (oEvent) {
             if (oEvent.getParameter("expand") == true) {
-                //getHistoricalSensordata(this.selectedRoom);
+                // getHistoricalSensordata(this.selectedRoom);
                 this._getHistoricalData(this.selectedRoom);
             }
         },
         _getHistoricalData: function(selectedRoom) {
+          var historicalDataRest = new RESTService();
+          historicalDataRest.loadDataAsync("/HomeAutomation/services/sensors/forroom/" + selectedRoom, "", "GET", this._historicalDataLoaded, null, this);
+        },
+        _historicalDataLoaded: function(event, model, data) {
+
+          var labels=new Array();
+          var datasets=new Array();
+          var colors=["rgba(220,220,0,0.5)", "rgba(220,220,0,0.5)","rgba(220,220,220,0.5)","rgba(0,220,0,0.5)", "rgba(0,0,220,0.5)"];
+
+          $.each(data.sensorData, function(i, element) {
+            var dataseries=new Array();
+            $.each(element.values, function(a, elem) {
+              //
+              labels.push(formatter.dateTimeHourFormatter(elem.dateTime));
+              //{x:formatter.dateTimeHourFormatter(elem.dateTime), y:
+              // }
+              
+              dataseries.push(parseFloat(elem.value.replace(",", ".")));
+            });
+
+            var singleDataSet={
+              label: element.sensorName,
+              backgroundColor: colors[i%(colors.length-1)],
+             /*
+				 * backgroundColor: "rgba(220,0,0,0.5)", fillColor:
+				 * "rgba(220,0,0,0.5)", strokeColor: "rgba(220,0,0,0.8)",
+				 * highlightFill: "rgba(220,0,0,0.75)", highlightStroke:
+				 * "rgba(220,0,0,1)",
+				 */
+              data: dataseries,
+              };
+              datasets.push(singleDataSet);
+
+          });
+
+            var chartJSData={
+                 lineData: {
+                    labels: labels,
+                    datasets: datasets
+
+                  },
+                  options: {
+                    legend: {
+                          display: true,
+                          position: "bottom",
+                          /*
+							 * labels: { filter: function (item, data) { return
+							 * false; } }
+							 */
+                    },
+                      hover: {
+                          // Overrides the global setting
+                          mode: "index"
+                      },
+                      scales: {
+                          xAxes: [{
+                             display: true,
+                             type: 'linear',
+                             position: 'bottom',
+                               ticks: {
+                                      callback: function(dataLabel, index) {
+                                            // Hide the label of
+                        // every 12th dataset.
+                        // return null to hide
+                        // the grid line too
+                                            return index % 12 === 0 ? dataLabel : '';
+                                        }
+
+                          }}]
+                      }
+
+                  }
+                };
+      /*
+		 *
+		 */
+
+            var chartJSModel = new JSONModel();
+            chartJSModel.setData(chartJSData);
+            sap.ui.getCore().setModel(chartJSModel, "historicalData");
 
         },
         handleTrainSpeedChange:function(event){
@@ -1121,6 +1209,12 @@ sap.ui.define([
           doorWindowModel.loadDataAsync("/HomeAutomation/services/window/readAll", "", "GET", subject.handleDoorWindowLoaded, null, subject);
 
         },
+        packageListLoad: function() {
+          var subject = this;
+          var packageModel = new RESTService();
+          packageModel.loadDataAsync("/HomeAutomation/services/packages/getAllOpen", "", "GET", subject.handlePackageListLoaded, null, subject);
+
+        },
         /**
 		 * handle selection, triggering navigation
 		 *
@@ -1137,7 +1231,7 @@ sap.ui.define([
             var roomName = selectedElement.roomName;
             var tileType = selectedElement.tileType;
 
-            var currentRoomData={"roomName": roomName};
+            var currentRoomData={"roomName": roomName, "historicDataExpanded": false};
             var currentRoomModel = new sap.ui.model.json.JSONModel();
 
             currentRoomModel.setData(currentRoomData);
@@ -1184,6 +1278,13 @@ sap.ui.define([
                 }
                 this._dialogs["downloads"].open();
               }
+              else if (tileType =="package") {
+                  if (!this._dialogs["package"]) {
+                      this._dialogs["package"] = sap.ui.xmlfragment("cm.homeautomation.Package", this);
+                  }
+                  this._dialogs["package"].open();
+                  this.packageListLoad();
+                }
             else if (tileType == "camera") {
                 if (!this.camera) {
                     this.camera = sap.ui.xmlfragment("cm.homeautomation.Camera", this);
@@ -1293,7 +1394,7 @@ sap.ui.define([
 
             var chartJSModel = new JSONModel();
             chartJSModel.setData(chartJSData);
-            sap.ui.getCore().setModel(chartJSModel, "chartjsData");
+            sap.ui.getCore().setModel(chartJSModel, "powerdata");
 
         },
         dialogClose: function () {
@@ -1314,6 +1415,10 @@ sap.ui.define([
         },
         powerMeterDialogClose: function() {
             this._dialogs["powermeter"].close();
+
+        },
+        packageDialogClose: function() {
+            this._dialogs["package"].close();
 
         },
         doorWindowDialogClose: function() {
@@ -1341,6 +1446,10 @@ sap.ui.define([
         afterDownloadDialogClose: function () {
         	this._dialogs["downloads"].destroy();
         	this._dialogs["downloads"] = null;
+        },
+        afterPackageDialogClose: function () {
+          this._dialogs["package"].destroy();
+          this._dialogs["package"] = null;
         },
         afterPlanesDialogClose: function () {
             this.planesView.destroy();

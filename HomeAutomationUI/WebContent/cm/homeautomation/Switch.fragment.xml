@@ -1,5 +1,5 @@
 <core:FragmentDefinition xmlns="sap.m"
-	xmlns:core="sap.ui.core" xmlns:commons="sap.ui.commons">
+	xmlns:core="sap.ui.core" xmlns:agraebe.custom="agraebe.custom.control" xmlns:commons="sap.ui.commons">
 	<Dialog title="{currentRoom>/roomName}" afterClose="afterDialogClose"
 		stretch="true">
 		<content>
@@ -36,7 +36,7 @@
 							<InputListItem label="{windowBlinds>name}"
 								description="{windowBlinds>name}" icon="sap-icon://lightbulb"
 								iconDensityAware="false" iconInset="false">
-								
+
 								<Slider min="0" max="99" value="{windowBlinds>currentValue}"
 									width="100px" change="handleBlindChange" />
 								<Label text="{windowBlinds>currentValue}"></Label>
@@ -57,7 +57,7 @@
 						<items>
 							<InputListItem label="{lights>name}" description="{lights>name}"
 								icon="sap-icon://lightbulb" iconDensityAware="false" iconInset="false">
-								
+
 								<Switch state="{= ${lights>brightnessLevel}>0}" change="handleLightSwitchChange" />
 								<Slider min="0" max="99" value="{lights>brightnessLevel}"
 									width="100px" change="handleLightChange" />
@@ -99,19 +99,20 @@
 						</headerToolbar>
 					</List>
 
-					<!-- <commons:ColorPicker id="lampe" name="Wohnzimmer" change="handleColorPickerChange" 
+					<!-- <commons:ColorPicker id="lampe" name="Wohnzimmer" change="handleColorPickerChange"
 						/> -->
 				</content>
 			</Panel>
 
-			<Panel expandable="true" expanded="false" headerText="Historic Data"
+			<Panel expandable="true" expanded="{currentRoom>/historicDataExpanded}" headerText="Historic Data"
 				width="auto" class="sapUiResponsiveMargin" expand="expandHistoricData">
 				<content>
-
-					<core:HTML
+					<agraebe.custom:ChartJSControl width="600"
+						height="200" responsive="true" chartType="Line" data="{historicalData>/lineData}" options="{historicalData>/options}"/>
+			<!--		<core:HTML
 						content="&lt;div id='chart'&gt;
     &lt;svg style='height:300px; width:100%;'&gt;&lt;/svg&gt;
-&lt;/div&gt;"></core:HTML>
+&lt;/div&gt;"></core:HTML>-->
 				</content>
 			</Panel>
 

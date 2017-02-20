@@ -90,6 +90,10 @@ public class WindowBlindService extends BaseService {
 	public void setDim(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value,
 			@PathParam("type") String type, @PathParam("roomId") Long roomId) {
 		EntityManager em = EntityManagerService.getNewManager();
+		
+		if (Float.parseFloat(value)>99) {
+			value="99";
+		}
 
 		if (WindowBlind.SINGLE.equals(type)) {
 

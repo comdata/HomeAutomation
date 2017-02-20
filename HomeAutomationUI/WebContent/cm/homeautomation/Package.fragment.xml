@@ -1,0 +1,76 @@
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<Dialog title="Packages" afterClose="afterPackageDialogClose"
+		stretch="true" horizontalScrolling="false" verticalScrolling="true"
+		contentHeight="100%">
+		<content>
+			<Panel expandable="false" expanded="true"
+				width="auto" class="sapUiResponsiveMargin" id="network">
+				<content>
+
+					<Table
+						items="{
+			path: 'packages>/',
+			sorter: {
+				path: 'id/trackingNumber'
+			}
+		}"
+						title="Packages" selectionMode="MultiToggle">
+						<columns>
+							<Column>
+								<Text text="Tracking Number" />
+							</Column>
+							<Column>
+								<Text text="Carrier" />
+							</Column>
+							<Column>
+								<Text text="Name" />
+							</Column>
+							<Column>
+								<Text text="Delivered" />
+							</Column>
+							<Column>
+								<Text text="Latest Status" />
+							</Column>
+							<Column>
+								<Text text="Timestamp" />
+							</Column>
+						</columns>
+
+						<items>
+							<ColumnListItem>
+								<cells>
+									<Text text="{packages>id/trackingNumber}" />
+									<Text text="{packages>carrierName}" />
+									<Text text="{packages>packageName}" />
+									<Text text="{packages>delivered}" />
+									<Text text="{packages>packageHistory/0/id/statusText}" />
+									<Text
+										text="{
+											path: 'packages>packageHistory/0/id/timestamp',
+											formatter: 'formatter.dateTimeFormatter'
+}" />
+
+								</cells>
+							</ColumnListItem>
+						</items>
+					</Table>
+
+
+
+
+				</content>
+			</Panel>
+
+
+		</content>
+		<beginButton>
+			<!--<Button text="Aktualisieren" press="networkDevicesLoad" />-->
+
+		</beginButton>
+		<endButton>
+			<Button text="Schliessen" press="packageDialogClose" />
+		</endButton>
+
+	</Dialog>
+</core:FragmentDefinition>

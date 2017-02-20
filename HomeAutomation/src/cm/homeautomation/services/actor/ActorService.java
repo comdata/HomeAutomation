@@ -29,6 +29,8 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Switch;
+import cm.homeautomation.eventbus.EventBusService;
+import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.ActorMessage;
 import cm.homeautomation.services.base.BaseService;
 
@@ -128,37 +130,63 @@ public class ActorService extends BaseService implements MqttCallback {
 	@Path("press/{switch}/{status}")
 	public SwitchPressResponse pressSwitch(@PathParam("switch") String switchId,
 			@PathParam("status") String targetStatus) {
+		targetStatus=targetStatus.toUpperCase();
+		
+		Switch singleSwitch = updateBackendSwitchState(switchId, targetStatus);
+		
+		ActorMessage actorMessage = createActorMessage(targetStatus, singleSwitch);
+
+		//sendMulticastUDP(actorMessage);
+		sendMQTTMessage(actorMessage);
+		
+		SwitchPressResponse switchPressResponse = new SwitchPressResponse();
+		switchPressResponse.setSuccess(true);
+		return switchPressResponse;
+	}
+
+	private ActorMessage createActorMessage(String targetStatus, Switch singleSwitch) {
+		ActorMessage actorMessage = new ActorMessage();
+		actorMessage.setHouseCode(singleSwitch.getHouseCode());
+		actorMessage.setStatus((targetStatus.equals("ON") ? "1" : "0"));
+		actorMessage.setSwitchNo(singleSwitch.getSwitchNo());
+		
+		return actorMessage;
+	}
+
+	/**
+	 * update backend switch state
+	 * 
+	 * @param switchId
+	 * @param targetStatus
+	 * @return
+	 */
+	@GET
+	@Path("updateBackend/{switch}/{status}")
+	public Switch updateBackendSwitchState(@PathParam("switch") String switchId,
+			@PathParam("status") String targetStatus) {
+		
+		targetStatus=targetStatus.toUpperCase();
+		
 		EntityManager em = EntityManagerService.getNewManager();
 
 		Switch singleSwitch = (Switch) em.createQuery("select sw from Switch sw where sw.id=:switchId")
 				.setParameter("switchId", Float.parseFloat(switchId)).getSingleResult();
 
-		String status = "";
-		if ("ON".equals(targetStatus)) {
-			status = singleSwitch.getSwitchOnCode();
-		} else if ("OFF".equals(targetStatus)) {
-			status = singleSwitch.getSwitchOffCode();
-		} else {
-			// TODO fail
-		}
-
-		ActorMessage actorMessage = new ActorMessage();
-		actorMessage.setHouseCode(singleSwitch.getHouseCode());
-		actorMessage.setStatus((targetStatus.equals("ON") ? "1" : "0"));
-		actorMessage.setSwitchNo(singleSwitch.getSwitchNo());
-
-		//sendMulticastUDP(actorMessage);
-		sendMQTTMessage(actorMessage);
-		
 		em.getTransaction().begin();
-		singleSwitch.setLatestStatus(status);
+		singleSwitch.setLatestStatus(targetStatus);
 		singleSwitch.setLatestStatusFrom(new Date());
 		em.merge(singleSwitch);
 		em.getTransaction().commit();
 		
-		SwitchPressResponse switchPressResponse = new SwitchPressResponse();
-		switchPressResponse.setSuccess(true);
-		return switchPressResponse;
+		/**
+		 * post a switch information event
+		 */
+		SwitchEvent switchEvent = new SwitchEvent();
+		switchEvent.setStatus(targetStatus);
+		switchEvent.setSwitchId(switchId);
+		EventBusService.getEventBus().post(new EventObject(switchEvent));
+		
+		return singleSwitch;
 	}
 
 	private void sendMQTTMessage(ActorMessage actorMessage) {

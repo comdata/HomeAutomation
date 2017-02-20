@@ -44,6 +44,13 @@ public class NetworkDevicesService extends BaseService {
 		return resultList;
 	}
 	
+	@GET
+	@Path("delete/{name}/{ip}/{mac}")
+	public GenericStatus delete(@PathParam("name") String name, @PathParam("ip") String ip, @PathParam("mac") String macStsr) {
+		// TODO perform delete
+		return new GenericStatus(true);
+	}
+	
 
     @GET
     @Path("wake/{mac}")

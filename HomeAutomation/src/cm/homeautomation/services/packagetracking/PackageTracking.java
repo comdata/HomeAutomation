@@ -437,6 +437,7 @@ public class PackageTracking {
 		JsonNode rootNode = om.readTree(resultString);
 
 		Iterator<Map.Entry<String, JsonNode>> fieldsIterator = rootNode.fields();
+		List<Package> trackedPackages=new ArrayList<Package>();
 		while (fieldsIterator.hasNext()) {
 
 			Map.Entry<String, JsonNode> field = fieldsIterator.next();
@@ -500,24 +501,53 @@ public class PackageTracking {
 				}
 
 				mergeTrackedPackage(trackedPackage);
+				
+				trackedPackages.add(trackedPackage);
 
 				System.out.println("Tracking No:" + trackingNumber + " Delivered: " + delivered + " sCarrier: "
 						+ carrierFullname + " Name: " + packageName);
 			}
 		}
+		
+		List<Package> allOpenPackages = new PackageTracking().getAllOpen();
+		EntityManager em = EntityManagerService.getNewManager();
+		
+		em.getTransaction().begin();
+		for (Package openPackage : allOpenPackages) {
+			
+			
+			if (!isPackageTracked(openPackage, trackedPackages)) {
+				System.out.println("Package deleted: "+openPackage.getId().getTrackingNumber());
+				openPackage.setDelivered(true);
+				em.merge(openPackage);
+			}
+		}
+		em.getTransaction().commit();
+	}
+
+	private static boolean isPackageTracked(Package openPackage, List<Package> trackedPackages) {
+		for (Package trackedPackage : trackedPackages) {
+			if (openPackage.getId().getCarrier().equals(trackedPackage.getId().getCarrier()) && openPackage.getId().getTrackingNumber().equals(trackedPackage.getId().getTrackingNumber())) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	@Path("getAllOpen")
 	@GET
 	public List<Package> getAllOpen() {
 		EntityManager em = EntityManagerService.getNewManager();
+		
+		Map<String, String> createCarrierMap = createCarrierMap();
 
 		List<Package> resultList = (List<Package>) em.createQuery("select p from Package p where p.delivered=0").getResultList();
 		List<Package> newPackageList=new ArrayList<Package>();
 		for (Package singlePackage : resultList) {
 			
 			List<PackageHistory> phList = (List<PackageHistory>) em
-					.createQuery("select p from PackageHistory p where p.id.trackingNumber=:trackingNumber and p.id.carrier=:carrier")
+					.createQuery("select p from PackageHistory p where p.id.trackingNumber=:trackingNumber and p.id.carrier=:carrier order by p.id.timestamp desc")
 
 					.setParameter("trackingNumber", singlePackage.getId().getTrackingNumber())
 					.setParameter("carrier", singlePackage.getId().getCarrier()).getResultList();
@@ -527,6 +557,8 @@ public class PackageTracking {
 				
 				System.out.println("steps: "+singlePackage.getPackageHistory().size());
 			}
+			singlePackage.setCarrierName(createCarrierMap.get(singlePackage.getId().getCarrier()));
+			
 			newPackageList.add(singlePackage);
 		}
 		
