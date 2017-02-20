@@ -51,6 +51,8 @@ public class TelegramBotService {
 				bot = new CommandsHandler(user, token);
 				telegramBotApi.registerBot(bot);
 
+				sendMessage("Bot is alive");
+				
 			} catch (TelegramApiException e) {
 
 			}
