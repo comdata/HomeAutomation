@@ -17,6 +17,7 @@ import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.PresenceState;
 import cm.homeautomation.entities.TelegramUser;
+import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.eventbus.EventTranscoder;
 
@@ -31,6 +32,8 @@ public class TelegramBotService {
 	public TelegramBotService() {
 		token = ConfigurationService.getConfigurationProperty("telegram", "token");
 		user = ConfigurationService.getConfigurationProperty("telegram", "user");
+		
+		EventBusService.getEventBus().register(this);
 	}
 
 	public static TelegramBotService getInstance() {
