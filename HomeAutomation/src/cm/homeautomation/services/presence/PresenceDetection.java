@@ -1,4 +1,4 @@
-package cm.homeautomation.presence;
+package cm.homeautomation.services.presence;
 
 /**
  * performs presence detection

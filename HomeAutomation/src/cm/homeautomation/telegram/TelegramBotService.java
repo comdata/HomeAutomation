@@ -15,6 +15,7 @@ import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.entities.PresenceState;
 import cm.homeautomation.entities.TelegramUser;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.eventbus.EventTranscoder;
@@ -97,15 +98,18 @@ public class TelegramBotService {
 		TelegramBotService.user = user;
 	}
 
-	//@Subscribe
+	@Subscribe
 	public void handleEvent(EventObject eventObject) {
 		try {
 
-			EventTranscoder transcoder = new EventTranscoder();
-
-			String message = transcoder.encode(eventObject);
-
-			TelegramBotService.getInstance().sendMessage(message);
+			if (eventObject.getData() instanceof PresenceState) {
+			
+				EventTranscoder transcoder = new EventTranscoder();
+	
+				String message = transcoder.encode(eventObject);
+	
+				TelegramBotService.getInstance().sendMessage(message);
+			}
 		} catch (EncodeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
