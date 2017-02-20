@@ -15,6 +15,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class EventTranscoder implements Encoder.Text<EventObject>, Decoder.Text<EventObject> {
 	private ObjectMapper mapper;
 
+	public EventTranscoder() {
+		init(null);
+	}
+	
 	@Override
 	public void init(EndpointConfig config) {
 		mapper = new ObjectMapper();
