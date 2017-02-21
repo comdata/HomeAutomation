@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class PresenceState {
+public class PresenceState implements HumanMessageGenerationInterface {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,5 +52,11 @@ public class PresenceState {
 
 	public void setState(String state) {
 		this.state = state;
+	}
+
+	@Override
+	public String getMessageString() {
+		
+		return person.getName()+" is now: "+state;
 	}
 }
