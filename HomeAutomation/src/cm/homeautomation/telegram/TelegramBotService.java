@@ -34,6 +34,8 @@ public class TelegramBotService {
 		token = ConfigurationService.getConfigurationProperty("telegram", "token");
 		user = ConfigurationService.getConfigurationProperty("telegram", "user");
 		
+		instance=this;
+		
 		EventBusService.getEventBus().register(this);
 	}
 
