@@ -8,7 +8,7 @@ package cm.homeautomation.sensors;
 public class GasmeterData extends JSONSensorDataBase {
 	private int gasMeter;
 
-	public int getPGasMeter() {
+	public int getGasMeter() {
 		return gasMeter;
 	}
 

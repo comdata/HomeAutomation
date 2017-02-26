@@ -16,6 +16,7 @@
 		<class>cm.homeautomation.entities.DimmableLight</class>
 		<class>cm.homeautomation.entities.RGBLight</class>
 		<class>cm.homeautomation.entities.PowerMeterPing</class>
+		<class>cm.homeautomation.entities.GasMeterPing</class>
 		<class>cm.homeautomation.entities.WindowState</class>
 		<class>cm.homeautomation.entities.Package</class>
 		<class>cm.homeautomation.entities.PackagePK</class>
