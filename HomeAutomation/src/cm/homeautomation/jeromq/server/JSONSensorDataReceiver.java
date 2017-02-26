@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.DistanceSensorData;
+import cm.homeautomation.sensors.GasmeterData;
 import cm.homeautomation.sensors.JSONSensorDataBase;
 import cm.homeautomation.sensors.PowerMeterData;
 import cm.homeautomation.sensors.SensorDataRoomSaveRequest;
@@ -45,6 +46,9 @@ public class JSONSensorDataReceiver {
 				EventBusService.getEventBus().post(eventObject);	
 			} else if (sensorData instanceof PowerMeterData) {
 				EventObject eventObject=new EventObject((PowerMeterData)sensorData);
+				EventBusService.getEventBus().post(eventObject);	
+			}else if (sensorData instanceof GasmeterData) {
+				EventObject eventObject=new EventObject((GasmeterData)sensorData);
 				EventBusService.getEventBus().post(eventObject);	
 			}
 			
