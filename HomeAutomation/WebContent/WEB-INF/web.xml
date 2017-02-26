@@ -34,7 +34,7 @@
 			<param-value>http://192.168.1.34:8080/?action=snapshot</param-value>
 		</init-param>
 	</servlet>
-		<servlet>
+	<servlet>
 		<servlet-name>cameraproxy3</servlet-name>
 		<servlet-class>cm.homeautomation.web.HttpProxyServlet</servlet-class>
 		<init-param>
@@ -50,7 +50,7 @@
 			<param-value>http://192.168.1.76:8081/?action=snapshot</param-value>
 		</init-param>
 	</servlet>
-			<servlet>
+	<servlet>
 		<servlet-name>cameraproxy4</servlet-name>
 		<servlet-class>cm.homeautomation.web.HttpProxyServlet</servlet-class>
 		<init-param>
@@ -92,21 +92,21 @@
 	</servlet>
 
 	<servlet>
-	  <servlet-name>newCameraProxy</servlet-name>
-	  <servlet-class>org.mitre.dsmiley.httpproxy.URITemplateProxyServlet</servlet-class>
-	  <init-param>
-	    <param-name>targetUri</param-name>
-	    <param-value>http://192.168.1.{_ip}:{_port}/?action={_action}</param-value>
-	  </init-param>
-	  <init-param>
-	    <param-name>log</param-name>
-	    <param-value>true</param-value>
-	  </init-param>
+		<servlet-name>newCameraProxy</servlet-name>
+		<servlet-class>org.mitre.dsmiley.httpproxy.URITemplateProxyServlet</servlet-class>
+		<init-param>
+			<param-name>targetUri</param-name>
+			<param-value>http://192.168.1.{_ip}:{_port}/?action={_action}</param-value>
+		</init-param>
+		<init-param>
+			<param-name>log</param-name>
+			<param-value>true</param-value>
+		</init-param>
 	</servlet>
 
 	<servlet-mapping>
-	  <servlet-name>newCameraProxy</servlet-name>
-	  <url-pattern>/newCameraProxy/*</url-pattern>
+		<servlet-name>newCameraProxy</servlet-name>
+		<url-pattern>/newCameraProxy/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
@@ -124,11 +124,21 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
+	<servlet>
+		<servlet-name>vminspect</servlet-name>
+		<servlet-class>com.purej.vminspect.http.servlet.VmInspectionServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>vminspect</servlet-name>
+		<url-pattern>/inspect/*</url-pattern>
+	</servlet-mapping>
+
 	<servlet-mapping>
 		<servlet-name>jersey</servlet-name>
 		<url-pattern>/services/*</url-pattern>
 	</servlet-mapping>
-		<servlet-mapping>
+	<servlet-mapping>
 		<servlet-name>cameraproxy4</servlet-name>
 		<url-pattern>/cameraproxy4/*</url-pattern>
 	</servlet-mapping>
@@ -140,11 +150,11 @@
 	<servlet-mapping>
 		<servlet-name>camerasnapshot4</servlet-name>
 		<url-pattern>/camerasnapshot4/*</url-pattern>
-	</servlet-mapping>		
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>camerasnapshot3</servlet-name>
 		<url-pattern>/camerasnapshot3/*</url-pattern>
-	</servlet-mapping>		
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>cameraproxy2</servlet-name>
 		<url-pattern>/cameraproxy2/*</url-pattern>
@@ -153,7 +163,7 @@
 	<servlet-mapping>
 		<servlet-name>camerasnapshot2</servlet-name>
 		<url-pattern>/camerasnapshot2/*</url-pattern>
-	</servlet-mapping>	
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>cameraproxy</servlet-name>
 		<url-pattern>/cameraproxy/*</url-pattern>

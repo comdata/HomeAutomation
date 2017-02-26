@@ -42,6 +42,15 @@
 			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 		</repository>
 
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/libs-milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+
 	</repositories>
 
 	<properties>
@@ -62,8 +71,17 @@
 
 
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.social</groupId>
+			<artifactId>spring-social-tripit</artifactId>
+			<version>1.0.0.M3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.purej</groupId>
+			<artifactId>purej-vminspect</artifactId>
+			<version>1.2.9</version>
 
-
+		</dependency>
 		<!-- <dependency> <groupId>com.armzilla.ha</groupId> <artifactId>amazon-echo-bridge</artifactId> 
 			<version>0.4.0</version> </dependency> -->
 		<dependency>
@@ -247,11 +265,8 @@
 			<artifactId>jersey-media-multipart</artifactId>
 			<version>${version.jersey}</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.8.6</version>
-		</dependency>-->
+		<!-- <dependency> <groupId>com.fasterxml.jackson.core</groupId> <artifactId>jackson-databind</artifactId> 
+			<version>2.8.6</version> </dependency> -->
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-sse</artifactId>
