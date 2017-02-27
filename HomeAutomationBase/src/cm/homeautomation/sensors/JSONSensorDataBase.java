@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include=JsonTypeInfo.As.PROPERTY, property="@c")
 @JsonSubTypes({@Type(value=SensorDataRoomSaveRequest.class), @Type(value=SensorDataSaveRequest.class), @Type(value=WindowSensorData.class)})
-@JsonInclude (JsonInclude.Include.NON_EMPTY)
+@JsonInclude (JsonInclude.Include.USE_DEFAULTS)
 @XmlRootElement
 public abstract class JSONSensorDataBase {
 

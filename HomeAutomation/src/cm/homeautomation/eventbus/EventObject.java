@@ -2,7 +2,11 @@ package cm.homeautomation.eventbus;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+
 @XmlRootElement
+@JsonInclude (JsonInclude.Include.USE_DEFAULTS)
 public class EventObject {
 
 	private Object data;
