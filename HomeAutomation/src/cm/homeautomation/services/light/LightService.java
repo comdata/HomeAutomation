@@ -52,7 +52,7 @@ public class LightService extends BaseService {
 		em.persist(light);
 
 		em.getTransaction().commit();
-
+		em.close();
 		return light;
 	}
 

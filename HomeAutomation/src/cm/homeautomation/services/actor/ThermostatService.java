@@ -73,7 +73,7 @@ public class ThermostatService extends BaseService {
 		
 		//TODO bind FHEM
 		System.out.println("Set "+id+" to value: "+value);
-		
+		em.close();
 		return new GenericStatus();
 	}
 

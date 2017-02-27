@@ -42,6 +42,8 @@ public class WindowStateService extends BaseService {
 			windowStateList.add(windowStateData);
 		}
 		
+		em.close();
+		
 		return windowStateList;
 	}
 

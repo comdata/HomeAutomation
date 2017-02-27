@@ -24,6 +24,8 @@ public class SensorMonitor {
 				System.out.println("Date is null");
 			}
 		}
+		
+		em.close();
 	}
 	
 	public static void main(String[] args) {

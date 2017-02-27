@@ -40,7 +40,7 @@ public class NetworkDevicesService extends BaseService {
 		if (resultList==null) {
 			resultList=new ArrayList<NetworkDevice>();
 		}
-		
+		em.close();
 		return resultList;
 	}
 	

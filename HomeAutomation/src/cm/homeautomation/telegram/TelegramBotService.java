@@ -88,6 +88,8 @@ public class TelegramBotService {
 				}
 			}
 		}
+		
+		em.close();
 	}
 
 	public static String getToken() {

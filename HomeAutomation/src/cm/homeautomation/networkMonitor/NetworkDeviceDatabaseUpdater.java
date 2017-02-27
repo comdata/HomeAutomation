@@ -57,6 +57,8 @@ public class NetworkDeviceDatabaseUpdater {
 				em.getTransaction().commit();
 			}
 			
+			em.close();
+			
 		}
 	}
 	

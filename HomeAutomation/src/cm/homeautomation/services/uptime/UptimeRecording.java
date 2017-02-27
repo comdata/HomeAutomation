@@ -21,6 +21,7 @@ public class UptimeRecording {
 		em.persist(uptimePing);
 		
 		em.getTransaction().commit();
+		em.close();
 	}
 	
 }

@@ -36,6 +36,8 @@ public class DeviceService extends BaseService {
 		@SuppressWarnings("unchecked")
 		List<Device> resultList = em.createQuery("select d from Device d").getResultList();
 
+		em.close();
+		
 		return resultList;
 	}
 
@@ -69,6 +71,7 @@ public class DeviceService extends BaseService {
 		em.persist(room);
 
 		em.getTransaction().commit();
+		em.close();
 
 		return new GenericStatus(true);
 	}
@@ -98,7 +101,7 @@ public class DeviceService extends BaseService {
 		em.merge(device);
 
 		em.getTransaction().commit();
-
+		em.close();
 		return new GenericStatus(true);
 	}
 
@@ -129,6 +132,7 @@ public class DeviceService extends BaseService {
 
 		}
 		em.getTransaction().commit();
+		em.close();
 		return new GenericStatus(true);
 	}
 }

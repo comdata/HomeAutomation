@@ -70,6 +70,8 @@ public class ActorService extends BaseService implements MqttCallback {
 
 			switchStatuses.getSwitchStatuses().add(singleSwitch);
 		}
+		em.close();
+		
 		return switchStatuses;
 	}
 
@@ -91,7 +93,7 @@ public class ActorService extends BaseService implements MqttCallback {
 				.setParameter("room", Long.parseLong(room)).getResultList();
 
 		switchStatuses.getSwitchStatuses().addAll(switchList);
-
+		em.close();
 		return switchStatuses;
 	}
 
@@ -185,7 +187,7 @@ public class ActorService extends BaseService implements MqttCallback {
 		switchEvent.setStatus(targetStatus);
 		switchEvent.setSwitchId(switchId);
 		EventBusService.getEventBus().post(new EventObject(switchEvent));
-		
+		em.close();
 		return singleSwitch;
 	}
 

@@ -36,7 +36,7 @@ public class OverviewService extends BaseService {
 		}
 
 		em.getTransaction().commit();
-
+		em.close();
 		return overviewTiles;
 	}
 
@@ -45,7 +45,7 @@ public class OverviewService extends BaseService {
 
 
 		OverviewTile roomTile = getOverviewTileForRoom(em, room);
-		
+		em.close();
 		return roomTile;
 	}
 

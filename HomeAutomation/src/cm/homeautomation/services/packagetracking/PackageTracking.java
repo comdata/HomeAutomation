@@ -523,6 +523,7 @@ public class PackageTracking {
 			}
 		}
 		em.getTransaction().commit();
+		em.close();
 	}
 
 	private static boolean isPackageTracked(Package openPackage, List<Package> trackedPackages) {
@@ -561,7 +562,7 @@ public class PackageTracking {
 			
 			newPackageList.add(singlePackage);
 		}
-		
+		em.close();
 		return newPackageList;
 	}
 
@@ -602,6 +603,7 @@ public class PackageTracking {
 			em.merge(existingPackage);
 			em.getTransaction().commit();
 		}
+		em.close();
 
 	}
 

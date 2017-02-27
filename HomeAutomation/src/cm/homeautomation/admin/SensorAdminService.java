@@ -41,6 +41,8 @@ public class SensorAdminService {
 
 			genericStatus.setObject(sensor);
 		}
+		em.close();
+		
 		return genericStatus;
 	}
 
@@ -65,6 +67,8 @@ public class SensorAdminService {
 			
 			em.getTransaction().commit();
 		}
+		
+		em.close();
 		return new GenericStatus(true);
 	}
 
@@ -89,6 +93,8 @@ public class SensorAdminService {
 			}
 			em.getTransaction().commit();
 		}
+		
+		em.close();
 
 		return new GenericStatus(true);
 	}

@@ -56,6 +56,8 @@ public class CameraService extends BaseService {
 		List<Camera> resultList = (List<Camera>) em.createQuery("select c from Camera c where c.id=:id")
 				.setParameter("id", id).getResultList();
 
+		em.close();
+		
 		for (Camera camera : resultList) {
 			final byte[] imageData = camera.getImageSnapshot();
 			StreamingOutput stream = new StreamingOutput() {

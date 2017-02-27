@@ -42,6 +42,8 @@ public class DeviceService {
 			Device device = (Device) em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac)
 					.getSingleResult();
 
+			em.close();
+			
 			if (device == null) {
 
 				return null;

@@ -36,6 +36,8 @@ public class PowerMeterService extends BaseService {
 	    	PowerIntervalData powerIntervalData = new PowerIntervalData( (BigDecimal)resultElement[0], (Timestamp)resultElement[1]);
 	    	results.add(powerIntervalData);
 	    }
+		em.close();
+	    
 		return results;
 	}
 

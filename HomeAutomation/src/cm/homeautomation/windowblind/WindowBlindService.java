@@ -46,6 +46,7 @@ public class WindowBlindService extends BaseService {
 		}
 
 		em.getTransaction().commit();
+		em.close();
 		return windowBlindsList;
 	}
 
@@ -76,6 +77,8 @@ public class WindowBlindService extends BaseService {
 		}
 
 		em.getTransaction().commit();
+		
+		em.close();
 		return windowBlindsList;
 	}
 
@@ -137,6 +140,7 @@ public class WindowBlindService extends BaseService {
 				
 			}
 		}
+		em.close();
 	}
 
 	@GET
@@ -152,6 +156,7 @@ public class WindowBlindService extends BaseService {
 		singleWindowBlind.setCurrentValue(Float.parseFloat(value));
 		em.merge(singleWindowBlind);
 		em.getTransaction().commit();
+		em.close();
 	}
 
 
@@ -189,6 +194,7 @@ public class WindowBlindService extends BaseService {
 				HTTPHelper.performHTTPRequest(calibrationUrl);
 			}
 		}
+		em.close();
 
 	}
 

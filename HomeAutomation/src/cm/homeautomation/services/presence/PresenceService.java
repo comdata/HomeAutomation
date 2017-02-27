@@ -61,6 +61,9 @@ public class PresenceService extends BaseService {
 				em.getTransaction().commit();
 			}
 		}
+		
+		em.close();
+		
 		return new GenericStatus(true);
 	}
 

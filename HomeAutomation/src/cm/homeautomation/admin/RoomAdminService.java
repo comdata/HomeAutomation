@@ -25,6 +25,8 @@ public class RoomAdminService extends BaseService {
 		
 		roomList.setRooms(resultList);
 		
+		em.close();
+		
 		return roomList;
 	}
 	
@@ -38,6 +40,7 @@ public class RoomAdminService extends BaseService {
 		room.setRoomName(roomName);
 		em.persist(room);
 		em.getTransaction().commit();
+		em.close();
 		return room;
 	}
 	
@@ -52,8 +55,10 @@ public class RoomAdminService extends BaseService {
 		if (room!=null) {
 			room.setRoomName(roomName);
 			room=em.merge(room);
-			em.getTransaction().commit();
 		}
+		
+		em.getTransaction().commit();
+		em.close();
 		
 		return room;
 	}

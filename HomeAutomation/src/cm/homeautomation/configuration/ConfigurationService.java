@@ -28,6 +28,8 @@ public class ConfigurationService {
 		
 		List<ConfigurationSetting> resultList = (List<ConfigurationSetting>)em.createQuery("select c from ConfigurationSetting c where c.settingsGroup=:settingsGroup and c.property=:property").setParameter("settingsGroup", settingsGroup).setParameter("property", property).getResultList();
 		
+		em.close();
+		
 		if (resultList!=null && !resultList.isEmpty()) {
 			return resultList.get(0).getValue();
 		}

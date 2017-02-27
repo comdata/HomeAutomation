@@ -112,6 +112,8 @@ public class Sensors extends BaseService {
 		} catch (NoResultException e) {
 
 		}
+		
+		em.close();
 	}
 
 	@GET
@@ -181,7 +183,7 @@ public class Sensors extends BaseService {
 		} else {
 			System.out.println("found no sensors for room "+roomID);
 		}
-		
+		em.close();
 		return new GenericStatus(true);
 	}
 	
@@ -240,6 +242,7 @@ public class Sensors extends BaseService {
 		} else {
 			System.err.println("Not a sensor");
 		}
+		em.close();
 	}
 
 	/**
@@ -275,7 +278,7 @@ public class Sensors extends BaseService {
 		} catch (InterruptedException e) {
 		
 		}
-
+		em.close();
 		return sensorDatas;
 	}
 
@@ -380,6 +383,8 @@ public class Sensors extends BaseService {
 
 			emSensor.getTransaction().commit();
 		}
+		
+		em.close();
 	}
 
 	class DataLoadThread extends Thread {
