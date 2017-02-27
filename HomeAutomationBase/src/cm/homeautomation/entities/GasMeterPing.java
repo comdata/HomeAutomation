@@ -33,5 +33,13 @@ public class GasMeterPing {
 	public void setGasMeter(int gasMeter) {
 		this.gasMeter = gasMeter;
 	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 	
 }
