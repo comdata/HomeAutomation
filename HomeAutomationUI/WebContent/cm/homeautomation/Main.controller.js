@@ -613,6 +613,17 @@ sap.ui.define([
 
         },
         _initPowerMeterTile: function() {
+        	this.gasMeterTile = {
+                    tileType: "gasmeter",
+                    roomId: "meter",
+                    title: "Gas Meter",
+                    numberUnit: "m²",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://energy-saving-lightbulb"
+                };
+            this.getView().getModel().getData().overviewTiles.push(this.gasMeterTile);
+
         	this.powerMeterTileOneMinute = {
                     tileType: "powermeter",
                     roomId: "meter",
@@ -1258,6 +1269,13 @@ sap.ui.define([
                 this._dialogs["powermeter"].open();
                 this.powerMeterLoad();
               }
+            else if (tileType =="gasmeter") {
+                if (!this._dialogs["gasmeter"]) {
+                    this._dialogs["gasmeter"] = sap.ui.xmlfragment("cm.homeautomation.GasMeter", this);
+                }
+                this._dialogs["gasmeter"].open();
+                this.gasMeterLoad();
+              }
             else if (tileType =="networkDevices") {
               if (!this._dialogs["networkDevices"]) {
                   this._dialogs["networkDevices"] = sap.ui.xmlfragment("cm.homeautomation.NetworkDevices", this);
@@ -1332,7 +1350,13 @@ sap.ui.define([
             powerMeterModel.loadDataAsync("/HomeAutomation/services/power/readInterval", "", "GET", subject.powerDataLoaded, null, subject);
 
         },
+        gasMeterLoad: function () {
+        	sap.ui.getCore().setModel(new JSONModel(), "chartjsData");
+        	var subject=this;
+            var gasMeterModel = new RESTService();
+            gasMeterModel.loadDataAsync("/HomeAutomation/services/gas/readInterval", "", "GET", subject.gasDataLoaded, null, subject);
 
+        },
         powerDataLoaded: function(event, model, data) {
 
 
@@ -1397,6 +1421,71 @@ sap.ui.define([
             sap.ui.getCore().setModel(chartJSModel, "powerdata");
 
         },
+        gasDataLoaded: function(event, model, data) {
+
+
+        	var labels=new Array();
+        	var dataseries=new Array();
+        	$.each(data, function(i, element) {
+
+       			labels.push(formatter.dateTimeHourFormatter(element.timeslice));
+
+        		dataseries.push(element.qm);
+        		});
+
+			var chartJSData={
+        				 barData: {
+        				    labels: labels,
+        				    datasets: [{
+        				      label: "m²",
+        				      backgroundColor: "rgba(220,0,0,0.5)",
+        				      fillColor: "rgba(220,0,0,0.5)",
+        				      strokeColor: "rgba(220,0,0,0.8)",
+        				      highlightFill: "rgba(220,0,0,0.75)",
+        				      highlightStroke: "rgba(220,0,0,1)",
+        				      data: dataseries,
+        				      options: {
+        				    	  legend: {
+        				              display: false,
+        				              position: "bottom",
+        				              labels: {
+        				            	  filter: function (item, data) {
+        				            		  return false;
+        				            	  }
+        				              }
+        				    	  },
+        				          hover: {
+        				              // Overrides the global setting
+        				              mode: "index"
+        				          },
+        				          scales: {
+        				              xAxes: [{
+        				            	   display: true,
+        				                   ticks: {
+        				                          callback: function(dataLabel, index) {
+        				                                // Hide the label of
+														// every 2nd dataset.
+														// return null to hide
+														// the grid line too
+        				                                return index % 12 === 0 ? dataLabel : '';
+        				                            }
+
+        				              }}]
+        				          }
+
+        				      }}]
+        				  }
+        				};
+			/*
+			 *
+			 */
+
+            var chartJSModel = new JSONModel();
+            chartJSModel.setData(chartJSData);
+            sap.ui.getCore().setModel(chartJSModel, "gasdata");
+
+        },
+
         dialogClose: function () {
             this._oDialog.close();
         },
@@ -1417,6 +1506,11 @@ sap.ui.define([
             this._dialogs["powermeter"].close();
 
         },
+        gasMeterDialogClose: function() {
+            this._dialogs["gasmeter"].close();
+
+        },
+
         packageDialogClose: function() {
             this._dialogs["package"].close();
 
@@ -1443,7 +1537,10 @@ sap.ui.define([
         afterPowerMeterDialogClose: function () {
         	sap.ui.getCore().setModel(new JSONModel(), "powermeter");
           },
-        afterDownloadDialogClose: function () {
+          afterGasMeterDialogClose: function () {
+          	sap.ui.getCore().setModel(new JSONModel(), "gasmeter");
+            },
+          afterDownloadDialogClose: function () {
         	this._dialogs["downloads"].destroy();
         	this._dialogs["downloads"] = null;
         },
