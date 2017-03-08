@@ -33,7 +33,6 @@ public class StartupServlet extends HttpServlet {
 	private MQTTReceiverClient moquetteClient;
 	private EventBusEndpoint eventBusEndpoint;
 	private Thread mqttThread;
-	private TransmissionMonitor transmissionMonitor;
 	private WindowBlindNotificationService windowBlindNotificationService;
 	private NetworkDeviceDatabaseUpdater networkDeviceDatabaseUpdater;
 	private MDNSService mdnsService;
@@ -66,9 +65,6 @@ public class StartupServlet extends HttpServlet {
 		eventBusEndpoint = (EventBusEndpoint) eventBusAnnotationInitializer.getInstances().get(EventBusEndpoint.class);
 		EventBusEndpointConfigurator.setEventBusEndpoint(eventBusEndpoint);
 		
-		transmissionMonitor = new TransmissionMonitor();
-		transmissionMonitor.start();
-
 		mdnsService = new MDNSService();
 		mdnsService.registerServices();
 
@@ -112,12 +108,6 @@ public class StartupServlet extends HttpServlet {
 
 		try {
 			moquetteClient.stopServer();
-		} catch (Exception e) {
-
-		}
-
-		try {
-			transmissionMonitor.stopMonitor();
 		} catch (Exception e) {
 
 		}
