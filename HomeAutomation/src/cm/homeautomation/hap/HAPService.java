@@ -63,7 +63,7 @@ public class HAPService {
 		}
 	}
 
-	@Subscribe
+	//@Subscribe
 	public void handleSensorDataChanged(EventObject eventObject) {
 
 		Object eventData = eventObject.getData();
