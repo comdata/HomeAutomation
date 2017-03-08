@@ -20,7 +20,7 @@ import nl.stil4m.transmission.rpc.RpcException;
 
 public class TransmissionMonitor {
 
-	private static void checkTorrents(String[] args) {
+	public static void checkTorrents(String[] args) {
 		try {
 			ObjectMapper objectMapper = new ObjectMapper();
 			objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
