@@ -38,6 +38,7 @@ public class StartupServlet extends HttpServlet {
 	private MDNSService mdnsService;
 	private TelegramBotService telegramBotService;
 	private Thread telegramThread;
+	private StartupAnnotationInitializer startupAnnotationInitializer;
 
 	public void init(ServletConfig config) throws ServletException {
 
@@ -46,6 +47,8 @@ public class StartupServlet extends HttpServlet {
 
 		EventBusAnnotationInitializer eventBusAnnotationInitializer = new EventBusAnnotationInitializer();
 
+		startupAnnotationInitializer = new StartupAnnotationInitializer();
+		
 		Runnable mqttClient = new Runnable() {
 			public void run() {
 				moquetteClient = new MQTTReceiverClient();
@@ -125,6 +128,8 @@ public class StartupServlet extends HttpServlet {
 		} catch (Exception e) {
 
 		}
+		
+		startupAnnotationInitializer.disposeInstances();
 	}
 
 }
