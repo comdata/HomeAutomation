@@ -21,6 +21,9 @@ public class PhoneCallEvent implements HumanMessageGenerationInterface {
 	private String externalNumber;
 	private String event;
 
+	public PhoneCallEvent() {
+	}
+	
 	public PhoneCallEvent(String event, String mode, String internalNumber, String externalNumber) {
 		this.setEvent(event);
 		this.setMode(mode);
