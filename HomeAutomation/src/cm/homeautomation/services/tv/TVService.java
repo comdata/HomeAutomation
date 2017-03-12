@@ -18,6 +18,7 @@ public class TVService {
 	public TVService() {
 		tvBinding = new PanasonicTVBinding();
 		tvIp= ConfigurationService.getConfigurationProperty("tv", "tvIp");
+		System.out.println("Tv IP: "+tvIp);
 		EventBusService.getEventBus().register(this);
 	}
 
