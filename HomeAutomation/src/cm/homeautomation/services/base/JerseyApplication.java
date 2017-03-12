@@ -71,7 +71,7 @@ public class JerseyApplication extends Application {
 		// register resources and features
 		classes.add(MultiPartFeature.class);
 		classes.add(JacksonFeature.class);
-		classes.add(LoggingFilter.class);
+		//classes.add(LoggingFilter.class);
 		return classes;
 	}
 }
