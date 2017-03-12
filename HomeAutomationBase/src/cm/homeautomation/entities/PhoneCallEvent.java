@@ -1,12 +1,21 @@
-package cm.homeautomation.services.phone;
+package cm.homeautomation.entities;
 
+import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import cm.homeautomation.entities.HumanMessageGenerationInterface;
-
+@Entity
 @XmlRootElement
 public class PhoneCallEvent implements HumanMessageGenerationInterface {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	private Date timestamp=new Date();
 	private String mode;
 	private String internalNumber;
 	private String externalNumber;
@@ -56,6 +65,14 @@ public class PhoneCallEvent implements HumanMessageGenerationInterface {
 
 	public void setEvent(String event) {
 		this.event = event;
+	}
+
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
 	}
 
 }

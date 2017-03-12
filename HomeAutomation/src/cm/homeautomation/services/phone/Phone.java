@@ -8,10 +8,13 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
 
+import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.entities.PhoneCallEvent;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
@@ -27,7 +30,18 @@ public class Phone extends BaseService {
 		System.out.println(
 				"Phone call: " + mode + " internalNumber: " + internalNumber + " external number: " + externalNumber);
 
-		EventBusService.getEventBus().post(new EventObject(new PhoneCallEvent(event, mode, internalNumber, externalNumber)));
+		
+		
+		PhoneCallEvent phoneCallEvent = new PhoneCallEvent(event, mode, internalNumber, externalNumber);
+		
+		EntityManager em = EntityManagerService.getNewManager();
+		em.getTransaction().begin();
+		
+		em.persist(phoneCallEvent);
+		
+		em.getTransaction().commit();
+		
+		EventBusService.getEventBus().post(new EventObject(phoneCallEvent));
 
 		return new GenericStatus(true);
 	}
