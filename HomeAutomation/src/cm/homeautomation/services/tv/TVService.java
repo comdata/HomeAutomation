@@ -13,11 +13,10 @@ public class TVService {
 	
 	
 	private PanasonicTVBinding tvBinding;
-	private String tvIp;
 
 	public TVService() {
 		tvBinding = new PanasonicTVBinding();
-		tvIp= ConfigurationService.getConfigurationProperty("tv", "tvIp");
+		
 		System.out.println("Tv IP: "+tvIp);
 		EventBusService.getEventBus().register(this);
 	}
@@ -32,6 +31,7 @@ public class TVService {
 			
 			PhoneCallEvent callEvent=(PhoneCallEvent)eventData;
 			
+			String tvIp= ConfigurationService.getConfigurationProperty("tv", "tvIp");
 			
 			String event = callEvent.getEvent();
 			
