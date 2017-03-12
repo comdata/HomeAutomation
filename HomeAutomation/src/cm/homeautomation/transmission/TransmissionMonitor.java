@@ -3,6 +3,8 @@ package cm.homeautomation.transmission;
 import java.net.URI;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
@@ -37,8 +39,8 @@ public class TransmissionMonitor {
 
 			Long downloadSpeed = rpcClient.getSessionStats().getDownloadSpeed();
 			Long uploadSpeed = rpcClient.getSessionStats().getUploadSpeed();
-			System.out.println("Download speed: " + downloadSpeed);
-			System.out.println("Upload speed: " + uploadSpeed);
+			Logger.getLogger(TransmissionMonitor.class).info("Download speed: " + downloadSpeed);
+			Logger.getLogger(TransmissionMonitor.class).info("Upload speed: " + uploadSpeed);
 			int numberOfTorrents = result.getTorrents().size();
 			int numberOfDoneTorrents = 0;
 			List<TorrentInfo> torrents = result.getTorrents();
@@ -46,13 +48,13 @@ public class TransmissionMonitor {
 				Boolean finished = torrentInfo.getFinished();
 
 				double percentDone = torrentInfo.getPercentDone().doubleValue();
-				System.out.println("Percent done: " + percentDone);
+				Logger.getLogger(TransmissionMonitor.class).info("Percent done: " + percentDone);
 				if (percentDone == 1) {
 					numberOfDoneTorrents++;
 				}
 			}
-			System.out.println("Done torrents: " + numberOfDoneTorrents);
-			System.out.println("Running torrents: " + numberOfTorrents);
+			Logger.getLogger(TransmissionMonitor.class).info("Done torrents: " + numberOfDoneTorrents);
+			Logger.getLogger(TransmissionMonitor.class).info("Running torrents: " + numberOfTorrents);
 
 			TransmissionStatusData torrentData = new TransmissionStatusData();
 			torrentData.setUploadSpeed(uploadSpeed);
