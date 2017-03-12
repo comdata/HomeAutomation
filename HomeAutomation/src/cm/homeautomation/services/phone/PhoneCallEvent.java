@@ -10,8 +10,10 @@ public class PhoneCallEvent implements HumanMessageGenerationInterface {
 	private String mode;
 	private String internalNumber;
 	private String externalNumber;
+	private String event;
 
-	public PhoneCallEvent(String mode, String internalNumber, String externalNumber) {
+	public PhoneCallEvent(String event, String mode, String internalNumber, String externalNumber) {
+		this.setEvent(event);
 		this.setMode(mode);
 		this.setInternalNumber(internalNumber);
 		this.setExternalNumber(externalNumber);
@@ -45,7 +47,15 @@ public class PhoneCallEvent implements HumanMessageGenerationInterface {
 	@Override
 	public String getMessageString() {
 
-		return "Call event. Mode: " + mode + " external number: " + externalNumber;
+		return "Call event. Event: "+event+" Mode: " + mode + " external number: " + externalNumber;
+	}
+
+	public String getEvent() {
+		return event;
+	}
+
+	public void setEvent(String event) {
+		this.event = event;
 	}
 
 }

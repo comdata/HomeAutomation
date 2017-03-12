@@ -20,14 +20,14 @@ import cm.homeautomation.services.base.GenericStatus;
 @Path("phone")
 public class Phone extends BaseService {
 
-	@Path("status/{mode}/{internalNumber}/{externalNumber}")
+	@Path("status/{event}/{mode}/{internalNumber}/{externalNumber}")
 	@GET
-	public GenericStatus setStatus(@PathParam("mode") String mode, @PathParam("internalNumber") String internalNumber,
+	public GenericStatus setStatus(@PathParam("event") String event, @PathParam("mode") String mode, @PathParam("internalNumber") String internalNumber,
 			@PathParam("externalNumber") String externalNumber) {
 		System.out.println(
 				"Phone call: " + mode + " internalNumber: " + internalNumber + " external number: " + externalNumber);
 
-		EventBusService.getEventBus().post(new EventObject(new PhoneCallEvent(mode, internalNumber, externalNumber)));
+		EventBusService.getEventBus().post(new EventObject(new PhoneCallEvent(event, mode, internalNumber, externalNumber)));
 
 		return new GenericStatus(true);
 	}
