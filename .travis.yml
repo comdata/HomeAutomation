@@ -7,10 +7,17 @@ jdk:
 #- mvn install
 #- cd ..
 
+sudo: false
+
 addons:
   mariadb: '10.0'
+  apt:
+    packages:
+      - oracle-java8-installer
+
 before_script:
   - mysql -u root -e 'CREATE DATABASE HA;'
   - mysql -u root HA < HomeAutomation/WebContent/WEB-INF/log4j.sql
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+
