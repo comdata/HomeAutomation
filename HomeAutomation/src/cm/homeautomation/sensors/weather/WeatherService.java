@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 import com.amphibian.weather.request.Feature;
 import com.amphibian.weather.request.WeatherRequest;
 import com.amphibian.weather.response.WeatherResponse;
@@ -26,7 +28,7 @@ public class WeatherService {
 		Properties props = new Properties();
 		try {
 			File file = new File("weather.properties");
-			System.out.println("Weather properties: "+file.getAbsolutePath());
+			Logger.getLogger(WeatherService.class).info("Weather properties: "+file.getAbsolutePath());
 			FileReader fileReader = new FileReader(file);
 			
 			props.load(fileReader);
@@ -34,7 +36,7 @@ public class WeatherService {
 			city = props.getProperty("city");
 			country = props.getProperty("country");
 		} catch (IOException e) {
-			System.out.println("Could not find weather properties!");
+			Logger.getLogger(WeatherService.class).info("Could not find weather properties!");
 			return null;
 		}
 
@@ -53,7 +55,7 @@ public class WeatherService {
 
 	public static void main(String[] args) {
 		WeatherData weather = WeatherService.getWeather();
-		System.out.println(weather.getTempC());
-		System.out.println(weather.getHumidity());
+		Logger.getLogger(WeatherService.class).info(weather.getTempC());
+		Logger.getLogger(WeatherService.class).info(weather.getHumidity());
 	}
 }
