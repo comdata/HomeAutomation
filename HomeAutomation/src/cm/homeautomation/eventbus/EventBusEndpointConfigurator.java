@@ -2,6 +2,8 @@ package cm.homeautomation.eventbus;
 
 import javax.websocket.server.ServerEndpointConfig.Configurator;
 
+import org.apache.log4j.Logger;
+
 public class EventBusEndpointConfigurator extends Configurator {
 	private static EventBusEndpoint eventBusEndpoint;
 
@@ -16,7 +18,7 @@ public class EventBusEndpointConfigurator extends Configurator {
 	}
 
 	public static void setEventBusEndpoint(EventBusEndpoint eventBusEndpoint) {
-		System.out.println("adding eventBusEndpoint");
+		Logger.getLogger(EventBusEndpointConfigurator.class).info("adding eventBusEndpoint");
 		EventBusEndpointConfigurator.eventBusEndpoint = eventBusEndpoint;
 	}
 }

@@ -15,6 +15,8 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
+import org.apache.log4j.Logger;
+
 import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.services.actor.MessageTranscoder;
@@ -67,7 +69,7 @@ public class EventBusEndpoint {
 
 			if (session.isOpen()) {
 				try {
-					System.out.println("Eventbus Sending to " + session.getId());
+					Logger.getLogger(this.getClass()).info("Eventbus Sending to " + session.getId());
 					session.getAsyncRemote().sendObject(eventObject);
 				} catch (IllegalStateException e) {
 					userSessions.remove(key);

@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.eventbus.EventBusService;
@@ -38,11 +40,11 @@ public class WindowBlindNotificationService {
 			notificationUrl = props.getProperty("notificationUrl");
 			iconUrl = props.getProperty("iconUrl");
 			
-			System.out.println("Notification setup using authToken: "+authToken+" projectId: "+projectId+" url: "+notificationUrl);
+			Logger.getLogger(this.getClass()).info("Notification setup using authToken: "+authToken+" projectId: "+projectId+" url: "+notificationUrl);
 
 			EventBusService.getEventBus().register(this);
 		} catch (IOException e) {
-			System.out.println("Could not find pushpad properties!");
+			Logger.getLogger(this.getClass()).info("Could not find pushpad properties!");
 		}
 	}
 
@@ -69,7 +71,7 @@ public class WindowBlindNotificationService {
 			Notification notification = pushpad.buildNotification("Window Blind ("+name+") changed position", message,
 					notificationUrl);
 			
-			System.out.println("Preparing notification: "+message);
+			Logger.getLogger(this.getClass()).info("Preparing notification: "+message);
 
 			// optional, defaults to the project icon
 			// notification.iconUrl = notificationUrl;
@@ -82,7 +84,7 @@ public class WindowBlindNotificationService {
 
 				// deliver to everyone
 				notification.broadcast();
-				System.out.println("Notification sent.");
+				Logger.getLogger(this.getClass()).info("Notification sent.");
 				
 			} catch (DeliveryException e) {
 				e.printStackTrace();

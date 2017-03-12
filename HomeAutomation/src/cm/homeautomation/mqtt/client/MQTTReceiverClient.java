@@ -2,6 +2,7 @@ package cm.homeautomation.mqtt.client;
 
 import java.util.UUID;
 
+import org.apache.log4j.Logger;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -117,7 +118,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		byte[] payload = message.getPayload();
 		String messageContent = new String(payload);
-		System.out.println("Got MQTT message: " + messageContent);
+		Logger.getLogger(this.getClass()).info("Got MQTT message: " + messageContent);
 		try {
 			JSONSensorDataReceiver.receiveSensorData(messageContent);
 		} catch (Exception e) {

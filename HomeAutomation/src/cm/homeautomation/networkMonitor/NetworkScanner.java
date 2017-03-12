@@ -7,6 +7,8 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.log4j.Logger;
+
 import com.google.common.eventbus.EventBus;
 
 import cm.homeautomation.entities.NetworkDevice;
@@ -33,7 +35,7 @@ public class NetworkScanner {
 			try {
 				InetAddress currentHost = InetAddress.getByName(host);
 				if (currentHost.isReachable(timeout)) {
-					System.out.println(host + " is reachable");
+					Logger.getLogger(this.getClass()).info(host + " is reachable");
 
 					String macFromArpCache = getMacFromArpCache(host);
 

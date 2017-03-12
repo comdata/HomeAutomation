@@ -3,6 +3,7 @@ package cm.homeautomation.jeromq.server;
 import java.io.IOException;
 import java.util.Random;
 
+import org.apache.log4j.Logger;
 import org.zeromq.ZContext;
 import org.zeromq.ZFrame;
 import org.zeromq.ZMQ;
@@ -41,7 +42,7 @@ public class JeroMQServerWorker implements Runnable {
 			msg.destroy();
 
 			String messageContent = content.toString();
-			System.out.println("Got message: "+messageContent);
+			Logger.getLogger(this.getClass()).info("Got message: "+messageContent);
 
 			ObjectMapper mapper = new ObjectMapper();
 
@@ -53,7 +54,7 @@ public class JeroMQServerWorker implements Runnable {
 				
 				messageContent=messageContent.replace("cm.homeautomation.transmission.TransmissionStatusData", ".TransmissionStatusData");
 				
-				System.out.println("message for deserialization: "+messageContent);
+				Logger.getLogger(this.getClass()).info("message for deserialization: "+messageContent);
 				
 				JSONSensorDataBase sensorData = mapper.readValue(messageContent, JSONSensorDataBase.class);
 
