@@ -6,6 +6,7 @@ import com.homeautomation.tv.panasonic.TVNotReachableException;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.PhoneCallEvent;
+import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 
 public class TVService {
@@ -17,6 +18,7 @@ public class TVService {
 	public TVService() {
 		tvBinding = new PanasonicTVBinding();
 		tvIp= ConfigurationService.getConfigurationProperty("tv", "tvIp");
+		EventBusService.getEventBus().register(this);
 	}
 
 	@Subscribe
