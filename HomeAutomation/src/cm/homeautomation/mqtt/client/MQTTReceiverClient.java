@@ -35,12 +35,12 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 				try {
 					if (client != null) {
 						if (!client.isConnected()) {
-							System.out.println("Not connected");
+							Logger.getLogger(this.getClass()).info("Not connected");
 							connect();
 						}
 
 					} else {
-						System.out.println("client is null");
+						Logger.getLogger(this.getClass()).info("client is null");
 						connect();
 					}
 					Thread.sleep(10000);
@@ -82,7 +82,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 		client.subscribe("/sensorState");
 		client.subscribe("/distanceSensor");
 		client.subscribe("/switch");
-		System.out.println("Started MQTT client");
+		Logger.getLogger(this.getClass()).info("Started MQTT client");
 	}
 
 	public void stopServer() {
@@ -103,9 +103,9 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 			client.close();
 			client.disconnect();
 		} catch (MqttException e1) {
-			System.out.println("force close failed.");
+			Logger.getLogger(this.getClass()).error("force close failed.", e1);
 		}
-		System.out.println("trying reconnect to MQTT broker");
+		Logger.getLogger(this.getClass()).info("trying reconnect to MQTT broker");
 		try {
 			connect();
 		} catch (MqttException e) {
@@ -123,7 +123,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 			JSONSensorDataReceiver.receiveSensorData(messageContent);
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("Got an exception while saving data.");
+			Logger.getLogger(this.getClass()).error("Got an exception while saving data.", e);
 		}
 		client.messageArrivedComplete(message.getId(), message.getQos());
 

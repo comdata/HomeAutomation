@@ -4,6 +4,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
+import org.apache.log4j.Logger;
 import org.eclipse.paho.client.mqttv3.logging.LoggerFactory;
 
 import cm.homeautomation.entities.NetworkDevice;
@@ -42,7 +43,7 @@ public class StartupServlet extends HttpServlet {
 
 	public void init(ServletConfig config) throws ServletException {
 
-		System.out.println("Starting scheduler");
+		Logger.getLogger(this.getClass()).info("Starting scheduler");
 		schedulerThread = SchedulerThread.getInstance();
 
 		EventBusAnnotationInitializer eventBusAnnotationInitializer = new EventBusAnnotationInitializer();

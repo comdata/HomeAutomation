@@ -16,6 +16,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import org.apache.log4j.Logger;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -253,7 +254,7 @@ public class ActorService extends BaseService implements MqttCallback {
 			packet = new DatagramPacket(buf, buf.length, group, port);
 			for (int i = 0; i < 1; i++) {
 				socket.send(packet);
-				System.out.println("Send message:" + json);
+				Logger.getLogger(this.getClass()).info("Send message:" + json);
 				Thread.sleep(200);
 			}
 

@@ -9,6 +9,8 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
+import org.apache.log4j.Logger;
+
 import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.entities.SensorData;
@@ -43,7 +45,7 @@ public class OverviewWebSocket {
 	@Subscribe
 	public void handleSensorDataChanged(EventObject eventObject) {
 
-		System.out.println("Overview got event");
+		Logger.getLogger(this.getClass()).info("Overview got event");
 		Object eventData = eventObject.getData();
 		if (eventData instanceof SensorData) {
 
@@ -51,13 +53,13 @@ public class OverviewWebSocket {
 			OverviewTile overviewTileForRoom = new OverviewService()
 					.getOverviewTileForRoom(sensorData.getSensor().getRoom());
 
-			System.out.println("Got eventbus for room: " + sensorData.getSensor().getRoom().getRoomName());
+			Logger.getLogger(this.getClass()).info("Got eventbus for room: " + sensorData.getSensor().getRoom().getRoomName());
 
 			try {
 
 				overviewEndPointConfiguration = new OverviewEndPointConfiguration();
 				overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
-				System.out.println(
+				Logger.getLogger(this.getClass()).info(
 						"Sending tile: " + overviewTileForRoom.getRoomName() + " - " + overviewTileForRoom.getNumber());
 				overviewEndpoint.sendTile(overviewTileForRoom);
 			} catch (InstantiationException e) {
@@ -65,7 +67,7 @@ public class OverviewWebSocket {
 				e.printStackTrace();
 			}
 		} else {
-			System.out.println("Eventdata not SensorData: " + eventData.getClass().getName());
+			Logger.getLogger(this.getClass()).info("Eventdata not SensorData: " + eventData.getClass().getName());
 		}
 	}
 
@@ -123,7 +125,7 @@ public class OverviewWebSocket {
 			if (session.isOpen()) {
 
 				try {
-					System.out.println(
+					Logger.getLogger(this.getClass()).info(
 							"Sending to " + session.getId() + " - " + tile.getRoomName() + " - " + tile.getNumber());
 
 					if (session.isOpen()) {

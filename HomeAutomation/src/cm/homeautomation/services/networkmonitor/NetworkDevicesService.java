@@ -12,6 +12,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import org.apache.log4j.Logger;
+
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.NetworkDevice;
 import cm.homeautomation.networkMonitor.NetworkScanner;
@@ -71,11 +73,11 @@ public class NetworkDevicesService extends BaseService {
             socket.send(packet);
             socket.close();
             
-            System.out.println("Wake-on-LAN packet sent.");
+            Logger.getLogger(this.getClass()).info("Wake-on-LAN packet sent.");
             return new GenericStatus(true);
         }
         catch (Exception e) {
-            System.out.println("Failed to send Wake-on-LAN packet: + e");
+            Logger.getLogger(this.getClass()).info("Failed to send Wake-on-LAN packet: + e");
             return new GenericStatus(false);
         }
         

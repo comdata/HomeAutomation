@@ -13,6 +13,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import org.apache.log4j.Logger;
+
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.device.DeviceService;
 import cm.homeautomation.entities.Device;
@@ -48,7 +50,7 @@ public class Sensors extends BaseService {
 	@Path("rfsniffer")
 	public void registerRFEvent(RFEvent event) {
 		String code = Integer.toString(event.getCode());
-		System.out.println("RF Event: " + code);
+		Logger.getLogger(this.getClass()).info("RF Event: " + code);
 		EntityManager em = EntityManagerService.getNewManager();
 
 		if (actorEndpointConfigurator == null) {
@@ -136,7 +138,7 @@ public class Sensors extends BaseService {
 	public GenericStatus save(SensorDataRoomSaveRequest request) {
 		
 		if (request==null) {
-			System.out.println("got null request"); 
+			Logger.getLogger(this.getClass()).info("got null request"); 
 			return new GenericStatus(false);
 		}
 		
@@ -181,7 +183,7 @@ public class Sensors extends BaseService {
 			
 			
 		} else {
-			System.out.println("found no sensors for room "+roomID);
+			Logger.getLogger(this.getClass()).info("found no sensors for room "+roomID);
 		}
 		em.close();
 		return new GenericStatus(true);
@@ -240,7 +242,7 @@ public class Sensors extends BaseService {
  
 			
 		} else {
-			System.err.println("Not a sensor");
+			Logger.getLogger(this.getClass()).error("Not a sensor");
 		}
 		em.close();
 	}

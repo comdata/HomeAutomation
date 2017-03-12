@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
@@ -30,12 +31,12 @@ public class EventBusAnnotationInitializer {
 		for (Method method : resources) {
 			try {
 				Class<?> declaringClass = method.getDeclaringClass();
-				System.out.println("Creating class: " + declaringClass.getName());
+				Logger.getLogger(this.getClass()).info("Creating class: " + declaringClass.getName());
 				Object classInstance = declaringClass.newInstance();
 
 				instances.put(declaringClass, classInstance);
 			} catch (InstantiationException | IllegalAccessException e) {
-				System.out.println("Failed creating class");
+				Logger.getLogger(this.getClass()).info("Failed creating class");
 			}
 		}
 	}

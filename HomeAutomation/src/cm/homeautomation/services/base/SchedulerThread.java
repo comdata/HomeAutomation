@@ -2,6 +2,8 @@ package cm.homeautomation.services.base;
 
 import java.io.File;
 
+import org.apache.log4j.Logger;
+
 import it.sauronsoftware.cron4j.Scheduler;
 
 /**
@@ -39,7 +41,7 @@ public class SchedulerThread {
 			scheduler.start();
 		}
 
-		System.out.println("Reloaded scheduler");
+		Logger.getLogger(this.getClass()).info("Reloaded scheduler");
 	}
 	
 	public void stopScheduler() {

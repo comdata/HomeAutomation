@@ -14,6 +14,8 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
+import org.apache.log4j.Logger;
+
 @ServerEndpoint(value = "/actor/{clientId}", configurator = ActorEndpointConfigurator.class, encoders = {
 		MessageTranscoder.class }, decoders = { MessageTranscoder.class })
 public class ActorEndpoint {
@@ -59,7 +61,7 @@ public class ActorEndpoint {
 
 			if (session.isOpen()) {
 				try {
-					System.out.println("Actor Sending to " + session.getId());
+					Logger.getLogger(this.getClass()).info("Actor Sending to " + session.getId());
 					session.getAsyncRemote().sendObject(switchEvent);
 				} catch (IllegalStateException e) {
 					userSessions.remove(key);
