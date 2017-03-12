@@ -12,6 +12,8 @@ import javax.mail.Store;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
+import org.apache.log4j.Logger;
+
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
@@ -57,7 +59,7 @@ public class MailStatistics extends BaseService {
 		  
 		  
 		  Folder folder = store.getFolder("INBOX");
-		  System.out.println(folder.getNewMessageCount() + " - "+folder.getUnreadMessageCount());
+		  Logger.getLogger(MailStatistics.class).info("Account: "+account+": "+folder.getNewMessageCount() + " - "+folder.getUnreadMessageCount());
 		  mailData.setNewMessages(folder.getNewMessageCount());
 		  mailData.setUnreadMessages(folder.getUnreadMessageCount());
 		  EventObject eventObject=new EventObject(mailData);
@@ -77,7 +79,7 @@ public class MailStatistics extends BaseService {
 		List<MailData> mailboxStatus = new MailStatistics().getMailboxStatus();
 		
 		for (MailData mailData : mailboxStatus) {
-			System.out.println(mailData.getAccount()+" - "+mailData.getNewMessages()+" - "+mailData.getUnreadMessages());
+			Logger.getLogger(MailStatistics.class).info(mailData.getAccount()+" - "+mailData.getNewMessages()+" - "+mailData.getUnreadMessages());
 		}
 	}
 }
