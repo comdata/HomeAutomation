@@ -25,6 +25,11 @@ public class JSONSensorDataReceiver {
 	public static void receiveSensorData(String messageContent) {
 
 		try {
+			if (!messageContent.contains("@c") ) {
+				return;
+			}
+			
+			
 			Sensors sensorsService = new Sensors();
 			
 			ObjectMapper mapper = new ObjectMapper();
