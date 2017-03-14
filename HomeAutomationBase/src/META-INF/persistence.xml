@@ -37,7 +37,7 @@
     <class>org.apache.logging.log4j.core.appender.db.jpa.converter.StackTraceElementAttributeConverter</class>
     <class>org.apache.logging.log4j.core.appender.db.jpa.converter.ThrowableAttributeConverter</class>
     <class>cm.homeautomation.entities.LoggingEntity</class>
-    <shared-cache-mode>ALL</shared-cache-mode>
+    <shared-cache-mode>NONE</shared-cache-mode>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" />
 			<property name="javax.persistence.jdbc.url"
