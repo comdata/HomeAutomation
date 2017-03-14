@@ -15,10 +15,11 @@ public class LoggingEntity extends BasicLogEventEntity {
 	 */
 	private static final long serialVersionUID = -1297620939056969127L;
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	private Long id;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public Long getId() {
 		return id;
 	}
