@@ -28,6 +28,16 @@
 		<class>cm.homeautomation.entities.PresenceState</class>
 		<class>cm.homeautomation.entities.UptimePing</class>
 		<class>cm.homeautomation.entities.PhoneCallEvent</class>
+		    <class>org.apache.logging.log4j.core.appender.db.jpa.converter.ContextMapAttributeConverter</class>
+    <class>org.apache.logging.log4j.core.appender.db.jpa.converter.ContextMapJsonAttributeConverter</class>
+    <class>org.apache.logging.log4j.core.appender.db.jpa.converter.ContextStackAttributeConverter</class>
+    <class>org.apache.logging.log4j.core.appender.db.jpa.converter.ContextStackJsonAttributeConverter</class>
+    <class>org.apache.logging.log4j.core.appender.db.jpa.converter.MarkerAttributeConverter</class>
+    <class>org.apache.logging.log4j.core.appender.db.jpa.converter.MessageAttributeConverter</class>
+    <class>org.apache.logging.log4j.core.appender.db.jpa.converter.StackTraceElementAttributeConverter</class>
+    <class>org.apache.logging.log4j.core.appender.db.jpa.converter.ThrowableAttributeConverter</class>
+    <class>cm.homeautomation.entities.LoggingEntity</class>
+    <shared-cache-mode>ALL</shared-cache-mode>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" />
 			<property name="javax.persistence.jdbc.url"
