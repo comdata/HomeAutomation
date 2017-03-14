@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="debug">
+<Configuration status="DEBUG">
   <Appenders>
     <JPA name="databaseAppender" persistenceUnitName="HA"
          entityClassName="cm.homeautomation.entities.LoggingEntity" />
   </Appenders>
   <Loggers>
-    <Root level="debug">
+    <Root level="trace">
       <AppenderRef ref="databaseAppender"/>
     </Root>
   </Loggers>
