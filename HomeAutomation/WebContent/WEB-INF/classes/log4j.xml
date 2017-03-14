@@ -14,7 +14,7 @@
 			<AppenderRef ref="STDOUT" />
 		</Logger>
 
-		<Root level="trace">
+		<Root>
 			<AppenderRef ref="databaseAppender" />
 			<AppenderRef ref="STDOUT" />
 		</Root>
