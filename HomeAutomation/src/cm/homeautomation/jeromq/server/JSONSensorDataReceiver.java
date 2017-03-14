@@ -2,7 +2,7 @@ package cm.homeautomation.jeromq.server;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -40,7 +40,7 @@ public class JSONSensorDataReceiver {
 			
 			messageContent=messageContent.replace("cm.homeautomation.transmission.TransmissionStatusData", ".TransmissionStatusData");
 			
-			Logger.getLogger(JSONSensorDataReceiver.class).info("message for deserialization: "+messageContent);
+			LogManager.getLogger(JSONSensorDataReceiver.class).info("message for deserialization: "+messageContent);
 			
 			JSONSensorDataBase sensorData = mapper.readValue(messageContent, JSONSensorDataBase.class);
 

@@ -34,7 +34,7 @@ import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.SingleClientConnManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -372,16 +372,16 @@ public class PackageTracking {
 		// set up a TrustManager that trusts everything
 		sslContext.init(null, new TrustManager[] { new X509TrustManager() {
 			public X509Certificate[] getAcceptedIssuers() {
-				Logger.getLogger(this.getClass()).info("getAcceptedIssuers =============");
+				LogManager.getLogger(this.getClass()).info("getAcceptedIssuers =============");
 				return null;
 			}
 
 			public void checkClientTrusted(X509Certificate[] certs, String authType) {
-				Logger.getLogger(this.getClass()).info("checkClientTrusted =============");
+				LogManager.getLogger(this.getClass()).info("checkClientTrusted =============");
 			}
 
 			public void checkServerTrusted(X509Certificate[] certs, String authType) {
-				Logger.getLogger(this.getClass()).info("checkServerTrusted =============");
+				LogManager.getLogger(this.getClass()).info("checkServerTrusted =============");
 			}
 		} }, new SecureRandom());
 
@@ -397,7 +397,7 @@ public class PackageTracking {
 		String url = "https://data.parcelapp.net/data.php?caller=yes&version=4";
 
 		String cookie = args[0];
-		// Logger.getLogger(this.getClass()).info(cookie);
+		// LogManager.getLogger(this.getClass()).info(cookie);
 
 		HttpGet request = new HttpGet(url);
 
@@ -407,7 +407,7 @@ public class PackageTracking {
 		request.addHeader("Cookie", cookie);
 		HttpResponse response = client.execute(request);
 
-		Logger.getLogger(PackageHistory.class).info("Response Code : " + response.getStatusLine().getStatusCode());
+		LogManager.getLogger(PackageHistory.class).info("Response Code : " + response.getStatusLine().getStatusCode());
 
 		BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 
@@ -415,7 +415,7 @@ public class PackageTracking {
 		String line = "";
 		while ((line = rd.readLine()) != null) {
 			result.append(line);
-			// Logger.getLogger(this.getClass()).info(line);
+			// LogManager.getLogger(this.getClass()).info(line);
 		}
 
 		String resultString = result.toString();
@@ -424,7 +424,7 @@ public class PackageTracking {
 		resultString = resultString.substring(0, resultString.length() - 1);
 		resultString = "{\"packages\":" + resultString + "}";
 
-		// Logger.getLogger(this.getClass()).info(resultString);
+		// LogManager.getLogger(this.getClass()).info(resultString);
 
 		List<SimpleDateFormat> knownPatterns = new ArrayList<SimpleDateFormat>();
 		knownPatterns.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
@@ -442,7 +442,7 @@ public class PackageTracking {
 		while (fieldsIterator.hasNext()) {
 
 			Map.Entry<String, JsonNode> field = fieldsIterator.next();
-			// Logger.getLogger(this.getClass()).info("Key: " + field.getKey() + "\tValue:" +
+			// LogManager.getLogger(this.getClass()).info("Key: " + field.getKey() + "\tValue:" +
 			// field.getValue());
 
 			JsonNode jsonNode = field.getValue().get(0);
@@ -453,7 +453,7 @@ public class PackageTracking {
 
 				JsonNode singleShipment = jsonNode.get(i);
 
-				Logger.getLogger(PackageHistory.class).info(singleShipment);
+				LogManager.getLogger(PackageHistory.class).info(singleShipment);
 
 				String trackingNumber = singleShipment.get(0).asText();
 				String packageName = singleShipment.get(1).asText();
@@ -461,10 +461,10 @@ public class PackageTracking {
 				boolean delivered = (singleShipment.get(3).asText().equals("no")) ? true : false;
 
 				JsonNode steps = singleShipment.get(4);
-				Logger.getLogger(PackageHistory.class).info("Steps:" + steps.get(0));
+				LogManager.getLogger(PackageHistory.class).info("Steps:" + steps.get(0));
 				String dateAdded = singleShipment.get(6).asText();
 				String dateChanged = singleShipment.get(7).asText();
-				Logger.getLogger(PackageHistory.class).info("Status: " + singleShipment.get(8).asText());
+				LogManager.getLogger(PackageHistory.class).info("Status: " + singleShipment.get(8).asText());
 
 				String carrierFullname = carrierMap.get(carrier);
 
@@ -495,9 +495,9 @@ public class PackageTracking {
 						// historyEntry.setTrackedPackage(trackedPackage);
 						trackedPackage.getPackageHistory().add(historyEntry);
 						hashCodes.add(id);
-						Logger.getLogger(PackageHistory.class).info("adding history event");
+						LogManager.getLogger(PackageHistory.class).info("adding history event");
 					} else {
-						Logger.getLogger(PackageHistory.class).info("duplicate found");
+						LogManager.getLogger(PackageHistory.class).info("duplicate found");
 					}
 				}
 
@@ -505,7 +505,7 @@ public class PackageTracking {
 				
 				trackedPackages.add(trackedPackage);
 
-				Logger.getLogger(PackageHistory.class).info("Tracking No:" + trackingNumber + " Delivered: " + delivered + " sCarrier: "
+				LogManager.getLogger(PackageHistory.class).info("Tracking No:" + trackingNumber + " Delivered: " + delivered + " sCarrier: "
 						+ carrierFullname + " Name: " + packageName);
 			}
 		}
@@ -518,7 +518,7 @@ public class PackageTracking {
 			
 			
 			if (!isPackageTracked(openPackage, trackedPackages)) {
-				Logger.getLogger(PackageHistory.class).info("Package deleted: "+openPackage.getId().getTrackingNumber());
+				LogManager.getLogger(PackageHistory.class).info("Package deleted: "+openPackage.getId().getTrackingNumber());
 				openPackage.setDelivered(true);
 				em.merge(openPackage);
 			}
@@ -557,7 +557,7 @@ public class PackageTracking {
 			if (phList!=null && !phList.isEmpty()) {
 				singlePackage.setPackageHistory(phList);
 				
-				Logger.getLogger(this.getClass()).info("steps: "+singlePackage.getPackageHistory().size());
+				LogManager.getLogger(this.getClass()).info("steps: "+singlePackage.getPackageHistory().size());
 			}
 			singlePackage.setCarrierName(createCarrierMap.get(singlePackage.getId().getCarrier()));
 			
@@ -581,7 +581,7 @@ public class PackageTracking {
 		for (PackageHistory packageHistory : packageHistories) {
 			PackageHistory mergedPackageHistory = mergePackageHistory(em, packageHistory);
 			em.merge(mergedPackageHistory);
-			Logger.getLogger(PackageHistory.class).info("persisting history");
+			LogManager.getLogger(PackageHistory.class).info("persisting history");
 			mergedPackageHistories.add(mergedPackageHistory);
 
 		}
@@ -595,7 +595,7 @@ public class PackageTracking {
 			Package existingPackage = results.get(0);
 			
 			em.getTransaction().begin();
-			Logger.getLogger(PackageHistory.class).info("performing package merge");
+			LogManager.getLogger(PackageHistory.class).info("performing package merge");
 
 			
 			existingPackage.setDateModified(trackedPackage.getDateModified());
@@ -617,10 +617,10 @@ public class PackageTracking {
 		if (results == null || results.isEmpty()) {
 			
 			em.persist(packageHistory);
-			Logger.getLogger(PackageHistory.class).info("added new history");
+			LogManager.getLogger(PackageHistory.class).info("added new history");
 			return packageHistory;
 		} else {
-			Logger.getLogger(PackageHistory.class).info("found existing history");
+			LogManager.getLogger(PackageHistory.class).info("found existing history");
 			return results.get(0);
 		}
 

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.services.base.AutoCreateInstance;
 
@@ -23,7 +23,7 @@ class CustomOutputStream extends OutputStream {
 		// the correct way of doing this would be using a buffer
 		// to store characters until a newline is encountered,
 		// this implementation is for illustration only
-		Logger.getLogger(this.getClass()).info((char) b);
+		LogManager.getLogger(this.getClass()).info((char) b);
 	}
 	
 	public static CustomOutputStream getInstance() {

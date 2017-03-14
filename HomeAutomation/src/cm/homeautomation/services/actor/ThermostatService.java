@@ -14,11 +14,10 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Switch;
-import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 
@@ -73,7 +72,7 @@ public class ThermostatService extends BaseService {
 		em.getTransaction().commit();
 		
 		//TODO bind FHEM
-		Logger.getLogger(this.getClass()).info("Set "+id+" to value: "+value);
+		LogManager.getLogger(this.getClass()).info("Set "+id+" to value: "+value);
 		em.close();
 		return new GenericStatus();
 	}

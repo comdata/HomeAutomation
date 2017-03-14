@@ -9,7 +9,7 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -45,7 +45,7 @@ public class OverviewWebSocket {
 	@Subscribe
 	public void handleSensorDataChanged(EventObject eventObject) {
 
-		Logger.getLogger(this.getClass()).info("Overview got event");
+		LogManager.getLogger(this.getClass()).info("Overview got event");
 		Object eventData = eventObject.getData();
 		if (eventData instanceof SensorData) {
 
@@ -53,13 +53,13 @@ public class OverviewWebSocket {
 			OverviewTile overviewTileForRoom = new OverviewService()
 					.getOverviewTileForRoom(sensorData.getSensor().getRoom());
 
-			Logger.getLogger(this.getClass()).info("Got eventbus for room: " + sensorData.getSensor().getRoom().getRoomName());
+			LogManager.getLogger(this.getClass()).info("Got eventbus for room: " + sensorData.getSensor().getRoom().getRoomName());
 
 			try {
 
 				overviewEndPointConfiguration = new OverviewEndPointConfiguration();
 				overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
-				Logger.getLogger(this.getClass()).info(
+				LogManager.getLogger(this.getClass()).info(
 						"Sending tile: " + overviewTileForRoom.getRoomName() + " - " + overviewTileForRoom.getNumber());
 				overviewEndpoint.sendTile(overviewTileForRoom);
 			} catch (InstantiationException e) {
@@ -67,7 +67,7 @@ public class OverviewWebSocket {
 				e.printStackTrace();
 			}
 		} else {
-			Logger.getLogger(this.getClass()).info("Eventdata not SensorData: " + eventData.getClass().getName());
+			LogManager.getLogger(this.getClass()).info("Eventdata not SensorData: " + eventData.getClass().getName());
 		}
 	}
 
@@ -125,7 +125,7 @@ public class OverviewWebSocket {
 			if (session.isOpen()) {
 
 				try {
-					Logger.getLogger(this.getClass()).info(
+					LogManager.getLogger(this.getClass()).info(
 							"Sending to " + session.getId() + " - " + tile.getRoomName() + " - " + tile.getNumber());
 
 					if (session.isOpen()) {

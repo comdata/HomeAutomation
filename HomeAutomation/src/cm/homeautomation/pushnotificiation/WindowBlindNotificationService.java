@@ -5,7 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -40,11 +40,11 @@ public class WindowBlindNotificationService {
 			notificationUrl = props.getProperty("notificationUrl");
 			iconUrl = props.getProperty("iconUrl");
 			
-			Logger.getLogger(this.getClass()).info("Notification setup using authToken: "+authToken+" projectId: "+projectId+" url: "+notificationUrl);
+			LogManager.getLogger(this.getClass()).info("Notification setup using authToken: "+authToken+" projectId: "+projectId+" url: "+notificationUrl);
 
 			EventBusService.getEventBus().register(this);
 		} catch (IOException e) {
-			Logger.getLogger(this.getClass()).info("Could not find pushpad properties!");
+			LogManager.getLogger(this.getClass()).info("Could not find pushpad properties!");
 		}
 	}
 
@@ -71,7 +71,7 @@ public class WindowBlindNotificationService {
 			Notification notification = pushpad.buildNotification("Window Blind ("+name+") changed position", message,
 					notificationUrl);
 			
-			Logger.getLogger(this.getClass()).info("Preparing notification: "+message);
+			LogManager.getLogger(this.getClass()).info("Preparing notification: "+message);
 
 			// optional, defaults to the project icon
 			// notification.iconUrl = notificationUrl;
@@ -84,7 +84,7 @@ public class WindowBlindNotificationService {
 
 				// deliver to everyone
 				notification.broadcast();
-				Logger.getLogger(this.getClass()).info("Notification sent.");
+				LogManager.getLogger(this.getClass()).info("Notification sent.");
 				
 			} catch (DeliveryException e) {
 				e.printStackTrace();

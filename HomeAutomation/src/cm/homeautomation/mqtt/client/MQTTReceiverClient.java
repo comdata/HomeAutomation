@@ -2,7 +2,7 @@ package cm.homeautomation.mqtt.client;
 
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -35,12 +35,12 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 				try {
 					if (client != null) {
 						if (!client.isConnected()) {
-							Logger.getLogger(this.getClass()).info("Not connected");
+							LogManager.getLogger(this.getClass()).info("Not connected");
 							connect();
 						}
 
 					} else {
-						Logger.getLogger(this.getClass()).info("client is null");
+						LogManager.getLogger(this.getClass()).info("client is null");
 						connect();
 					}
 					Thread.sleep(10000);
@@ -82,7 +82,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 		client.subscribe("/sensorState");
 		client.subscribe("/distanceSensor");
 		client.subscribe("/switch");
-		Logger.getLogger(this.getClass()).info("Started MQTT client");
+		LogManager.getLogger(this.getClass()).info("Started MQTT client");
 	}
 
 	public void stopServer() {
@@ -103,9 +103,9 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 			client.close();
 			client.disconnect();
 		} catch (MqttException e1) {
-			Logger.getLogger(this.getClass()).error("force close failed.", e1);
+			LogManager.getLogger(this.getClass()).error("force close failed.", e1);
 		}
-		Logger.getLogger(this.getClass()).info("trying reconnect to MQTT broker");
+		LogManager.getLogger(this.getClass()).info("trying reconnect to MQTT broker");
 		try {
 			connect();
 		} catch (MqttException e) {
@@ -118,12 +118,12 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		byte[] payload = message.getPayload();
 		String messageContent = new String(payload);
-		Logger.getLogger(this.getClass()).info("Got MQTT message: " + messageContent);
+		LogManager.getLogger(this.getClass()).info("Got MQTT message: " + messageContent);
 		try {
 			JSONSensorDataReceiver.receiveSensorData(messageContent);
 		} catch (Exception e) {
 			e.printStackTrace();
-			Logger.getLogger(this.getClass()).error("Got an exception while saving data.", e);
+			LogManager.getLogger(this.getClass()).error("Got an exception while saving data.", e);
 		}
 		client.messageArrivedComplete(message.getId(), message.getQos());
 

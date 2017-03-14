@@ -3,7 +3,7 @@ package cm.homeautomation.device;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Device;
@@ -31,7 +31,7 @@ public class DeviceService {
 			
 			return device.getRoom();
 		} catch (NoResultException e) {
-			Logger.getLogger(DeviceService.class).info("Mac: " + mac);
+			LogManager.getLogger(DeviceService.class).info("Mac: " + mac);
 			e.printStackTrace();
 			return null;
 		}
@@ -40,7 +40,7 @@ public class DeviceService {
 	public static Device getDeviceForMac(String mac) {
 		try {
 			EntityManager em = EntityManagerService.getNewManager();
-			Logger.getLogger(DeviceService.class).info("Mac: " + mac);
+			LogManager.getLogger(DeviceService.class).info("Mac: " + mac);
 			Device device = (Device) em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac)
 					.getSingleResult();
 
@@ -52,7 +52,7 @@ public class DeviceService {
 			}
 			return device;
 		} catch (NoResultException e) {
-			Logger.getLogger(DeviceService.class).info("Mac: " + mac);
+			LogManager.getLogger(DeviceService.class).info("Mac: " + mac);
 			e.printStackTrace();
 			return null;
 		}

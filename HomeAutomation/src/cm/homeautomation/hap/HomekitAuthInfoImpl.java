@@ -14,8 +14,8 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.beowulfe.hap.HomekitAuthInfo;
 import com.beowulfe.hap.HomekitServer;
@@ -108,7 +108,7 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
 	private final BigInteger salt;
 	private final byte[] privateKey;
 	private final String pin;
-	private Logger logger = LoggerFactory.getLogger(HomekitAuthInfoImpl.class);
+	private Logger logger = LogManager.getLogger(HomekitAuthInfoImpl.class);
 
 	public HomekitAuthInfoImpl(String pin) throws InvalidAlgorithmParameterException {
 		storage = new StorageService().getStorage();

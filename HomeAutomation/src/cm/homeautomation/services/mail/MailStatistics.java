@@ -12,7 +12,7 @@ import javax.mail.Store;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
@@ -59,7 +59,7 @@ public class MailStatistics extends BaseService {
 		  
 		  
 		  Folder folder = store.getFolder("INBOX");
-		  Logger.getLogger(MailStatistics.class).info("Account: "+account+": "+folder.getNewMessageCount() + " - "+folder.getUnreadMessageCount());
+		  LogManager.getLogger(MailStatistics.class).info("Account: "+account+": "+folder.getNewMessageCount() + " - "+folder.getUnreadMessageCount());
 		  mailData.setNewMessages(folder.getNewMessageCount());
 		  mailData.setUnreadMessages(folder.getUnreadMessageCount());
 		  EventObject eventObject=new EventObject(mailData);
@@ -79,7 +79,7 @@ public class MailStatistics extends BaseService {
 		List<MailData> mailboxStatus = new MailStatistics().getMailboxStatus();
 		
 		for (MailData mailData : mailboxStatus) {
-			Logger.getLogger(MailStatistics.class).info(mailData.getAccount()+" - "+mailData.getNewMessages()+" - "+mailData.getUnreadMessages());
+			LogManager.getLogger(MailStatistics.class).info(mailData.getAccount()+" - "+mailData.getNewMessages()+" - "+mailData.getUnreadMessages());
 		}
 	}
 }

@@ -4,7 +4,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -12,7 +11,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.NetworkDevice;
@@ -73,11 +72,11 @@ public class NetworkDevicesService extends BaseService {
             socket.send(packet);
             socket.close();
             
-            Logger.getLogger(this.getClass()).info("Wake-on-LAN packet sent.");
+            LogManager.getLogger(this.getClass()).info("Wake-on-LAN packet sent.");
             return new GenericStatus(true);
         }
         catch (Exception e) {
-            Logger.getLogger(this.getClass()).info("Failed to send Wake-on-LAN packet: + e");
+            LogManager.getLogger(this.getClass()).info("Failed to send Wake-on-LAN packet: + e");
             return new GenericStatus(false);
         }
         

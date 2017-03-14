@@ -1,6 +1,6 @@
 package cm.homeautomation.telegram.commands;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Chat;
 import org.telegram.telegrambots.api.objects.User;
@@ -31,7 +31,7 @@ public class AuthenticateCommand extends BotCommand {
         
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
-        Logger.getLogger(this.getClass()).info(String.valueOf(user.getId()));
+        LogManager.getLogger(this.getClass()).info(String.valueOf(user.getId()));
         sendMessage.setChatId(String.valueOf(user.getId()));
         sendMessage.setText("Test");
         try {

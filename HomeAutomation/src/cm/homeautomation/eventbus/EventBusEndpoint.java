@@ -1,12 +1,7 @@
 package cm.homeautomation.eventbus;
 
-import java.net.URI;
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentHashMap.KeySetView;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -15,11 +10,9 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.google.common.eventbus.Subscribe;
-
-import cm.homeautomation.services.actor.MessageTranscoder;
 
 @ServerEndpoint(value = "/eventbus/{clientId}", configurator = EventBusEndpointConfigurator.class, encoders = {
 		EventTranscoder.class }, decoders = { EventTranscoder.class })
@@ -69,7 +62,7 @@ public class EventBusEndpoint {
 
 			if (session.isOpen()) {
 				try {
-					Logger.getLogger(this.getClass()).info("Eventbus Sending to " + session.getId());
+					LogManager.getLogger(this.getClass()).info("Eventbus Sending to " + session.getId());
 					session.getAsyncRemote().sendObject(eventObject);
 				} catch (IllegalStateException e) {
 					userSessions.remove(key);

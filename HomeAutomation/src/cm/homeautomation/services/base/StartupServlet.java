@@ -4,23 +4,19 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
-import org.apache.log4j.Logger;
-import org.eclipse.paho.client.mqttv3.logging.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
 
-import cm.homeautomation.entities.NetworkDevice;
 import cm.homeautomation.eventbus.EventBusEndpoint;
 import cm.homeautomation.eventbus.EventBusEndpointConfigurator;
 import cm.homeautomation.hap.HAPService;
 import cm.homeautomation.jeromq.server.JeroMQServer;
 import cm.homeautomation.mdns.MDNSService;
-import cm.homeautomation.moquette.server.MoquetteServer;
-import cm.homeautomation.services.overview.OverviewEndPointConfiguration;
-import cm.homeautomation.services.overview.OverviewWebSocket;
-import cm.homeautomation.telegram.TelegramBotService;
-import cm.homeautomation.transmission.TransmissionMonitor;
 import cm.homeautomation.mqtt.client.MQTTReceiverClient;
 import cm.homeautomation.networkMonitor.NetworkDeviceDatabaseUpdater;
 import cm.homeautomation.pushnotificiation.WindowBlindNotificationService;
+import cm.homeautomation.services.overview.OverviewEndPointConfiguration;
+import cm.homeautomation.services.overview.OverviewWebSocket;
+import cm.homeautomation.telegram.TelegramBotService;
 
 public class StartupServlet extends HttpServlet {
 
@@ -43,7 +39,7 @@ public class StartupServlet extends HttpServlet {
 
 	public void init(ServletConfig config) throws ServletException {
 
-		Logger.getLogger(this.getClass()).info("Starting scheduler");
+		LogManager.getLogger(this.getClass()).info("Starting scheduler");
 		schedulerThread = SchedulerThread.getInstance();
 
 		EventBusAnnotationInitializer eventBusAnnotationInitializer = new EventBusAnnotationInitializer();

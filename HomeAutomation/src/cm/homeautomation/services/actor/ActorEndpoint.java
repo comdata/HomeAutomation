@@ -1,10 +1,6 @@
 package cm.homeautomation.services.actor;
 
-import java.net.URI;
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.websocket.OnClose;
@@ -14,7 +10,7 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 @ServerEndpoint(value = "/actor/{clientId}", configurator = ActorEndpointConfigurator.class, encoders = {
 		MessageTranscoder.class }, decoders = { MessageTranscoder.class })
@@ -61,7 +57,7 @@ public class ActorEndpoint {
 
 			if (session.isOpen()) {
 				try {
-					Logger.getLogger(this.getClass()).info("Actor Sending to " + session.getId());
+					LogManager.getLogger(this.getClass()).info("Actor Sending to " + session.getId());
 					session.getAsyncRemote().sendObject(switchEvent);
 				} catch (IllegalStateException e) {
 					userSessions.remove(key);

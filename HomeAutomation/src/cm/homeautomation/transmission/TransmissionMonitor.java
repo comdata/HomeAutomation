@@ -3,20 +3,17 @@ package cm.homeautomation.transmission;
 import java.net.URI;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.eventbus.EventBus;
 
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import nl.stil4m.transmission.api.TransmissionRpcClient;
-import nl.stil4m.transmission.api.domain.RemoveTorrentInfo;
 import nl.stil4m.transmission.api.domain.TorrentInfo;
 import nl.stil4m.transmission.api.domain.TorrentInfoCollection;
 import nl.stil4m.transmission.rpc.RpcClient;
-import nl.stil4m.transmission.rpc.RpcCommand;
 import nl.stil4m.transmission.rpc.RpcConfiguration;
 import nl.stil4m.transmission.rpc.RpcException;
 
@@ -39,8 +36,8 @@ public class TransmissionMonitor {
 
 			Long downloadSpeed = rpcClient.getSessionStats().getDownloadSpeed();
 			Long uploadSpeed = rpcClient.getSessionStats().getUploadSpeed();
-			Logger.getLogger(TransmissionMonitor.class).info("Download speed: " + downloadSpeed);
-			Logger.getLogger(TransmissionMonitor.class).info("Upload speed: " + uploadSpeed);
+			LogManager.getLogger(TransmissionMonitor.class).info("Download speed: " + downloadSpeed);
+			LogManager.getLogger(TransmissionMonitor.class).info("Upload speed: " + uploadSpeed);
 			int numberOfTorrents = result.getTorrents().size();
 			int numberOfDoneTorrents = 0;
 			List<TorrentInfo> torrents = result.getTorrents();
@@ -48,13 +45,13 @@ public class TransmissionMonitor {
 				Boolean finished = torrentInfo.getFinished();
 
 				double percentDone = torrentInfo.getPercentDone().doubleValue();
-				Logger.getLogger(TransmissionMonitor.class).info("Percent done: " + percentDone);
+				LogManager.getLogger(TransmissionMonitor.class).info("Percent done: " + percentDone);
 				if (percentDone == 1) {
 					numberOfDoneTorrents++;
 				}
 			}
-			Logger.getLogger(TransmissionMonitor.class).info("Done torrents: " + numberOfDoneTorrents);
-			Logger.getLogger(TransmissionMonitor.class).info("Running torrents: " + numberOfTorrents);
+			LogManager.getLogger(TransmissionMonitor.class).info("Done torrents: " + numberOfDoneTorrents);
+			LogManager.getLogger(TransmissionMonitor.class).info("Running torrents: " + numberOfTorrents);
 
 			TransmissionStatusData torrentData = new TransmissionStatusData();
 			torrentData.setUploadSpeed(uploadSpeed);

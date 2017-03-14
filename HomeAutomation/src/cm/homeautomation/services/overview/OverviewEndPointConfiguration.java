@@ -2,7 +2,7 @@ package cm.homeautomation.services.overview;
 
 import javax.websocket.server.ServerEndpointConfig.Configurator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class OverviewEndPointConfiguration extends Configurator {
 	private static OverviewWebSocket overviewEndpoint;
@@ -17,7 +17,7 @@ public class OverviewEndPointConfiguration extends Configurator {
 	}
 
 	public static void setOverviewEndpoint(OverviewWebSocket overviewEndpoint) {
-		Logger.getLogger(OverviewEndPointConfiguration.class).info("adding overviewEndpoint");
+		LogManager.getLogger(OverviewEndPointConfiguration.class).info("adding overviewEndpoint");
 		OverviewEndPointConfiguration.overviewEndpoint = overviewEndpoint;
 	}
 	

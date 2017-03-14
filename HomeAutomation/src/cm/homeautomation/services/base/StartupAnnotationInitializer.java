@@ -5,13 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
-
-import com.google.common.eventbus.Subscribe;
 
 public class StartupAnnotationInitializer {
 
@@ -31,12 +29,12 @@ public class StartupAnnotationInitializer {
 		for (Method method : resources) {
 			try {
 				Class<?> declaringClass = method.getDeclaringClass();
-				Logger.getLogger(this.getClass()).info("Creating class: " + declaringClass.getName());
+				LogManager.getLogger(this.getClass()).info("Creating class: " + declaringClass.getName());
 				Object classInstance = declaringClass.newInstance();
 
 				instances.put(declaringClass, classInstance);
 			} catch (InstantiationException | IllegalAccessException e) {
-				Logger.getLogger(this.getClass()).info("Failed creating class");
+				LogManager.getLogger(this.getClass()).info("Failed creating class");
 			}
 		}
 	}

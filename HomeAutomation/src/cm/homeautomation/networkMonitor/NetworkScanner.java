@@ -4,12 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
-
-import com.google.common.eventbus.EventBus;
+import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.entities.NetworkDevice;
 import cm.homeautomation.eventbus.EventBusService;
@@ -35,7 +32,7 @@ public class NetworkScanner {
 			try {
 				InetAddress currentHost = InetAddress.getByName(host);
 				if (currentHost.isReachable(timeout)) {
-					Logger.getLogger(this.getClass()).info(host + " is reachable");
+					LogManager.getLogger(this.getClass()).info(host + " is reachable");
 
 					String macFromArpCache = getMacFromArpCache(host);
 
