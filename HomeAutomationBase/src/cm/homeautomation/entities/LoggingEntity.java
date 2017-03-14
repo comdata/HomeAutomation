@@ -7,7 +7,7 @@ import javax.persistence.Id;
 
 import org.apache.logging.log4j.core.appender.db.jpa.BasicLogEventEntity;
 
-@Entity
+@Entity(name="LOGGING")
 public class LoggingEntity extends BasicLogEventEntity {
 
 	/**
