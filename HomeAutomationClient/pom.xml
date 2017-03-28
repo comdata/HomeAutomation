@@ -16,6 +16,7 @@
 		<sapui5.version>1.30.10</sapui5.version>
 		<version.jersey>2.22.1</version.jersey>
 		<version.servlet.api>3.1.0</version.servlet.api>
+		<sonar.skip>true</sonar.skip>
 	</properties>
 
 	<dependencies>

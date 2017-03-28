@@ -8,6 +8,10 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
+	<properties>
+		<sonar.test.inclusions>**/*test*/**</sonar.test.inclusions>
+		<sonar.exclusions>**/*test*/**</sonar.exclusions>
+	</properties>
 <!--	<prerequisites>
 		<maven>3.3.9</maven>
 	</prerequisites>-->
