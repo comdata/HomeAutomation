@@ -47,8 +47,13 @@ public class WeatherService {
 		req.addFeature(Feature.CONDITIONS);
 		req.addFeature(Feature.FORECAST);
 		WeatherResponse weather = req.query(country, city);
-		weatherData.setHumidity(weather.getCurrent_observation().getRelativeHumidity());
-		weatherData.setTempC(weather.getCurrent_observation().getTempC());
+		
+		if (weather!=null && weather.getCurrent_observation()!=null) {
+			weatherData.setHumidity(weather.getCurrent_observation().getRelativeHumidity());
+			weatherData.setTempC(weather.getCurrent_observation().getTempC());
+		} else {
+			Logger.getLogger(WeatherService.class).info("Could not access weather information");
+		}
 
 		return weatherData;
 	}
