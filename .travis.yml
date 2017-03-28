@@ -15,7 +15,7 @@ addons:
     packages:
       - oracle-java8-installer
   sonarqube:
-    organization: "HomeAutomation"
+    organization: "homeautomation"
 
 script:
   # the following command line builds the project, runs the tests with coverage and then execute the SonarQube analysis
