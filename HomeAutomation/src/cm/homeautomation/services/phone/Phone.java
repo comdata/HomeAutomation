@@ -30,11 +30,9 @@ public class Phone extends BaseService {
 	@GET
 	public GenericStatus setStatus(@PathParam("event") String event, @PathParam("mode") String mode, @PathParam("internalNumber") String internalNumber,
 			@PathParam("externalNumber") String externalNumber) {
-		System.out.println(
-				"Phone call: " + mode + " internalNumber: " + internalNumber + " external number: " + externalNumber);
-
 		
-		
+		LogManager.getLogger(this.getClass()).info("Phone call: " + mode + " internalNumber: " + internalNumber + " external number: " + externalNumber);
+				
 		PhoneCallEvent phoneCallEvent = new PhoneCallEvent(event, mode, internalNumber, externalNumber);
 		
 		EntityManager em = EntityManagerService.getNewManager();
