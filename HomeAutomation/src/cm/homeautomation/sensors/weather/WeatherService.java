@@ -52,7 +52,7 @@ public class WeatherService {
 			weatherData.setHumidity(weather.getCurrent_observation().getRelativeHumidity());
 			weatherData.setTempC(weather.getCurrent_observation().getTempC());
 		} else {
-			Logger.getLogger(WeatherService.class).info("Could not access weather information");
+			LogManager.getLogger(WeatherService.class).info("Could not access weather information");
 		}
 
 		return weatherData;

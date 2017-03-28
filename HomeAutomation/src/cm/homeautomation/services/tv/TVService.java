@@ -1,6 +1,6 @@
 package cm.homeautomation.services.tv;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.google.common.eventbus.Subscribe;
 import com.homeautomation.tv.panasonic.PanasonicTVBinding;
@@ -41,18 +41,18 @@ public class TVService {
 				try {
 					tvBinding.sendCommand(tvIp, "MUTE");
 
-					Logger.getLogger(this.getClass()).info("muting TV");
+					LogManager.getLogger(this.getClass()).info("muting TV");
 				} catch (TVNotReachableException e) {
-					Logger.getLogger(this.getClass()).error(e);
+					LogManager.getLogger(this.getClass()).error(e);
 				}
 			}
 			
 			if ("disconnect".equals(event)) {
 				try {
 					tvBinding.sendCommand(tvIp, "MUTE");
-					Logger.getLogger(this.getClass()).info("unmuting TV");
+					LogManager.getLogger(this.getClass()).info("unmuting TV");
 				} catch (TVNotReachableException e) {
-					Logger.getLogger(this.getClass()).error(e);
+					LogManager.getLogger(this.getClass()).error(e);
 				}
 			}
 		}
