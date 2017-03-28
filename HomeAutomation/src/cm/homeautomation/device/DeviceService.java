@@ -31,8 +31,8 @@ public class DeviceService {
 			
 			return device.getRoom();
 		} catch (NoResultException e) {
-			LogManager.getLogger(DeviceService.class).info("Mac: " + mac);
-			e.printStackTrace();
+			LogManager.getLogger(DeviceService.class).info("Mac: " + mac, e);
+
 			return null;
 		}
 	}
@@ -52,8 +52,7 @@ public class DeviceService {
 			}
 			return device;
 		} catch (NoResultException e) {
-			LogManager.getLogger(DeviceService.class).info("Mac: " + mac);
-			e.printStackTrace();
+			LogManager.getLogger(DeviceService.class).info("Mac: " + mac, e);
 			return null;
 		}
 	}

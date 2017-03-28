@@ -60,7 +60,9 @@ public class WeatherService {
 
 	public static void main(String[] args) {
 		WeatherData weather = WeatherService.getWeather();
-		LogManager.getLogger(WeatherService.class).info(weather.getTempC());
-		LogManager.getLogger(WeatherService.class).info(weather.getHumidity());
+		if (weather!=null) {
+			LogManager.getLogger(WeatherService.class).info(weather.getTempC());
+			LogManager.getLogger(WeatherService.class).info(weather.getHumidity());
+		}
 	}
 }

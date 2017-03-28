@@ -61,16 +61,16 @@ public class Phone extends BaseService {
 
 	private void getCall(String host, int portNum) {
 
-		System.out.println("Host " + host + "; port " + portNum);
+		LogManager.getLogger(this.getClass()).info("Host " + host + "; port " + portNum);
 		try {
 			Socket s = new Socket(host, portNum);
 			new Pipe(s.getInputStream(), System.out).start();
 			new Pipe(System.in, s.getOutputStream()).start();
 		} catch (IOException e) {
-			System.out.println(e);
+			LogManager.getLogger(this.getClass()).info(e);
 			return;
 		}
-		System.out.println("Connected OK");
+		LogManager.getLogger(this.getClass()).info("Connected OK");
 	}
 
 	/**
