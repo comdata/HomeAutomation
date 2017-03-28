@@ -13,10 +13,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import org.apache.logging.log4j.LogManager;
+
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.PhoneCallEvent;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
+import cm.homeautomation.sensors.weather.WeatherService;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 
@@ -53,8 +56,7 @@ public class Phone extends BaseService {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LogManager.getLogger(Phone.class).info("Thread interrupted.");
 			}
 		}
 	}
