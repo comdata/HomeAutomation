@@ -54,6 +54,7 @@ public class NetworkScanner {
 					}
 				}
 			} catch (IOException e) {
+				LogManager.getLogger(this.getClass()).info(e);
 			}
 		}
 
@@ -97,12 +98,12 @@ public class NetworkScanner {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).info(e);
 		} finally {
 			try {
 				br.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				LogManager.getLogger(this.getClass()).info(e);
 			}
 		}
 		return null;
