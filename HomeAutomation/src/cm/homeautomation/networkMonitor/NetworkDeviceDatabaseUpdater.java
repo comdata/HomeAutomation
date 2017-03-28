@@ -28,7 +28,7 @@ public class NetworkDeviceDatabaseUpdater {
 			NetworkDevice networkDevice = foundHostMessage.getHost();
 			
 			EntityManager em = EntityManagerService.getNewManager();
-			List<NetworkDevice> resultList = null; 
+			List<NetworkDevice> resultList; 
 			
 			String mac = networkDevice.getMac();
 			
