@@ -101,7 +101,9 @@ public class NetworkScanner {
 			LogManager.getLogger(this.getClass()).info(e);
 		} finally {
 			try {
-				br.close();
+				if (br!=null) {
+					br.close();
+				}
 			} catch (IOException e) {
 				LogManager.getLogger(this.getClass()).info(e);
 			}
