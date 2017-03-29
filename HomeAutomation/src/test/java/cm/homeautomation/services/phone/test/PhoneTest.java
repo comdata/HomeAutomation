@@ -10,6 +10,12 @@ import org.junit.Test;
 import cm.homeautomation.entities.PhoneCallEvent;
 import cm.homeautomation.services.phone.Phone;
 
+/**
+ * Phone Call recording and event handling tests
+ * 
+ * @author christoph
+ *
+ */
 public class PhoneTest {
 	
 	private Phone phone;

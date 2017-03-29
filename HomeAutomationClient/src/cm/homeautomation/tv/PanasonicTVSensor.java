@@ -1,8 +1,7 @@
 package cm.homeautomation.tv;
 
-import com.homeautomation.tv.panasonic.PanasonicTVBinding;
-
 import cm.homeautomation.sensors.base.TechnicalSensor;
+import cm.homeautomation.tv.panasonic.PanasonicTVBinding;
 
 public class PanasonicTVSensor implements TechnicalSensor {
 

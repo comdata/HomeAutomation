@@ -1,21 +1,15 @@
-package com.homeautomation.tv.panasonic.test;
+package cm.homeautomation.tv.panasonic.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.ServerSocket;
-import java.net.Socket;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.homeautomation.tv.panasonic.PanasonicTVBinding;
+import cm.homeautomation.tv.panasonic.PanasonicTVBinding;
+import cm.homeautomation.tv.panasonic.test.TVServer;
 
 public class PanasonicTVBindingTest {
 
@@ -39,7 +33,7 @@ public class PanasonicTVBindingTest {
 
 	@Test
 	public void testCheckAlive() throws Exception {
-		tvServer = new TVServer();
+		tvServer = new TVServer(tvPort);
 		tvServer.setRun(true);
 		tvServer.start();
 
@@ -53,7 +47,7 @@ public class PanasonicTVBindingTest {
 
 	@Test
 	public void testCheckAliveFalse() throws Exception {
-		tvServer = new TVServer();
+		tvServer = new TVServer(tvPort);
 		tvServer.setRun(true);
 		tvServer.start();
 		System.out.println("Running test for checkAliveFalse");
@@ -76,7 +70,7 @@ public class PanasonicTVBindingTest {
 	@Test
 	public void testSendHDMICommand() throws Exception {
 		System.out.println("Running test for testSendHDMICommand()");
-		tvServer = new TVServer();
+		tvServer = new TVServer(tvPort);
 		tvServer.setRun(true);
 		tvServer.start();
 
@@ -96,64 +90,5 @@ public class PanasonicTVBindingTest {
 		assertEquals(statusCode, 0);
 	}
 
-	class TVServer extends Thread {
-
-		private boolean run = true;
-		private String statusCode = "";
-		private ServerSocket welcomeSocket;
-
-		public TVServer() {
-
-			try {
-				welcomeSocket = new ServerSocket(tvPort);
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.out.println("socket creation failed");
-			}
-		}
-
-		public void run() {
-			System.out.println("Starting server");
-			while (run) {
-
-				try {
-
-					Socket connectionSocket = welcomeSocket.accept();
-					BufferedReader inFromClient = new BufferedReader(
-							new InputStreamReader(connectionSocket.getInputStream()));
-					DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
-
-					boolean clientData = true;
-					while (clientData) {
-						String clientSentence = inFromClient.readLine();
-						if (clientSentence.equals("")) {
-							clientData = false;
-						}
-					}
-
-					outToClient.writeBytes(statusCode);
-
-					welcomeSocket.close();
-
-				} catch (IOException e) {
-				}
-			}
-		}
-
-		public boolean isRun() {
-			return run;
-		}
-
-		public void setRun(boolean run) {
-			this.run = run;
-		}
-
-		public String getStatusCode() {
-			return statusCode;
-		}
-
-		public void setStatusCode(String statusCode) {
-			this.statusCode = statusCode;
-		}
-	}
+	
 }

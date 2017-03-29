@@ -25,6 +25,12 @@ import cm.homeautomation.sensors.weather.WeatherService;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 
+/**
+ * Phone Call recording and event handling 
+ * 
+ * @author christoph
+ *
+ */
 @Path("phone")
 public class Phone extends BaseService {
 
@@ -61,6 +67,11 @@ public class Phone extends BaseService {
 		return new GenericStatus(true);
 	}
 	
+	/**
+	 * provide a list of calls recorded in the system
+	 * 
+	 * @return
+	 */
 	@GET
 	@Path("getCallList")
 	public List<PhoneCallEvent> getCallList() {
@@ -70,7 +81,11 @@ public class Phone extends BaseService {
 		return em.createQuery("select p from PhoneCallEvent p order by p.timestamp desc").getResultList();
 		
 	}
-
+	
+	
+	/*
+	 * preparation for watching for call events internally
+	 */
 	public static void main(String[] argv) {
 		String configurationProperty = ConfigurationService.getConfigurationProperty("phone", "phoneserverip");
 		new Phone().getCall(configurationProperty, 1012);

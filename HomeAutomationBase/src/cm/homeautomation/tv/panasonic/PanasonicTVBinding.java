@@ -1,4 +1,4 @@
-package com.homeautomation.tv.panasonic;
+package cm.homeautomation.tv.panasonic;
 
 /**
  * Copyright (c) 2010-2015, openHAB.org and others.

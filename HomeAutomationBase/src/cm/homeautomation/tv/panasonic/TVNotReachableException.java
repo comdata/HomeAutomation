@@ -1,4 +1,4 @@
-package com.homeautomation.tv.panasonic;
+package cm.homeautomation.tv.panasonic;
 
 public class TVNotReachableException extends Exception {
 
