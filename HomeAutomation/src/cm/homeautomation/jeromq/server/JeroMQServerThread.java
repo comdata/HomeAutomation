@@ -10,10 +10,11 @@ public class JeroMQServerThread implements Runnable {
 
 	private Socket frontend;
 	private Socket backend;
+	private ZContext ctx;
 
 	@Override
 	public void run() {
-		ZContext ctx = new ZContext();
+		ctx = new ZContext();
 
         frontend = ctx.createSocket(ZMQ.ROUTER);
         frontend.bind("tcp://*:5570");
@@ -29,13 +30,15 @@ public class JeroMQServerThread implements Runnable {
         //  Connect backend to frontend via a proxy
         ZMQ.proxy(frontend, backend, null);
 
-        ctx.destroy();
 
 	}
 	
 	public void stop() {
+
 		frontend.close();
 		backend.close();
+        ctx.close();
+        ctx.destroy();
 	}
 
 }
