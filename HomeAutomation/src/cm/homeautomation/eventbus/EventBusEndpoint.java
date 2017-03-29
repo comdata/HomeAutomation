@@ -12,6 +12,7 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.apache.logging.log4j.LogManager;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 @ServerEndpoint(value = "/eventbus/{clientId}", configurator = EventBusEndpointConfigurator.class, encoders = {
@@ -20,9 +21,9 @@ public class EventBusEndpoint {
 
 	private ConcurrentHashMap<String, Session> userSessions = new ConcurrentHashMap<String, Session>();
 
-	// private Set<Session> userSessions = Collections.synchronizedSet(new
-	// HashSet<Session>());
-
+	/**
+	 * register for {@link EventBus} messages
+	 */
 	public EventBusEndpoint() {
 		EventBusService.getEventBus().register(this);
 	}
@@ -51,6 +52,11 @@ public class EventBusEndpoint {
 		userSessions.remove(userSession);
 	}
 
+	/**
+	 * receive EventObjects and forward them to the frontend using a web socket
+	 * 
+	 * @param eventObject
+	 */
 	@Subscribe
 	public void handleEvent(EventObject eventObject) {
 		Enumeration<String> keySet = userSessions.keys();
@@ -65,6 +71,7 @@ public class EventBusEndpoint {
 					LogManager.getLogger(this.getClass()).info("Eventbus Sending to " + session.getId());
 					session.getAsyncRemote().sendObject(eventObject);
 				} catch (IllegalStateException e) {
+					LogManager.getLogger(this.getClass()).info("Sending failed", e);
 					userSessions.remove(key);
 				}
 			} else {
