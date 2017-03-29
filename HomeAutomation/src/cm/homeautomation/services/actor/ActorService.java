@@ -59,7 +59,8 @@ public class ActorService extends BaseService implements MqttCallback {
 		EntityManager em = EntityManagerService.getNewManager();
 		SwitchStatuses switchStatuses = new SwitchStatuses();
 
-		List<Switch> switchList = em
+		@SuppressWarnings("unchecked")
+		List<Switch> switchList = (List<Switch>)em
 				.createQuery(
 						"select sw from Switch sw where sw.switchType IN ('SOCKET', 'LIGHT') and sw.room=(select r from Room r where r.id=:room)")
 				.setParameter("room", Long.parseLong(room)).getResultList();
@@ -87,7 +88,8 @@ public class ActorService extends BaseService implements MqttCallback {
 		EntityManager em = EntityManagerService.getNewManager();
 		SwitchStatuses switchStatuses = new SwitchStatuses();
 
-		List<Switch> switchList = em
+		@SuppressWarnings("unchecked")
+		List<Switch> switchList = (List<Switch>)em
 				.createQuery(
 						"select sw from Switch sw where sw.switchType IN ('THERMOSTAT') and sw.room=(select r from Room r where r.id=:room)")
 				.setParameter("room", Long.parseLong(room)).getResultList();
@@ -223,57 +225,13 @@ public class ActorService extends BaseService implements MqttCallback {
 			client.disconnect();
 			client.close();
 		} catch (MqttException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error(e);
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error(e);
 		}
 	}
 
-	/**
-	 * send multicast message with JSON data to the Client
-	 * 
-	 * uses multicast group 239.1.1.1 port 5000
-	 * 
-	 * @param message
-	 */
-	private synchronized void sendMulticastUDP(Object message) {
-		try {
-			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-			String json = ow.writeValueAsString(message);
-			
-			DatagramSocket socket = new DatagramSocket();
-
-			byte[] buf = new byte[4096];
-			buf = json.getBytes();
-
-			InetAddress group = InetAddress.getByName("239.1.1.1");
-			DatagramPacket packet;
-			packet = new DatagramPacket(buf, buf.length, group, port);
-			for (int i = 0; i < 1; i++) {
-				socket.send(packet);
-				LogManager.getLogger(this.getClass()).info("Send message:" + json);
-				Thread.sleep(200);
-			}
-
-			socket.close();
-
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
+	
 
 	/**
 	 * @return the instance
@@ -295,19 +253,19 @@ public class ActorService extends BaseService implements MqttCallback {
 
 	@Override
 	public void connectionLost(Throwable arg0) {
-		// TODO Auto-generated method stub
+		// do nothing
 		
 	}
 
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken arg0) {
-		// TODO Auto-generated method stub
+		// do nothing
 		
 	}
 
 	@Override
 	public void messageArrived(String arg0, MqttMessage arg1) throws Exception {
-		// TODO Auto-generated method stub
+		// do nothing
 		
 	}
 
