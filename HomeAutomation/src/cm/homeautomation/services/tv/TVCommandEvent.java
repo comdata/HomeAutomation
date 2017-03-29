@@ -9,6 +9,7 @@ public class TVCommandEvent {
 	private String command;
 
 	public TVCommandEvent() {
+		// nothing to do here, just an empty initializer
 	}
 
 	public TVCommandEvent(String tvIp, String command) {
