@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
@@ -15,6 +16,7 @@ import javax.ws.rs.PathParam;
 
 import org.apache.logging.log4j.LogManager;
 
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.PhoneCallEvent;
 import cm.homeautomation.eventbus.EventBusService;
@@ -26,29 +28,52 @@ import cm.homeautomation.services.base.GenericStatus;
 @Path("phone")
 public class Phone extends BaseService {
 
+	/**
+	 * accepts call events from external systems and creates a
+	 * {@link EventObject} message of type {@link PhoneCallEvent} to all
+	 * interested systems
+	 * 
+	 * @param event
+	 * @param mode
+	 * @param internalNumber
+	 * @param externalNumber
+	 * @return
+	 */
 	@Path("status/{event}/{mode}/{internalNumber}/{externalNumber}")
 	@GET
-	public GenericStatus setStatus(@PathParam("event") String event, @PathParam("mode") String mode, @PathParam("internalNumber") String internalNumber,
-			@PathParam("externalNumber") String externalNumber) {
-		
-		LogManager.getLogger(this.getClass()).info("Phone call: " + mode + " internalNumber: " + internalNumber + " external number: " + externalNumber);
-				
+	public GenericStatus setStatus(@PathParam("event") String event, @PathParam("mode") String mode,
+			@PathParam("internalNumber") String internalNumber, @PathParam("externalNumber") String externalNumber) {
+
+		LogManager.getLogger(this.getClass()).info(
+				"Phone call: " + mode + " internalNumber: " + internalNumber + " external number: " + externalNumber);
+
 		PhoneCallEvent phoneCallEvent = new PhoneCallEvent(event, mode, internalNumber, externalNumber);
-		
+
 		EntityManager em = EntityManagerService.getNewManager();
 		em.getTransaction().begin();
-		
+
 		em.persist(phoneCallEvent);
-		
+
 		em.getTransaction().commit();
-		
+
 		EventBusService.getEventBus().post(new EventObject(phoneCallEvent));
 
 		return new GenericStatus(true);
 	}
+	
+	@GET
+	@Path("getCallList")
+	public List<PhoneCallEvent> getCallList() {
+		
+		EntityManager em = EntityManagerService.getNewManager();
+		
+		return em.createQuery("select p from PhoneCallEvent p order by p.timestamp desc").getResultList();
+		
+	}
 
 	public static void main(String[] argv) {
-		new Phone().getCall("192.168.1.1", 1012);
+		String configurationProperty = ConfigurationService.getConfigurationProperty("phone", "phoneserverip");
+		new Phone().getCall(configurationProperty, 1012);
 
 		while (true) {
 			try {
