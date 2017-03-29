@@ -77,8 +77,10 @@ public class NetworkScanner {
 		if (ip == null)
 			return null;
 		BufferedReader br = null;
+		FileReader fr = null;
 		try {
-			br = new BufferedReader(new FileReader("/proc/net/arp"));
+			fr = new FileReader("/proc/net/arp");
+			br = new BufferedReader(fr);
 			String line;
 			while ((line = br.readLine()) != null) {
 				String[] splitted = line.split(" +");
@@ -103,6 +105,9 @@ public class NetworkScanner {
 			try {
 				if (br!=null) {
 					br.close();
+				}
+				if (fr!=null) {
+					fr.close();
 				}
 			} catch (IOException e) {
 				LogManager.getLogger(this.getClass()).info(e);
