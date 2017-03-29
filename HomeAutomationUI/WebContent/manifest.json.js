@@ -1,8 +1,8 @@
 /**
  * Created by mertins on 28.10.15.
  */
-{
-    "_version": "1.0.0",
+{   
+	"_version": "1.0.0",
     "sap.app": {
         "_version": "1.0.0",
         "id": "cm.homeautomation",
@@ -85,7 +85,7 @@
                     "viewPath": "cm.homeautomation.RoomDetail",
                     "viewName": "RoomDetail",
                     "viewLevel": 2,
-                    transition: "show"
+                    "transition": "show"
                 }
             }
         }
