@@ -9,6 +9,10 @@ jdk:
 
 sudo: false
 
+cache:
+  directories:
+  - $HOME/.m2
+
 addons:
   mariadb: '10.0'
   apt:
