@@ -129,7 +129,7 @@ sap.ui.define([
         handleSwitchEvent: function (data) {
             var eventModel = new JSONModel();
 
-            eventModel.setData(JSON.parse(evt.data));
+            eventModel.setData(JSON.parse(data));
 
             var switchId = data.switchId;
             var status = data.status;
@@ -171,7 +171,7 @@ sap.ui.define([
 
             if  (newData.clazz=="SwitchEvent") {
 
-            	this.handleSwitchEvent(newData.data.host);
+            	this.handleSwitchEvent(newData.data);
             }
             if  (newData.clazz=="CameraImageUpdateEvent") {
 
