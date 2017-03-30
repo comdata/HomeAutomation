@@ -48,6 +48,7 @@ public class PresenceServiceTest {
 	
 	@Test
 	public void testGetPresenceNotNull() throws Exception {
+		presenceService.purgeStates();
 		List<PresenceState>presences=presenceService.getPresences();
 		
 		assertTrue(presences!=null);
@@ -55,6 +56,7 @@ public class PresenceServiceTest {
 	
 	@Test
 	public void testGetPresenceEmpty() throws Exception {
+		presenceService.purgeStates();
 		List<PresenceState>presences=presenceService.getPresences();
 		
 		assertTrue(presences.isEmpty());
