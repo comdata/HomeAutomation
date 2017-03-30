@@ -54,11 +54,10 @@ public class PresenceServiceTest {
 
 	@Test
 	public void testGetPresenceEmpty() throws Exception {
-		presenceService.purgeStates();
 		List<PresenceState> presences = presenceService.getPresences();
 
 		System.out.println(presences);
-		// TODO assertTrue("presences size: "+ presences.size(), presences.isEmpty());
+		assertTrue("presences size: "+ presences.size(), presences.isEmpty());
 	}
 
 	@Test
