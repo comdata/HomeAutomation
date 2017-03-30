@@ -854,14 +854,14 @@ sap.ui.define([
             var modelData=model.oData;
             var subject=this;
             var count=0;
-            
+
             $.each(modelData, function(i, data) {
             	count++;
-            	
+
             });
-            
+
             this._tripsTile.number=count;
-            
+
             subject.getView().getModel().refresh(false);
         },
         handleDoorWindowLoaded: function(event, model) {
@@ -1091,7 +1091,7 @@ sap.ui.define([
               labels.push(formatter.dateTimeHourFormatter(elem.dateTime));
               //{x:formatter.dateTimeHourFormatter(elem.dateTime), y:
               // }
-              
+
               dataseries.push(parseFloat(elem.value.replace(",", ".")));
             });
 
@@ -1342,6 +1342,12 @@ sap.ui.define([
                   this._dialogs["package"].open();
                   this.packageListLoad();
                 }
+              else if (tileType =="trips") {
+                  if (!this._dialogs["trips"]) {
+                      this._dialogs["trips"] = sap.ui.xmlfragment("cm.homeautomation.Trips", this);
+                  }
+                  this._dialogs["trips"].open();
+                }
             else if (tileType == "camera") {
                 if (!this.camera) {
                     this.camera = sap.ui.xmlfragment("cm.homeautomation.Camera", this);
@@ -1554,6 +1560,10 @@ sap.ui.define([
             this._dialogs["package"].close();
 
         },
+        tripsDialogClose: function() {
+            this._dialogs["trips"].close();
+
+        },
         doorWindowDialogClose: function() {
             this._dialogs["doorWindow"].close();
             sap.ui.getCore().setModel(new JSONModel(), "doorWindow");
@@ -1586,6 +1596,10 @@ sap.ui.define([
         afterPackageDialogClose: function () {
           this._dialogs["package"].destroy();
           this._dialogs["package"] = null;
+        },
+        afterTripsDialogClose: function () {
+          this._dialogs["trips"].destroy();
+          this._dialogs["trips"] = null;
         },
         afterPlanesDialogClose: function () {
             this.planesView.destroy();
