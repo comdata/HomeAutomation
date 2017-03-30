@@ -860,7 +860,7 @@ sap.ui.define([
             	
             });
             
-            _tripsTile.number=count;
+            this._tripsTile.number=count;
             
             subject.getView().getModel().refresh(false);
         },
