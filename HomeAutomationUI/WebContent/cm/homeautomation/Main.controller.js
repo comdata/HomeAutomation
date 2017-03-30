@@ -39,6 +39,10 @@ formatter.dateTimeFormatter=function(sDate) {
 	return moment(new Date(sDate)).format('DD.MM.YYYY HH:mm:ss');
 }
 
+formatter.dateFormatter=function(sDate) {
+	return moment(new Date(sDate)).format('DD.MM.YYYY');
+}
+
 formatter.dateTimeHourFormatter=function(sDate) {
 	if (sDate==null) {
 		return "";
@@ -854,13 +858,20 @@ sap.ui.define([
             var modelData=model.oData;
             var subject=this;
             var count=0;
+            var nextDestination=null;
 
             $.each(modelData, function(i, data) {
             	count++;
 
+              // get next destination
+              if (nextDestination==null) {
+                nextDestination=data.summary+" "+formatter.dateFormatter(data.start);
+              }
             });
 
             this._tripsTile.number=count;
+
+            this._tripsTile.info=nextDestination;
 
             subject.getView().getModel().refresh(false);
         },
