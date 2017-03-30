@@ -28,6 +28,7 @@
 		<class>cm.homeautomation.entities.PresenceState</class>
 		<class>cm.homeautomation.entities.UptimePing</class>
 		<class>cm.homeautomation.entities.PhoneCallEvent</class>
+		<class>cm.homeautomation.entities.CalendarEntry</class>
 		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.ContextDataAttributeConverter</class>
 		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.ContextDataJsonAttributeConverter</class>
 		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.ContextMapAttributeConverter</class>
