@@ -34,7 +34,7 @@
 						<items>
 							<ColumnListItem>
 								<cells>
-									<Text text="{trips>description}" />
+									<Text text="{trips>summary}" />
 									<Text
 										text="{
 											path: 'trips>start',
