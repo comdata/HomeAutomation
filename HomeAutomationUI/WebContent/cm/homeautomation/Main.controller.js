@@ -469,6 +469,22 @@ sap.ui.define([
 
 			this.networkDevicesLoad();
         },
+        _initTripsTile: function () {
+			this._tripsTile={
+                    tileType: "trips",
+                    roomId: "trips",
+                    title: "Reisen",
+                    numberUnit: "Anzahl",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://laptop"
+			};
+
+			this.getView().getModel().getData().overviewTiles.push(this._tripsTile);
+			this.getView().getModel().refresh(false);
+
+			this.tripsLoad();
+        },
         _initCameraTiles: function() {
         	var oModel = new RESTService();
             oModel.loadDataAsync("/HomeAutomation/services/camera/getAll", "", "GET", this._handleCamerasLoaded, null, this);
@@ -765,6 +781,7 @@ sap.ui.define([
             this._initLegoTrainTile();
             this._initMenu();
             this._initPackageTile();
+            this._initTripsTile();
         },
         _initMailTile: function() {
         	var subject=this;
@@ -830,6 +847,22 @@ sap.ui.define([
 		        subject.handleNetworkMonitor(data);
           });
 
+        },
+        tripsLoaded: function(event, model) {
+            sap.ui.getCore().setModel(model, "trips");
+
+            var modelData=model.oData;
+            var subject=this;
+            var count=0;
+            
+            $.each(modelData, function(i, data) {
+            	count++;
+            	
+            });
+            
+            _tripsTile.number=count;
+            
+            subject.getView().getModel().refresh(false);
         },
         handleDoorWindowLoaded: function(event, model) {
           sap.ui.getCore().setModel(model, "doorWindow");
@@ -1214,6 +1247,12 @@ sap.ui.define([
           networkDeviceModel.loadDataAsync("/HomeAutomation/services/networkdevices/getAll", "", "GET", subject.handleNetworkDevicesLoaded, null, subject);
 
         },
+        tripsLoad: function() {
+            var subject = this;
+            var tripsModel = new RESTService();
+            tripsModel.loadDataAsync("/HomeAutomation/services/trips/getUpcoming", "", "GET", subject.tripsLoaded, null, subject);
+
+          },
         doorWindowLoad: function() {
           var subject = this;
           var doorWindowModel = new RESTService();
