@@ -1,5 +1,6 @@
 package cm.homeautomation.services.presence;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,6 +20,18 @@ import cm.homeautomation.services.base.GenericStatus;
 @Path("presence")
 public class PresenceService extends BaseService {
 
+	public GenericStatus purgeStates() {
+		EntityManager em = EntityManagerService.getNewManager();
+		
+		em.getTransaction().begin();
+		
+		em.createQuery("delete from PresenceState ps");
+		
+		em.getTransaction().commit();
+		
+		return new GenericStatus(true);
+	}
+	
 	@GET
 	@Path("setPresence/{id}/{state}")
 	public GenericStatus setPresence(@PathParam("id") Long id, @PathParam("state") String state) {
@@ -67,4 +80,33 @@ public class PresenceService extends BaseService {
 		return new GenericStatus(true);
 	}
 
+	@GET
+	@Path("getAll")
+	public List<PresenceState> getPresences() {
+		
+		List<PresenceState> foundPresenceStates=new ArrayList<PresenceState>();
+		
+		EntityManager em = EntityManagerService.getNewManager();
+
+
+		List<Person> personList = (List<Person>) em.createQuery("select p from Person p").getResultList();
+		
+		for (Person person: personList) {
+			
+			if (person != null) {
+				PresenceState presenceState = null;
+				List<PresenceState> result = (List<PresenceState>) em
+						.createQuery("select p from PresenceState p where p.person=:person order by p.date desc")
+						.setParameter("person", person).getResultList();
+				
+				if (result != null && !result.isEmpty()) {
+					foundPresenceStates.add(result.get(0));
+				}
+			}
+			
+		}
+		return foundPresenceStates;
+	}
+
+	
 }
