@@ -3,6 +3,7 @@ package cm.homeautomation.services.trips;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
@@ -26,13 +27,13 @@ public class TripsICalReader {
 	public static void main(String[] args) throws IOException, ParserException {
 		loadTrips(args);
 	}
-	
+
 	public static void loadTrips(String[] args) throws IOException, ParserException {
 		CalendarBuilder calendarBuilder = new CalendarBuilder();
-		
+
 		EntityManager em = EntityManagerService.getNewManager();
 		em.getTransaction().begin();
-		em.createQuery("delete from CalendarEntry").executeUpdate();
+		// em.createQuery("delete from CalendarEntry").executeUpdate();
 
 		String url = args[0];
 		URL trips = new URL(url);
@@ -62,7 +63,8 @@ public class TripsICalReader {
 					calendarEntry.setStart(DATE_FORMATTER.parseDateTime(propertyValue).toDate());
 					break;
 				case "DTEND":
-					calendarEntry.setEnd(new Date(DATE_FORMATTER.parseDateTime(propertyValue).toDate().getTime()+(86399*1000)));
+					calendarEntry.setEnd(
+							new Date(DATE_FORMATTER.parseDateTime(propertyValue).toDate().getTime() + (86399 * 1000)));
 					break;
 				case "SUMMARY":
 					calendarEntry.setSummary(propertyValue);
@@ -82,12 +84,30 @@ public class TripsICalReader {
 				}
 
 			}
-			em.persist(calendarEntry);
+
+			List<CalendarEntry> resultList = em.createQuery("select c from CalendarEntry c where c.uid=:uid")
+					.setParameter("uid", calendarEntry.getUid()).getResultList();
+
+			if (resultList != null && !resultList.isEmpty()) {
+				CalendarEntry oldCalendarEntry = resultList.get(0);
+				oldCalendarEntry.setDateTimeStamp(calendarEntry.getDateTimeStamp());
+				oldCalendarEntry.setDescription(calendarEntry.getDescription());
+				oldCalendarEntry.setEnd(calendarEntry.getEnd());
+				oldCalendarEntry.setGeoLocation(calendarEntry.getGeoLocation());
+				oldCalendarEntry.setLocation(calendarEntry.getLocation());
+				oldCalendarEntry.setStart(calendarEntry.getStart());
+				oldCalendarEntry.setSummary(calendarEntry.getSummary());
+				oldCalendarEntry.setTransparent(calendarEntry.getTransparent());
+				
+				em.merge(oldCalendarEntry);
+			} else {
+
+				em.persist(calendarEntry);
+			}
 			System.out.println("===================================");
 
 		}
-		
-		
+
 		em.getTransaction().commit();
 
 	}
