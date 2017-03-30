@@ -12,7 +12,17 @@ public class ConfigurationServiceTest {
 	private static final String TEST_GROUP = "testGroup";
 	private static final String TEST_PROP = "testProp";
 	private static final String TEST_VALUE = "testValue";
+	private static final String TEST_GROUP_UNKNOWN = "testGroupUnknown";
 
+	
+	@Test
+	public void testUnknownConfigSetting() {
+		
+		String configurationProperty = ConfigurationService.getConfigurationProperty(TEST_GROUP_UNKNOWN, TEST_PROP);
+	
+		assertTrue(configurationProperty==null);
+	}
+	
 	@Test
 	public void testCreateConfigSetting() {
 		ConfigurationService.createOrUpdate(TEST_GROUP, TEST_PROP, TEST_VALUE);
