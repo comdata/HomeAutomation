@@ -25,7 +25,7 @@ public class PresenceService extends BaseService {
 		
 		em.getTransaction().begin();
 		
-		em.createQuery("delete from PresenceState ps");
+		em.createQuery("delete from PresenceState ps").executeUpdate();
 		
 		em.getTransaction().commit();
 		
