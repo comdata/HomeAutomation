@@ -2,6 +2,7 @@ package cm.homeautomation.services.trips;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
 
 import javax.persistence.EntityManager;
 
@@ -61,7 +62,7 @@ public class TripsICalReader {
 					calendarEntry.setStart(DATE_FORMATTER.parseDateTime(propertyValue).toDate());
 					break;
 				case "DTEND":
-					calendarEntry.setEnd(DATE_FORMATTER.parseDateTime(propertyValue).toDate());
+					calendarEntry.setEnd(new Date(DATE_FORMATTER.parseDateTime(propertyValue).toDate().getTime()+(86399*1000)));
 					break;
 				case "SUMMARY":
 					calendarEntry.setSummary(propertyValue);
