@@ -127,9 +127,6 @@ sap.ui.define([
             }
         },
         handleSwitchEvent: function (data) {
-            var eventModel = new JSONModel();
-
-            eventModel.setData(JSON.parse(data));
 
             var switchId = data.switchId;
             var status = data.status;
