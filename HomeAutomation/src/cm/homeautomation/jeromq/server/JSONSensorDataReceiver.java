@@ -17,9 +17,18 @@ import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.sensors.WindowSensorData;
 import cm.homeautomation.services.sensors.Sensors;
 
+/**
+ * JSON Data Receiver and mapper
+ * 
+ * forwards messages to the EventBus
+ * 
+ * @author christoph
+ *
+ */
 public class JSONSensorDataReceiver {
 
 	public JSONSensorDataReceiver() {
+		// intentionally left empty
 	}
 
 	public static void receiveSensorData(String messageContent) {
@@ -63,9 +72,8 @@ public class JSONSensorDataReceiver {
 				EventObject eventObject=new EventObject((WindowSensorData)sensorData);
 				EventBusService.getEventBus().post(eventObject);	
 			}
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		} catch (IOException e) {
+			LogManager.getLogger(JSONSensorDataReceiver.class).error("received IOException", e);
 		}
 	}
 }
