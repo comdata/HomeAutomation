@@ -39,12 +39,6 @@ import cm.homeautomation.services.overview.OverviewWebSocket;
 @Path("sensors")
 public class Sensors extends BaseService {
 
-	private ActorEndpointConfigurator actorEndpointConfigurator;
-	private ActorEndpoint endpointInstance;
-	private OverviewEndPointConfiguration overviewEndPointConfiguration;
-	private OverviewWebSocket overviewEndpoint;
-
-
 	@POST
 	@Path("rfsniffer")
 	public void registerRFEvent(RFEvent event) {
@@ -52,15 +46,6 @@ public class Sensors extends BaseService {
 		LogManager.getLogger(this.getClass()).info("RF Event: " + code);
 		EntityManager em = EntityManagerService.getNewManager();
 
-		if (actorEndpointConfigurator == null) {
-			actorEndpointConfigurator = new ActorEndpointConfigurator();
-			try {
-				endpointInstance = actorEndpointConfigurator.getEndpointInstance(ActorEndpoint.class);
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 
 		try {
 			Switch sw = (Switch) em.createQuery("select sw from Switch sw where sw.onCode=:code or sw.offCode=:code")
@@ -85,9 +70,6 @@ public class Sensors extends BaseService {
 				
 				EventBusService.getEventBus().post(switchEvent);
 				
-				//endpointInstance.handleEvent(Long.toString(sw.getId()), status);
-				// endpointInstance.onMessage("Switch: "++" new status:
-				// "+status, null);
 
 				sw.setLatestStatus(status);
 				sw.setLatestStatusFrom(new Date());
@@ -111,7 +93,7 @@ public class Sensors extends BaseService {
 
 			}
 		} catch (NoResultException e) {
-
+			LogManager.getLogger(this.getClass()).error(e);
 		}
 		
 		em.close();
@@ -221,12 +203,12 @@ public class Sensors extends BaseService {
 			requestSensorData.setValue(df.format(valueAsDouble).toString());
 			if (existingSensorData != null && existingSensorData.getValue().equals(requestSensorData.getValue())) {
 				existingSensorData.setValidThru(new Date());
-				sensorData = em.merge(existingSensorData);
+				em.merge(existingSensorData);
 			} else {
 				if (existingSensorData != null && requestSensorData != null
 						&& requestSensorData.getDateTime() != null) {
 					existingSensorData.setValidThru(new Date(requestSensorData.getDateTime().getTime() - 1000));
-					sensorData = em.merge(existingSensorData);
+					em.merge(existingSensorData);
 				}
 
 				sensorData = requestSensorData;
@@ -277,7 +259,7 @@ public class Sensors extends BaseService {
 			latch.await();
 			em.getTransaction().commit();
 		} catch (InterruptedException e) {
-		
+			LogManager.getLogger(this.getClass()).error(e);
 		}
 		em.close();
 		return sensorDatas;
@@ -359,7 +341,6 @@ public class Sensors extends BaseService {
 								SensorValue tempSensorValue = new SensorValue();
 								tempSensorValue.setValue(lastSensorValue.getValue());
 								tempSensorValue.setDateTime(new Date(sData.getDateTime().getTime() - 1000));
-								//sensorData.getValues().add(tempSensorValue);
 							}
 
 							SensorValue sensorValue = new SensorValue();
@@ -405,6 +386,7 @@ public class Sensors extends BaseService {
 
 		}
 
+		@Override
 		public void run() {
 			loadSensorData(sensorDatas, em, now, object);
 			this.latch.countDown();
