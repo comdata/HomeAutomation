@@ -42,7 +42,7 @@ public class TripsICalReader {
 		ComponentList<CalendarComponent> components = calendar.getComponents();
 
 		for (CalendarComponent calendarComponent : components) {
-			System.out.println("===================================");
+			//System.out.println("===================================");
 			PropertyList properties = calendarComponent.getProperties();
 
 			CalendarEntry calendarEntry = new CalendarEntry();
@@ -50,7 +50,7 @@ public class TripsICalReader {
 			for (Property property : properties) {
 				String propertyName = property.getName();
 				String propertyValue = property.getValue();
-				System.out.println(propertyName + " - " + propertyValue);
+				//System.out.println(propertyName + " - " + propertyValue);
 
 				switch (propertyName) {
 				case "DTSTAMP":
@@ -104,7 +104,7 @@ public class TripsICalReader {
 
 				em.persist(calendarEntry);
 			}
-			System.out.println("===================================");
+			//System.out.println("===================================");
 
 		}
 
