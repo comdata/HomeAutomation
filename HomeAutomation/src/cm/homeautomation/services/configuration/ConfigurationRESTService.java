@@ -27,16 +27,7 @@ public class ConfigurationRESTService extends BaseService {
 	@GET
 	@Path("getAll")
 	public List<ConfigurationSetting> getAllConfigSettings() {
-
-		EntityManager em = EntityManagerService.getNewManager();
-
-		List<ConfigurationSetting> resultList = em.createQuery("select c from ConfigurationSetting c").getResultList();
-
-		if (resultList != null && resultList.isEmpty()) {
-			return null;
-		}
-
-		return resultList;
+		return ConfigurationService.getAllSettings();
 	}
 
 	@GET

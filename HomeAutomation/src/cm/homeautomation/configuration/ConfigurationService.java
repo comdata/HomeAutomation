@@ -74,4 +74,31 @@ public class ConfigurationService {
 		em.getTransaction().commit();
 		em.close();
 	}
+
+
+	public static void purgeAllSettings() {
+		EntityManager em = EntityManagerService.getNewManager();
+
+		em.getTransaction().begin();
+		
+		em.createQuery("delete from ConfigurationSetting").executeUpdate();
+		
+		em.getTransaction().commit();
+		
+		
+	}
+
+
+	public static List<ConfigurationSetting> getAllSettings() {
+		EntityManager em = EntityManagerService.getNewManager();
+
+		List<ConfigurationSetting> resultList = em.createQuery("select c from ConfigurationSetting c").getResultList();
+
+		if (resultList != null && resultList.isEmpty()) {
+			return null;
+		}
+
+		return resultList;
+		
+	}
 }
