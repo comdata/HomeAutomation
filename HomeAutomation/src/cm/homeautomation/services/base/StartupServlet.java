@@ -12,7 +12,6 @@ import cm.homeautomation.hap.HAPService;
 import cm.homeautomation.jeromq.server.JeroMQServer;
 import cm.homeautomation.mdns.MDNSService;
 import cm.homeautomation.mqtt.client.MQTTReceiverClient;
-import cm.homeautomation.networkMonitor.NetworkDeviceDatabaseUpdater;
 import cm.homeautomation.pushnotificiation.WindowBlindNotificationService;
 import cm.homeautomation.services.overview.OverviewEndPointConfiguration;
 import cm.homeautomation.services.overview.OverviewWebSocket;
@@ -24,23 +23,22 @@ public class StartupServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 131323703998785803L;
-	private SchedulerThread schedulerThread;
 	private JeroMQServer jeroMQServer;
 	private OverviewWebSocket overviewEndpoint;
 	private MQTTReceiverClient moquetteClient;
 	private EventBusEndpoint eventBusEndpoint;
 	private Thread mqttThread;
 	private WindowBlindNotificationService windowBlindNotificationService;
-	private NetworkDeviceDatabaseUpdater networkDeviceDatabaseUpdater;
 	private MDNSService mdnsService;
 	private TelegramBotService telegramBotService;
 	private Thread telegramThread;
 	private StartupAnnotationInitializer startupAnnotationInitializer;
 
+	@Override
 	public void init(ServletConfig config) throws ServletException {
 
 		LogManager.getLogger(this.getClass()).info("Starting scheduler");
-		schedulerThread = SchedulerThread.getInstance();
+		SchedulerThread.getInstance();
 
 		EventBusAnnotationInitializer eventBusAnnotationInitializer = new EventBusAnnotationInitializer();
 
@@ -100,7 +98,7 @@ public class StartupServlet extends HttpServlet {
 
 		try {
 			if (mqttThread != null) {
-				mqttThread.stop();
+				mqttThread.interrupt();
 			}
 		} catch (Exception e) {
 
