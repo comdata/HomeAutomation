@@ -63,7 +63,7 @@ public class TripsICalReader {
 					calendarEntry.setStart(DATE_FORMATTER.parseDateTime(propertyValue+"000000").toDate());
 					break;
 				case "DTEND":
-					calendarEntry.setEnd(DATE_FORMATTER.parseDateTime(propertyValue+"235959").toDate());
+					calendarEntry.setEnd(new Date(DATE_FORMATTER.parseDateTime(propertyValue+"000000").toDate().getTime()-(1*1000)));
 					break;
 				case "SUMMARY":
 					calendarEntry.setSummary(propertyValue);
