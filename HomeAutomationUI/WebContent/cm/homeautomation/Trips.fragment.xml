@@ -5,7 +5,7 @@
 		contentHeight="100%">
 		<content>
 			<Panel expandable="false" expanded="true"
-				width="auto" class="sapUiResponsiveMargin" id="network">
+				width="auto" class="sapUiResponsiveMargin" id="trips">
 				<content>
 
 					<Table
@@ -15,7 +15,7 @@
 				path: 'start'
 			}
 		}"
-						title="Packages" selectionMode="MultiToggle">
+						title="Trips" selectionMode="MultiToggle">
 						<columns>
 							<Column>
 								<Text text="Description" />

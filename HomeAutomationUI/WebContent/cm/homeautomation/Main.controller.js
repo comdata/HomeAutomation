@@ -486,6 +486,24 @@ sap.ui.define([
 
 			this.tripsLoad();
         },
+        _initPresenceTile: function () {
+			this._presenceTile={
+                    tileType: "presence",
+                    roomId: "presence",
+                    title: "Personen",
+                    numberUnit: "Anzahl",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://laptop"
+			};
+
+			this.getView().getModel().getData().overviewTiles.push(this._presenceTile);
+			this.getView().getModel().refresh(false);
+
+			this.presenceLoad();
+			
+			// TODO update presence information using web socket
+        },
         _initCameraTiles: function() {
         	var oModel = new RESTService();
             oModel.loadDataAsync("/HomeAutomation/services/camera/getAll", "", "GET", this._handleCamerasLoaded, null, this);
@@ -783,6 +801,7 @@ sap.ui.define([
             this._initMenu();
             this._initPackageTile();
             this._initTripsTile();
+            this._initPresenceTile();
         },
         _initMailTile: function() {
         	var subject=this;
@@ -872,6 +891,32 @@ sap.ui.define([
 
             subject.getView().getModel().refresh(false);
         },
+        presenceLoaded: function(event, model) {
+            sap.ui.getCore().setModel(model, "presence");
+
+            var modelData=model.oData;
+            var subject=this;
+            var count=0;
+            var present="";
+
+            $.each(modelData, function(i, data) {
+            	count++;
+
+              // get next destination
+              if (present!="") {
+            	  present+="; ";
+              }
+            	  present+=data.person.name;
+              
+            });
+
+            this._presenceTile.number=count;
+
+            this._presenceTile.info=present;
+
+            subject.getView().getModel().refresh(false);
+        },
+
         handleDoorWindowLoaded: function(event, model) {
           sap.ui.getCore().setModel(model, "doorWindow");
         },
@@ -1261,7 +1306,13 @@ sap.ui.define([
             tripsModel.loadDataAsync("/HomeAutomation/services/trips/getUpcoming", "", "GET", subject.tripsLoaded, null, subject);
 
           },
-        doorWindowLoad: function() {
+          presenceLoad: function() {
+              var subject = this;
+              var tripsModel = new RESTService();
+              tripsModel.loadDataAsync("/HomeAutomation/services/presence/getAll", "", "GET", subject.presenceLoaded, null, subject);
+
+            },
+          doorWindowLoad: function() {
           var subject = this;
           var doorWindowModel = new RESTService();
           doorWindowModel.loadDataAsync("/HomeAutomation/services/window/readAll", "", "GET", subject.handleDoorWindowLoaded, null, subject);
@@ -1572,6 +1623,11 @@ sap.ui.define([
             this._dialogs["trips"].close();
 
         },
+        presenceDialogClose: function() {
+            this._dialogs["presence"].close();
+
+        },
+
         doorWindowDialogClose: function() {
             this._dialogs["doorWindow"].close();
             sap.ui.getCore().setModel(new JSONModel(), "doorWindow");
@@ -1609,6 +1665,10 @@ sap.ui.define([
           this._dialogs["trips"].destroy();
           this._dialogs["trips"] = null;
         },
+        afterPresenceDialogClose: function () {
+            this._dialogs["presence"].destroy();
+            this._dialogs["presence"] = null;
+          },
         afterPlanesDialogClose: function () {
             this.planesView.destroy();
             this.planesView = null;
