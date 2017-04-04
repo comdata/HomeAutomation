@@ -20,6 +20,7 @@ public class TripsService extends BaseService{
 		
 		EntityManager em = EntityManagerService.getNewManager();
 		
+		@SuppressWarnings("unchecked")
 		List<CalendarEntry> resultList = em.createQuery("select c from CalendarEntry c where c.end >= :currentDate order by c.start ASC").setParameter("currentDate",new Date()).getResultList();
 	
 		return resultList;

@@ -86,6 +86,7 @@ public class TripsICalReader {
 
 			}
 
+			@SuppressWarnings("unchecked")
 			List<CalendarEntry> resultList = em.createQuery("select c from CalendarEntry c where c.uid=:uid")
 					.setParameter("uid", calendarEntry.getUid()).getResultList();
 
