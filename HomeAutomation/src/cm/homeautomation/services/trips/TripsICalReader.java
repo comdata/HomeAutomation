@@ -22,7 +22,7 @@ import net.fortuna.ical4j.model.component.CalendarComponent;
 
 public class TripsICalReader {
 	private static final DateTimeFormatter DATE_FORMATTER = new DateTimeFormatterBuilder().appendYear(4, 4)
-			.appendMonthOfYear(2).appendDayOfMonth(2).toFormatter();
+			.appendMonthOfYear(2).appendDayOfMonth(2).appendHourOfDay(2).appendMinuteOfHour(2).appendSecondOfMinute(2).toFormatter();
 
 	public static void main(String[] args) throws IOException, ParserException {
 		loadTrips(args);
@@ -60,11 +60,10 @@ public class TripsICalReader {
 					calendarEntry.setUid(propertyValue);
 					break;
 				case "DTSTART":
-					calendarEntry.setStart(DATE_FORMATTER.parseDateTime(propertyValue).toDate());
+					calendarEntry.setStart(DATE_FORMATTER.parseDateTime(propertyValue+"000000").toDate());
 					break;
 				case "DTEND":
-					calendarEntry.setEnd(
-							new Date(DATE_FORMATTER.parseDateTime(propertyValue).toDate().getTime() + (86399 * 1000)));
+					calendarEntry.setEnd(DATE_FORMATTER.parseDateTime(propertyValue+"235959").toDate());
 					break;
 				case "SUMMARY":
 					calendarEntry.setSummary(propertyValue);
