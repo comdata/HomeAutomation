@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -22,6 +23,7 @@ import javax.ws.rs.core.StreamingOutput;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Camera;
+import cm.homeautomation.entities.CameraImageHistory;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
@@ -94,10 +96,20 @@ public class CameraService extends BaseService {
 					byte[] cameraSnapshot = bos.toByteArray();
 					camera.setImageSnapshot(cameraSnapshot);
 					em.merge(camera);
+					
+					// persist history of camera images
+					CameraImageHistory cameraImageHistory = new CameraImageHistory();
+					cameraImageHistory.setCamera(camera);
+					cameraImageHistory.setDateTaken(new Date());
+					cameraImageHistory.setImageSnapshot(cameraSnapshot);
+					em.persist(cameraSnapshot);
+					
+					
 					em.getTransaction().commit();
 
 					CameraImageUpdateEvent cameraEvent = new CameraImageUpdateEvent();
 					cameraEvent.setCamera(camera);
+					
 					EventObject event = new EventObject(cameraEvent);
 
 					EventBusService.getEventBus().post(event);

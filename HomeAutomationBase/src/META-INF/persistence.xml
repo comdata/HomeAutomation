@@ -11,6 +11,7 @@
 		<class>cm.homeautomation.entities.Weather</class>
 		<class>cm.homeautomation.entities.Switch</class>
 		<class>cm.homeautomation.entities.Camera</class>
+		<class>cm.homeautomation.entities.CameraImageHistory</class>
 		<class>cm.homeautomation.entities.WindowBlind</class>
 		<class>cm.homeautomation.entities.Light</class>
 		<class>cm.homeautomation.entities.DimmableLight</class>
