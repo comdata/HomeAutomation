@@ -40,6 +40,7 @@ public class PresenceService extends BaseService {
 
 		Person person = null;
 
+		@SuppressWarnings("unchecked")
 		List<Person> resultList = (List<Person>) em.createQuery("select p from Person p where p.id=:id")
 				.setParameter("id", id).getResultList();
 
@@ -49,6 +50,7 @@ public class PresenceService extends BaseService {
 
 		if (person != null) {
 			PresenceState presenceState = null;
+			@SuppressWarnings("unchecked")
 			List<PresenceState> result = (List<PresenceState>) em
 					.createQuery("select p from PresenceState p where p.person=:person order by p.date desc")
 					.setParameter("person", person).getResultList();
@@ -89,12 +91,13 @@ public class PresenceService extends BaseService {
 		EntityManager em = EntityManagerService.getNewManager();
 
 
+		@SuppressWarnings("unchecked")
 		List<Person> personList = (List<Person>) em.createQuery("select p from Person p").getResultList();
 		
 		for (Person person: personList) {
 			
 			if (person != null) {
-				PresenceState presenceState = null;
+				@SuppressWarnings("unchecked")
 				List<PresenceState> result = (List<PresenceState>) em
 						.createQuery("select p from PresenceState p where p.person=:person order by p.date desc")
 						.setParameter("person", person).getResultList();
