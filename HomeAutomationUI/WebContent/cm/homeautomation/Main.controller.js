@@ -1407,6 +1407,12 @@ sap.ui.define([
                   }
                   this._dialogs["trips"].open();
                 }
+              else if (tileType =="presence") {
+                  if (!this._dialogs["presence"]) {
+                      this._dialogs["presence"] = sap.ui.xmlfragment("cm.homeautomation.Presence", this);
+                  }
+                  this._dialogs["presence"].open();
+                }
             else if (tileType == "camera") {
                 if (!this.camera) {
                     this.camera = sap.ui.xmlfragment("cm.homeautomation.Camera", this);
