@@ -1,6 +1,6 @@
 <core:FragmentDefinition xmlns="sap.m"
 	xmlns:core="sap.ui.core">
-	<Dialog title="{i18n>Trips}" afterClose="afterPresenceDialogClose"
+	<Dialog title="{i18n>Presence}" afterClose="afterPresenceDialogClose"
 		stretch="true" horizontalScrolling="false" verticalScrolling="true"
 		contentHeight="100%">
 		<content>
