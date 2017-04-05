@@ -23,6 +23,9 @@
 							<Column>
 								<Text text="Date" />
 							</Column>
+							<Column>
+								<Text text="State" />
+							</Column>
 						</columns>
 
 						<items>
@@ -34,6 +37,7 @@
 											path: 'presence>date',
 											formatter: 'formatter.dateTimeFormatter'
 										}" />
+									<Text text="{presence>state}" />
 								</cells>
 							</ColumnListItem>
 						</items>
