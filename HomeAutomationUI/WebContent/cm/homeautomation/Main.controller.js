@@ -902,12 +902,13 @@ sap.ui.define([
             $.each(modelData, function(i, data) {
             	count++;
 
-              // get next destination
-              if (present!="") {
-            	  present+="; ";
-              }
-            	  present+=data.person.name;
-              
+             if (data.present=="present") {	
+            	 	// get next destination
+            	 	if (present!="") {
+            	  		present+="; ";
+              		}
+              		present+=data.person.name;
+             	}
             });
 
             this._presenceTile.number=count;
