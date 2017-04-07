@@ -491,7 +491,7 @@ sap.ui.define([
                     tileType: "presence",
                     roomId: "presence",
                     title: "Personen",
-                    numberUnit: "Anzahl",
+                    numberUnit: "Anzahl anwesend",
                     eventHandler: null,
                     infoState: sap.ui.core.ValueState.Success,
                     icon: "sap-icon://laptop"
@@ -900,9 +900,9 @@ sap.ui.define([
             var present="";
 
             $.each(modelData, function(i, data) {
-            	count++;
-
-             if (data.present=="present") {	
+            	if (data.present=="present") {
+            		count++;
+             	
             	 	// get next destination
             	 	if (present!="") {
             	  		present+="; ";
