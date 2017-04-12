@@ -261,7 +261,11 @@ public class Sensors extends BaseService {
 		} catch (InterruptedException e) {
 			LogManager.getLogger(this.getClass()).error(e);
 		}
-		em.close();
+		try {
+			em.close();
+		} catch (IllegalStateException e) {
+			
+		}
 		return sensorDatas;
 	}
 
@@ -366,7 +370,11 @@ public class Sensors extends BaseService {
 			emSensor.getTransaction().commit();
 		}
 		
-		em.close();
+		try {
+			em.close();
+		} catch (IllegalStateException e) {
+			
+		}
 	}
 
 	class DataLoadThread extends Thread {
