@@ -5,6 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.appender.db.jpa.BasicLogEventEntity;
 
 @Entity(name="LOGGING")
@@ -17,6 +18,14 @@ public class LoggingEntity extends BasicLogEventEntity {
 	
 	
 	private Long id;
+	
+	public LoggingEntity() {
+		super();
+	}
+	
+	public LoggingEntity(final LogEvent wrappedEvent) {
+		super(wrappedEvent);
+	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
