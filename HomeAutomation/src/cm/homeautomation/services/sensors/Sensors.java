@@ -240,7 +240,7 @@ public class Sensors extends BaseService {
 		SensorDatas sensorDatas = new SensorDatas();
 
 		EntityManager em = EntityManagerService.getNewManager();
-		em.getTransaction().begin();
+		//em.getTransaction().begin();
 		@SuppressWarnings("unchecked")
 		List<Object> sensors = em
 				.createQuery("select s FROM Sensor s where s.showData=true and s.room=(select r from Room r where r.id=:room)")
@@ -257,7 +257,7 @@ public class Sensors extends BaseService {
 
 		try {
 			latch.await();
-			em.getTransaction().commit();
+			//em.getTransaction().commit();
 		} catch (InterruptedException e) {
 			LogManager.getLogger(this.getClass()).error(e);
 		}
