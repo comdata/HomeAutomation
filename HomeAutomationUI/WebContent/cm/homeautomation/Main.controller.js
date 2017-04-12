@@ -1134,8 +1134,8 @@ sap.ui.define([
         },
         _historicalDataLoaded: function(event, model, data) {
 
-          var labels=new Array();
-          var datasets=new Array();
+          var labels=[];
+          var datasets=[];
           var colors=["rgba(220,220,0,0.5)", "rgba(220,220,0,0.5)","rgba(220,220,220,0.5)","rgba(0,220,0,0.5)", "rgba(0,0,220,0.5)"];
 
           $.each(data.sensorData, function(i, element) {
@@ -1143,10 +1143,9 @@ sap.ui.define([
             $.each(element.values, function(a, elem) {
               //
               labels.push(formatter.dateTimeHourFormatter(elem.dateTime));
-              //{x:formatter.dateTimeHourFormatter(elem.dateTime), y:
-              // }
 
-              dataseries.push(parseFloat(elem.value.replace(",", ".")));
+
+              dataseries.push({x:formatter.dateTimeHourFormatter(elem.dateTime), y:parseFloat(elem.value.replace(",", "."))});
             });
 
             var singleDataSet={
@@ -1186,7 +1185,16 @@ sap.ui.define([
                       scales: {
                           xAxes: [{
                              display: true,
-                             type: 'linear',
+                             type: 'time',
+                             time: {
+     							format: 'MM/DD/YYYY HH:mm',
+     							// round: 'day'
+     							tooltipFormat: 'll HH:mm'
+     						},
+    						scaleLabel: {
+    							display: true,
+    							labelString: 'Date'
+    						},
                              position: 'bottom',
                                ticks: {
                                       callback: function(dataLabel, index) {
@@ -1197,7 +1205,13 @@ sap.ui.define([
                                             return index % 12 === 0 ? dataLabel : '';
                                         }
 
-                          }}]
+                          }}],
+      					yAxes: [{
+    						scaleLabel: {
+    							display: true,
+    							labelString: 'value'
+    						}
+    					}]
                       }
 
                   }
