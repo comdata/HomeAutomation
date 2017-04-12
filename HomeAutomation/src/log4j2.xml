@@ -9,13 +9,16 @@
         </Appenders>
 
         <Loggers>
-                <Logger name="cm.homeautomation" additivity="false">
+                <Logger name="cm.homeautomation" additivity="false"  level="trace">
                         <AppenderRef ref="databaseAppender" />
+                </Logger>
+
+                <Logger name="cm.homeautomation" additivity="false"  level="error">
                         <AppenderRef ref="STDOUT" />
                 </Logger>
 
                 <Root>
-                        <AppenderRef ref="databaseAppender" />
+                        <!-- <AppenderRef ref="databaseAppender" /> -->
                         <AppenderRef ref="STDOUT" />
                 </Root>
         </Loggers>
