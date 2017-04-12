@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -32,6 +34,7 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.logging.log4j.LogManager;
@@ -385,7 +388,10 @@ public class PackageTracking {
 			}
 		} }, new SecureRandom());
 
+		HostnameVerifier hostnameVerifier = org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
+		
 		SSLSocketFactory sf = new SSLSocketFactory(sslContext);
+		sf.setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);
 		Scheme httpsScheme = new Scheme("https", 443, sf);
 		SchemeRegistry schemeRegistry = new SchemeRegistry();
 		schemeRegistry.register(httpsScheme);
@@ -395,6 +401,8 @@ public class PackageTracking {
 		ClientConnectionManager cm = new SingleClientConnManager(schemeRegistry);
 		HttpClient client = new DefaultHttpClient(cm);
 		String url = "https://data.parcelapp.net/data.php?caller=yes&version=4";
+		
+		HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
 
 		String cookie = args[0];
 		// LogManager.getLogger(this.getClass()).info(cookie);
