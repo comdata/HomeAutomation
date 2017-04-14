@@ -494,7 +494,7 @@ sap.ui.define([
                     numberUnit: "Anzahl anwesend",
                     eventHandler: null,
                     infoState: sap.ui.core.ValueState.Success,
-                    icon: "sap-icon://laptop"
+                    icon: "sap-icon://person-placeholder"
 			};
 
 			this.getView().getModel().getData().overviewTiles.push(this._presenceTile);
