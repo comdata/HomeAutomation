@@ -501,7 +501,7 @@ sap.ui.define([
 			this.getView().getModel().refresh(false);
 
 			this.presenceLoad();
-			
+
 			// TODO update presence information using web socket
         },
         _initCameraTiles: function() {
@@ -900,9 +900,9 @@ sap.ui.define([
             var present="";
 
             $.each(modelData, function(i, data) {
-            	if (data.present=="present") {
+            	if (data.state=="present") {
             		count++;
-             	
+
             	 	// get next destination
             	 	if (present!="") {
             	  		present+="; ";
