@@ -478,7 +478,7 @@ sap.ui.define([
                     numberUnit: "Anzahl",
                     eventHandler: null,
                     infoState: sap.ui.core.ValueState.Success,
-                    icon: "sap-icon://laptop"
+                    icon: "sap-icon://suitcase"
 			};
 
 			this.getView().getModel().getData().overviewTiles.push(this._tripsTile);
