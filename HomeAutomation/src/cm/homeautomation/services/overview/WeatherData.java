@@ -14,11 +14,17 @@ public class WeatherData {
 	}
 
 	public void setHumidity(String relativeHumidity) {
-	
+		this.relativeHumidity=relativeHumidity;
 	}
 
 	public String getHumidity() {
 		return relativeHumidity;
+	}
+	
+	@Override
+	public String toString() {
+		
+		return "Temperature: "+tempC+" humidity: "+relativeHumidity;
 	}
 
 }

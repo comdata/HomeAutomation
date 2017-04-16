@@ -20,6 +20,7 @@ public class WeatherRequest {
 	private final static String BASE_URL = "http://api.wunderground.com/api/";
 	
 	private String apiKey;
+	private String zmw;
 	
 	private Set<Feature> features;
 	
@@ -54,7 +55,18 @@ public class WeatherRequest {
 		while (i.hasNext()) {
 			url += i.next() + "/";
 		}
-		url += "/lang:DL/q/" +country +"/"+ city + ".json";
+		url += "/lang:DL/q/"; 
+				
+		if (zmw==null || "".equals(zmw)) {
+			url+=country +"/"+ city;
+		} else {
+			url+=zmw;
+		}
+		  
+				
+		url+=".json";
+		
+		System.out.println(url);
 		
 		WebTarget r = c.target(url);
 		Response response = r.request(MediaType.APPLICATION_JSON).get(); //.readEntity(ClientResponse.class);
@@ -77,6 +89,14 @@ public class WeatherRequest {
 		System.out.println("Current temp(F): " + resp.getConditions().getTempF());
 		*/
 		
+	}
+
+	public String getZmw() {
+		return zmw;
+	}
+
+	public void setZmw(String zmw) {
+		this.zmw = zmw;
 	}
 	
 }

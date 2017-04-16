@@ -25,6 +25,7 @@ public class WeatherService {
 		String apiKey = "";
 		String city = "";
 		String country = "";
+		String zmw = "";
 		Properties props = new Properties();
 		try {
 			File file = new File("weather.properties");
@@ -35,7 +36,9 @@ public class WeatherService {
 			apiKey = props.getProperty("apiKey");
 			city = props.getProperty("city");
 			country = props.getProperty("country");
+			zmw = props.getProperty("zmw");
 		} catch (IOException e) {
+			e.printStackTrace();
 			LogManager.getLogger(WeatherService.class).info("Could not find weather properties!");
 			return null;
 		}
@@ -43,14 +46,17 @@ public class WeatherService {
 		WeatherData weatherData = new WeatherData();
 
 		WeatherRequest req = new WeatherRequest();
+		req.setZmw(zmw);
 		req.setApiKey(apiKey);
 		req.addFeature(Feature.CONDITIONS);
 		req.addFeature(Feature.FORECAST);
 		WeatherResponse weather = req.query(country, city);
+		System.out.println(weather.getResponse());
 		
 		if (weather!=null && weather.getCurrent_observation()!=null) {
 			weatherData.setHumidity(weather.getCurrent_observation().getRelativeHumidity());
 			weatherData.setTempC(weather.getCurrent_observation().getTempC());
+			System.out.println(weatherData.toString());
 		} else {
 			LogManager.getLogger(WeatherService.class).info("Could not access weather information");
 		}
