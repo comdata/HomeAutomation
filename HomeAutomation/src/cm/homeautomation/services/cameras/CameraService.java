@@ -102,7 +102,7 @@ public class CameraService extends BaseService {
 					cameraImageHistory.setCamera(camera);
 					cameraImageHistory.setDateTaken(new Date());
 					cameraImageHistory.setImageSnapshot(cameraSnapshot);
-					em.persist(cameraSnapshot);
+					em.persist(cameraImageHistory);
 					
 					
 					em.getTransaction().commit();
