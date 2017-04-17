@@ -1187,7 +1187,7 @@ sap.ui.define([
                              display: true,
                              type: 'time',
                              time: {
-     							format: 'MM/DD/YYYY HH:mm',
+     							format: 'DD.MM.YYYY HH:mm',
      							// round: 'day'
      							tooltipFormat: 'll HH:mm'
      						},
