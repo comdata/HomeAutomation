@@ -116,7 +116,7 @@ public class CameraService extends BaseService {
 				} catch (IOException e) {
 					em.getTransaction().rollback();
 					loadNoImage(args, em, camera);
-				} catch (RuntimeException e) {
+				} catch (Exception e) {
 					em.getTransaction().rollback();
 					loadNoImage(args, em, camera);
 				}
