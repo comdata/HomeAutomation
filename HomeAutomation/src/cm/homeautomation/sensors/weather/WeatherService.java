@@ -29,6 +29,7 @@ public class WeatherService {
 		Properties props = new Properties();
 		try {
 			File file = new File("weather.properties");
+			System.out.println("Weather properties: "+file.getAbsolutePath());
 			LogManager.getLogger(WeatherService.class).info("Weather properties: "+file.getAbsolutePath());
 			FileReader fileReader = new FileReader(file);
 			
