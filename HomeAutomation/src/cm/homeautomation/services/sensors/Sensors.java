@@ -398,6 +398,7 @@ public class Sensors extends BaseService {
 		public void run() {
 			loadSensorData(sensorDatas, em, now, object);
 			this.latch.countDown();
+			this.stop();
 		}
 
 		public SensorDatas getSensorDatas() {
