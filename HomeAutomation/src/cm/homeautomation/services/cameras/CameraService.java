@@ -106,7 +106,6 @@ public class CameraService extends BaseService {
 					
 					
 					em.getTransaction().commit();
-					em.close();
 
 					CameraImageUpdateEvent cameraEvent = new CameraImageUpdateEvent();
 					cameraEvent.setCamera(camera);
@@ -120,7 +119,10 @@ public class CameraService extends BaseService {
 				} catch (Exception e) {
 					em.getTransaction().rollback();
 					loadNoImage(args, em, camera);
+				} finally {
+					em.close();
 				}
+				
 			}
 
 		}
@@ -153,7 +155,6 @@ public class CameraService extends BaseService {
 			camera.setImageSnapshot(cameraSnapshot);
 			em.merge(camera);
 			em.getTransaction().commit();
-			em.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}catch (RuntimeException e) {
