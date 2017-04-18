@@ -1142,10 +1142,10 @@ sap.ui.define([
             var dataseries=new Array();
             $.each(element.values, function(a, elem) {
               //
-              labels.push(formatter.dateTimeHourFormatter(elem.dateTime));
+              labels.push(formatter.dateTimeFormatter(elem.dateTime));
 
 
-              dataseries.push({x:formatter.dateTimeHourFormatter(elem.dateTime), y:parseFloat(elem.value.replace(",", "."))});
+              dataseries.push({x:formatter.dateTimeFormatter(elem.dateTime), y:parseFloat(elem.value.replace(",", "."))});
             });
 
             var singleDataSet={
