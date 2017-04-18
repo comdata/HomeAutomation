@@ -123,8 +123,22 @@ public class CameraService extends BaseService {
 			}
 
 		}
+		
+		cleanOldImages();
 	}
-
+	
+	private static void cleanOldImages() {
+		EntityManager em = EntityManagerService.getNewManager();
+		
+		em.getTransaction().begin();
+		
+		em.createQuery("delete from CameraImageHistory c where c.dateTaken<=:deleteDate").setParameter("deleteDate", new Date((new Date()).getTime()-(3*86400*1000))).executeUpdate();
+		
+		
+		em.getTransaction().commit();
+		
+	}
+ 
 	private static void loadNoImage(String[] args, EntityManager em, Camera camera) {
 		try {
 			em.getTransaction().begin();
