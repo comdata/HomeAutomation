@@ -55,7 +55,7 @@ public class WeatherService {
 		System.out.println(weather.getResponse());
 		
 		if (weather!=null && weather.getCurrent_observation()!=null) {
-			weatherData.setHumidity(weather.getCurrent_observation().getRelativeHumidity());
+			weatherData.setHumidity(weather.getCurrent_observation().getRelativeHumidity().replace("%", ""));
 			weatherData.setTempC(weather.getCurrent_observation().getTempC());
 			System.out.println(weatherData.toString());
 		} else {
