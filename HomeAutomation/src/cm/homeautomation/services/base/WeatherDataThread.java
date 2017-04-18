@@ -40,7 +40,7 @@ public class WeatherDataThread extends Thread {
 		weatherTemperatureSensor = null;
 
 		if (weatherHumidityResultObj instanceof Sensor) {
-			weatherHumiditySensor = (Sensor) weatherResultObj;
+			weatherHumiditySensor = (Sensor) weatherHumidityResultObj;
 		}
 		em.close();
 		
