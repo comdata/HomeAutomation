@@ -43,7 +43,7 @@ public class WeatherDataThread extends Thread {
 		if (weatherHumidityResultObj instanceof Sensor) {
 			weatherHumiditySensor = (Sensor) weatherResultObj;
 		}
-		em.close();
+		
 	}
 	
 	public static WeatherDataThread getInstance() {
@@ -131,5 +131,6 @@ public class WeatherDataThread extends Thread {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		em.close();
 	}
 }
