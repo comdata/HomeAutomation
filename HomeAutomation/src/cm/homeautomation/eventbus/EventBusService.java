@@ -7,7 +7,7 @@ public class EventBusService {
 
 	public static EventBus getEventBus() {
 		if (eventBus == null) {
-			eventBus = new CustomAsyncEventBus(java.util.concurrent.Executors.newCachedThreadPool());
+			eventBus = new CustomAsyncEventBus(java.util.concurrent.Executors.newFixedThreadPool(10));
 		}
 		return eventBus;
 	}
