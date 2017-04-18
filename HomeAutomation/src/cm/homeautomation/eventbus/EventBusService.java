@@ -1,6 +1,5 @@
 package cm.homeautomation.eventbus;
 
-import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 
 public class EventBusService {
@@ -8,7 +7,7 @@ public class EventBusService {
 
 	public static EventBus getEventBus() {
 		if (eventBus == null) {
-			eventBus = new AsyncEventBus(java.util.concurrent.Executors.newCachedThreadPool());
+			eventBus = new CustomAsyncEventBus(java.util.concurrent.Executors.newCachedThreadPool());
 		}
 		return eventBus;
 	}
