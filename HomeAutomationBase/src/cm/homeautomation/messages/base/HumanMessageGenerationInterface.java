@@ -1,4 +1,4 @@
-package cm.homeautomation.entities;
+package cm.homeautomation.messages.base;
 
 public interface HumanMessageGenerationInterface {
 

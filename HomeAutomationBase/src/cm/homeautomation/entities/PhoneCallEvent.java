@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
+
 @Entity
 @XmlRootElement
 public class PhoneCallEvent implements HumanMessageGenerationInterface {

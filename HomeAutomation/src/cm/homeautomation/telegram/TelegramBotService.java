@@ -15,12 +15,12 @@ import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
-import cm.homeautomation.entities.HumanMessageGenerationInterface;
 import cm.homeautomation.entities.PresenceState;
 import cm.homeautomation.entities.TelegramUser;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.eventbus.EventTranscoder;
+import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
 
 public class TelegramBotService {
 

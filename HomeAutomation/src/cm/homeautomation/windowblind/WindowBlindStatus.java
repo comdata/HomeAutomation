@@ -2,8 +2,8 @@ package cm.homeautomation.windowblind;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import cm.homeautomation.entities.HumanMessageGenerationInterface;
 import cm.homeautomation.entities.WindowBlind;
+import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
 
 @XmlRootElement
 public class WindowBlindStatus implements HumanMessageGenerationInterface {
