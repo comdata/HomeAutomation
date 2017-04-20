@@ -51,7 +51,7 @@
 			<property name="javax.persistence.jdbc.password" value="" />
 
 			<!-- EclipseLink should create the database schema automatically -->
-			<property name="eclipselink.ddl-generation" value="create-tables" />
+			<property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
 			<property name="eclipselink.ddl-generation.output-mode"
 				value="database" />
 			<property name="eclipselink.jdbc.timeout" value="60" />
