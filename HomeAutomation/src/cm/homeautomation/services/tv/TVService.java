@@ -28,6 +28,7 @@ public class TVService extends BaseService {
 
 	private PanasonicTVBinding tvBinding;
 	private String tvIp;
+	private static boolean muted=false;
 
 	public TVService() {
 		tvBinding = new PanasonicTVBinding();
@@ -79,6 +80,7 @@ public class TVService extends BaseService {
 
 			if ("ring".equals(event)) {
 				try {
+					muted=true;
 					tvBinding.sendCommand(tvIp, "MUTE");
 
 					LogManager.getLogger(this.getClass()).info("muting TV");
@@ -87,7 +89,18 @@ public class TVService extends BaseService {
 				}
 			}
 
-			if ("disconnect".equals(event)) {
+			if ("connect".equals(event) && !muted) {
+				try {
+					muted=true;
+					tvBinding.sendCommand(tvIp, "MUTE");
+
+					LogManager.getLogger(this.getClass()).info("muting TV");
+				} catch (TVNotReachableException e) {
+					LogManager.getLogger(this.getClass()).error(e);
+				}
+			}
+			
+			if ("disconnect".equals(event) && muted) {
 				try {
 					tvBinding.sendCommand(tvIp, "MUTE");
 					LogManager.getLogger(this.getClass()).info("unmuting TV");
