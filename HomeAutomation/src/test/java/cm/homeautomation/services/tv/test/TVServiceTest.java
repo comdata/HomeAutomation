@@ -21,13 +21,13 @@ import cm.homeautomation.tv.panasonic.test.TVServer;
  *
  */
 public class TVServiceTest {
-	private final int tvPort = 55000;
+	private final static int tvPort = 55000;
 	
-	private TVService tvService;
-	private TVServer tvServer;
+	private static TVService tvService;
+	private static TVServer tvServer;
 
 	@BeforeClass
-	public void setup() {
+	public static void setup() {
 		tvService = new TVService();
 		
 		tvServer = new TVServer(tvPort);
@@ -36,7 +36,7 @@ public class TVServiceTest {
 	}
 	
 	@AfterClass
-	public void teardown() {
+	public static void teardown() {
 		tvServer.setRun(false);
 		tvServer.stop();
 	}
