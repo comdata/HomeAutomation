@@ -36,14 +36,15 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 					if (client != null) {
 						if (!client.isConnected()) {
 							LogManager.getLogger(this.getClass()).info("Not connected");
-							connect();
-						}
+							client.reconnect();
+						} 
 
 					} else {
 						LogManager.getLogger(this.getClass()).info("client is null");
 						connect();
 					}
 					Thread.sleep(10000);
+
 				} catch (MqttException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -72,6 +73,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 		connOpt.setAutomaticReconnect(true);
 		//connOpt.setCleanSession(true);
 		connOpt.setKeepAliveInterval(60);
+		connOpt.setConnectionTimeout(60);
 		connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
 		// connOpt.setUserName(M2MIO_USERNAME);
 		// connOpt.setPassword(M2MIO_PASSWORD_MD5.toCharArray());
