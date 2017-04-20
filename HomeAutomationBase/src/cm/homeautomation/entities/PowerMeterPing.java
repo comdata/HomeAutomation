@@ -7,11 +7,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import org.eclipse.persistence.annotations.Index;
+
 @Entity
 public class PowerMeterPing {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@Index(name="ix_timestamp")
 	private Date timestamp;
 	private int powermeter;
 	

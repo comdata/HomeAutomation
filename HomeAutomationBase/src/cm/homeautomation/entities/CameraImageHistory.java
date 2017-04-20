@@ -6,12 +6,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
 import javax.persistence.ManyToOne;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.annotations.Index;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+
 
 @Entity
 public class CameraImageHistory {
@@ -20,13 +23,13 @@ public class CameraImageHistory {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Index
+	@Index(name="ix_camera")
 	@ManyToOne
 	private Camera camera;
 	
-	@Index
+	@Index(name="ix_date")
 	private Date dateTaken;
-	
+
 	@XmlTransient
 	@JsonIgnore
 	private byte[] imageSnapshot;
