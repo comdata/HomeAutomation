@@ -3,7 +3,9 @@ package cm.homeautomation.services.tv.test;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import cm.homeautomation.entities.PhoneCallEvent;
@@ -24,7 +26,7 @@ public class TVServiceTest {
 	private TVService tvService;
 	private TVServer tvServer;
 
-	@Before
+	@BeforeClass
 	public void setup() {
 		tvService = new TVService();
 		
@@ -33,7 +35,7 @@ public class TVServiceTest {
 		tvServer.start();
 	}
 	
-	@After
+	@AfterClass
 	public void teardown() {
 		tvServer.setRun(false);
 		tvServer.stop();
