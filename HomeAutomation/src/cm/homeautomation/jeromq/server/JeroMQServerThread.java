@@ -23,7 +23,7 @@ public class JeroMQServerThread implements Runnable {
         backend.bind("inproc://backend");
 
         //  Launch pool of worker threads, precise number is not critical
-        for (int threadNbr = 0; threadNbr < 5; threadNbr++) {
+        for (int threadNbr = 0; threadNbr < 2; threadNbr++) {
             new Thread(new JeroMQServerWorker(ctx)).start();
         }
 
