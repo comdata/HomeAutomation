@@ -28,7 +28,7 @@ public class NetworkScanner {
 	public HashMap<String, NetworkDevice> checkHosts(String subnet) {
 		setAvailableHosts(new HashMap<String, NetworkDevice>());
 
-		int timeout = 1000;
+		int timeout = 500;
 		for (int i = 1; i < 255; i++) {
 			String host = subnet + "." + i;
 			try {
