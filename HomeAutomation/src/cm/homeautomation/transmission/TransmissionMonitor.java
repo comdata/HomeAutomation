@@ -11,8 +11,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import nl.stil4m.transmission.api.TransmissionRpcClient;
+import nl.stil4m.transmission.api.domain.RemoveTorrentInfo;
+import nl.stil4m.transmission.api.domain.TorrentAction;
 import nl.stil4m.transmission.api.domain.TorrentInfo;
 import nl.stil4m.transmission.api.domain.TorrentInfoCollection;
+import nl.stil4m.transmission.api.domain.ids.Ids;
+import nl.stil4m.transmission.api.domain.ids.NumberListIds;
 import nl.stil4m.transmission.rpc.RpcClient;
 import nl.stil4m.transmission.rpc.RpcConfiguration;
 import nl.stil4m.transmission.rpc.RpcException;
@@ -48,6 +52,10 @@ public class TransmissionMonitor {
 				LogManager.getLogger(TransmissionMonitor.class).info("Percent done: " + percentDone);
 				if (percentDone == 1) {
 					numberOfDoneTorrents++;
+					torrentInfo.getId();
+					
+					// remove done torrents, keeping local data
+					rpcClient.removeTorrent(new RemoveTorrentInfo(new NumberListIds(torrentInfo.getId()), false));
 				}
 			}
 			LogManager.getLogger(TransmissionMonitor.class).info("Done torrents: " + numberOfDoneTorrents);
