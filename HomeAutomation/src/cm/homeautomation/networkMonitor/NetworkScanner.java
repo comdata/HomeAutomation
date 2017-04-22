@@ -15,6 +15,7 @@ import cm.homeautomation.eventbus.EventObject;
 public class NetworkScanner {
 
 	private static NetworkScanner networkScanner;
+	private static boolean scanRunning=false;
 	private HashMap<String, NetworkDevice> availableHosts;
 
 	/**
@@ -36,7 +37,7 @@ public class NetworkScanner {
 
 					String macFromArpCache = getMacFromArpCache(host);
 
-					String key = host+"-"+macFromArpCache;
+					String key = host + "-" + macFromArpCache;
 					if (!getAvailableHosts().keySet().contains(key)) {
 
 						NetworkDevice device = new NetworkDevice();
@@ -103,10 +104,10 @@ public class NetworkScanner {
 			LogManager.getLogger(this.getClass()).info(e);
 		} finally {
 			try {
-				if (br!=null) {
+				if (br != null) {
 					br.close();
 				}
-				if (fr!=null) {
+				if (fr != null) {
 					fr.close();
 				}
 			} catch (IOException e) {
@@ -135,11 +136,17 @@ public class NetworkScanner {
 	 * @param args
 	 */
 	public static void scanNetwork(String[] args) {
-		HashMap<String, NetworkDevice> checkHosts = NetworkScanner.getInstance().checkHosts(args[0]);
+		if (!scanRunning) {
+			scanRunning = true;
 
-		NetworkScanResult data = new NetworkScanResult();
-		data.setHosts(checkHosts);
-		EventBusService.getEventBus().post(new EventObject(data));
+			HashMap<String, NetworkDevice> checkHosts = NetworkScanner.getInstance().checkHosts(args[0]);
+
+			NetworkScanResult data = new NetworkScanResult();
+			data.setHosts(checkHosts);
+			EventBusService.getEventBus().post(new EventObject(data));
+			scanRunning=false;
+		}
+
 	}
 
 	public HashMap<String, NetworkDevice> getAvailableHosts() {
