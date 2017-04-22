@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -15,7 +16,7 @@ import cm.homeautomation.eventbus.EventObject;
 public class NetworkScanner {
 
 	private static NetworkScanner networkScanner;
-	private static boolean scanRunning=false;
+	private static Map<String, Boolean> runningScans=new HashMap<String, Boolean>();
 	private HashMap<String, NetworkDevice> availableHosts;
 
 	/**
@@ -136,15 +137,25 @@ public class NetworkScanner {
 	 * @param args
 	 */
 	public static void scanNetwork(String[] args) {
-		if (!scanRunning) {
-			scanRunning = true;
+		String subnet = args[0];
+		
+		Boolean scanRunningObject = runningScans.get(subnet);
+		
+		if (scanRunningObject==null) {
+			runningScans.put(subnet, new Boolean(false));
+			scanRunningObject = runningScans.get(subnet);
+		}
+		
+		if (!scanRunningObject.booleanValue()) {
+			runningScans.put(subnet, new Boolean(true));
 
-			HashMap<String, NetworkDevice> checkHosts = NetworkScanner.getInstance().checkHosts(args[0]);
+			
+			HashMap<String, NetworkDevice> checkHosts = NetworkScanner.getInstance().checkHosts(subnet);
 
 			NetworkScanResult data = new NetworkScanResult();
 			data.setHosts(checkHosts);
 			EventBusService.getEventBus().post(new EventObject(data));
-			scanRunning=false;
+			runningScans.put(subnet, new Boolean(false));
 		}
 
 	}
