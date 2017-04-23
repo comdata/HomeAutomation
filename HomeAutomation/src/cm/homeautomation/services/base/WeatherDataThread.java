@@ -79,7 +79,7 @@ public class WeatherDataThread extends Thread {
 	
 
 		while (run) {
-			init();
+			
 			loadAndStoreWeather();
 			try {
 				Thread.sleep(30 * 60 * 1000);
@@ -92,6 +92,7 @@ public class WeatherDataThread extends Thread {
 	}
 
 	public void loadAndStoreWeather() {
+		init();
 		EntityManager em = EntityManagerService.getNewManager();
 		try {
 			WeatherData weatherData = WeatherService.getWeather();
