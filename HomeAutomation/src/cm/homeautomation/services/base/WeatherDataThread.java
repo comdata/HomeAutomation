@@ -23,6 +23,11 @@ public class WeatherDataThread extends Thread {
 	private Sensor weatherHumiditySensor;
 	
 	public WeatherDataThread() {
+		init();
+		
+	}
+
+	private void init() {
 		sensorService = new Sensors();
 
 		EntityManager em = EntityManagerService.getNewManager();
@@ -43,7 +48,6 @@ public class WeatherDataThread extends Thread {
 			weatherHumiditySensor = (Sensor) weatherHumidityResultObj;
 		}
 		em.close();
-		
 	}
 	
 	public static WeatherDataThread getInstance() {
@@ -75,6 +79,7 @@ public class WeatherDataThread extends Thread {
 	
 
 		while (run) {
+			init();
 			loadAndStoreWeather();
 			try {
 				Thread.sleep(30 * 60 * 1000);
