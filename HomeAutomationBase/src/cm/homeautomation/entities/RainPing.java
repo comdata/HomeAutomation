@@ -18,6 +18,7 @@ public class RainPing {
 	private String mac;
 	
 	private int state;
+	private int rainCounter;
 	
 	@Index(name="ix_timestamp")
 	private Date timestamp;
@@ -45,6 +46,12 @@ public class RainPing {
 	}
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
+	}
+	public int getRainCounter() {
+		return rainCounter;
+	}
+	public void setRainCounter(int rainCounter) {
+		this.rainCounter = rainCounter;
 	}
 
 }

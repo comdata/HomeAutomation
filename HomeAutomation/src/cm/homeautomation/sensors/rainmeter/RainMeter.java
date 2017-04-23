@@ -33,6 +33,7 @@ public class RainMeter {
 			rainPing.setMac(rainData.getMac());
 			rainPing.setState(rainData.getState());
 			rainPing.setState(rainData.getState());
+			rainPing.setRainCounter(rainData.getRc());
 			rainPing.setTimestamp(new Date());
 			em.persist(rainPing);
 			
