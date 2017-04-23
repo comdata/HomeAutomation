@@ -12,6 +12,7 @@ import cm.homeautomation.sensors.DistanceSensorData;
 import cm.homeautomation.sensors.GasmeterData;
 import cm.homeautomation.sensors.JSONSensorDataBase;
 import cm.homeautomation.sensors.PowerMeterData;
+import cm.homeautomation.sensors.RainData;
 import cm.homeautomation.sensors.SensorDataRoomSaveRequest;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.sensors.WindowSensorData;
@@ -27,6 +28,11 @@ import cm.homeautomation.services.sensors.Sensors;
  */
 public class JSONSensorDataReceiver {
 
+	public static void main(String[] args) {
+		String messageContent="{\"@c\": \".RainData\",\"rc\":48,\"state\":0, \"mac\": \":::::12\"}?��?�� @";
+		receiveSensorData(messageContent);
+	}
+	
 	public JSONSensorDataReceiver() {
 		// intentionally left empty
 	}
@@ -49,6 +55,12 @@ public class JSONSensorDataReceiver {
 			
 			messageContent=messageContent.replace("cm.homeautomation.transmission.TransmissionStatusData", ".TransmissionStatusData");
 			
+			if (messageContent.contains("\"}?")) {
+				String[] split = messageContent.split("[?]");
+				messageContent=split[0];
+			}
+			
+			
 			LogManager.getLogger(JSONSensorDataReceiver.class).info("message for deserialization: "+messageContent);
 			
 			JSONSensorDataBase sensorData = mapper.readValue(messageContent, JSONSensorDataBase.class);
@@ -66,6 +78,11 @@ public class JSONSensorDataReceiver {
 			}else if (sensorData instanceof GasmeterData) {
 				EventObject eventObject=new EventObject((GasmeterData)sensorData);
 				EventBusService.getEventBus().post(eventObject);	
+			}else if (sensorData instanceof RainData) {
+				RainData rainData = (RainData)sensorData;
+				EventObject eventObject=new EventObject(rainData);
+				EventBusService.getEventBus().post(eventObject);
+				System.out.println(rainData.getRc());
 			}
 			
 			else if (sensorData instanceof WindowSensorData) {
