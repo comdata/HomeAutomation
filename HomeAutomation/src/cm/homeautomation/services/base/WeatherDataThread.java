@@ -42,7 +42,7 @@ public class WeatherDataThread extends Thread {
 		
 		Object weatherHumidityResultObj = em.createQuery("select s from Sensor s where s.sensorType=:sensorType and s.room=(select r from Room r where r.roomName='Draussen')")
 				.setParameter("sensorType", "HUMIDITY").getSingleResult();
-		weatherTemperatureSensor = null;
+		weatherHumiditySensor = null;
 
 		if (weatherHumidityResultObj instanceof Sensor) {
 			weatherHumiditySensor = (Sensor) weatherHumidityResultObj;
