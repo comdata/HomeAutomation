@@ -53,9 +53,12 @@ public class TransmissionMonitor {
 				if (percentDone == 1) {
 					numberOfDoneTorrents++;
 					torrentInfo.getId();
+					String name = torrentInfo.getName();
 					
 					// remove done torrents, keeping local data
 					rpcClient.removeTorrent(new RemoveTorrentInfo(new NumberListIds(torrentInfo.getId()), false));
+					EventBusService.getEventBus().post(new TransmissionDownloadFinishedEvent(name));
+					
 				}
 			}
 			LogManager.getLogger(TransmissionMonitor.class).info("Done torrents: " + numberOfDoneTorrents);
