@@ -34,7 +34,7 @@ public class Conditions {
 	@XmlTransient private float windGustMph;
 	@XmlTransient private float windKph;
 	@XmlTransient private float windGustKph;
-	@XmlTransient private int pressureMb;
+	@XmlTransient private float pressureMb;
 	@XmlTransient private float pressureIn;
 	@XmlTransient private String pressureTrend;
 	@XmlTransient private String dewpointString;
@@ -317,7 +317,7 @@ public class Conditions {
 	 * @return the pressureMb
 	 */
 	@XmlElement(name="pressure_mb")
-	public int getPressureMb() {
+	public float getPressureMb() {
 		return pressureMb;
 	}
 
