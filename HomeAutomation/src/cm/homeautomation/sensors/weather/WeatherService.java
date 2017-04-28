@@ -57,6 +57,7 @@ public class WeatherService {
 		if (weather!=null && weather.getCurrent_observation()!=null) {
 			weatherData.setHumidity(weather.getCurrent_observation().getRelativeHumidity().replace("%", ""));
 			weatherData.setTempC(weather.getCurrent_observation().getTempC());
+			weatherData.setPressure(Float.toString(weather.getCurrent_observation().getPressureMb()));
 			System.out.println(weatherData.toString());
 		} else {
 			LogManager.getLogger(WeatherService.class).info("Could not access weather information");
