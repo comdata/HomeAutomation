@@ -324,7 +324,7 @@ public class Conditions {
 	/**
 	 * @param pressureMb the pressureMb to set
 	 */
-	public void setPressureMb(int pressureMb) {
+	public void setPressureMb(float pressureMb) {
 		this.pressureMb = pressureMb;
 	}
 
