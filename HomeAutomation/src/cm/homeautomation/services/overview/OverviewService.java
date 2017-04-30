@@ -60,57 +60,65 @@ public class OverviewService extends BaseService {
 		Date sensorDate = null;
 
 		List<Sensor> sensors = room.getSensors();
-		for (Sensor sensor : sensors) {
 
-			List latestDataList = em
-					.createQuery("select sd from SensorData sd where sd.sensor=:sensor order by sd.dateTime desc")
-					.setParameter("sensor", sensor).setMaxResults(1).getResultList();
-			if (latestDataList != null && !latestDataList.isEmpty()) {
-
-				Object latestData = latestDataList.get(0);
-
-				if (latestData != null) {
-					if (latestData instanceof SensorData) {
-						SensorData data = (SensorData) latestData;
-
-						if ("TEMPERATURE".equals(sensor.getSensorType())) {
-							temperature = data.getValue();
-							sensorDate = data.getValidThru();
+		if (sensors!=null) {
+			for (Sensor sensor : sensors) {
+	
+				@SuppressWarnings("rawtypes")
+				List latestDataList = em
+						.createQuery("select sd from SensorData sd where sd.sensor=:sensor order by sd.dateTime desc")
+						.setParameter("sensor", sensor).setMaxResults(1).getResultList();
+				if (latestDataList != null && !latestDataList.isEmpty()) {
+	
+					Object latestData = latestDataList.get(0);
+	
+					if (latestData != null) {
+						if (latestData instanceof SensorData) {
+							SensorData data = (SensorData) latestData;
+	
+							if ("TEMPERATURE".equals(sensor.getSensorType())) {
+								temperature = data.getValue();
+								sensorDate = data.getValidThru();
+							}
+							if ("HUMIDITY".equals(sensor.getSensorType())) {
+								humidity = data.getValue();
+								sensorDate = data.getValidThru();
+							}
+	
 						}
-						if ("HUMIDITY".equals(sensor.getSensorType())) {
-							humidity = data.getValue();
-							sensorDate = data.getValidThru();
-						}
-
 					}
 				}
+	
 			}
-
 		}
 
+		@SuppressWarnings("rawtypes")
 		List switchResult = em.createQuery("select sw from Switch sw where sw.room=:room").setParameter("room", room)
 				.getResultList();
 
-		for (Object singleSwitchAnon : switchResult) {
-			if (singleSwitchAnon instanceof Switch) {
-				Switch singleSwitch = (Switch) singleSwitchAnon;
-
-				if ("LIGHT".equals(singleSwitch.getSwitchType())) {
-					if ("ON".equals(singleSwitch.getLatestStatus())) {
-						icon = "sap-icon://lightbulb";
+		if (switchResult!=null) {
+			for (Object singleSwitchAnon : switchResult) {
+				if (singleSwitchAnon instanceof Switch) {
+					Switch singleSwitch = (Switch) singleSwitchAnon;
+	
+					if ("LIGHT".equals(singleSwitch.getSwitchType())) {
+						if ("ON".equals(singleSwitch.getLatestStatus())) {
+							icon = "sap-icon://lightbulb";
+						}
+	
 					}
-
-				}
-
-				if ("SPEAKER".equals(singleSwitch.getSwitchType())) {
-					if ("ON".equals(singleSwitch.getLatestStatus())) {
-						icon = "sap-icon://marketing-campaign";
+	
+					if ("SPEAKER".equals(singleSwitch.getSwitchType())) {
+						if ("ON".equals(singleSwitch.getLatestStatus())) {
+							icon = "sap-icon://marketing-campaign";
+						}
+	
 					}
-
 				}
+	
 			}
-
 		}
+		
 		String number = (temperature != null && !"".equals(temperature))
 				? (temperature.replace(",", ".") + ((humidity != null && !"".equals(humidity)) ? " / " + humidity.replace(",", ".") : ""))
 				: "";

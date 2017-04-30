@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -15,6 +16,7 @@ import cm.homeautomation.eventbus.EventObject;
 public class NetworkScanner {
 
 	private static NetworkScanner networkScanner;
+	private static Map<String, Boolean> runningScans=new HashMap<String, Boolean>();
 	private HashMap<String, NetworkDevice> availableHosts;
 
 	/**
@@ -26,7 +28,7 @@ public class NetworkScanner {
 	public HashMap<String, NetworkDevice> checkHosts(String subnet) {
 		setAvailableHosts(new HashMap<String, NetworkDevice>());
 
-		int timeout = 1000;
+		int timeout = 200;
 		for (int i = 1; i < 255; i++) {
 			String host = subnet + "." + i;
 			try {
@@ -36,7 +38,7 @@ public class NetworkScanner {
 
 					String macFromArpCache = getMacFromArpCache(host);
 
-					String key = host+"-"+macFromArpCache;
+					String key = host + "-" + macFromArpCache;
 					if (!getAvailableHosts().keySet().contains(key)) {
 
 						NetworkDevice device = new NetworkDevice();
@@ -103,10 +105,10 @@ public class NetworkScanner {
 			LogManager.getLogger(this.getClass()).info(e);
 		} finally {
 			try {
-				if (br!=null) {
+				if (br != null) {
 					br.close();
 				}
-				if (fr!=null) {
+				if (fr != null) {
 					fr.close();
 				}
 			} catch (IOException e) {
@@ -135,11 +137,27 @@ public class NetworkScanner {
 	 * @param args
 	 */
 	public static void scanNetwork(String[] args) {
-		HashMap<String, NetworkDevice> checkHosts = NetworkScanner.getInstance().checkHosts(args[0]);
+		String subnet = args[0];
+		
+		Boolean scanRunningObject = runningScans.get(subnet);
+		
+		if (scanRunningObject==null) {
+			runningScans.put(subnet, new Boolean(false));
+			scanRunningObject = runningScans.get(subnet);
+		}
+		
+		if (!scanRunningObject.booleanValue()) {
+			runningScans.put(subnet, new Boolean(true));
 
-		NetworkScanResult data = new NetworkScanResult();
-		data.setHosts(checkHosts);
-		EventBusService.getEventBus().post(new EventObject(data));
+			
+			HashMap<String, NetworkDevice> checkHosts = NetworkScanner.getInstance().checkHosts(subnet);
+
+			NetworkScanResult data = new NetworkScanResult();
+			data.setHosts(checkHosts);
+			EventBusService.getEventBus().post(new EventObject(data));
+			runningScans.put(subnet, new Boolean(false));
+		}
+
 	}
 
 	public HashMap<String, NetworkDevice> getAvailableHosts() {

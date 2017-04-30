@@ -36,6 +36,11 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 					if (client != null) {
 						if (!client.isConnected()) {
 							LogManager.getLogger(this.getClass()).info("Not connected");
+							try {
+								client.disconnectForcibly(100);
+							} catch (MqttException e) {
+								
+							}
 							client.reconnect();
 						} 
 

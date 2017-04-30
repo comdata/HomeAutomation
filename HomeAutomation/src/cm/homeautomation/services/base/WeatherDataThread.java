@@ -18,47 +18,44 @@ public class WeatherDataThread extends Thread {
 
 	private static WeatherDataThread instance;
 	boolean run = true;
-	private Sensor weatherTemperatureSensor;
+
 	private Sensors sensorService;
-	private Sensor weatherHumiditySensor;
-	
+
 	public WeatherDataThread() {
+		init();
+
+	}
+
+	private void init() {
 		sensorService = new Sensors();
 
+	}
+
+	private Sensor getSensorType(String sensorType) {
 		EntityManager em = EntityManagerService.getNewManager();
-		
-		Object weatherResultObj = em.createQuery("select s from Sensor s where s.sensorType=:sensorType and s.room=(select r from Room r where r.roomName='Draussen')")
-				.setParameter("sensorType", "TEMPERATURE").getSingleResult();
-		weatherTemperatureSensor = null;
+		Object sensorResultObj = em
+				.createQuery(
+						"select s from Sensor s where s.sensorType=:sensorType and s.room=(select r from Room r where r.roomName='Draussen')")
+				.setParameter("sensorType", sensorType).getSingleResult();
 
-		if (weatherResultObj instanceof Sensor) {
-			weatherTemperatureSensor = (Sensor) weatherResultObj;
-		}
-		
-		Object weatherHumidityResultObj = em.createQuery("select s from Sensor s where s.sensorType=:sensorType and s.room=(select r from Room r where r.roomName='Draussen')")
-				.setParameter("sensorType", "HUMIDITY").getSingleResult();
-		weatherTemperatureSensor = null;
-
-		if (weatherHumidityResultObj instanceof Sensor) {
-			weatherHumiditySensor = (Sensor) weatherHumidityResultObj;
+		if (sensorResultObj instanceof Sensor) {
+			return (Sensor) sensorResultObj;
 		}
 		em.close();
-		
+		return null;
 	}
-	
+
 	public static WeatherDataThread getInstance() {
-		if (instance==null) {
-			instance=new WeatherDataThread();
+		if (instance == null) {
+			instance = new WeatherDataThread();
 		}
-		
+
 		return instance;
 	}
-	
-	
+
 	public static void loadWeather(String[] params) {
 		WeatherDataThread.getInstance().loadAndStoreWeather();
 	}
-	
 
 	public void stopThread() {
 		run = false;
@@ -68,13 +65,11 @@ public class WeatherDataThread extends Thread {
 	@Override
 	public void run() {
 		super.run();
-		
 
 		run = true;
 
-	
-
 		while (run) {
+
 			loadAndStoreWeather();
 			try {
 				Thread.sleep(30 * 60 * 1000);
@@ -87,6 +82,7 @@ public class WeatherDataThread extends Thread {
 	}
 
 	public void loadAndStoreWeather() {
+		init();
 		EntityManager em = EntityManagerService.getNewManager();
 		try {
 			WeatherData weatherData = WeatherService.getWeather();
@@ -107,8 +103,13 @@ public class WeatherDataThread extends Thread {
 			weather.setFetchDate(new Date());
 			weather.setTempC(Float.toString(weatherData.getTempC()));
 			weather.setHumidity(weatherData.getHumidity());
+			weather.setPressure(weatherData.getPressure());
 			em.persist(weather);
 			em.getTransaction().commit();
+
+			Sensor weatherHumiditySensor = getSensorType("HUMIDITY");
+			Sensor weatherTemperatureSensor = getSensorType("TEMPERATURE");
+			Sensor weatherPressureSensor = getSensorType("PRESSURE");
 
 			if (weatherTemperatureSensor != null) {
 				SensorData weatherSensorTemperatureData = new SensorData();
@@ -118,7 +119,7 @@ public class WeatherDataThread extends Thread {
 				weatherTemperatureSaveRequest.setSensorId(weatherTemperatureSensor.getId());
 				sensorService.saveSensorData(weatherTemperatureSaveRequest);
 			}
-			
+
 			if (weatherHumiditySensor != null) {
 				SensorData weatherSensorHumidityData = new SensorData();
 				weatherSensorHumidityData.setValue(weatherData.getHumidity());
@@ -127,8 +128,16 @@ public class WeatherDataThread extends Thread {
 				weatherHumiditySaveRequest.setSensorId(weatherHumiditySensor.getId());
 				sensorService.saveSensorData(weatherHumiditySaveRequest);
 			}
-
 			
+			if (weatherPressureSensor != null) {
+				SensorData weatherPressureData = new SensorData();
+				weatherPressureData.setValue(weatherData.getPressure());
+				SensorDataSaveRequest weatherHumiditySaveRequest = new SensorDataSaveRequest();
+				weatherHumiditySaveRequest.setSensorData(weatherPressureData);
+				weatherHumiditySaveRequest.setSensorId(weatherPressureSensor.getId());
+				sensorService.saveSensorData(weatherHumiditySaveRequest);
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

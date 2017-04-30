@@ -3,23 +3,19 @@ package cm.homeautomation.telegram;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.websocket.EncodeException;
 
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
-import org.telegram.telegrambots.logging.BotLogger;
 
 import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
-import cm.homeautomation.entities.PresenceState;
 import cm.homeautomation.entities.TelegramUser;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
-import cm.homeautomation.eventbus.EventTranscoder;
 import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
 
 public class TelegramBotService {
@@ -70,6 +66,7 @@ public class TelegramBotService {
 	 */
 	public void sendMessage(String message) {
 		EntityManager em = EntityManagerService.getNewManager();
+		@SuppressWarnings("unchecked")
 		List<TelegramUser> resultList = (List<TelegramUser>) em.createQuery("select t from TelegramUser t")
 				.getResultList();
 
@@ -84,7 +81,9 @@ public class TelegramBotService {
 				sendMessage.setText(message);
 				try {
 					bot.sendMessage(sendMessage);
+					Thread.sleep(1000);
 				} catch (TelegramApiException e) {
+				} catch (InterruptedException e) {
 				}
 			}
 		}
