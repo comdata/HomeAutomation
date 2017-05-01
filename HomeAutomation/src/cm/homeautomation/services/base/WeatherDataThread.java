@@ -14,10 +14,9 @@ import cm.homeautomation.sensors.weather.WeatherService;
 import cm.homeautomation.services.overview.WeatherData;
 import cm.homeautomation.services.sensors.Sensors;
 
-public class WeatherDataThread extends Thread {
+public class WeatherDataThread {
 
 	private static WeatherDataThread instance;
-	boolean run = true;
 
 	private Sensors sensorService;
 
@@ -28,7 +27,6 @@ public class WeatherDataThread extends Thread {
 
 	private void init() {
 		sensorService = new Sensors();
-
 	}
 
 	private Sensor getSensorType(String sensorType) {
@@ -57,29 +55,7 @@ public class WeatherDataThread extends Thread {
 		WeatherDataThread.getInstance().loadAndStoreWeather();
 	}
 
-	public void stopThread() {
-		run = false;
-		this.interrupt();
-	}
 
-	@Override
-	public void run() {
-		super.run();
-
-		run = true;
-
-		while (run) {
-
-			loadAndStoreWeather();
-			try {
-				Thread.sleep(30 * 60 * 1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				// e.printStackTrace();
-			}
-		}
-
-	}
 
 	public void loadAndStoreWeather() {
 		init();
