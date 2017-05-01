@@ -174,6 +174,11 @@ sap.ui.define([
 
             	this.handleCameraEvent(newData.data);
             }
+            
+            if  (newData.clazz=="HumanMessageEvent") {
+
+            	this.handleHumanMessageEventEvent(newData.data);
+            }
 
             if (newData.clazz=="MailData") {
             	this.handleMailEvent(newData.data);
@@ -220,6 +225,10 @@ sap.ui.define([
                 // this.getView().setModel(newTiles);
                 $(".sapMStdTileIconDiv > img[src='/HomeAutomation/cameraproxy']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
             }
+        },
+        handleHumanMessageEventEvent: function (data) {
+        	var message=data.message;
+        	 this.messageToast.show(message);
         },
         handleWindowStateEvent: function (data) {
           var state=data.state;
