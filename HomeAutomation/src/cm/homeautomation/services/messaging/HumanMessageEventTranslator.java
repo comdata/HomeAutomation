@@ -9,16 +9,18 @@ import cm.homeautomation.telegram.TelegramBotService;
 
 public class HumanMessageEventTranslator {
 
+	public HumanMessageEventTranslator() {
+		EventBusService.getEventBus().register(this);
+	}
+
 	@Subscribe
 	public void handleEvent(EventObject eventObject) {
-//		try {
-			Object eventData = eventObject.getData();
-			if (eventData instanceof HumanMessageGenerationInterface) {
-				HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventData;
-				EventBusService.getEventBus().post(new EventObject(new HumanMessageEvent(humanMessage.getMessageString())));
-			}
-			
-			
+
+		Object eventData = eventObject.getData();
+		if (eventData instanceof HumanMessageGenerationInterface) {
+			HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventData;
+			EventBusService.getEventBus().post(new EventObject(new HumanMessageEvent(humanMessage.getMessageString())));
+		}
 
 	}
 }
