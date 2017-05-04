@@ -1451,8 +1451,17 @@ sap.ui.define([
                 this._dialogs["worldmap"].open();
                 
                 window.setTimeout(function() {
-                	$("#worldmapframe").src="http://"+location.host+":1880/worldmap";
+                	$("#worldmapframe").attr("src","http://"+location.host+":1880/worldmap");
                 }, 1000);
+                window.setTimeout(function() {
+                	$("#worldmapframe").attr("src","http://"+location.host+":1880/worldmap");
+                }, 2000);
+                window.setTimeout(function() {
+                	$("#worldmapframe").attr("src","http://"+location.host+":1880/worldmap");
+                }, 3000);
+                window.setTimeout(function() {
+                	$("#worldmapframe").attr("src","http://"+location.host+":1880/worldmap");
+                }, 4000);
               }
               else if (tileType =="package") {
                   if (!this._dialogs["package"]) {
