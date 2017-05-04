@@ -484,7 +484,7 @@ sap.ui.define([
             var worldmapModel = new JSONModel();
 
             var worldMapData={};
-            worldMapData.url=location.host+":1880";
+            worldMapData.url=location.hostname+":1880";
             
             worldmapModel.setData(worldMapData);
 
@@ -1451,16 +1451,16 @@ sap.ui.define([
                 this._dialogs["worldmap"].open();
                 
                 window.setTimeout(function() {
-                	$("#worldmapframe").attr("src","http://"+location.host+":1880/worldmap");
+                	$("#worldmapframe").attr("src","http://"+location.hostname+":1880/worldmap");
                 }, 1000);
                 window.setTimeout(function() {
-                	$("#worldmapframe").attr("src","http://"+location.host+":1880/worldmap");
+                	$("#worldmapframe").attr("src","http://"+location.hostname+":1880/worldmap");
                 }, 2000);
                 window.setTimeout(function() {
-                	$("#worldmapframe").attr("src","http://"+location.host+":1880/worldmap");
+                	$("#worldmapframe").attr("src","http://"+location.hostname+":1880/worldmap");
                 }, 3000);
                 window.setTimeout(function() {
-                	$("#worldmapframe").attr("src","http://"+location.host+":1880/worldmap");
+                	$("#worldmapframe").attr("src","http://"+location.hostname+":1880/worldmap");
                 }, 4000);
               }
               else if (tileType =="package") {
