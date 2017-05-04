@@ -491,7 +491,7 @@ sap.ui.define([
             sap.ui.getCore().setModel(worldmapModel, "worldmap");
         	
 			this._worldMapTile={
-                    tileType: "worldMap",
+                    tileType: "worldmap",
                     roomId: "worldmap",
                     title: "Position",
                     numberUnit: "",
