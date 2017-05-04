@@ -6,7 +6,7 @@
 
 
             <core:HTML
-                    content="&lt;iframe src=&quot;http://{worldmap>url}/worldmap&quot; scrolling=&quot;no&quot; style=&quot;overflow: hidden;&quot; width=&quot;100%&quot; height=&quot;100%&quot; /&gt;"/>
+                    content="&lt;iframe id=&quot;worldmapframe&quot; src=&quot;http://{worldmap>url}/worldmap&quot; scrolling=&quot;no&quot; style=&quot;overflow: hidden;&quot; width=&quot;100%&quot; height=&quot;100%&quot; /&gt;"/>
 
 <!--/HomeAutomation/cameraproxy-->
         </content>
