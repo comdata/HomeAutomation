@@ -479,6 +479,30 @@ sap.ui.define([
 
 			this.networkDevicesLoad();
         },
+        _initWorldMapTile: function () {
+        	
+            var worldmapModel = new JSONModel();
+
+            worldMapData={};
+            worldMapData.url=location.host+":1880";
+            
+            worldmapModel.setData(worldMapData);
+
+            sap.ui.getCore().setModel(worldmapModel, "worldmap");
+        	
+			this._worldMapTile={
+                    tileType: "worldMap",
+                    roomId: "worldmap",
+                    title: "Position",
+                    numberUnit: "",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://locate-me"
+			};
+
+			this.getView().getModel().getData().overviewTiles.push(this._worldMapTile);
+			this.getView().getModel().refresh(false);
+        },
         _initTripsTile: function () {
 			this._tripsTile={
                     tileType: "trips",
@@ -798,6 +822,7 @@ sap.ui.define([
             this.getView().setModel(model);
             this.overviewData = jsonModelData;
 
+            this._initWorldMapTile();
             this._initNetworkTile();
             this._initCameraTiles();
             this._initPlanesTile();
@@ -811,6 +836,7 @@ sap.ui.define([
             this._initPackageTile();
             this._initTripsTile();
             this._initPresenceTile();
+            
         },
         _initMailTile: function() {
         	var subject=this;
@@ -1418,6 +1444,12 @@ sap.ui.define([
                 }
                 this._dialogs["downloads"].open();
               }
+            else if (tileType =="worldmap") {
+                if (!this._dialogs["worldmap"]) {
+                    this._dialogs["worldmap"] = sap.ui.xmlfragment("cm.homeautomation.WorldMap", this);
+                }
+                this._dialogs["worldmap"].open();
+              }
               else if (tileType =="package") {
                   if (!this._dialogs["package"]) {
                       this._dialogs["package"] = sap.ui.xmlfragment("cm.homeautomation.Package", this);
@@ -1640,6 +1672,10 @@ sap.ui.define([
             this._dialogs["powermeter"].close();
 
         },
+        worldMapDialogClose: function() {
+            this._dialogs["worldmap"].close();
+
+        },
         gasMeterDialogClose: function() {
             this._dialogs["gasmeter"].close();
 
@@ -1686,6 +1722,10 @@ sap.ui.define([
           afterDownloadDialogClose: function () {
         	this._dialogs["downloads"].destroy();
         	this._dialogs["downloads"] = null;
+        },
+        afterWorldMapDialogClose: function () {
+        	this._dialogs["worldmap"].destroy();
+        	this._dialogs["worldmap"] = null;
         },
         afterPackageDialogClose: function () {
           this._dialogs["package"].destroy();
