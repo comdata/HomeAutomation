@@ -483,7 +483,7 @@ sap.ui.define([
         	
             var worldmapModel = new JSONModel();
 
-            worldMapData={};
+            var worldMapData={};
             worldMapData.url=location.host+":1880";
             
             worldmapModel.setData(worldMapData);
