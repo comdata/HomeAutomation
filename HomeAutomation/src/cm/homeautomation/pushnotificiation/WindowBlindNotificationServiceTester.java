@@ -20,6 +20,6 @@ public class WindowBlindNotificationServiceTester extends WindowBlindNotificatio
 		windowBlind.setName("Test Window Blind");
 		windowBlindStatus.setWindowBlind(windowBlind);
 		EventObject eventObject=new EventObject(windowBlindStatus);
-		windowBlindNotificationServiceTester.handleWindowBlindChange(eventObject);
+		//windowBlindNotificationServiceTester.handleWindowBlindChange(eventObject);
 	}
 }
