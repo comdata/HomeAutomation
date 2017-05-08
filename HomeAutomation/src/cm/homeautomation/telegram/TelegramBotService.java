@@ -1,5 +1,7 @@
 package cm.homeautomation.telegram;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -69,6 +71,11 @@ public class TelegramBotService {
 		@SuppressWarnings("unchecked")
 		List<TelegramUser> resultList = (List<TelegramUser>) em.createQuery("select t from TelegramUser t")
 				.getResultList();
+		
+	    String pattern = "yyyy-MM-dd HH:mm:ss";
+	    Date date = new Date();
+	    String defaultFmt = new SimpleDateFormat(pattern).format(date);
+		
 
 		if (resultList != null && !resultList.isEmpty()) {
 
@@ -78,7 +85,7 @@ public class TelegramBotService {
 				sendMessage.enableMarkdown(true);
 
 				sendMessage.setChatId(telegramUser.getUserId());
-				sendMessage.setText(message);
+				sendMessage.setText(defaultFmt+": "+message);
 				try {
 					bot.sendMessage(sendMessage);
 					Thread.sleep(1000);
