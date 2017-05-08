@@ -88,6 +88,23 @@ public class Pushpad {
 
 			Notification notification = this.buildNotification(humanMessage.getTitle(), humanMessage.getMessageString(),
 					notificationUrl);
+			
+			// optional, defaults to the project icon
+			// notification.iconUrl = notificationUrl;
+			notification.iconUrl=iconUrl;
+			// optional, drop the notification after this number of seconds if a
+			// device is offline
+			notification.ttl = 5*3600;
+
+			try {
+
+				// deliver to everyone
+				notification.broadcast();
+				LogManager.getLogger(this.getClass()).info("Notification sent.");
+				
+			} catch (DeliveryException e) {
+				e.printStackTrace();
+			}
 
 		}
 	}

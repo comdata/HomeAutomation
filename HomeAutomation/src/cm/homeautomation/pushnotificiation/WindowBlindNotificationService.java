@@ -47,42 +47,4 @@ public class WindowBlindNotificationService {
 			LogManager.getLogger(this.getClass()).info("Could not find pushpad properties!");
 		}
 	}
-
-
-
-	
-	public void handleWindowBlindChange(EventObject eventObject) {
-
-		Object data = eventObject.getData();
-		if (data instanceof WindowBlindStatus) {
-			WindowBlindStatus windowBlindStatus = (WindowBlindStatus) data;
-
-			Pushpad pushpad = new Pushpad(authToken, projectId);
-
-			String name = windowBlindStatus.getWindowBlind().getName();
-			String message = "Window Blind: " + name + " changed status to: "
-					+ windowBlindStatus.getWindowBlind().getCurrentValue() + " % open.";
-			Notification notification = pushpad.buildNotification("Window Blind ("+name+") changed position", message,
-					notificationUrl);
-			
-			LogManager.getLogger(this.getClass()).info("Preparing notification: "+message);
-
-			// optional, defaults to the project icon
-			// notification.iconUrl = notificationUrl;
-			notification.iconUrl=iconUrl;
-			// optional, drop the notification after this number of seconds if a
-			// device is offline
-			notification.ttl = 5*3600;
-
-			try {
-
-				// deliver to everyone
-				notification.broadcast();
-				LogManager.getLogger(this.getClass()).info("Notification sent.");
-				
-			} catch (DeliveryException e) {
-				e.printStackTrace();
-			}
-		}
-	}
 }
