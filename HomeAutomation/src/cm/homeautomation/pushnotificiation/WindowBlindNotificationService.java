@@ -48,15 +48,9 @@ public class WindowBlindNotificationService {
 		}
 	}
 
-	/**
-	 * do an unregister
-	 */
-	public void destroy() {
-		EventBusService.getEventBus().unregister(this);
 
-	}
 
-	@Subscribe
+	
 	public void handleWindowBlindChange(EventObject eventObject) {
 
 		Object data = eventObject.getData();

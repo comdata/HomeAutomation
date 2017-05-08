@@ -110,11 +110,6 @@ public class StartupServlet extends HttpServlet {
 
 		}
 
-		try {
-			windowBlindNotificationService.destroy();
-		} catch (Exception e) {
-
-		}
 		
 		try {
 			if (mdnsService != null) {
