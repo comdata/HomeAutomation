@@ -28,9 +28,7 @@ public class Pushpad {
 	private String notificationUrl;
 	private String iconUrl;
 
-	public Pushpad(String authToken, String projectId) {
-		this.authToken = authToken;
-		this.projectId = projectId;
+	public Pushpad() {
 
 		EventBusService.getEventBus().register(this);
 
@@ -88,10 +86,8 @@ public class Pushpad {
 		if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
 			HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventObject.getData();
 
-			Pushpad pushpad = new Pushpad(authToken, projectId);
-
-			Notification notification = pushpad.buildNotification(humanMessage.getTitle(),
-					humanMessage.getMessageString(), notificationUrl);
+			Notification notification = this.buildNotification(humanMessage.getTitle(), humanMessage.getMessageString(),
+					notificationUrl);
 
 		}
 	}

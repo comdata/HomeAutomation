@@ -23,6 +23,7 @@ import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
+import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.base.HTTPHelper;
 
 @Path("windowBlinds")
@@ -84,13 +85,14 @@ public class WindowBlindService extends BaseService {
 
 	@GET
 	@Path("setDim/{windowBlind}/{value}")
-	public void setDim(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value) {
+	public GenericStatus setDim(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value) {
 		setDim(windowBlindId, value, WindowBlind.SINGLE, null);
+		return new GenericStatus(true);
 	}
 
 	@GET
 	@Path("setDim/{windowBlind}/{value}/{type}/{roomId}")
-	public void setDim(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value,
+	public GenericStatus setDim(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value,
 			@PathParam("type") String type, @PathParam("roomId") Long roomId) {
 		EntityManager em = EntityManagerService.getNewManager();
 		
@@ -141,6 +143,7 @@ public class WindowBlindService extends BaseService {
 			}
 		}
 		em.close();
+		return new GenericStatus(true);
 	}
 
 	@GET
