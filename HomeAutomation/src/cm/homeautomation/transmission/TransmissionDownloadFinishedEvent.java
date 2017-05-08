@@ -26,4 +26,10 @@ public class TransmissionDownloadFinishedEvent implements HumanMessageGeneration
 	public String getMessageString() {
 		return "Download of: "+name+" finished.";
 	}
+
+	@Override
+	public String getTitle() {
+		// TODO Auto-generated method stub
+		return "Transmission Download Finished";
+	}
 }

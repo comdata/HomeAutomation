@@ -20,9 +20,15 @@ public class WindowBlindStatus implements HumanMessageGenerationInterface {
 	@Override
 	public String getMessageString() {
 		if (this.windowBlind != null) {
-			return "Window blind: "+this.windowBlind.getName()+" new status: "+ this.windowBlind.getCurrentValue();
+			return "Window blind: "+this.windowBlind.getName()+" new status: "+ this.windowBlind.getCurrentValue()+"%";
 		}
 		return null;
+	}
+
+	@Override
+	public String getTitle() {
+		
+		return "Window Blind ("+windowBlind.getName()+") changed position";
 	}
 
 }

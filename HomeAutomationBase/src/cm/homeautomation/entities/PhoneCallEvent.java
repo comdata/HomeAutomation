@@ -80,4 +80,9 @@ public class PhoneCallEvent implements HumanMessageGenerationInterface {
 		this.timestamp = timestamp;
 	}
 
+	@Override
+	public String getTitle() {
+		return "Phone Call Event";
+	}
+
 }

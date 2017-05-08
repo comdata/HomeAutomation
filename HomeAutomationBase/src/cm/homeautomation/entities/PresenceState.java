@@ -61,4 +61,10 @@ public class PresenceState implements HumanMessageGenerationInterface {
 		
 		return person.getName()+" is now: "+state;
 	}
+
+	@Override
+	public String getTitle() {
+		
+		return "Presence State";
+	}
 }
