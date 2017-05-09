@@ -5,13 +5,14 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 
 import com.google.common.eventbus.AsyncEventBus;
+import com.google.common.eventbus.EventBus;
 
-public class CustomAsyncEventBus extends AsyncEventBus {
+public class CustomEventBus extends EventBus {
 
 	Set<Class> classes=new HashSet<Class>();
 	
-	public CustomAsyncEventBus(Executor executor) {
-		super(executor);
+	public CustomEventBus() {
+		super();
 	}
 
 	
