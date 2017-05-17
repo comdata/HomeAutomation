@@ -188,6 +188,7 @@ public class ActorService extends BaseService implements MqttCallback {
 		SwitchEvent switchEvent = new SwitchEvent();
 		switchEvent.setStatus(targetStatus);
 		switchEvent.setSwitchId(switchId);
+		switchEvent.setUsedSwitch(singleSwitch);
 		EventBusService.getEventBus().post(new EventObject(switchEvent));
 		em.close();
 		return singleSwitch;
