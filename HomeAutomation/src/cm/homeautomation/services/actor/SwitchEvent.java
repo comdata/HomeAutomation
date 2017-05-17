@@ -41,4 +41,9 @@ public class SwitchEvent implements HumanMessageGenerationInterface {
 	public Switch getUsedSwitch() {
 		return usedSwitch;
 	}
+
+	@Override
+	public String getTitle() {
+		return "SwitchEvent";
+	}
 }
