@@ -57,7 +57,7 @@ public class TransmissionMonitor {
 					
 					// remove done torrents, keeping local data
 					rpcClient.removeTorrent(new RemoveTorrentInfo(new NumberListIds(torrentInfo.getId()), false));
-					EventBusService.getEventBus().post(new TransmissionDownloadFinishedEvent(name));
+					EventBusService.getEventBus().post(new EventObject(new TransmissionDownloadFinishedEvent(name)));
 					
 				}
 			}
