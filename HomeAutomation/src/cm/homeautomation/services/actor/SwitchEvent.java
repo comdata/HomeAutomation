@@ -1,11 +1,16 @@
 package cm.homeautomation.services.actor;
 
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import cm.homeautomation.entities.Switch;
+import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
+
 @XmlRootElement
-public class SwitchEvent {
+public class SwitchEvent implements HumanMessageGenerationInterface {
 	private String switchId;
 	private String status;
+	private Switch usedSwitch;
 
 	public String getStatus() {
 		return status;
@@ -21,5 +26,24 @@ public class SwitchEvent {
 
 	public void setSwitchId(String switchId) {
 		this.switchId = switchId;
+	}
+
+	@Override
+	public String getMessageString() {
+		return "Switch "+getUsedSwitch().getName()+" switched to "+getStatus();
+	}
+
+	public void setUsedSwitch(Switch singleSwitch) {
+		this.usedSwitch = singleSwitch;
+	}
+	
+	@Transient
+	public Switch getUsedSwitch() {
+		return usedSwitch;
+	}
+
+	@Override
+	public String getTitle() {
+		return "SwitchEvent";
 	}
 }
