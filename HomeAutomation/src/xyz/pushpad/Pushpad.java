@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.util.Base64;
 import java.util.Properties;
+import java.util.concurrent.Executors;
 
 public class Pushpad {
 	public String authToken;
@@ -88,23 +89,28 @@ public class Pushpad {
 
 			Notification notification = this.buildNotification(humanMessage.getTitle(), humanMessage.getMessageString(),
 					notificationUrl);
-			
+
 			// optional, defaults to the project icon
 			// notification.iconUrl = notificationUrl;
-			notification.iconUrl=iconUrl;
+			notification.iconUrl = iconUrl;
 			// optional, drop the notification after this number of seconds if a
 			// device is offline
-			notification.ttl = 5*3600;
+			notification.ttl = 5 * 3600;
 
-			try {
+			Executors.newSingleThreadExecutor().execute(new Runnable() {
+				@Override
+				public void run() {
+					try {
 
-				// deliver to everyone
-				notification.broadcast();
-				LogManager.getLogger(this.getClass()).info("Notification sent.");
-				
-			} catch (DeliveryException e) {
-				e.printStackTrace();
-			}
+						// deliver to everyone
+						notification.broadcast();
+						LogManager.getLogger(this.getClass()).info("Notification sent.");
+
+					} catch (DeliveryException e) {
+						e.printStackTrace();
+					}
+				}
+			});
 
 		}
 	}
