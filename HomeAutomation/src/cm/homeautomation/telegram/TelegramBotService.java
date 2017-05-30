@@ -3,6 +3,7 @@ package cm.homeautomation.telegram;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import javax.persistence.EntityManager;
 
@@ -31,9 +32,9 @@ public class TelegramBotService {
 	public TelegramBotService() {
 		token = ConfigurationService.getConfigurationProperty("telegram", "token");
 		user = ConfigurationService.getConfigurationProperty("telegram", "user");
-		
-		instance=this;
-		
+
+		instance = this;
+
 		EventBusService.getEventBus().register(this);
 	}
 
@@ -53,7 +54,7 @@ public class TelegramBotService {
 				telegramBotApi.registerBot(bot);
 
 				sendMessage("Bot is alive");
-				
+
 			} catch (TelegramApiException e) {
 
 			}
@@ -71,11 +72,10 @@ public class TelegramBotService {
 		@SuppressWarnings("unchecked")
 		List<TelegramUser> resultList = (List<TelegramUser>) em.createQuery("select t from TelegramUser t")
 				.getResultList();
-		
-	    String pattern = "yyyy-MM-dd HH:mm:ss";
-	    Date date = new Date();
-	    String defaultFmt = new SimpleDateFormat(pattern).format(date);
-		
+
+		String pattern = "yyyy-MM-dd HH:mm:ss";
+		Date date = new Date();
+		String defaultFmt = new SimpleDateFormat(pattern).format(date);
 
 		if (resultList != null && !resultList.isEmpty()) {
 
@@ -85,16 +85,20 @@ public class TelegramBotService {
 				sendMessage.enableMarkdown(true);
 
 				sendMessage.setChatId(telegramUser.getUserId());
-				sendMessage.setText(defaultFmt+": "+message);
-				try {
-					bot.sendMessage(sendMessage);
-					Thread.sleep(1000);
-				} catch (TelegramApiException e) {
-				} catch (InterruptedException e) {
-				}
+				sendMessage.setText(defaultFmt + ": " + message);
+
+				Executors.newSingleThreadExecutor().execute(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							bot.sendMessage(sendMessage);
+						} catch (TelegramApiException e) {
+						}
+					}
+				});
 			}
 		}
-		
+
 		em.close();
 	}
 
@@ -116,24 +120,23 @@ public class TelegramBotService {
 
 	@Subscribe
 	public void handleEvent(EventObject eventObject) {
-//		try {
-			if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
-				HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventObject.getData();
-				TelegramBotService.getInstance().sendMessage(humanMessage.getMessageString());
-			}
-			
-			
-//			if (eventObject.getData() instanceof PresenceState) {
-//			
-//				EventTranscoder transcoder = new EventTranscoder();
-//	
-//				String message = transcoder.encode(eventObject);
-//	
-//				TelegramBotService.getInstance().sendMessage(message);
-//			}
-//		} catch (EncodeException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		// try {
+		if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
+			HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventObject.getData();
+			TelegramBotService.getInstance().sendMessage(humanMessage.getMessageString());
+		}
+
+		// if (eventObject.getData() instanceof PresenceState) {
+		//
+		// EventTranscoder transcoder = new EventTranscoder();
+		//
+		// String message = transcoder.encode(eventObject);
+		//
+		// TelegramBotService.getInstance().sendMessage(message);
+		// }
+		// } catch (EncodeException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 	}
 }
