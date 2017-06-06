@@ -3,16 +3,20 @@ package cm.homeautomation.eventbus;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 
-public class CustomEventBus extends EventBus {
+public class CustomEventBus extends AsyncEventBus {
 
 	Set<Class> classes=new HashSet<Class>();
 	
+	EventBus eventBus;
+	
 	public CustomEventBus() {
-		super();
+		super(Executors.newCachedThreadPool());
+		eventBus=this;
 	}
 
 	
@@ -25,14 +29,14 @@ public class CustomEventBus extends EventBus {
 			System.out.println("Class already registered on eventbus: "+clazz.getName());
 		} else {
 			System.out.println("Registering Class on eventbus: "+clazz.getName());
-			super.register(object);
+			eventBus.register(object);
 			classes.add(clazz);
 		}
 	}
 	@Override
 	public void unregister(Object object) {
 		classes.remove(object.getClass());
-		super.unregister(object);
+		eventBus.unregister(object);
 	}
 	
 	

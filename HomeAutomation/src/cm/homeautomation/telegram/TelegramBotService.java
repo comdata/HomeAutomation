@@ -12,6 +12,7 @@ import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.configuration.ConfigurationService;
@@ -119,6 +120,7 @@ public class TelegramBotService {
 	}
 
 	@Subscribe
+	@AllowConcurrentEvents
 	public void handleEvent(EventObject eventObject) {
 		// try {
 		if (eventObject.getData() instanceof HumanMessageGenerationInterface) {

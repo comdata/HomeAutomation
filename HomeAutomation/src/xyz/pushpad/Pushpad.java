@@ -4,6 +4,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.logging.log4j.LogManager;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.eventbus.EventBusService;
@@ -82,6 +83,7 @@ public class Pushpad {
 	}
 
 	@Subscribe
+	@AllowConcurrentEvents
 	public void handleEvent(EventObject eventObject) {
 		// try {
 		if (eventObject.getData() instanceof HumanMessageGenerationInterface) {

@@ -12,6 +12,7 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.apache.logging.log4j.LogManager;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -58,6 +59,7 @@ public class EventBusEndpoint {
 	 * @param eventObject
 	 */
 	@Subscribe
+	@AllowConcurrentEvents
 	public void handleEvent(EventObject eventObject) {
 		Enumeration<String> keySet = userSessions.keys();
 
