@@ -31,7 +31,7 @@ public class EventBusServiceTest {
 	public void testAlreadyRegistered() throws Exception {
 		CustomEventBus eventBus = EventBusService.getEventBus();
 		
-		TVService tvService = new TVService();
+		EventBusServiceTestSubscriber tvService = new EventBusServiceTestSubscriber();
 		eventBus.register(tvService);
 		
 		assertTrue(eventBus.getClasses().size()==1);
@@ -45,7 +45,7 @@ public class EventBusServiceTest {
 	public void testUnregister() throws Exception {
 		CustomEventBus eventBus = EventBusService.getEventBus();
 		
-		TVService tvService = new TVService();
+		EventBusServiceTestSubscriber tvService = new EventBusServiceTestSubscriber();
 		eventBus.register(tvService);
 		
 		assertTrue(eventBus.getClasses().size()==1);
