@@ -1,5 +1,11 @@
 package cm.homeautomation.eventbus;
 
+/**
+ * Event Bus service
+ * 
+ * @author cmertins
+ *
+ */
 public class EventBusService {
 	private static CustomEventBus eventBus = null;
 
