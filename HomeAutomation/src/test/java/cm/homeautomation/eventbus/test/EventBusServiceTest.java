@@ -38,6 +38,7 @@ public class EventBusServiceTest {
 		
 		eventBus.register(tvService);
 		assertTrue(eventBus.getClasses().size()==1);
+		eventBus.unregister(tvService);
 	}
 	
 	@Test
