@@ -7,7 +7,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<sapui5.version>1.36.5</sapui5.version>
-		<version.jersey>2.26-b02</version.jersey>
+		<version.jersey>2.26-b04</version.jersey>
 		<version.servlet.api>3.1.0</version.servlet.api>
 		<sonar.test.inclusions>**/*test*/**</sonar.test.inclusions>
 		<sonar.exclusions>**/*test*/**</sonar.exclusions>
@@ -100,7 +100,7 @@
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
-			<version>1.5.8</version>
+			<version>2.0.2</version>
 		</dependency>
 	</dependencies>
 	<build>

@@ -61,7 +61,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<sapui5.version>1.38.4</sapui5.version>
-		<version.jersey>2.26-b02</version.jersey>
+		<version.jersey>2.26-b04</version.jersey>
 		<version.servlet.api>3.1.0</version.servlet.api>
 		<httpcompontents.version>4.5.2</httpcompontents.version>
 		<telegrambots.version>2.4.2</telegrambots.version>
@@ -180,7 +180,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>21.0</version>
+			<version>22.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.moquette</groupId>
@@ -290,7 +290,7 @@
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
-			<version>1.5.7</version>
+			<version>2.0.2</version>
 		</dependency>
 
 		<!-- <dependency> <groupId>org.apache.derby</groupId> <artifactId>derby</artifactId> 
