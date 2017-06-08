@@ -1,27 +1,25 @@
 package cm.homeautomation.eventbus;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 
-public class CustomEventBus extends AsyncEventBus {
+public class CustomEventBus {
 
 	Map<String, Class> classes = new HashMap<String, Class>();
 
-	EventBus eventBus;
+	static EventBus eventBus=null;
 
 	public CustomEventBus() {
-		super(Executors.newCachedThreadPool());
-		eventBus = this;
+		if (eventBus==null) {
+			eventBus=new AsyncEventBus(Executors.newCachedThreadPool());
+		}
 	}
 
-	@Override
+	
 	public void register(Object object) {
 
 		Class clazz = object.getClass();
@@ -36,10 +34,13 @@ public class CustomEventBus extends AsyncEventBus {
 		}
 	}
 
-	@Override
 	public void unregister(Object object) {
 		classes.remove(object.getClass());
 		eventBus.unregister(object);
 	}
+	
+	 public void post(Object event) {
+		 eventBus.post(event);
+	 }
 
 }
