@@ -9,7 +9,7 @@ import com.google.common.eventbus.EventBus;
 
 public class CustomEventBus {
 
-	Map<String, Class> classes = new HashMap<String, Class>();
+	private Map<String, Class> classes = new HashMap<String, Class>();
 
 	static EventBus eventBus=null;
 
@@ -25,17 +25,17 @@ public class CustomEventBus {
 		Class clazz = object.getClass();
 		String clazzName = clazz.getName();
 
-		if (classes.containsKey(clazzName)) {
+		if (getClasses().containsKey(clazzName)) {
 			System.out.println("Class already registered on eventbus: " + clazzName);
 		} else {
 			System.out.println("Registering Class on eventbus: " + clazz.getName());
 			eventBus.register(object);
-			classes.put(clazzName, clazz);
+			getClasses().put(clazzName, clazz);
 		}
 	}
 
 	public void unregister(Object object) {
-		classes.remove(object.getClass());
+		getClasses().remove(object.getClass());
 		eventBus.unregister(object);
 	}
 	
@@ -43,4 +43,8 @@ public class CustomEventBus {
 		 eventBus.post(event);
 	 }
 
+
+	public Map<String, Class> getClasses() {
+		return classes;
+	}
 }
