@@ -11,9 +11,13 @@ public class EventBusService {
 
 	public static CustomEventBus getEventBus() {
 		if (eventBus == null) {
-			eventBus = new CustomEventBus();
+			init();
 		}
 		return eventBus;
+	}
+
+	public static void init() {
+		eventBus = new CustomEventBus();
 	}
 
 }

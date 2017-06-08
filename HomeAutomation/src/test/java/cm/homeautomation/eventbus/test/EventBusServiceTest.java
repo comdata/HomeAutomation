@@ -1,14 +1,22 @@
 package cm.homeautomation.eventbus.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import cm.homeautomation.eventbus.CustomEventBus;
 import cm.homeautomation.eventbus.EventBusService;
-import cm.homeautomation.services.tv.TVService;
 
 public class EventBusServiceTest {
+
+	
+	@Before
+	public void setup() {
+		EventBusService.init();
+	}
 
 	
 	@Test
