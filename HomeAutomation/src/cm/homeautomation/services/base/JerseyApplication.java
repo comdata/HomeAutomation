@@ -6,7 +6,6 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.ws.rs.core.Application;
 
-import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
