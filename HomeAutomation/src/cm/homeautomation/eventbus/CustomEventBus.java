@@ -35,8 +35,9 @@ public class CustomEventBus {
 	}
 
 	public void unregister(Object object) {
-		getClasses().remove(object.getClass().getName());
 		eventBus.unregister(object);
+		getClasses().remove(object.getClass().getName());
+
 	}
 	
 	 public void post(Object event) {
