@@ -39,10 +39,10 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 							try {
 								client.disconnectForcibly(100);
 							} catch (MqttException e) {
-								
+
 							}
 							client.reconnect();
-						} 
+						}
 
 					} else {
 						LogManager.getLogger(this.getClass()).info("client is null");
@@ -76,7 +76,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 
 		MqttConnectOptions connOpt = new MqttConnectOptions();
 		connOpt.setAutomaticReconnect(true);
-		//connOpt.setCleanSession(true);
+		// connOpt.setCleanSession(true);
 		connOpt.setKeepAliveInterval(60);
 		connOpt.setConnectionTimeout(60);
 		connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
@@ -127,7 +127,16 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 		String messageContent = new String(payload);
 		LogManager.getLogger(this.getClass()).info("Got MQTT message: " + messageContent);
 		try {
-			JSONSensorDataReceiver.receiveSensorData(messageContent);
+			Runnable receiver = new Runnable() {
+
+				@Override
+				public void run() {
+					JSONSensorDataReceiver.receiveSensorData(messageContent);
+
+				}
+			};
+			new Thread(receiver).start();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			LogManager.getLogger(this.getClass()).error("Got an exception while saving data.", e);
