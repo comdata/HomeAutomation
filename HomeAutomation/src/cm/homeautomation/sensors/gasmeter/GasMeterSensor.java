@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.persistence.EntityManager;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.db.EntityManagerService;
@@ -36,6 +37,7 @@ public class GasMeterSensor {
 	}
 
 	@Subscribe
+	@AllowConcurrentEvents
 	public void handleGasMeterData(EventObject eventObject) {
 
 		Object data = eventObject.getData();

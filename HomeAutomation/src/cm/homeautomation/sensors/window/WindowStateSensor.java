@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.persistence.EntityManager;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.db.EntityManagerService;
@@ -38,6 +39,7 @@ public class WindowStateSensor {
 	}
 
 	@Subscribe
+	@AllowConcurrentEvents
 	public void handleWindowState(EventObject eventObject) {
 
 		Object data = eventObject.getData();

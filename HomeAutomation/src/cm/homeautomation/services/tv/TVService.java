@@ -6,6 +6,7 @@ import javax.ws.rs.PathParam;
 
 import org.apache.logging.log4j.LogManager;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.configuration.ConfigurationService;
@@ -67,6 +68,7 @@ public class TVService extends BaseService {
 	}
 
 	@Subscribe
+	@AllowConcurrentEvents
 	public void phoneEventHandler(EventObject eventObject) {
 
 		Object eventData = eventObject.getData();

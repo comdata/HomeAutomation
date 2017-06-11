@@ -1,5 +1,6 @@
 package cm.homeautomation.services.messaging;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.eventbus.EventBusService;
@@ -14,6 +15,7 @@ public class HumanMessageEventTranslator {
 	}
 
 	@Subscribe
+	@AllowConcurrentEvents
 	public void handleEvent(EventObject eventObject) {
 
 		Object eventData = eventObject.getData();

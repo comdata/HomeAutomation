@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.persistence.EntityManager;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.db.EntityManagerService;
@@ -34,6 +35,7 @@ public class PowerMeterSensor {
 	}
 
 	@Subscribe
+	@AllowConcurrentEvents
 	public void handlePowerMeterData(EventObject eventObject) {
 
 		Object data = eventObject.getData();

@@ -11,6 +11,7 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.apache.logging.log4j.LogManager;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.entities.SensorData;
@@ -43,6 +44,7 @@ public class OverviewWebSocket {
 	}
 
 	@Subscribe
+	@AllowConcurrentEvents
 	public void handleSensorDataChanged(EventObject eventObject) {
 
 		LogManager.getLogger(this.getClass()).info("Overview got event");
