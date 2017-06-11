@@ -1,4 +1,4 @@
-package cm.homeautomation.services.legotrain;
+package cm.homeautomation.mqtt.client;
 
 import java.util.UUID;
 

@@ -12,6 +12,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 
