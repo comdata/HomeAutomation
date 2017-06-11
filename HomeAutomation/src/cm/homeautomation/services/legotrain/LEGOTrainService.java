@@ -89,7 +89,8 @@ import cm.homeautomation.services.base.GenericStatus;
 @Path("lego")
 public class LEGOTrainService extends BaseService {
 
-	private MqttClient client;
+
+	private static final String topic = "/lego";
 
 	@GET
 	@Path("control/speed/{train}/{speed}")
@@ -97,7 +98,7 @@ public class LEGOTrainService extends BaseService {
 		//{mode: 0, step: 0, output: 0, channel:0}
 		
 		String jsonMessage="{mode: 0, step: "+speed+", output: 0, channel:"+train+"}";
-		sendMQTTMessage(jsonMessage);
+		MQTTSender.sendMQTTMessage(topic, jsonMessage);
 		return new GenericStatus(true);
 	}
 	
@@ -107,7 +108,7 @@ public class LEGOTrainService extends BaseService {
 		//{mode: 0, step: 0, output: 0, channel:0}
 		
 		String jsonMessage="{mode: 0, step: "+light+", output: 1, channel:"+train+"}";
-		sendMQTTMessage(jsonMessage);
+		MQTTSender.sendMQTTMessage(topic, jsonMessage);
 		return new GenericStatus(true);
 	}
 	
@@ -118,42 +119,12 @@ public class LEGOTrainService extends BaseService {
 		for(int a=0;a<2;a++) {
 			for(int i=0;i<4;i++) { 
 				String jsonMessage="{mode: 0, step: 8, output: "+a+", channel:"+i+"}";
-				sendMQTTMessage(jsonMessage);
+				MQTTSender.sendMQTTMessage(topic ,jsonMessage);
 			}
 		}
 		return new GenericStatus(true);
 	}
 	
-	private void sendMQTTMessage(String jsonMessage) {
-		try {
-			
-			if (client==null || !client.isConnected()) {
-			
-				UUID uuid = UUID.randomUUID();
-				String randomUUIDString = uuid.toString();
 	
-				client = new MqttClient("tcp://localhost:1883", "HomeAutomation/" + randomUUIDString);
-	
-				MqttConnectOptions connOpt = new MqttConnectOptions();
-				connOpt.setAutomaticReconnect(true);
-				connOpt.setCleanSession(true);
-				connOpt.setKeepAliveInterval(60);
-				connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
-				// connOpt.setUserName(M2MIO_USERNAME);
-				// connOpt.setPassword(M2MIO_PASSWORD_MD5.toCharArray());
-	
-				client.connect(connOpt);
-			}
-
-			MqttMessage message = new MqttMessage();
-			message.setPayload(jsonMessage.getBytes());
-			client.publish("/lego", message);
-			/*client.disconnect();
-			client.close();*/
-		} catch (MqttException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
 }
