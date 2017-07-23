@@ -60,8 +60,8 @@
 
 								<Switch state="{= ${lights>brightnessLevel}>0}" change="handleLightSwitchChange" />
 								<Slider min="0" max="99" value="{lights>brightnessLevel}"
-									width="100px" change="handleLightChange" />
-								<Label text="{lights>brightnessLevel}"></Label>
+									width="100px" change="handleLightChange" visible="{= ${dType} === 'DimmableLight'}"/>
+								<Label text="{lights>brightnessLevel}" visible="{= ${dType} === 'DimmableLight'}"></Label>
 							</InputListItem>
 						</items>
 
