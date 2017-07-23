@@ -37,6 +37,9 @@ public class Light {
 	@JoinColumn(name = "ROOM_ID")
 	private Room room;
 	
+	@JsonIgnore
+	private String dimUrl;
+	
 	private String name;
 
 	public boolean isPowerState() {
@@ -72,6 +75,15 @@ public class Light {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	@JsonIgnore
+	public String getDimUrl() {
+		return dimUrl;
+	}
+
+	public void setDimUrl(String dimUrl) {
+		this.dimUrl = dimUrl;
 	}
 	
 }

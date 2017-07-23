@@ -20,8 +20,7 @@ public class DimmableLight extends Light {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@JsonIgnore
-	private String dimUrl;
+
 	
 	@Column(name="BRIGHTNESS")
 	private int brightnessLevel;
@@ -34,14 +33,7 @@ public class DimmableLight extends Light {
 		this.brightnessLevel = brightnessLevel;
 	}
 
-	@JsonIgnore
-	public String getDimUrl() {
-		return dimUrl;
-	}
 
-	public void setDimUrl(String dimUrl) {
-		this.dimUrl = dimUrl;
-	}
 
 	
 	

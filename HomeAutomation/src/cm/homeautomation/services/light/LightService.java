@@ -59,24 +59,44 @@ public class LightService extends BaseService {
 	@GET
 	@Path("dim/{lightId}/{dimValue}")
 	public GenericStatus dimLight(@PathParam("lightId") long lightId, @PathParam("dimValue") int dimValue) {
-
+		String powerState="off";
+		
 		if (dimValue>99) {
 			dimValue=99;
 		}
 		
+		if (dimValue==0) {
+			powerState="off";
+		}else {
+			powerState="on";
+		}
+		
+		
+		
 		EntityManager em = EntityManagerService.getNewManager();
 		em.getTransaction().begin();
-		DimmableLight light = (DimmableLight) em.createQuery("select l from Light l where l.id=:lightId")
+		Light light = (Light) em.createQuery("select l from Light l where l.id=:lightId")
 				.setParameter("lightId", lightId).getSingleResult();
 
-		light.setBrightnessLevel(dimValue);
-		em.persist(light);
+		String dimUrl = light.getDimUrl();
+		
+		if (light instanceof DimmableLight) {
+			DimmableLight dimmableLight=(DimmableLight)light;
+			dimmableLight.setBrightnessLevel(dimValue);
+			em.persist(dimmableLight);		
+			dimUrl = dimmableLight.getDimUrl();
+		} else {
+			light.setPowerState(("off".equals(powerState))?false:true);
+		}
+		
+
 		
 		em.getTransaction().commit();
 		
-		String dimUrl = light.getDimUrl();
+		
 		
 		dimUrl = dimUrl.replace("{DIMVALUE}", Integer.toString(dimValue));
+		dimUrl = dimUrl.replace("{STATE}", powerState);
 		
 		HTTPHelper.performHTTPRequest(dimUrl);
 		
