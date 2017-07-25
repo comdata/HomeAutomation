@@ -13,6 +13,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 public class HTTPHelper {
 	public static void performHTTPRequest(String url) {
 		try {
+			System.out.println("perform http call: "+url);
+			
 			HttpGet getMethod = new HttpGet(url);
 			HttpClientBuilder clientBuilder = HttpClientBuilder.create();
 
