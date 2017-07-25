@@ -7,10 +7,10 @@
 
 	<repositories>
 		<repository>
-                <id>eclipsesmarthome</id>
-  
-                <url>https://repo.eclipse.org/content/repositories/smarthome-releases/</url>
-            </repository>
+			<id>eclipsesmarthome</id>
+
+			<url>https://repo.eclipse.org/content/repositories/smarthome-releases/</url>
+		</repository>
 		<repository>
 			<id>eclipselink</id>
 			<url>http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/rt/eclipselink/maven.repo/</url>
@@ -474,9 +474,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.19.1</version>
-    				<configuration>
-        				<argLine>${argLine} -Xmx512m -XX:MaxPermSize=256m</argLine>
-    				</configuration>
+				<configuration>
+					<argLine>${argLine} -Xmx512m -XX:MaxPermSize=256m</argLine>
+				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
@@ -499,6 +499,7 @@
 					</execution>
 				</executions>
 				<configuration>
+					<argLine>${argLine} -Xmx512m -XX:MaxPermSize=256m</argLine>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
