@@ -33,6 +33,7 @@ import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.ActorMessage;
 import cm.homeautomation.services.base.BaseService;
+import cm.homeautomation.services.base.HTTPHelper;
 
 /**
  * everything necessary for handling actors and reading the statuses
@@ -141,11 +142,25 @@ public class ActorService extends BaseService implements MqttCallback {
 		ActorMessage actorMessage = createActorMessage(targetStatus, singleSwitch);
 
 		//sendMulticastUDP(actorMessage);
-		sendMQTTMessage(actorMessage);
+		if (singleSwitch.getHouseCode()!=null) {
+			sendMQTTMessage(actorMessage);			
+		}
+		
+		if(singleSwitch.getSwitchSetUrl()!=null) {
+			sendHTTPMessage(singleSwitch, actorMessage);
+		}
+
 		
 		SwitchPressResponse switchPressResponse = new SwitchPressResponse();
 		switchPressResponse.setSuccess(true);
 		return switchPressResponse;
+	}
+
+	private void sendHTTPMessage(Switch singleSwitch, ActorMessage actorMessage) {
+		String switchSetUrl = singleSwitch.getSwitchSetUrl();		
+		switchSetUrl=switchSetUrl.replace("{STATE}", actorMessage.getStatus());
+		
+		HTTPHelper.performHTTPRequest(switchSetUrl);
 	}
 
 	private ActorMessage createActorMessage(String targetStatus, Switch singleSwitch) {
