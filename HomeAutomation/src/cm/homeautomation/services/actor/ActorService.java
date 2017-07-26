@@ -158,7 +158,7 @@ public class ActorService extends BaseService implements MqttCallback {
 
 	private void sendHTTPMessage(Switch singleSwitch, ActorMessage actorMessage) {
 		String switchSetUrl = singleSwitch.getSwitchSetUrl();		
-		switchSetUrl=switchSetUrl.replace("{STATE}", ((actorMessage.getStatus()==0) ? "off": "on"));
+		switchSetUrl=switchSetUrl.replace("{STATE}", ((actorMessage.getStatus()=="0") ? "off": "on"));
 		
 		HTTPHelper.performHTTPRequest(switchSetUrl);
 	}
