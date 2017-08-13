@@ -635,6 +635,19 @@ sap.ui.define([
             this.getView().getModel().getData().overviewTiles.push(this.transmissionTile);
             this.getView().getModel().refresh(false);
         },
+        _initMPDTile: function () {
+            this.mpdTile = {
+                    tileType: "mpd",
+                    roomId: "mpd",
+                    title: "Mopidy",
+                    numberUnit: "",
+                    eventHandler: null,
+                    infoState: sap.ui.core.ValueState.Success,
+                    icon: "sap-icon://media-play"
+                };
+            this.getView().getModel().getData().overviewTiles.push(this.mpdTile);
+            this.getView().getModel().refresh(false);
+        }
         _initDistanceTile: function () {
         	this.distanceTile = {
                     tileType: "distance",
@@ -827,6 +840,7 @@ sap.ui.define([
             this._initCameraTiles();
             this._initPlanesTile();
             this._initTransmissionTile();
+            this._initMPDTile();
             this._initDistanceTile();
             this._initWindowTile();
             this._initPowerMeterTile();
@@ -1444,6 +1458,12 @@ sap.ui.define([
                 }
                 this._dialogs["downloads"].open();
               }
+            else if (tileType =="mpd") {
+                if (!this._dialogs["mpd"]) {
+                    this._dialogs["mpd"] = sap.ui.xmlfragment("cm.homeautomation.MPD", this);
+                }
+                this._dialogs["mpd"].open();
+            }
             else if (tileType =="worldmap") {
                 if (!this._dialogs["worldmap"]) {
                     this._dialogs["worldmap"] = sap.ui.xmlfragment("cm.homeautomation.WorldMap", this);
@@ -1685,6 +1705,10 @@ sap.ui.define([
             this._dialogs["powermeter"].close();
 
         },
+        mopidyDialogClose: function() {
+            this._dialogs["mpd"].close();
+
+        },
         worldMapDialogClose: function() {
             this._dialogs["worldmap"].close();
 
@@ -1740,6 +1764,10 @@ sap.ui.define([
         	this._dialogs["worldmap"].destroy();
         	this._dialogs["worldmap"] = null;
         },
+        afterMopidyDialogClose: function () {
+            this._dialogs["mpd"].destroy();
+            this._dialogs["mpd"] = null;
+          },
         afterPackageDialogClose: function () {
           this._dialogs["package"].destroy();
           this._dialogs["package"] = null;
