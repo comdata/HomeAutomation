@@ -647,7 +647,7 @@ sap.ui.define([
                 };
             this.getView().getModel().getData().overviewTiles.push(this.mpdTile);
             this.getView().getModel().refresh(false);
-        }
+        },
         _initDistanceTile: function () {
         	this.distanceTile = {
                     tileType: "distance",
