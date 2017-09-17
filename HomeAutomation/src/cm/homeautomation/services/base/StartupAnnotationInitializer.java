@@ -20,6 +20,7 @@ public class StartupAnnotationInitializer {
 	}
 
 	private void init() {
+		System.out.println("Scanning classes");
 		Reflections reflections = new Reflections(new ConfigurationBuilder()
 				.setUrls(ClasspathHelper.forPackage("cm.homeautomation")).setScanners(new MethodAnnotationsScanner()));
 
@@ -29,7 +30,7 @@ public class StartupAnnotationInitializer {
 
 		for (Method method : resources) {
 			Class<?> declaringClass = method.getDeclaringClass();
-		
+			String message = "Adding class: " + declaringClass.getName();
 			typesAnnotatedWith.add(declaringClass);
 		}
 		
@@ -43,6 +44,7 @@ public class StartupAnnotationInitializer {
 
 				instances.put(declaringClass, classInstance);
 			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
 				LogManager.getLogger(this.getClass()).info("Failed creating class");
 			}
 		}
