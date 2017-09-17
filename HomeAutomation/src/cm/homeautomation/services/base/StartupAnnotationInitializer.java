@@ -35,7 +35,9 @@ public class StartupAnnotationInitializer {
 		
 		for (Class<?> declaringClass : typesAnnotatedWith) {
 			try {
-				LogManager.getLogger(this.getClass()).info("Creating class: " + declaringClass.getName());
+				String message = "Creating class: " + declaringClass.getName();
+				System.out.println(message);
+				LogManager.getLogger(this.getClass()).info(message);
 				
 				Object classInstance = declaringClass.newInstance();
 

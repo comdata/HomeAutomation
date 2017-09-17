@@ -22,10 +22,12 @@ import cm.homeautomation.services.base.AutoCreateInstance;
 public class DashButtonService {
 
 	public DashButtonService() {
+		System.out.println("Creating Dashbutton Service");
 		this.run();
 	}
 	
 
+	@AutoCreateInstance
 	private void run() {
 
 		 
@@ -34,7 +36,7 @@ public class DashButtonService {
 
 		DatagramSocket socket = null;
 		try {
-
+			System.out.println("Start listening");
 			socket = new DatagramSocket(listenPort); // ipaddress? throws socket exception
 
 			byte[] payload = new byte[MAX_BUFFER_SIZE];
