@@ -82,11 +82,16 @@
 
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/org.pcap4j/pcap4j-core -->
-		<dependency>
+		 <dependency>
+			<groupId>com.github.shynixn</groupId>
+			<artifactId>dashbuttonwatcher-api</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<!--  <dependency>
 			<groupId>org.pcap4j</groupId>
 			<artifactId>pcap4j-core</artifactId>
 			<version>1.7.1</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>org.eclipse.smarthome.core</groupId>
 			<artifactId>org.eclipse.smarthome.core</artifactId>
