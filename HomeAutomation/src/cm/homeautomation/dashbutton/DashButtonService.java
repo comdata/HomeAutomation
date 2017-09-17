@@ -29,7 +29,7 @@ public class DashButtonService {
 	private void run() {
 
 		 
-		int listenPort = 67;
+		int listenPort = 1367;
 		int MAX_BUFFER_SIZE = 1500;
 
 		DatagramSocket socket = null;
