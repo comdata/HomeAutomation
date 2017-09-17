@@ -25,11 +25,18 @@ public class StartupAnnotationInitializer {
 
 		// MethodAnnotationsScanner
 		Set<Method> resources = reflections.getMethodsAnnotatedWith(AutoCreateInstance.class);
+		Set<Class<?>> typesAnnotatedWith = reflections.getTypesAnnotatedWith(AutoCreateInstance.class);
 
 		for (Method method : resources) {
+			Class<?> declaringClass = method.getDeclaringClass();
+		
+			typesAnnotatedWith.add(declaringClass);
+		}
+		
+		for (Class<?> declaringClass : typesAnnotatedWith) {
 			try {
-				Class<?> declaringClass = method.getDeclaringClass();
 				LogManager.getLogger(this.getClass()).info("Creating class: " + declaringClass.getName());
+				
 				Object classInstance = declaringClass.newInstance();
 
 				instances.put(declaringClass, classInstance);

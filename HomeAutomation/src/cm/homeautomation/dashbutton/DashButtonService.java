@@ -25,6 +25,7 @@ public class DashButtonService {
 		this.run();
 	}
 	
+
 	private void run() {
 
 		 
@@ -55,7 +56,7 @@ public class DashButtonService {
 				byte[] chaddr = packet.getChaddr();
 				
 				String mac=packet.getHardwareAddress().getHardwareAddressHex();
-				
+				System.out.println("checking mac: "+mac);
 				if (isDashButton(mac)) {
 					System.out.println("found a dashbutton mac: "+mac);
 					
