@@ -34,6 +34,7 @@ public class StartupAnnotationInitializer {
 		for (Method method : resources) {
 			Class<?> declaringClass = method.getDeclaringClass();
 			String message = "Adding class: " + declaringClass.getName();
+			System.out.println(message);
 			typesAnnotatedWith.add(declaringClass);
 		}
 		
