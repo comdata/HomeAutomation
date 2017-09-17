@@ -8,6 +8,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
@@ -16,17 +17,19 @@ public class StartupAnnotationInitializer {
 	private Map<Class, Object> instances = new HashMap<Class, Object>();
 
 	public StartupAnnotationInitializer() {
-		init();
 	}
 
-	private void init() {
+	public void init() {
 		System.out.println("Scanning classes");
-		Reflections reflections = new Reflections(new ConfigurationBuilder()
+		Reflections reflectionsMethods = new Reflections(new ConfigurationBuilder()
 				.setUrls(ClasspathHelper.forPackage("cm.homeautomation")).setScanners(new MethodAnnotationsScanner()));
 
+		Reflections reflectionsClasses = new Reflections(new ConfigurationBuilder()
+				.setUrls(ClasspathHelper.forPackage("cm.homeautomation")).setScanners(new TypeAnnotationsScanner()));
+		
 		// MethodAnnotationsScanner
-		Set<Method> resources = reflections.getMethodsAnnotatedWith(AutoCreateInstance.class);
-		Set<Class<?>> typesAnnotatedWith = reflections.getTypesAnnotatedWith(AutoCreateInstance.class);
+		Set<Method> resources = reflectionsMethods.getMethodsAnnotatedWith(AutoCreateInstance.class);
+		Set<Class<?>> typesAnnotatedWith = reflectionsClasses.getTypesAnnotatedWith(AutoCreateInstance.class);
 
 		for (Method method : resources) {
 			Class<?> declaringClass = method.getDeclaringClass();

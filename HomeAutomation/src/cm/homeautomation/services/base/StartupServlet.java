@@ -43,6 +43,7 @@ public class StartupServlet extends HttpServlet {
 		EventBusAnnotationInitializer eventBusAnnotationInitializer = new EventBusAnnotationInitializer();
 
 		startupAnnotationInitializer = new StartupAnnotationInitializer();
+		startupAnnotationInitializer.init();
 		
 		Runnable mqttClient = new Runnable() {
 			public void run() {
