@@ -31,7 +31,7 @@ public class DashButtonService {
 		Runnable dashbuttonRunner = new Runnable() {
 			public void run() {
 
-				int listenPort = 1367;
+				int listenPort = 67;
 				int MAX_BUFFER_SIZE = 1500;
 
 				DatagramSocket socket = null;
