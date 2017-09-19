@@ -28,6 +28,7 @@ public class DashButtonService {
 
 	@AutoCreateInstance
 	public void run() {
+		System.out.println("Creating runner");
 		Runnable dashbuttonRunner = new Runnable() {
 			public void run() {
 
@@ -79,8 +80,11 @@ public class DashButtonService {
 			}
 		};
 		
-		new Thread(dashbuttonRunner).start();;
+		System.out.println("Triggering start");
+		new Thread(dashbuttonRunner).start();
+		
 
+		System.out.println("Start triggered");
 	}
 
 	/*
