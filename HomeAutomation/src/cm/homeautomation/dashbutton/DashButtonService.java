@@ -41,7 +41,7 @@ public class DashButtonService {
 					socket = new DatagramSocket(listenPort); // ipaddress? throws socket exception
 
 					byte[] payload = new byte[MAX_BUFFER_SIZE];
-					int length = 261;
+					int length = 1500;
 					DatagramPacket p = new DatagramPacket(payload, length);
 					// System.out.println("Success! Now listening on port " + listenPort + "...");
 					System.out.println("Listening on port " + listenPort + "...");
@@ -49,26 +49,29 @@ public class DashButtonService {
 					// server is always listening
 					boolean listening = true;
 					while (listening) {
+						try {
+							socket.receive(p); // throws i/o exception
+							System.out.println("Received data");
 
-						socket.receive(p); // throws i/o exception
-						System.out.println("Received data");
-						byte[] data = p.getData();
-						ByteBuffer buf = ByteBuffer.wrap(data);
+							DHCPPacket packet = DHCPPacket.getPacket(p);
 
-						DHCPPacket packet = DHCPPacket.getPacket(p);
-						byte[] chaddr = packet.getChaddr();
+							String mac = packet.getHardwareAddress().getHardwareAddressHex();
+							System.out.println("checking mac: " + mac);
+							if (isDashButton(mac)) {
+								System.out.println("found a dashbutton mac: " + mac);
 
-						String mac = packet.getHardwareAddress().getHardwareAddressHex();
-						System.out.println("checking mac: " + mac);
-						if (isDashButton(mac)) {
-							System.out.println("found a dashbutton mac: " + mac);
+								EventBusService.getEventBus().post(new EventObject(new DashButtonEvent(mac)));
 
-							EventBusService.getEventBus().post(new EventObject(new DashButtonEvent(mac)));
-
-						} else {
-							System.out.println("not a dashbutton: " + mac);
+							} else {
+								System.out.println("not a dashbutton: " + mac);
+							}
+						} catch (SocketException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
-
 					}
 				} catch (SocketException e) {
 					// TODO Auto-generated catch block
@@ -79,10 +82,9 @@ public class DashButtonService {
 				}
 			}
 		};
-		
+
 		System.out.println("Triggering start");
 		new Thread(dashbuttonRunner).start();
-		
 
 		System.out.println("Start triggered");
 	}
