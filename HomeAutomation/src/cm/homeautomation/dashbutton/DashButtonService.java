@@ -6,6 +6,8 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -31,6 +33,8 @@ public class DashButtonService {
 	public void run() {
 		System.out.println("Creating runner");
 		Runnable dashbuttonRunner = new Runnable() {
+			HashMap<String, Date> timeFilter = new HashMap<String, Date>();
+
 			public void run() {
 
 				int listenPort = 67;
@@ -61,7 +65,22 @@ public class DashButtonService {
 							if (isDashButton(mac)) {
 								System.out.println("found a dashbutton mac: " + mac);
 
-								EventBusService.getEventBus().post(new EventObject(new DashButtonEvent(mac)));
+								/*
+								 * suppress events if they are to fast 
+								 * 
+								 */
+								if (!timeFilter.containsKey(mac)) {
+									timeFilter.put(mac, new Date());
+								}
+
+								Date filterTime = timeFilter.get(mac);
+								
+								if (filterTime.getTime()+1000<(new Date()).getTime()) {
+									timeFilter.put(mac, new Date());
+									EventBusService.getEventBus().post(new EventObject(new DashButtonEvent(mac)));
+								}
+
+
 
 							} else {
 								System.out.println("not a dashbutton: " + mac);
