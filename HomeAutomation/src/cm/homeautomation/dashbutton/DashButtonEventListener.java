@@ -9,11 +9,24 @@ import com.google.common.eventbus.Subscribe;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DashButton;
 import cm.homeautomation.entities.Switch;
+import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.actor.ActorService;
 
 public class DashButtonEventListener {
 
+	private EntityManager em;
+
+	public DashButtonEventListener() {
+		em = EntityManagerService.getNewManager();
+		EventBusService.getEventBus().register(this);
+	}
+
+	public void destroy() {
+		EventBusService.getEventBus().unregister(this);
+
+	}
+	
 	@Subscribe
 	public void handleEvent(EventObject event) {
 	
@@ -21,8 +34,6 @@ public class DashButtonEventListener {
 		
 		if (data instanceof DashButtonEvent) {
 			DashButtonEvent dbEvent = (DashButtonEvent)data;
-			
-			EntityManager em = EntityManagerService.getNewManager();
 			
 			String mac = dbEvent.getMac();
 			
