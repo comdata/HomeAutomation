@@ -40,7 +40,7 @@ public class DashButtonEventListener {
 			List<DashButton> resultList = (List<DashButton>)em.createQuery("select db from DashButton db where db.mac=:mac").setParameter("mac", mac).getResultList();
 			
 			DashButton dashButton=null;
-			if (resultList==null) {
+			if (resultList==null || resultList.isEmpty()) {
 				em.getTransaction().begin();
 
 				dashButton = new DashButton();
