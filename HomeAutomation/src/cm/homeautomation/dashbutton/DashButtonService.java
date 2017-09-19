@@ -41,7 +41,7 @@ public class DashButtonService {
 					socket = new DatagramSocket(listenPort); // ipaddress? throws socket exception
 
 					byte[] payload = new byte[MAX_BUFFER_SIZE];
-					int length = 1500;
+					int length = 261;
 					DatagramPacket p = new DatagramPacket(payload, length);
 					// System.out.println("Success! Now listening on port " + listenPort + "...");
 					System.out.println("Listening on port " + listenPort + "...");
