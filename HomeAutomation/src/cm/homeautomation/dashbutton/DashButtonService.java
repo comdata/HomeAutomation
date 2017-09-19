@@ -51,7 +51,7 @@ public class DashButtonService {
 					while (listening) {
 
 						socket.receive(p); // throws i/o exception
-
+						System.out.println("Received data");
 						byte[] data = p.getData();
 						ByteBuffer buf = ByteBuffer.wrap(data);
 
