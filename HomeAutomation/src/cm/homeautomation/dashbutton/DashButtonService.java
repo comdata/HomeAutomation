@@ -70,12 +70,12 @@ public class DashButtonService {
 								 * 
 								 */
 								if (!timeFilter.containsKey(mac)) {
-									timeFilter.put(mac, new Date());
+									timeFilter.put(mac, new Date(1));
 								}
 
 								Date filterTime = timeFilter.get(mac);
 								
-								if (filterTime.getTime()+1000<(new Date()).getTime()) {
+								if ((filterTime.getTime())+1000<(new Date()).getTime()) {
 									timeFilter.put(mac, new Date());
 									EventBusService.getEventBus().post(new EventObject(new DashButtonEvent(mac)));
 									System.out.println("send dashbutton event");
