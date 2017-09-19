@@ -119,7 +119,7 @@ public class DashButtonService {
 		EntityManager em = EntityManagerService.getNewManager();
 
 		DashButtonRange singleResult = (DashButtonRange) em
-				.createQuery("select dbr from DashButtonRange dbr where range=:vendor")
+				.createQuery("select dbr from DashButtonRange dbr where dbr.range=:vendor")
 				.setParameter("vendor", vendorCode).getSingleResult();
 
 		if (singleResult != null) {
