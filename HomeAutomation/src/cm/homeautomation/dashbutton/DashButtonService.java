@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 import org.dhcp4java.DHCPPacket;
 
@@ -44,7 +45,6 @@ public class DashButtonService {
 
 					DatagramPacket p = new DatagramPacket(payload, payload.length);
 					// System.out.println("Success! Now listening on port " + listenPort + "...");
-					
 
 					// server is always listening
 					boolean listening = true;
@@ -118,12 +118,16 @@ public class DashButtonService {
 
 		EntityManager em = EntityManagerService.getNewManager();
 
-		DashButtonRange singleResult = (DashButtonRange) em
-				.createQuery("select dbr from DashButtonRange dbr where dbr.range=:vendor")
-				.setParameter("vendor", vendorCode).getSingleResult();
+		try {
+			DashButtonRange singleResult = (DashButtonRange) em
+					.createQuery("select dbr from DashButtonRange dbr where dbr.range=:vendor")
+					.setParameter("vendor", vendorCode).getSingleResult();
 
-		if (singleResult != null) {
-			return true;
+			if (singleResult != null) {
+				return true;
+			}
+		} catch (NoResultException e) {
+
 		}
 
 		System.out.println(vendorCode);
