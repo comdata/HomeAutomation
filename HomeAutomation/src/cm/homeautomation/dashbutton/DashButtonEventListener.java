@@ -12,7 +12,6 @@ import cm.homeautomation.eventbus.EventObject;
 
 public class DashButtonEventListener {
 
-
 	@Subscribe
 	public void handleEvent(EventObject event) {
 	
