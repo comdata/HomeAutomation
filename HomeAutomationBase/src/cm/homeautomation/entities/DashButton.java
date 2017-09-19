@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class DashButton {
@@ -14,6 +15,9 @@ public class DashButton {
 	
 	private String mac;
 	private String actionEvent;
+	
+	@ManyToOne
+	private Switch referencedSwitch;
 	
 	public Long getId() {
 		return id;
@@ -32,5 +36,11 @@ public class DashButton {
 	}
 	public void setActionEvent(String actionEvent) {
 		this.actionEvent = actionEvent;
+	}
+	public Switch getReferencedSwitch() {
+		return referencedSwitch;
+	}
+	public void setReferencedSwitch(Switch referencedSwitch) {
+		this.referencedSwitch = referencedSwitch;
 	}
 }
