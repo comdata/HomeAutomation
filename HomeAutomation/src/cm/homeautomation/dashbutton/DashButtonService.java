@@ -33,7 +33,7 @@ public class DashButtonService {
 			public void run() {
 
 				int listenPort = 67;
-				int MAX_BUFFER_SIZE = 1500;
+				int MAX_BUFFER_SIZE = 1000;
 
 				DatagramSocket socket = null;
 				try {
@@ -41,15 +41,16 @@ public class DashButtonService {
 					socket = new DatagramSocket(listenPort); // ipaddress? throws socket exception
 
 					byte[] payload = new byte[MAX_BUFFER_SIZE];
-					int length = 1500;
-					DatagramPacket p = new DatagramPacket(payload, length);
+
+					DatagramPacket p = new DatagramPacket(payload, payload.length);
 					// System.out.println("Success! Now listening on port " + listenPort + "...");
-					System.out.println("Listening on port " + listenPort + "...");
+					
 
 					// server is always listening
 					boolean listening = true;
 					while (listening) {
 						try {
+							System.out.println("Listening on port " + listenPort + "...");
 							socket.receive(p); // throws i/o exception
 							System.out.println("Received data");
 
