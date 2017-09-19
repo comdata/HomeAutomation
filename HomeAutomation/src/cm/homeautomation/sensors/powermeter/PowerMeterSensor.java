@@ -50,7 +50,7 @@ public class PowerMeterSensor {
 
 			em.getTransaction().begin();
 
-			em.merge(powerMeterPing);
+			em.persist(powerMeterPing);
 			em.getTransaction().commit();
 
 			BigDecimal oneMinute = (BigDecimal) em
