@@ -127,6 +127,6 @@ public class Pushpad {
 	}
 
 	public Notification buildNotification(String title, String body, String targetUrl) {
-		return new Notification(this, title, body, targetUrl);
+		return new Notification(this, title.substring(0, 29), body, targetUrl);
 	}
 }
