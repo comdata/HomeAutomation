@@ -25,7 +25,7 @@ public class PowerMeterSensor {
 	private EntityManager em;
 
 	public PowerMeterSensor() {
-		em = EntityManagerService.getNewManager();
+		
 		EventBusService.getEventBus().register(this);
 	}
 
@@ -40,7 +40,8 @@ public class PowerMeterSensor {
 
 		Object data = eventObject.getData();
 		if (data instanceof PowerMeterData) {
-
+			em = EntityManagerService.getNewManager();
+			
 			PowerMeterData powerData = (PowerMeterData) data;
 
 			PowerMeterPing powerMeterPing = new PowerMeterPing();
@@ -52,6 +53,8 @@ public class PowerMeterSensor {
 
 			em.persist(powerMeterPing);
 			em.getTransaction().commit();
+			
+			em = EntityManagerService.getNewManager();
 
 			BigDecimal oneMinute = (BigDecimal) em
 					.createNativeQuery(
