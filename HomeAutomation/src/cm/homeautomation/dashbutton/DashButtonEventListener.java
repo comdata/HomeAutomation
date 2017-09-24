@@ -18,7 +18,6 @@ public class DashButtonEventListener {
 	private EntityManager em;
 
 	public DashButtonEventListener() {
-		em = EntityManagerService.getNewManager();
 		EventBusService.getEventBus().register(this);
 	}
 
@@ -26,21 +25,26 @@ public class DashButtonEventListener {
 		EventBusService.getEventBus().unregister(this);
 
 	}
-	
+
 	@Subscribe
 	public void handleEvent(EventObject event) {
-	
+
 		Object data = event.getData();
-		
+
 		if (data instanceof DashButtonEvent) {
-			DashButtonEvent dbEvent = (DashButtonEvent)data;
-			
+
+			em = EntityManagerService.getNewManager();
+
+			DashButtonEvent dbEvent = (DashButtonEvent) data;
+
 			String mac = dbEvent.getMac();
-			
-			List<DashButton> resultList = (List<DashButton>)em.createQuery("select db from DashButton db where db.mac=:mac").setParameter("mac", mac).getResultList();
-			
-			DashButton dashButton=null;
-			if (resultList==null || resultList.isEmpty()) {
+
+			List<DashButton> resultList = (List<DashButton>) em
+					.createQuery("select db from DashButton db where db.mac=:mac").setParameter("mac", mac)
+					.getResultList();
+
+			DashButton dashButton = null;
+			if (resultList == null || resultList.isEmpty()) {
 				em.getTransaction().begin();
 
 				dashButton = new DashButton();
@@ -49,27 +53,25 @@ public class DashButtonEventListener {
 				em.getTransaction().commit();
 			} else {
 				for (DashButton db : resultList) {
-					dashButton=db;
+					dashButton = db;
 					break;
 				}
 			}
-			
-			if (dashButton!=null) {
+
+			if (dashButton != null) {
 				Switch referencedSwitch = dashButton.getReferencedSwitch();
-				
-				if (referencedSwitch!=null) {
-					if (referencedSwitch!=null) {
-						String latestStatus = referencedSwitch.getLatestStatus();
-						
-						String newStatus=("ON".equals(latestStatus)?"OFF": "ON");
-						
-						ActorService.getInstance().pressSwitch(referencedSwitch.getId().toString(), newStatus);
-					}
+
+				if (referencedSwitch != null) {
+
+					String latestStatus = referencedSwitch.getLatestStatus();
+
+					String newStatus = ("ON".equals(latestStatus) ? "OFF" : "ON");
+
+					ActorService.getInstance().pressSwitch(referencedSwitch.getId().toString(), newStatus);
 				}
 			}
-			
 
 		}
 	}
-	
+
 }
