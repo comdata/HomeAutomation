@@ -9,7 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import cm.homeautomation.services.base.AutoCreateInstance;
 
 @AutoCreateInstance
-class CustomOutputStream extends OutputStream {
+public class CustomOutputStream extends OutputStream {
 	
 	private static CustomOutputStream instance;
 
