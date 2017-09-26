@@ -22,8 +22,6 @@ import cm.homeautomation.sensors.PowerMeterData;
  */
 public class PowerMeterSensor {
 
-	private EntityManager em;
-
 	public PowerMeterSensor() {
 		
 		EventBusService.getEventBus().register(this);
@@ -40,7 +38,7 @@ public class PowerMeterSensor {
 
 		Object data = eventObject.getData();
 		if (data instanceof PowerMeterData) {
-			em = EntityManagerService.getNewManager();
+			EntityManager em = EntityManagerService.getNewManager();
 			
 			PowerMeterData powerData = (PowerMeterData) data;
 
@@ -53,6 +51,7 @@ public class PowerMeterSensor {
 
 			em.persist(powerMeterPing);
 			em.getTransaction().commit();
+			em.close();
 			
 			em = EntityManagerService.getNewManager();
 
@@ -128,6 +127,7 @@ public class PowerMeterSensor {
 			powerMeterIntervalData.setLastSevenDays(lastSevenDays.floatValue());
 			powerMeterIntervalData.setLastSevenDaysTrend(lastSevenDays.compareTo(lastEightDaysBeforeTillYesterday));
 			
+			em.close();
 			
 			EventObject intervalEventObject = new EventObject(powerMeterIntervalData);
 			EventBusService.getEventBus().post(intervalEventObject);
