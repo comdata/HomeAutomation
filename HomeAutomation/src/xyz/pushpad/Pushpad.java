@@ -127,6 +127,13 @@ public class Pushpad {
 	}
 
 	public Notification buildNotification(String title, String body, String targetUrl) {
-		return new Notification(this, title.substring(0, 29), body, targetUrl);
+		
+		// used to limit the string length to 30 characters (maximum of pushpad)
+		int len=title.length()-1;
+		if (len>29) {
+			len=29;
+		}
+		
+		return new Notification(this, title.substring(0, len), body, targetUrl);
 	}
 }
