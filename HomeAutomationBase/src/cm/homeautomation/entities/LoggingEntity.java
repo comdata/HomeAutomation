@@ -16,9 +16,9 @@ public class LoggingEntity extends BasicLogEventEntity {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -1297620939056969127L;
-	private Long id;
-	
+    private static final long serialVersionUID = 1L;
+    private long id = 0L;
+    
 	public LoggingEntity() {
 		super();
 	}
@@ -29,11 +29,11 @@ public class LoggingEntity extends BasicLogEventEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	public Long getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	
