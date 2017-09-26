@@ -3,6 +3,7 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
 	version="2.0" xmlns="http://java.sun.com/xml/ns/persistence">
 	<persistence-unit name="HA" transaction-type="RESOURCE_LOCAL">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 		<class>cm.homeautomation.entities.NetworkDevice</class>
 		<class>cm.homeautomation.entities.Device</class>
 		<class>cm.homeautomation.entities.Room</class>
@@ -33,6 +34,23 @@
 		<class>cm.homeautomation.entities.RainPing</class>
 		<class>cm.homeautomation.entities.DashButtonRange</class>
 		<class>cm.homeautomation.entities.DashButton</class>
+		<properties>
+			<property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" />
+			<property name="javax.persistence.jdbc.url"
+				value="jdbc:mariadb://localhost:3306/HA?characterEncoding=utf8" />
+			<property name="javax.persistence.jdbc.user" value="root" />
+			<property name="javax.persistence.jdbc.password" value="" />
+
+			<!-- EclipseLink should create the database schema automatically -->
+			<property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
+			<property name="eclipselink.ddl-generation.output-mode"
+				value="database" />
+			<property name="eclipselink.jdbc.timeout" value="60" />
+		</properties>
+
+	</persistence-unit>
+	<persistence-unit name="loggingPersistenceUnit" transaction-type="RESOURCE_LOCAL">
+		 <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.ContextDataAttributeConverter</class>
 		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.ContextDataJsonAttributeConverter</class>
 		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.ContextMapAttributeConverter</class>
@@ -60,5 +78,5 @@
 			<property name="eclipselink.jdbc.timeout" value="60" />
 		</properties>
 
-	</persistence-unit>
+	</persistence-unit>	
 </persistence>

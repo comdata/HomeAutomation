@@ -4,19 +4,19 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.appender.db.jpa.BasicLogEventEntity;
 
-@Entity(name="LOGGING")
+@Entity
+@Table(name="LOGGING")
 public class LoggingEntity extends BasicLogEventEntity {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1297620939056969127L;
-	
-	
 	private Long id;
 	
 	public LoggingEntity() {
