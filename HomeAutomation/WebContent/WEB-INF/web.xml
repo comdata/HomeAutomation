@@ -13,6 +13,11 @@
 		<welcome-file>default.jsp</welcome-file>
 	</welcome-file-list>
 
+	<context-param>
+		<param-name>isLog4jAutoInitializationDisabled</param-name>
+		<param-value>true</param-value>
+	</context-param>
+
 	<servlet>
 		<servlet-name>startup</servlet-name>
 		<servlet-class>cm.homeautomation.services.base.StartupServlet</servlet-class>

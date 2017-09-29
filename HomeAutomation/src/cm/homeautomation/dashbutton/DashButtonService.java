@@ -40,10 +40,8 @@ public class DashButtonService {
 				int listenPort = 67;
 				int MAX_BUFFER_SIZE = 1000;
 
-				DatagramSocket socket = null;
-				try {
+				try (DatagramSocket socket = new DatagramSocket(listenPort);) {
 					System.out.println("Start listening");
-					socket = new DatagramSocket(listenPort); // ipaddress? throws socket exception
 
 					byte[] payload = new byte[MAX_BUFFER_SIZE];
 
@@ -66,7 +64,7 @@ public class DashButtonService {
 								System.out.println("found a dashbutton mac: " + mac);
 
 								/*
-								 * suppress events if they are to fast 
+								 * suppress events if they are to fast
 								 * 
 								 */
 								if (!timeFilter.containsKey(mac)) {
@@ -74,14 +72,12 @@ public class DashButtonService {
 								}
 
 								Date filterTime = timeFilter.get(mac);
-								
-								if ((filterTime.getTime())+1000<(new Date()).getTime()) {
+
+								if ((filterTime.getTime()) + 1000 < (new Date()).getTime()) {
 									timeFilter.put(mac, new Date());
 									EventBusService.getEventBus().post(new EventObject(new DashButtonEvent(mac)));
 									System.out.println("send dashbutton event");
 								}
-
-
 
 							} else {
 								System.out.println("not a dashbutton: " + mac);
