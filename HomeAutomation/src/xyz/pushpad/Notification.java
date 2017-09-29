@@ -49,7 +49,14 @@ public class Notification {
     JSONObject msgBody = new JSONObject();
     JSONObject notificationData = new JSONObject();
     notificationData.put("body", this.body);
-    notificationData.put("title", this.title.substring(0, 30));
+    
+	// used to limit the string length to 30 characters (maximum of pushpad)
+	int len=this.title.length();
+	if (len>29) {
+		len=29;
+	}
+    
+    notificationData.put("title", this.title.substring(0, len));
     notificationData.put("target_url", this.targetUrl);
     if (this.iconUrl != null) {
       notificationData.put("icon_url", this.iconUrl);

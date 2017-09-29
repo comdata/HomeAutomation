@@ -132,12 +132,6 @@ public class Pushpad {
 			title="";
 		}
 		
-		// used to limit the string length to 30 characters (maximum of pushpad)
-		int len=title.length();
-		if (len>29) {
-			len=29;
-		}
-		
-		return new Notification(this, title.substring(0, len), body, targetUrl);
+		return new Notification(this, title, body, targetUrl);
 	}
 }
