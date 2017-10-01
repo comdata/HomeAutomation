@@ -38,16 +38,15 @@ public class GenericJPAEntityService extends BaseService {
 			GenericClassDescription clazz=new GenericClassDescription();
 			clazz.setName(declaringClass.getName());
 			
-			
 			Field[] fields = declaringClass.getDeclaredFields();
 			for (Field field : fields) {
 				clazz.getFields().put(field.getName(), field.getType().getSimpleName());
 			}
 
-			Method[] methods = declaringClass.getDeclaredMethods();
+			/*Method[] methods = declaringClass.getDeclaredMethods();
 			for (Method method : methods) {
 				clazz.getMethods().put(method.getName(), method.getParameters());
-			}
+			}*/
 
 			
 			classes.add(clazz);
