@@ -15,6 +15,7 @@ public class DashButton {
 	
 	private String mac;
 	private String actionEvent;
+	private String name;
 	
 	@ManyToOne
 	private Switch referencedSwitch;
@@ -42,5 +43,11 @@ public class DashButton {
 	}
 	public void setReferencedSwitch(Switch referencedSwitch) {
 		this.referencedSwitch = referencedSwitch;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 }
