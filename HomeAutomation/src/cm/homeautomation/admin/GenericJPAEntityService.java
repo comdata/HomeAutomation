@@ -17,7 +17,6 @@ import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
-import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.base.BaseService;
 
 @Path("admin/entityservice")
@@ -40,11 +39,17 @@ public class GenericJPAEntityService extends BaseService {
 			clazz.setName(declaringClass.getName());
 			
 			
-			Field[] fields = declaringClass.getFields();
+			Field[] fields = declaringClass.getDeclaredFields();
 			for (Field field : fields) {
 				clazz.getFields().put(field.getName(), field.getType().getSimpleName());
 			}
 
+			Method[] methods = declaringClass.getDeclaredMethods();
+			for (Method method : methods) {
+				clazz.getMethods().put(method.getName(), method.getParameters());
+			}
+
+			
 			classes.add(clazz);
 		}
 		
