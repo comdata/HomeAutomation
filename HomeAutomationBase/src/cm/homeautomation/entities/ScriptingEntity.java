@@ -13,6 +13,12 @@ public class ScriptingEntity {
 
 	private String name;
 	private String jsCode;
+	
+	public enum ScriptingType {
+		EVENTHANDLER, UIACTION
+	}
+	
+	private ScriptingType scriptType;
 
 	public String getName() {
 		return name;
@@ -28,6 +34,14 @@ public class ScriptingEntity {
 
 	public void setJsCode(String jsCode) {
 		this.jsCode = jsCode;
+	}
+
+	public ScriptingType getScriptType() {
+		return scriptType;
+	}
+
+	public void setScriptType(ScriptingType scriptType) {
+		this.scriptType = scriptType;
 	}
 
 }
