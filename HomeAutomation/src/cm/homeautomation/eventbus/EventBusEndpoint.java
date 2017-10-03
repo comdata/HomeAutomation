@@ -16,6 +16,8 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
+import cm.homeautomation.logging.WebSocketEvent;
+
 @ServerEndpoint(value = "/eventbus/{clientId}", configurator = EventBusEndpointConfigurator.class, encoders = {
 		EventTranscoder.class }, decoders = { EventTranscoder.class })
 public class EventBusEndpoint {
@@ -82,6 +84,30 @@ public class EventBusEndpoint {
 		}
 	}
 
+	@Subscribe
+	@AllowConcurrentEvents
+	public void handleEvent(WebSocketEvent eventObject) {
+		Enumeration<String> keySet = userSessions.keys();
+
+		while (keySet.hasMoreElements()) {
+			String key = keySet.nextElement();
+
+			Session session = userSessions.get(key);
+
+			if (session.isOpen()) {
+				try {
+					LogManager.getLogger(this.getClass()).info("Eventbus Sending to " + session.getId());
+					session.getAsyncRemote().sendObject(eventObject);
+				} catch (IllegalStateException e) {
+					LogManager.getLogger(this.getClass()).info("Sending failed", e);
+					userSessions.remove(key);
+				}
+			} else {
+				userSessions.remove(key);
+			}
+		}
+	}
+	
 	@OnMessage
 	public void onMessage(String message, Session userSession) {
 

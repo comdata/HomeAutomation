@@ -3,6 +3,7 @@
 	<Appenders>
 		<JPA name="databaseAppender" persistenceUnitName="loggingPersistenceUnit"
 			entityClassName="cm.homeautomation.entities.LoggingEntity" />
+		<WebSocketAppender name="WebSocketAppender" />
 		<Console name="STDOUT">
 			<PatternLayout pattern="%m MDC%X%n" />
 		</Console>
@@ -12,10 +13,12 @@
 		<Logger name="cm.homeautomation" additivity="false" level="trace">
 			<AppenderRef ref="STDOUT" />
 			<AppenderRef ref="databaseAppender" />
+			<AppenderRef ref="WebSocketAppender" />
 		</Logger>
 
 		<Root>
 			<AppenderRef ref="databaseAppender" />
+			<AppenderRef ref="WebSocketAppender" />
 			<AppenderRef ref="STDOUT" />
 		</Root>
 	</Loggers>
