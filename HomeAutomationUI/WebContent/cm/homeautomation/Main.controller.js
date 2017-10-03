@@ -1080,8 +1080,6 @@ sap.ui.define([
             var lightId=( light.id==null) ? 0 : light.id;
             oModel.loadDataAsync("/HomeAutomation/services/light/dim/" + lightId + "/"
                 + value, "", "GET", this.handleSwitchChanged, null, this);
-
-
         },
 
         handleLightSwitchChange: function(event) {
