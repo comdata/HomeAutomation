@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="trace">
-        <Appenders>
-                <JPA name="databaseAppender" persistenceUnitName="loggingPersistenceUnit"
-                        entityClassName="cm.homeautomation.entities.LoggingEntity" />
-                <Console name="STDOUT">
-                        <PatternLayout pattern="%m MDC%X%n" />
-                </Console>
-        </Appenders>
+	<Appenders>
+		<JPA name="databaseAppender" persistenceUnitName="loggingPersistenceUnit"
+			entityClassName="cm.homeautomation.entities.LoggingEntity" />
+		<Console name="STDOUT">
+			<PatternLayout pattern="%m MDC%X%n" />
+		</Console>
+	</Appenders>
 
-        <Loggers>
-                <Logger name="cm.homeautomation" additivity="false"  level="debug">
-                        <AppenderRef ref="databaseAppender" />
-                </Logger>
+	<Loggers>
+		<Logger name="cm.homeautomation" additivity="false" level="trace">
+			<AppenderRef ref="STDOUT" />
+			<AppenderRef ref="databaseAppender" />
+		</Logger>
 
-                <Logger name="cm.homeautomation" additivity="false"  level="debug">
-                        <AppenderRef ref="STDOUT" />
-                </Logger>
-
-                <Root>
-                        <AppenderRef ref="databaseAppender" />
-                        <AppenderRef ref="STDOUT" />
-                </Root>
-        </Loggers>
+		<Root>
+			<AppenderRef ref="databaseAppender" />
+			<AppenderRef ref="STDOUT" />
+		</Root>
+	</Loggers>
 </Configuration>
