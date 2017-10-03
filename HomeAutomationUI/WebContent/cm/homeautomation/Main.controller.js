@@ -1089,9 +1089,9 @@ sap.ui.define([
             var light = lightsModel.getProperty(event.getSource().oPropagatedProperties.oBindingContexts.lights.sPath);
 
             if (state == true) {
-            	light.brightnessLevel=99;
+            		light.brightnessLevel=light.maximumValue;
             } else {
-            	light.brightnessLevel=0;
+            	light.brightnessLevel=light.minimumValue;
             }
 
             sap.ui.getCore().getModel("lights").refresh(false);
