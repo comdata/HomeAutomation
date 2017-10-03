@@ -59,7 +59,7 @@
 								icon="sap-icon://lightbulb" iconDensityAware="false" iconInset="false">
 
 								<Switch state="{= ${lights>brightnessLevel}>0}" change="handleLightSwitchChange" />
-								<Slider min="0" max="99" value="{lights>brightnessLevel}"
+								<Slider min="{lights>minimumValue}" max="{lights>maximumValue}" value="{lights>brightnessLevel}"
 									width="100px" change="handleLightChange" visible="{= ${lights>@class} === 'DimmableLight'}"/>
 								<Label text="{lights>brightnessLevel}" visible="{= ${lights>@class} === 'DimmableLight'}"></Label>
 							</InputListItem>
@@ -109,6 +109,19 @@
 				<content>
 					<agraebe.custom:ChartJSControl width="600"
 						height="200" responsive="true" chartType="Line" data="{historicalData>/lineData}" options="{historicalData>/options}"/>
+			<!--		<core:HTML
+						content="&lt;div id='chart'&gt;
+    &lt;svg style='height:300px; width:100%;'&gt;&lt;/svg&gt;
+&lt;/div&gt;"></core:HTML>-->
+				</content>
+			</Panel>
+
+			<Panel expandable="true" expanded="{currentRoom>/additionalUI}" headerText="{currentRoom>/additionalUIName}"
+				width="auto" class="sapUiResponsiveMargin" expand="expandAdditionalUI">
+				<content>
+					<core:HTML
+									content="&lt;iframe src=&quot;{currentRoom>/additionalUIURL}&quot; scrolling=&quot;no&quot; style=&quot;overflow: hidden;&quot; width=&quot;100%&quot; height=&quot;100%&quot; /&gt;"/>
+
 			<!--		<core:HTML
 						content="&lt;div id='chart'&gt;
     &lt;svg style='height:300px; width:100%;'&gt;&lt;/svg&gt;
