@@ -16,19 +16,17 @@ import cm.homeautomation.jeromq.server.JSONSensorDataReceiver;
 import cm.homeautomation.services.base.AutoCreateInstance;
 
 @AutoCreateInstance
-public class MQTTReceiverClient extends Thread implements MqttCallback {
+public class MQTTReceiverClient implements MqttCallback {
 
 	private MqttClient client;
 	private boolean run = true;
 	private MemoryPersistence memoryPersistence = new MemoryPersistence();
 
 	public MQTTReceiverClient() {
-		this.start();
+		runClient();
 	}
 
-	@Override
-	public void run() {
-		super.run();
+	public void runClient() {
 
 		try {
 			connect();

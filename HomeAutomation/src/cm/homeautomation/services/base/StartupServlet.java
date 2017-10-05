@@ -1,3 +1,4 @@
+
 package cm.homeautomation.services.base;
 
 import javax.servlet.ServletConfig;
@@ -45,17 +46,6 @@ public class StartupServlet extends HttpServlet {
 		startupAnnotationInitializer = new StartupAnnotationInitializer();
 		startupAnnotationInitializer.start();
 		
-		Runnable mqttClient = new Runnable() {
-			public void run() {
-				moquetteClient = new MQTTReceiverClient();
-				moquetteClient.start();
-			}
-		};
-		mqttThread = new Thread(mqttClient);
-		mqttThread.start();
-
-		jeroMQServer = new JeroMQServer();
-
 		overviewEndpoint = (OverviewWebSocket) eventBusAnnotationInitializer.getInstances()
 				.get(OverviewWebSocket.class);
 		OverviewEndPointConfiguration.setOverviewEndpoint(overviewEndpoint);
@@ -66,16 +56,6 @@ public class StartupServlet extends HttpServlet {
 		
 		mdnsService = new MDNSService();
 		mdnsService.registerServices();
-
-		Runnable telegramRunnable = new Runnable() {
-			public void run() {
-				telegramBotService = TelegramBotService.getInstance();
-				telegramBotService.init();
-			}
-		};
-		
-		telegramThread = new Thread(telegramRunnable);
-		telegramThread.start();
 	}
 
 	public void destroy() {
