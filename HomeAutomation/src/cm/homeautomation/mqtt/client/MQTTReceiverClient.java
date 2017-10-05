@@ -13,7 +13,9 @@ import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import cm.homeautomation.jeromq.server.JSONSensorDataReceiver;
+import cm.homeautomation.services.base.AutoCreateInstance;
 
+@AutoCreateInstance
 public class MQTTReceiverClient extends Thread implements MqttCallback {
 
 	private MqttClient client;
@@ -21,7 +23,7 @@ public class MQTTReceiverClient extends Thread implements MqttCallback {
 	private MemoryPersistence memoryPersistence = new MemoryPersistence();
 
 	public MQTTReceiverClient() {
-
+		this.start();
 	}
 
 	@Override
