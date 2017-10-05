@@ -1,0 +1,17 @@
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
+	<Dialog title="Scripting" afterClose="afterScriptingAdminDialogClose"
+		stretch="false">
+		<content>
+
+			
+
+		</content>
+		<buttons>
+
+			
+			<Button text="Ok" press="scriptingAdminDialogOk" />
+
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

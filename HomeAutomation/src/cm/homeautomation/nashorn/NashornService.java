@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 import cm.homeautomation.db.EntityManagerService;
@@ -24,6 +25,21 @@ public class NashornService extends BaseService {
 		return resultList;
 	}
 
+	@POST
+	@Path("update")
+	public void updateEntity(ScriptingEntity entity) {
+		EntityManager em = EntityManagerService.getNewManager();
 
+		ScriptingEntity modifiedEntity=entity;
+		
+		List<ScriptingEntity> resultList = (List<ScriptingEntity>) em
+				.createQuery("select se from ScriptingEntity se where se.id=:id").setParameter("id", entity.getId()).getResultList();
+
+		
+		if (resultList!=null) {
+			
+		}
+		
+	}
 	
 }
