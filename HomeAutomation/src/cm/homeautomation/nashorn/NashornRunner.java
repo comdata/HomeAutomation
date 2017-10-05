@@ -20,13 +20,13 @@ import cm.homeautomation.services.base.AutoCreateInstance;
 import org.apache.logging.log4j.Logger;
 
 @AutoCreateInstance
-public class NashhornRunner {
+public class NashornRunner {
 
 	private ScriptEngine engine;
-	private static NashhornRunner instance;
+	private static NashornRunner instance;
 	private Logger logger=LogManager.getLogger(this.getClass());
 
-	public NashhornRunner() {
+	public NashornRunner() {
 		ScriptEngineManager factory = new ScriptEngineManager();
 		engine = factory.getEngineByName("nashorn");
 		
@@ -76,15 +76,15 @@ public class NashhornRunner {
 		engine.eval(jsCode);
 	}
 
-	public static NashhornRunner getInstance() {
+	public static NashornRunner getInstance() {
 		if (instance == null) {
-			instance = new NashhornRunner();
+			instance = new NashornRunner();
 		}
 
 		return instance;
 	}
 
-	public static void setInstance(NashhornRunner instance) {
-		NashhornRunner.instance = instance;
+	public static void setInstance(NashornRunner instance) {
+		NashornRunner.instance = instance;
 	}
 }
