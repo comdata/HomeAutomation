@@ -1,6 +1,7 @@
 package cm.homeautomation.entities;
 
 import javax.persistence.Cacheable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,6 +15,8 @@ public class ScriptingEntity {
 	private Long id;
 
 	private String name;
+	
+	@Column(length=4096)
 	private String jsCode;
 	
 	public enum ScriptingType {
