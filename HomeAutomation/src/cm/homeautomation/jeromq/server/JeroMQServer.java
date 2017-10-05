@@ -1,5 +1,8 @@
 package cm.homeautomation.jeromq.server;
 
+import cm.homeautomation.services.base.AutoCreateInstance;
+
+@AutoCreateInstance
 public class JeroMQServer {
 
 	private Thread jeroMQServerThread;
