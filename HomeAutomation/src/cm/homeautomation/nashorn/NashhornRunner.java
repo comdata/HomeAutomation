@@ -30,7 +30,7 @@ public class NashhornRunner {
 		ScriptEngineManager factory = new ScriptEngineManager();
 		engine = factory.getEngineByName("nashorn");
 		
-
+		instance=this;
 		EventBusService.getEventBus().register(this);
 	}
 
