@@ -30,6 +30,7 @@ public class NashornService extends BaseService {
 	public void updateEntity(ScriptingEntity entity) {
 		EntityManager em = EntityManagerService.getNewManager();
 
+		em.getTransaction().begin();
 		ScriptingEntity modifiedEntity=entity;
 		
 		List<ScriptingEntity> resultList = (List<ScriptingEntity>) em
@@ -37,8 +38,15 @@ public class NashornService extends BaseService {
 
 		
 		if (resultList!=null) {
+			modifiedEntity=resultList.get(0);
+			modifiedEntity.setJsCode(entity.getJsCode());
+			modifiedEntity.setName(entity.getName());
 			
 		}
+		
+		em.persist(modifiedEntity);
+		em.getTransaction().commit();
+		
 		
 	}
 	
