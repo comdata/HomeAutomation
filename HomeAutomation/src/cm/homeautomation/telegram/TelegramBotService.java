@@ -23,7 +23,7 @@ import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
 import cm.homeautomation.services.base.AutoCreateInstance;
 
-@AutoCreateInstance
+//@AutoCreateInstance
 public class TelegramBotService {
 
 	private static TelegramBotService instance;
@@ -37,9 +37,9 @@ public class TelegramBotService {
 		user = ConfigurationService.getConfigurationProperty("telegram", "user");
 
 		instance = this;
+		init();
 
 		EventBusService.getEventBus().register(this);
-		init();
 	}
 
 	public static TelegramBotService getInstance() {
