@@ -10,7 +10,7 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.ScriptingEntity;
 import cm.homeautomation.services.base.BaseService;
 
-@Path("admin/nas")
+@Path("admin/nashorn")
 public class NashornService extends BaseService {
 
 	@GET
