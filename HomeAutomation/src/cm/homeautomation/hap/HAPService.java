@@ -23,9 +23,11 @@ import cm.homeautomation.entities.Switch;
 import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
+import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.windowblind.WindowBlindService;
 import cm.homeautomation.windowblind.WindowBlindsList;
 
+@AutoCreateInstance
 public class HAPService {
 	private static final int PORT = 9123;
 
