@@ -40,7 +40,7 @@ public class NashhornRunner {
 		EntityManager em = EntityManagerService.getNewManager();
 
 		List<ScriptingEntity> resultList = (List<ScriptingEntity>) em
-				.createQuery("select se from ScriptingEntity se where se.scriptType='EVENTHANDLER'").getResultList();
+				.createQuery("select se from ScriptingEntity se where se.scriptType=:scriptType").setParameter("scriptType", ScriptingEntity.ScriptingType.EVENTHANDLER).getResultList();
 
 		if (resultList != null) {
 
