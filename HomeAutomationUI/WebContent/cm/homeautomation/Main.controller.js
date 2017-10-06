@@ -1705,7 +1705,7 @@ sap.ui.define([
 	        var scriptingModel = new RESTService();
 	        scriptingModel.loadDataAsync("/HomeAutomation/services/admin/nashorn/getAll", "", "GET", function(event, model) {
 	            sap.ui.getCore().setModel(model, "scripting");
-	        },, null, subject);
+	        }, null, subject);
 
         },
         
