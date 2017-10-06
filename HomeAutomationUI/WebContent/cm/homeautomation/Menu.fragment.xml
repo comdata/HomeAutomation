@@ -7,6 +7,8 @@
 			icon="sap-icon://refresh" />
 		<u:MenuItem text="Administration" id="openAdminDialog"
 			icon="sap-icon://settings" />
+					<u:MenuItem text="Scripting" id="scriptingDialogOpen"
+			icon="sap-icon://settings" />
 	</u:Menu>
 
 </core:FragmentDefinition>

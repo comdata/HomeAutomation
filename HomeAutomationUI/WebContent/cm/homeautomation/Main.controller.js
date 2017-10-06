@@ -404,7 +404,7 @@ sap.ui.define([
 
         /**
 		 * initialize
-		 *
+		 * 
 		 * @param evt
 		 */
         onInit: function (evt) {
@@ -453,7 +453,7 @@ sap.ui.define([
 
         /**
 		 * perform data loading
-		 *
+		 * 
 		 */
         loadData: function () {
 
@@ -827,7 +827,7 @@ sap.ui.define([
         },
         /**
 		 * handle successful data loading for overview tiles
-		 *
+		 * 
 		 * @param event
 		 * @param model
 		 */
@@ -1049,7 +1049,7 @@ sap.ui.define([
 
             /**
 			 * set value directly to all other window blinds
-			 *
+			 * 
 			 */
             if (windowBlind.type=="ALL_AT_ONCE") {
 
@@ -1154,7 +1154,7 @@ sap.ui.define([
 
         /**
 		 * trigger a reload if something goes wrong
-		 *
+		 * 
 		 */
         _loadDataFailed: function (event) {
             this.loadDataInProgress = false;
@@ -1264,7 +1264,7 @@ sap.ui.define([
                   }
                 };
       /*
-		 *
+		 * 
 		 */
 
             var chartJSModel = new JSONModel();
@@ -1388,7 +1388,7 @@ sap.ui.define([
         },
         /**
 		 * handle selection, triggering navigation
-		 *
+		 * 
 		 * @param event
 		 */
         handleSelect: function (event) {
@@ -1468,15 +1468,15 @@ sap.ui.define([
                 }
                 this._dialogs["worldmap"].open();
                 
-               /* window.setTimeout(function() {
-                	$("#worldmapframe").attr("src","http://"+location.hostname+":1880/worldmap");
-                }, 1000);
-                window.setTimeout(function() {
-                	$("#worldmapframe").attr("src","http://"+location.hostname+":1880/worldmap");
-                }, 2000);
-                window.setTimeout(function() {
-                	$("#worldmapframe").attr("src","http://"+location.hostname+":1880/worldmap");
-                }, 3000);*/
+               /*
+				 * window.setTimeout(function() {
+				 * $("#worldmapframe").attr("src","http://"+location.hostname+":1880/worldmap"); },
+				 * 1000); window.setTimeout(function() {
+				 * $("#worldmapframe").attr("src","http://"+location.hostname+":1880/worldmap"); },
+				 * 2000); window.setTimeout(function() {
+				 * $("#worldmapframe").attr("src","http://"+location.hostname+":1880/worldmap"); },
+				 * 3000);
+				 */
                 window.setTimeout(function() {
                 	$("#worldmapframe").attr("src","http://"+location.hostname+":1880/worldmap");
                 }, 4000);
@@ -1541,15 +1541,15 @@ sap.ui.define([
         	  return Math.floor(Math.random() * (max - min)) + min;
         	},
         powerMeterLoad: function () {
-        	sap.ui.getCore().setModel(new JSONModel(), "chartjsData");
-        	var subject=this;
+        		sap.ui.getCore().setModel(new JSONModel(), "chartjsData");
+        		var subject=this;
             var powerMeterModel = new RESTService();
             powerMeterModel.loadDataAsync("/HomeAutomation/services/power/readInterval", "", "GET", subject.powerDataLoaded, null, subject);
 
         },
         gasMeterLoad: function () {
-        	sap.ui.getCore().setModel(new JSONModel(), "chartjsData");
-        	var subject=this;
+        		sap.ui.getCore().setModel(new JSONModel(), "chartjsData");
+        		var subject=this;
             var gasMeterModel = new RESTService();
             gasMeterModel.loadDataAsync("/HomeAutomation/services/gas/readInterval", "", "GET", subject.gasDataLoaded, null, subject);
 
@@ -1610,7 +1610,7 @@ sap.ui.define([
         				  }
         				};
 			/*
-			 *
+			 * 
 			 */
 
             var chartJSModel = new JSONModel();
@@ -1674,7 +1674,7 @@ sap.ui.define([
         				  }
         				};
 			/*
-			 *
+			 * 
 			 */
 
             var chartJSModel = new JSONModel();
@@ -1694,6 +1694,24 @@ sap.ui.define([
         },
         planesDialogClose: function () {
             this.planesView.close();
+        },
+        scriptingDialogOpen: function() {
+	        if (!this._dialogs["scripting"]) {
+	            this._dialogs["scripting"] = sap.ui.xmlfragment("cm.homeautomation.ScriptingAdmin", this);
+	        }
+	        this._dialogs["scripting"].open(); 
+	        
+	        var subject = this;
+	        var scriptingModel = new RESTService();
+	        scriptingModel.loadDataAsync("/HomeAutomation/services/admin/nashorn/getAll", "", "GET", function(event, model) {
+	            sap.ui.getCore().setModel(model, "scripting");
+	        },, null, subject);
+
+        },
+        
+        scriptingDialogClose: function() {
+            this._dialogs["scripting"].close();
+            sap.ui.getCore().setModel(new JSONModel(), "scripting");
         },
         networkDialogClose: function() {
             this._dialogs["networkDevices"].close();
@@ -1757,6 +1775,10 @@ sap.ui.define([
           afterDownloadDialogClose: function () {
         	this._dialogs["downloads"].destroy();
         	this._dialogs["downloads"] = null;
+        },
+        afterScriptingAdminDialogClose: function () {
+        		this._dialogs["scripting"].destroy();
+        		this._dialogs["scripting"] = null;
         },
         afterWorldMapDialogClose: function () {
         	this._dialogs["worldmap"].destroy();
@@ -1826,7 +1848,7 @@ sap.ui.define([
         },
         /**
 		 * menu open pressed
-		 *
+		 * 
 		 */
         handlePressOpenMenu: function (oEvent) {
             var oButton = oEvent.getSource();
