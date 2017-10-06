@@ -1897,6 +1897,9 @@ sap.ui.define([
                 this._reloadScheduler();
             } else if (oEvent.getParameter("item").sId == "openAdminDialog") {
                 this._openAdminDialog();
+            } elseif (oEvent.getParameter("item").sId == "scriptingDialogOpen") {
+            		this.scriptingDialogOpen();
+            	
             } else {
 
                 var msg = "";
