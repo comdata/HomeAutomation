@@ -1,7 +1,7 @@
 <core:FragmentDefinition xmlns="sap.m"
 	xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
 	<Dialog title="Scripting" afterClose="afterScriptingAdminDialogClose"
-		stretch="false">
+		stretch="true">
 		<content>
 			<Table id="idScriptingEntitiesTable" inset="false"
 				items="{
