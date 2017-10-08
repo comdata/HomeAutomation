@@ -37,7 +37,7 @@
 						<cells>
 							<Text text="{scriptingEntities>id}" />
 							<Text text="{scriptingEntities>name}" />
-							<Text text="{scriptingEntities>jsCode}" />
+							<Text text="{scriptingEntities>jsCode}" maxLines="2" />
 							<Text text="{scriptingEntities>scriptType}" />
 							
 						</cells>
