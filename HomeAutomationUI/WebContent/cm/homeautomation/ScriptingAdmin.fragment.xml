@@ -1,5 +1,6 @@
 <core:FragmentDefinition xmlns="sap.m"
-	xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
+	xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form"
+	xmlns:custom="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
 	<Dialog title="Scripting" afterClose="afterScriptingAdminDialogClose"
 		stretch="true">
 		<content>
@@ -39,7 +40,7 @@
 							<Text text="{scriptingEntities>name}" />
 							<Text text="{scriptingEntities>jsCode}" maxLines="2" />
 							<Text text="{scriptingEntities>scriptType}" />
-							
+							<Button text="Edit" custom:scriptId="{scriptingEntities>id}" press="handleScriptingEditButtonPress" />
 						</cells>
 					</ColumnListItem>
 				</items>
