@@ -1704,14 +1704,14 @@ sap.ui.define([
 	        var subject = this;
 	        var scriptingModel = new RESTService();
 	        scriptingModel.loadDataAsync("/HomeAutomation/services/admin/nashorn/getAll", "", "GET", function(event, model) {
-	            sap.ui.getCore().setModel(model, "scripting");
+	            sap.ui.getCore().setModel(model, "scriptingEntities");
 	        }, null, subject);
 
         },
         
         scriptingDialogClose: function() {
             this._dialogs["scripting"].close();
-            sap.ui.getCore().setModel(new JSONModel(), "scripting");
+            sap.ui.getCore().setModel(new JSONModel(), "scriptingEntities");
         },
         networkDialogClose: function() {
             this._dialogs["networkDevices"].close();

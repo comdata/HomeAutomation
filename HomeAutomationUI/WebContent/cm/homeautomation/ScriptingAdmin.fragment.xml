@@ -50,7 +50,7 @@
 		<buttons>
 
 
-			<Button text="Ok" press="scriptingAdminDialogOk" />
+			<Button text="Ok" press="scriptingDialogClose" />
 
 		</buttons>
 	</Dialog>
