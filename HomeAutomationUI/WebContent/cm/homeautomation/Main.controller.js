@@ -3,6 +3,7 @@ var imageFullScreen = false;
 
 jQuery.sap.require("sap.ui.core.UIComponent");
 jQuery.sap.require("sap.m.Dialog");
+jQuery.sap.require("cm.homeautomation.Scripting");
 
 function resize(element) {
 
@@ -1696,22 +1697,15 @@ sap.ui.define([
             this.planesView.close();
         },
         scriptingDialogOpen: function() {
+        	var controller=new cm.homeautomation.Scripting();
+        	controller.setMainController(this);
+        	
 	        if (!this._dialogs["scripting"]) {
-	            this._dialogs["scripting"] = sap.ui.xmlfragment("cm.homeautomation.ScriptingAdmin", this);
+	            this._dialogs["scripting"] = sap.ui.xmlfragment("cm.homeautomation.ScriptingAdmin", controller);
+	            controller.setDialog(this._dialogs["scripting"]);
 	        }
 	        this._dialogs["scripting"].open(); 
-	        
-	        var subject = this;
-	        var scriptingModel = new RESTService();
-	        scriptingModel.loadDataAsync("/HomeAutomation/services/admin/nashorn/getAll", "", "GET", function(event, model) {
-	            sap.ui.getCore().setModel(model, "scriptingEntities");
-	        }, null, subject);
 
-        },
-        
-        scriptingDialogClose: function() {
-            this._dialogs["scripting"].close();
-            sap.ui.getCore().setModel(new JSONModel(), "scriptingEntities");
         },
         networkDialogClose: function() {
             this._dialogs["networkDevices"].close();
@@ -1776,10 +1770,7 @@ sap.ui.define([
         	this._dialogs["downloads"].destroy();
         	this._dialogs["downloads"] = null;
         },
-        afterScriptingAdminDialogClose: function () {
-        		this._dialogs["scripting"].destroy();
-        		this._dialogs["scripting"] = null;
-        },
+        
         afterWorldMapDialogClose: function () {
         	this._dialogs["worldmap"].destroy();
         	this._dialogs["worldmap"] = null;
