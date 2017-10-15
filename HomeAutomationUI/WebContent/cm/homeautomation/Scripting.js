@@ -6,7 +6,7 @@ sap.ui.define([
 	return Controller.extend("cm.homeautomation.Scripting", {
 
 		onInit: function () {
-			
+			this.loadData();
 		},
 		_dialog: null,
 		setDialog: function(dialog) {
