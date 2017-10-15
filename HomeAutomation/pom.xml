@@ -69,7 +69,7 @@
 		<version.jersey>2.26</version.jersey>
 		<version.servlet.api>4.0.0</version.servlet.api>
 		<httpcompontents.version>4.5.2</httpcompontents.version>
-		<telegrambots.version>3.4</telegrambots.version>
+		<telegrambots.version>2.4.2</telegrambots.version>
 	</properties>
 
 	<distributionManagement>
@@ -175,7 +175,7 @@
 		<dependency>
 			<groupId>io.moquette</groupId>
 			<artifactId>moquette-broker</artifactId>
-			<version>0.10</version>
+			<version>0.8</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
