@@ -267,16 +267,9 @@
 			<artifactId>cron4j</artifactId>
 			<version>2.2.5</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>eclipselink</artifactId>
-			<version>2.7.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mariadb.jdbc</groupId>
-			<artifactId>mariadb-java-client</artifactId>
-			<version>2.1.2</version>
-		</dependency> -->
+		<!-- <dependency> <groupId>org.eclipse.persistence</groupId> <artifactId>eclipselink</artifactId> 
+			<version>2.7.0</version> </dependency> <dependency> <groupId>org.mariadb.jdbc</groupId> 
+			<artifactId>mariadb-java-client</artifactId> <version>2.1.2</version> </dependency> -->
 
 		<!-- <dependency> <groupId>org.apache.derby</groupId> <artifactId>derby</artifactId> 
 			<version>10.12.1.1</version> </dependency> -->
@@ -298,7 +291,11 @@
 			<artifactId>jersey-client</artifactId>
 			<version>${version.jersey}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.glassfish.jersey.inject</groupId>
+			<artifactId>jersey-hk2</artifactId>
+			<version>${version.jersey}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet-core</artifactId>
