@@ -9,11 +9,11 @@ sap.ui.define([
 	"use strict";
 
 	return Controller.extend("cm.homeautomation.Scripting", {
-
-		onInit: function () {
+		_dialog: null,
+		onBeforeRendering: function () {
 			this.loadData();
 		},
-		_dialog: null,
+
 		setDialog: function(dialog) {
 			this._dialog=dialog;
 		},
