@@ -1697,14 +1697,15 @@ sap.ui.define([
             this.planesView.close();
         },
         scriptingDialogOpen: function() {
-        	var controller=new cm.homeautomation.Scripting();
-        	controller.setMainController(this);
+        		var controller=new cm.homeautomation.Scripting();
+        		controller.setMainController(this);
         	
 	        if (!this._dialogs["scripting"]) {
 	            this._dialogs["scripting"] = sap.ui.xmlfragment("cm.homeautomation.ScriptingAdmin", controller);
 	            controller.setDialog(this._dialogs["scripting"]);
 	        }
 	        this._dialogs["scripting"].open(); 
+	        controller.onBeforeRendering();
 
         },
         networkDialogClose: function() {
