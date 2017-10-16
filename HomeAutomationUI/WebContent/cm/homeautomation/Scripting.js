@@ -1,12 +1,11 @@
 sap.ui.define([
-	"sap/ui/core/mvc/Controller",
 	'jquery.sap.global',
     'sap/ui/core/mvc/Controller',
     'sap/ui/model/json/JSONModel',
     'cm/webservice/RESTService',
     'cm/homeautomation/Validator',
     "sap/ui/model/resource/ResourceModel"
-], function (Controller, jQuery, Controller, JSONModel, RESTService, Validator,ResourceModel) {
+], function (jQuery, Controller, JSONModel, RESTService, Validator,ResourceModel) {
 	"use strict";
 
 	return Controller.extend("cm.homeautomation.Scripting", {
