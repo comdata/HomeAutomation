@@ -61,15 +61,7 @@ public class LightService extends BaseService {
 	public GenericStatus dimLight(@PathParam("lightId") long lightId, @PathParam("dimValue") int dimValue) {
 		String powerState="off";
 		
-		if (dimValue>99) {
-			dimValue=99;
-		}
-		
-		if (dimValue==0) {
-			powerState="off";
-		}else {
-			powerState="on";
-		}
+
 		
 		
 		
@@ -78,10 +70,23 @@ public class LightService extends BaseService {
 		Light light = (Light) em.createQuery("select l from Light l where l.id=:lightId")
 				.setParameter("lightId", lightId).getSingleResult();
 
+
+		
 		String dimUrl = light.getDimUrl();
 		
 		if (light instanceof DimmableLight) {
 			DimmableLight dimmableLight=(DimmableLight)light;
+			
+			if (dimValue>dimmableLight.getMaximumValue()) {
+				dimValue=dimmableLight.getMaximumValue();
+			}
+			
+			if (dimValue==0) {
+				powerState="off";
+			}else {
+				powerState="on";
+			}
+			
 			dimmableLight.setBrightnessLevel(dimValue);
 			em.persist(dimmableLight);		
 			dimUrl = dimmableLight.getDimUrl();
