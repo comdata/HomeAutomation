@@ -69,6 +69,7 @@ public class Room {
 		this.id = id;
 	}
 
+	@XmlIDREF
 	public List<Switch> getSwitches() {
 		return switches;
 	}

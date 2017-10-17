@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
@@ -43,6 +44,7 @@ public class Switch {
 	
 	@ManyToOne
 	@JoinColumn(name = "ROOM_ID")
+	@XmlIDREF
 	private Room room;
 	
 	@Transient
@@ -129,6 +131,7 @@ public class Switch {
 	}
 
 	@XmlTransient
+	@XmlIDREF
 	public Room getRoom() {
 		return room;
 	}
