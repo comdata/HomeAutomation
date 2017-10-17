@@ -73,7 +73,7 @@ public class EventBusEndpoint {
 
 			if (session.isOpen()) {
 				try {
-					LogManager.getLogger(this.getClass()).info("Eventbus Sending to " + session.getId());
+					LogManager.getLogger(this.getClass()).info("Eventbus Sending to " + session.getId()+ " key: "+key);
 					session.getAsyncRemote().sendObject(eventObject);
 				} catch (IllegalStateException e) {
 					LogManager.getLogger(this.getClass()).info("Sending failed", e);
