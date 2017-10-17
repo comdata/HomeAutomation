@@ -12,11 +12,17 @@ import it.sauronsoftware.cron4j.Scheduler;
  * @author mertins
  *
  */
+@AutoCreateInstance
 public class SchedulerThread {
 	private static SchedulerThread instance = null;
 	private Scheduler scheduler;
 	private boolean run = true;
 	private File scheduleFile;
+	
+	public SchedulerThread() {
+		instance = this;
+		instance.reloadScheduler();
+	}
 
 	public static SchedulerThread getInstance() {
 		if (instance == null) {
