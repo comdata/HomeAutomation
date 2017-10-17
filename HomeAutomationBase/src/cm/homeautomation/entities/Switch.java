@@ -14,6 +14,10 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Switch {
 	@Id
@@ -45,6 +49,7 @@ public class Switch {
 	@ManyToOne
 	@JoinColumn(name = "ROOM_ID")
 	@XmlIDREF
+	@JsonIdentityReference
 	private Room room;
 	
 	@Transient
@@ -132,6 +137,8 @@ public class Switch {
 
 	@XmlTransient
 	@XmlIDREF
+	@JsonIgnore
+	@JsonBackReference("room")
 	public Room getRoom() {
 		return room;
 	}
