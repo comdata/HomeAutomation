@@ -19,7 +19,7 @@ addons:
   apt:
     packages:
       - oracle-java8-installer
-  sonarqube:
+  sonarcloud:
     organization: "homeautomation"
 
 script:
