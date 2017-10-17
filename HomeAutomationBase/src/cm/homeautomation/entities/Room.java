@@ -57,8 +57,6 @@ public class Room {
 	}
 
 	@XmlIDREF
-	
-	
 	public void setSensors(List<Sensor> sensors) {
 		this.sensors = sensors;
 	}
