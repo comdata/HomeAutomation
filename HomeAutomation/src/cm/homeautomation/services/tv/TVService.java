@@ -50,7 +50,7 @@ public class TVService extends BaseService {
 		EntityManager em = EntityManagerService.getNewManager();
 		
 		@SuppressWarnings("unchecked")
-		List<Switch> resultList = ((List<Switch>)em.createQuery("select sw from Switch sw where sw.type='SOCKET' and sw.subtype='TV'").getResultList());
+		List<Switch> resultList = ((List<Switch>)em.createQuery("select sw from Switch sw where sw.switchType='SOCKET' and sw.subType='TV'").getResultList());
 		
 		
 		if (resultList!=null && !resultList.isEmpty()) {
