@@ -1,5 +1,7 @@
 package cm.homeautomation.device;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
@@ -41,16 +43,18 @@ public class DeviceService {
 		try {
 			EntityManager em = EntityManagerService.getNewManager();
 			LogManager.getLogger(DeviceService.class).info("Mac: " + mac);
-			Device device = (Device) em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac)
-					.getSingleResult();
+			@SuppressWarnings("unchecked")
+			List<Device> devices = (List<Device>) em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac)
+					.getResultList();
 
 			em.close();
 			
-			if (device == null) {
-
-				return null;
+			if (devices != null && devices.isEmpty()) {
+				for (Device device : devices) {
+					return device;
+				}
 			}
-			return device;
+			return null;
 		} catch (NoResultException e) {
 			LogManager.getLogger(DeviceService.class).info("Mac: " + mac, e);
 			return null;
