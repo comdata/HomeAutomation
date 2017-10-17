@@ -1089,10 +1089,15 @@ sap.ui.define([
         	var lightsModel = sap.ui.getCore().getModel("lights");
             var light = lightsModel.getProperty(event.getSource().oPropagatedProperties.oBindingContexts.lights.sPath);
 
+            if (light["@class"]=="Light") {
+            		light.maximumValue=99;
+            		light.minimumValue=0;
+            }
+            
             if (state == true) {
             		light.brightnessLevel=light.maximumValue;
             } else {
-            	light.brightnessLevel=light.minimumValue;
+            		light.brightnessLevel=light.minimumValue;
             }
 
             sap.ui.getCore().getModel("lights").refresh(false);
