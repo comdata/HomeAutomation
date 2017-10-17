@@ -28,12 +28,6 @@ public class PanasonicTVBinding {
 
 
 	/**
-	 * the refresh interval which is used to poll values from the PanansonicTV
-	 * server (optional, defaults to 60000ms)
-	 */
-	private long refreshInterval = 60000;
-
-	/**
 	 * Listening port of the TV
 	 */
 	private final int tvPort = 55000;
