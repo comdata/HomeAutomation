@@ -3,7 +3,7 @@ package cm.homeautomation.bmp180;
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
-
+import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 import com.pi4j.system.SystemInfo;
 
 import java.io.IOException;
@@ -102,7 +102,10 @@ public class BMP180
     catch (IOException e)
     {
       System.err.println(e.getMessage());
-    }
+    } catch (UnsupportedBusNumberException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
   }
   
   private int readU8(int reg) throws Exception
