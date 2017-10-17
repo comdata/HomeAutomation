@@ -53,7 +53,17 @@ public class EventBusEndpoint {
 	 */
 	@OnClose
 	public void onClose(Session userSession) {
-		userSessions.remove(userSession);
+		Enumeration<String> keySet = userSessions.keys();
+
+		while (keySet.hasMoreElements()) {
+			String key = keySet.nextElement();
+
+			Session session = userSessions.get(key);
+			
+			if (session.equals(userSession)) {
+				userSessions.remove(key);
+			}
+		}
 	}
 
 	/**
@@ -97,7 +107,7 @@ public class EventBusEndpoint {
 
 			if (session.isOpen()) {
 				try {
-					LogManager.getLogger(this.getClass()).info("Eventbus Sending to " + session.getId());
+					LogManager.getLogger(this.getClass()).info("Eventbus Sending to " + session.getId()+" key: "+key);
 					session.getAsyncRemote().sendObject(eventObject);
 				} catch (IllegalStateException e) {
 					LogManager.getLogger(this.getClass()).info("Sending failed", e);
