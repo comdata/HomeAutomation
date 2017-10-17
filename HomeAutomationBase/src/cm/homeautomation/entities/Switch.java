@@ -48,8 +48,8 @@ public class Switch {
 	
 	@ManyToOne
 	@JoinColumn(name = "ROOM_ID")
-	@XmlIDREF
-	@JsonIdentityReference
+	@XmlTransient
+	@JsonIgnore
 	private Room room;
 	
 	@Transient
@@ -136,9 +136,7 @@ public class Switch {
 	}
 
 	@XmlTransient
-	@XmlIDREF
 	@JsonIgnore
-	@JsonBackReference("room")
 	public Room getRoom() {
 		return room;
 	}
