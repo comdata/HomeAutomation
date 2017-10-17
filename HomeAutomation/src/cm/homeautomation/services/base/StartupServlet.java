@@ -39,23 +39,9 @@ public class StartupServlet extends HttpServlet {
 	public void init(ServletConfig config) throws ServletException {
 
 		LogManager.getLogger(this.getClass()).info("Starting scheduler");
-		SchedulerThread.getInstance();
-
-		EventBusAnnotationInitializer eventBusAnnotationInitializer = new EventBusAnnotationInitializer();
-
+		
 		startupAnnotationInitializer = new StartupAnnotationInitializer();
 		startupAnnotationInitializer.start();
-		
-		overviewEndpoint = (OverviewWebSocket) eventBusAnnotationInitializer.getInstances()
-				.get(OverviewWebSocket.class);
-		OverviewEndPointConfiguration.setOverviewEndpoint(overviewEndpoint);
-		
-
-		eventBusEndpoint = (EventBusEndpoint) eventBusAnnotationInitializer.getInstances().get(EventBusEndpoint.class);
-		EventBusEndpointConfigurator.setEventBusEndpoint(eventBusEndpoint);
-		
-		mdnsService = new MDNSService();
-		mdnsService.registerServices();
 	}
 
 	public void destroy() {

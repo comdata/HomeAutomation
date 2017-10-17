@@ -28,6 +28,7 @@ public class EventBusEndpoint {
 	 * register for {@link EventBus} messages
 	 */
 	public EventBusEndpoint() {
+		EventBusEndpointConfigurator.setEventBusEndpoint(this);
 		EventBusService.getEventBus().register(this);
 	}
 

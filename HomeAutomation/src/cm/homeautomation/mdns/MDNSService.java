@@ -10,6 +10,9 @@ import java.util.Enumeration;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
 
+import cm.homeautomation.services.base.AutoCreateInstance;
+
+@AutoCreateInstance
 public class MDNSService {
 
 	private JmDNS jmdns;
@@ -17,6 +20,7 @@ public class MDNSService {
 	public MDNSService() {
 		try {
 			jmdns = JmDNS.create(this.getIp());
+			this.registerServices();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

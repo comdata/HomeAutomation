@@ -35,6 +35,7 @@ public class OverviewWebSocket {
 				overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
 			}
 
+			OverviewEndPointConfiguration.setOverviewEndpoint(this);
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

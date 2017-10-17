@@ -13,15 +13,16 @@ import org.reflections.util.ConfigurationBuilder;
 
 import com.google.common.eventbus.Subscribe;
 
-public class EventBusAnnotationInitializer {
+@AutoCreateInstance
+public class EventBusAnnotationInitializer extends Thread {
 
-	private Map<Class, Object> instances = new HashMap<Class, Object>();
+	private static Map<Class, Object> instances = new HashMap<Class, Object>();
 
 	public EventBusAnnotationInitializer() {
-		init();
+		this.run();
 	}
 
-	private void init() {
+	public void run() {
 		Reflections reflections = new Reflections(new ConfigurationBuilder()
 				.setUrls(ClasspathHelper.forPackage("cm.homeautomation")).setScanners(new MethodAnnotationsScanner()));
 
@@ -29,14 +30,26 @@ public class EventBusAnnotationInitializer {
 		Set<Method> resources = reflections.getMethodsAnnotatedWith(Subscribe.class);
 
 		for (Method method : resources) {
-			try {
-				Class<?> declaringClass = method.getDeclaringClass();
-				LogManager.getLogger(this.getClass()).info("Creating class: " + declaringClass.getName());
-				Object classInstance = declaringClass.newInstance();
+			Class<?> declaringClass = method.getDeclaringClass();
 
-				instances.put(declaringClass, classInstance);
-			} catch (InstantiationException | IllegalAccessException e) {
-				LogManager.getLogger(this.getClass()).info("Failed creating class");
+			// check if the class has already been initialized
+			if (!instances.containsKey(declaringClass)) {
+
+				LogManager.getLogger(this.getClass()).info("Creating class: " + declaringClass.getName());
+
+				Runnable singleInstanceCreator = new Runnable() {
+					public void run() {
+						try {
+							Object classInstance = declaringClass.newInstance();
+
+							instances.put(declaringClass, classInstance);
+						} catch (InstantiationException | IllegalAccessException e) {
+							e.printStackTrace();
+							LogManager.getLogger(this.getClass()).info("Failed creating class");
+						}
+					}
+				};
+				new Thread(singleInstanceCreator).start();
 			}
 		}
 	}
