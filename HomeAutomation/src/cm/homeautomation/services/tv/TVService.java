@@ -1,5 +1,6 @@
 package cm.homeautomation.services.tv;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -58,6 +59,8 @@ public class TVService extends BaseService {
 			em.getTransaction().begin();
 			for (Switch singleSwitch : resultList) {
 				singleSwitch.setSwitchState(aliveStatus);
+				singleSwitch.setLatestStatus((aliveStatus)?"ON": "OFF");
+				singleSwitch.setLatestStatusFrom(new Date());
 				em.persist(singleSwitch);
 			}
 			
