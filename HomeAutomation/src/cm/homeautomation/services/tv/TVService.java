@@ -1,5 +1,8 @@
 package cm.homeautomation.services.tv;
 
+import java.util.List;
+
+import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -10,7 +13,9 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.configuration.ConfigurationService;
+import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.PhoneCallEvent;
+import cm.homeautomation.entities.Switch;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
@@ -29,14 +34,37 @@ public class TVService extends BaseService {
 
 	private PanasonicTVBinding tvBinding;
 	private String tvIp;
+	private static TVService instance;
 	private static boolean muted=false;
 
 	public TVService() {
 		tvBinding = new PanasonicTVBinding();
 		tvIp = ConfigurationService.getConfigurationProperty("tv", "tvIp");
 		EventBusService.getEventBus().register(this);
+		instance=this;
 	}
 
+	public static void getCurrentStatus(String[] args) {
+		boolean aliveStatus = getInstance().getAliveStatus();
+		
+		EntityManager em = EntityManagerService.getNewManager();
+		
+		@SuppressWarnings("unchecked")
+		List<Switch> resultList = ((List<Switch>)em.createQuery("select sw from Switch sw where sw.type='SOCKET' and sw.subtype='TV'").getResultList());
+		
+		
+		if (resultList!=null && !resultList.isEmpty()) {
+		
+			em.getTransaction().begin();
+			for (Switch singleSwitch : resultList) {
+				singleSwitch.setSwitchState(aliveStatus);
+				em.persist(singleSwitch);
+			}
+			
+			em.getTransaction().commit();
+		}
+	}
+	
 	/**
 	 * send a command to a TV
 	 * 
@@ -113,5 +141,14 @@ public class TVService extends BaseService {
 		}
 
 	}
+
+	public static TVService getInstance() {
+		if (instance==null) {
+			new TVService();
+		}
+		return instance;
+	}
+
+
 
 }
