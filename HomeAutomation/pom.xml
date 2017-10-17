@@ -70,6 +70,7 @@
 		<version.servlet.api>4.0.0</version.servlet.api>
 		<httpcompontents.version>4.5.2</httpcompontents.version>
 		<telegrambots.version>2.4.2</telegrambots.version>
+		<ratelimitj-inmemory.version>0.4.0</ratelimitj-inmemory.version>
 	</properties>
 
 	<distributionManagement>
@@ -301,6 +302,12 @@
 			<artifactId>jersey-container-servlet-core</artifactId>
 			<version>${version.jersey}</version>
 		</dependency>
+		
+		<dependency>
+  <groupId>es.moki.ratelimitj</groupId>
+  <artifactId>ratelimitj-inmemory</artifactId>
+  <version>${ratelimitj-inmemory.version}</version>
+</dependency>
 
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
