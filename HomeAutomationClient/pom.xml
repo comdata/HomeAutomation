@@ -14,7 +14,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<sapui5.version>1.30.10</sapui5.version>
-		<version.jersey>2.22.1</version.jersey>
+		<version.jersey>2.26</version.jersey>
 		<version.servlet.api>3.1.0</version.servlet.api>
 		<sonar.skip>true</sonar.skip>
 	</properties>
@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
-			<version>2.22.1</version>
+			<version>${version.jersey}</version>
 		</dependency>
 		
 
@@ -53,7 +53,7 @@
 		<dependency>
 			<groupId>com.pi4j</groupId>
 			<artifactId>pi4j-core</artifactId>
-			<version>1.0</version>
+			<version>1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
@@ -63,7 +63,7 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.3.6</version>
+			<version>4.5.3</version>
 		</dependency>
 	</dependencies>
 	<build>
