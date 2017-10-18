@@ -88,21 +88,22 @@ sap.ui.define([
             socket = new WebSocket(uri+"/"+this._wsGuid);
             var controller = this;
             socket.onopen = function (evt, state) {
-                controller.wsOnOpen.apply(controller, [evt, state])
+                controller.wsOnOpen.apply(controller, [evt, state]);
             };
             socket.onclose = function (evt) {
-                controller.wsOnClose.apply(controller, [evt, uri, callback, socket, state])
+                controller.wsOnClose.apply(controller, [evt, uri, callback, socket, state]);
             };
             socket.onmessage = function (evt) {
-                callback.apply(controller, [evt])
+                callback.apply(controller, [evt]);
+                controller.wsClose(socket, state);
             };
             socket.onerror = function (evt) {
-                controller.wsOnClose.apply(controller, [evt, uri, callback, socket, state])
+                controller.wsOnClose.apply(controller, [evt, uri, callback, socket, state]);
 
             };
         },
         wsOnOpen: function (evt, state) {
-        	state="CONNECTED";
+        		state="CONNECTED";
         },
         wsClose: function(socket, state) {
         	 try {
@@ -116,8 +117,8 @@ sap.ui.define([
 
         },
         wsOnClose: function (evt, uri, callback, socket, state) {
-        	console.log("socket "+uri+" closed");
-        	this.wsClose(socket, state);
+        		console.log("socket "+uri+" closed");
+        		this.wsClose(socket, state);
             var that=this;
 
             if (state=="DISCONNECTED") {
