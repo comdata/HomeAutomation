@@ -115,7 +115,7 @@ public class EventBusEndpoint {
 		}
 	}
 
-	@Subscribe
+	/*@Subscribe
 	public void handleEvent(WebSocketEvent eventObject) {
 		Enumeration<String> keySet = userSessions.keys();
 
@@ -147,7 +147,7 @@ public class EventBusEndpoint {
 				}
 			}
 		}
-	}
+	}*/
 
 	@OnMessage
 	public void onMessage(String message, Session userSession) {
