@@ -109,7 +109,8 @@ public class EventBusEndpoint {
 						// userSessions.remove(key);
 					}
 				} else {
-					userSessions.remove(key);
+					LogManager.getLogger(this.getClass()).info("Session not open" + key);
+					//userSessions.remove(key);
 				}
 			}
 		}
