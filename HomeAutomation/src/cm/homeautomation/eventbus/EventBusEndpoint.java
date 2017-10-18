@@ -93,6 +93,7 @@ public class EventBusEndpoint {
 			Session session = userSessions.get(key);
 
 			synchronized (session) {
+
 				if (session.isOpen()) {
 					try {
 						Semaphore semaphore = new Semaphore(1);
@@ -106,7 +107,6 @@ public class EventBusEndpoint {
 						session.getAsyncRemote().sendText(text, handler);
 						session.getAsyncRemote().sendPing(ByteBuffer.wrap("ping".getBytes()));
 						session.getAsyncRemote().flushBatch();
-						session.close();
 
 						// session.getBasicRemote().sendObject(eventObject);
 					} catch (IllegalStateException | EncodeException | IOException | InterruptedException e) {
