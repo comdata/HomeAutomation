@@ -3,11 +3,14 @@ package cm.homeautomation.eventbus;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
 
 import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
+import javax.websocket.SendHandler;
+import javax.websocket.SendResult;
 import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
@@ -90,58 +93,68 @@ public class EventBusEndpoint {
 			synchronized (session) {
 				if (session.isOpen()) {
 					try {
+						Semaphore semaphore = new Semaphore(1);
+						SendHandler handler = new SemaphoreSendHandler(semaphore);
+
 						String text = eventTranscoder.encode(eventObject);
-						
+
 						LogManager.getLogger(this.getClass())
-								.info("Eventbus Sending to " + session.getId() + " key: " + key+ " text: "+text);
-						session.getAsyncRemote().sendText(text);
+								.info("Eventbus Sending to " + session.getId() + " key: " + key + " text: " + text);
+						semaphore.acquire(1); 
+						session.getAsyncRemote().sendText(text, handler);
+						session.close();
 
 						// session.getBasicRemote().sendObject(eventObject);
-					} catch (IllegalStateException | EncodeException e) {
+					} catch (IllegalStateException | EncodeException | IOException | InterruptedException e) {
 						LogManager.getLogger(this.getClass()).info("Sending failed", e);
 						// userSessions.remove(key);
 					}
 				} else {
 					LogManager.getLogger(this.getClass()).info("Session not open" + key);
-					//userSessions.remove(key);
+					// userSessions.remove(key);
 				}
 			}
 		}
 	}
 
-	/*@Subscribe
-	public void handleEvent(WebSocketEvent eventObject) {
-		Enumeration<String> keySet = userSessions.keys();
+	private class SemaphoreSendHandler implements SendHandler {
 
-		while (keySet.hasMoreElements()) {
-			String key = keySet.nextElement();
+		private final Semaphore semaphore;
 
-			Session session = userSessions.get(key);
-
-			synchronized (session) {
-				if (session.isOpen()) {
-					try {
-						String text = webSocketEventTranscoder.encode(eventObject);
-						LogManager.getLogger(this.getClass())
-								.info("Eventbus Sending to " + session.getId() + " key: " + key+ " text: "+text);
-
-						//session.getBasicRemote().sendObject(eventObject);
-						//session.getBasicRemote().flushBatch();
-
-						session.getAsyncRemote().setBatchingAllowed(false);
-						session.getAsyncRemote().sendText(text);
-						session.getAsyncRemote().flushBatch();
-						
-					} catch (IllegalStateException | IOException | EncodeException e) {
-						LogManager.getLogger(this.getClass()).info("Sending failed", e);
-						// userSessions.remove(key);
-					}
-				} else {
-					userSessions.remove(key);
-				}
-			}
+		private SemaphoreSendHandler(Semaphore semaphore) {
+			this.semaphore = semaphore;
 		}
-	}*/
+
+		@Override
+		public void onResult(SendResult result) {
+			semaphore.release(); 
+		}
+	}
+
+	/*
+	 * @Subscribe public void handleEvent(WebSocketEvent eventObject) {
+	 * Enumeration<String> keySet = userSessions.keys();
+	 * 
+	 * while (keySet.hasMoreElements()) { String key = keySet.nextElement();
+	 * 
+	 * Session session = userSessions.get(key);
+	 * 
+	 * synchronized (session) { if (session.isOpen()) { try { String text =
+	 * webSocketEventTranscoder.encode(eventObject);
+	 * LogManager.getLogger(this.getClass()) .info("Eventbus Sending to " +
+	 * session.getId() + " key: " + key+ " text: "+text);
+	 * 
+	 * //session.getBasicRemote().sendObject(eventObject);
+	 * //session.getBasicRemote().flushBatch();
+	 * 
+	 * session.getAsyncRemote().setBatchingAllowed(false);
+	 * session.getAsyncRemote().sendText(text);
+	 * session.getAsyncRemote().flushBatch();
+	 * 
+	 * } catch (IllegalStateException | IOException | EncodeException e) {
+	 * LogManager.getLogger(this.getClass()).info("Sending failed", e); //
+	 * userSessions.remove(key); } } else { userSessions.remove(key); } } } }
+	 */
 
 	@OnMessage
 	public void onMessage(String message, Session userSession) {
