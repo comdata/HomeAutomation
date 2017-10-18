@@ -89,12 +89,15 @@ public class EventBusEndpoint {
 						LogManager.getLogger(this.getClass())
 								.info("Eventbus Sending to " + session.getId() + " key: " + key);
 
-						session.getBasicRemote().sendObject(eventObject);
-						session.getBasicRemote().flushBatch();
+						//session.getBasicRemote().sendObject(eventObject);
+						//session.getBasicRemote().flushBatch();
+						session.getAsyncRemote().setBatchingAllowed(false);
+						session.getAsyncRemote().sendObject(eventObject);
+						session.getAsyncRemote().flushBatch();
 						// session.getBasicRemote().sendText("Test");
 
 						// session.getBasicRemote().sendObject(eventObject);
-					} catch (IllegalStateException | IOException | EncodeException e) {
+					} catch (IllegalStateException | IOException e) {
 						LogManager.getLogger(this.getClass()).info("Sending failed", e);
 						// userSessions.remove(key);
 					}
@@ -120,10 +123,14 @@ public class EventBusEndpoint {
 						LogManager.getLogger(this.getClass())
 								.info("Eventbus Sending to " + session.getId() + " key: " + key);
 
-						session.getBasicRemote().sendObject(eventObject);
-						session.getBasicRemote().flushBatch();
+						//session.getBasicRemote().sendObject(eventObject);
+						//session.getBasicRemote().flushBatch();
 
-					} catch (IllegalStateException | IOException | EncodeException e) {
+						session.getAsyncRemote().setBatchingAllowed(false);
+						session.getAsyncRemote().sendObject(eventObject);
+						session.getAsyncRemote().flushBatch();
+						
+					} catch (IllegalStateException | IOException e) {
 						LogManager.getLogger(this.getClass()).info("Sending failed", e);
 						// userSessions.remove(key);
 					}
