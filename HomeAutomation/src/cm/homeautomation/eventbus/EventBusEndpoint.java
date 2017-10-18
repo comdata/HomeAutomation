@@ -90,7 +90,7 @@ public class EventBusEndpoint {
 								.info("Eventbus Sending to " + session.getId() + " key: " + key);
 
 						session.getBasicRemote().sendObject(eventObject);
-						session.getBasicRemote().sendText("Test");
+						// session.getBasicRemote().sendText("Test");
 
 						// session.getBasicRemote().sendObject(eventObject);
 					} catch (IllegalStateException | IOException | EncodeException e) {
@@ -113,19 +113,21 @@ public class EventBusEndpoint {
 
 			Session session = userSessions.get(key);
 
-			if (session.isOpen()) {
-				try {
-					LogManager.getLogger(this.getClass())
-							.info("Eventbus Sending to " + session.getId() + " key: " + key);
-					synchronized (session) {
+			synchronized (session) {
+				if (session.isOpen()) {
+					try {
+						LogManager.getLogger(this.getClass())
+								.info("Eventbus Sending to " + session.getId() + " key: " + key);
+
 						session.getBasicRemote().sendObject(eventObject);
+
+					} catch (IllegalStateException | IOException | EncodeException e) {
+						LogManager.getLogger(this.getClass()).info("Sending failed", e);
+						// userSessions.remove(key);
 					}
-				} catch (IllegalStateException | IOException | EncodeException e) {
-					LogManager.getLogger(this.getClass()).info("Sending failed", e);
-					// userSessions.remove(key);
+				} else {
+					userSessions.remove(key);
 				}
-			} else {
-				userSessions.remove(key);
 			}
 		}
 	}
