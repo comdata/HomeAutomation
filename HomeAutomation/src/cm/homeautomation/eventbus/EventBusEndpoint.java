@@ -105,6 +105,7 @@ public class EventBusEndpoint {
 						semaphore.acquire(1); 
 						session.getAsyncRemote().sendText(text, handler);
 						session.getAsyncRemote().sendPing(ByteBuffer.wrap("ping".getBytes()));
+						session.getAsyncRemote().flushBatch();
 						session.close();
 
 						// session.getBasicRemote().sendObject(eventObject);
