@@ -1,8 +1,10 @@
 package cm.homeautomation.eventbus;
 
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -72,7 +74,6 @@ public class EventBusEndpoint {
 	 * @param eventObject
 	 */
 	@Subscribe
-	@AllowConcurrentEvents
 	public void handleEvent(EventObject eventObject) {
 		Enumeration<String> keySet = userSessions.keys();
 
@@ -84,8 +85,15 @@ public class EventBusEndpoint {
 			if (session.isOpen()) {
 				try {
 					LogManager.getLogger(this.getClass()).info("Eventbus Sending to " + session.getId()+ " key: "+key);
-					session.getAsyncRemote().sendObject(eventObject);
+					//session.getAsyncRemote().sendObject(eventObject);
+					session.getBasicRemote().sendObject(eventObject);
 				} catch (IllegalStateException e) {
+					LogManager.getLogger(this.getClass()).info("Sending failed", e);
+					userSessions.remove(key);
+				} catch (IOException e) {
+					LogManager.getLogger(this.getClass()).info("Sending failed", e);
+					userSessions.remove(key);
+				} catch (EncodeException e) {
 					LogManager.getLogger(this.getClass()).info("Sending failed", e);
 					userSessions.remove(key);
 				}
@@ -96,7 +104,6 @@ public class EventBusEndpoint {
 	}
 
 	@Subscribe
-	@AllowConcurrentEvents
 	public void handleEvent(WebSocketEvent eventObject) {
 		Enumeration<String> keySet = userSessions.keys();
 
@@ -108,8 +115,14 @@ public class EventBusEndpoint {
 			if (session.isOpen()) {
 				try {
 					LogManager.getLogger(this.getClass()).info("Eventbus Sending to " + session.getId()+" key: "+key);
-					session.getAsyncRemote().sendObject(eventObject);
+					session.getBasicRemote().sendObject(eventObject);
 				} catch (IllegalStateException e) {
+					LogManager.getLogger(this.getClass()).info("Sending failed", e);
+					userSessions.remove(key);
+				} catch (IOException e) {
+					LogManager.getLogger(this.getClass()).info("Sending failed", e);
+					userSessions.remove(key);
+				} catch (EncodeException e) {
 					LogManager.getLogger(this.getClass()).info("Sending failed", e);
 					userSessions.remove(key);
 				}
