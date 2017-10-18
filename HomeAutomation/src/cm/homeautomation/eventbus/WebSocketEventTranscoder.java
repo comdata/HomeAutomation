@@ -13,11 +13,13 @@ import org.apache.logging.log4j.LogManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import cm.homeautomation.logging.WebSocketEvent;
 
-public class EventTranscoder implements Encoder.Text<EventObject>, Decoder.Text<EventObject> {
+
+public class WebSocketEventTranscoder implements Encoder.Text<WebSocketEvent>, Decoder.Text<WebSocketEvent> {
 	private ObjectMapper mapper;
 
-	public EventTranscoder() {
+	public WebSocketEventTranscoder() {
 		init(null);
 	}
 	
@@ -33,9 +35,9 @@ public class EventTranscoder implements Encoder.Text<EventObject>, Decoder.Text<
 	}
 
 	@Override
-	public EventObject decode(String s) throws DecodeException {
+	public WebSocketEvent decode(String s) throws DecodeException {
 		try {
-			return mapper.readValue(s, EventObject.class);
+			return mapper.readValue(s, WebSocketEvent.class);
 		} catch (IOException e) {
 			LogManager.getLogger(this.getClass()).error("decoding failed: "+s, e);
 		}
@@ -48,7 +50,7 @@ public class EventTranscoder implements Encoder.Text<EventObject>, Decoder.Text<
 	}
 
 	@Override
-	public String encode(EventObject object) throws EncodeException {
+	public String encode(WebSocketEvent object) throws EncodeException {
 
 		try {
 			return mapper.writeValueAsString(object);
