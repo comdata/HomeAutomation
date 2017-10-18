@@ -94,17 +94,10 @@ public class EventBusEndpoint {
 						
 						LogManager.getLogger(this.getClass())
 								.info("Eventbus Sending to " + session.getId() + " key: " + key+ " text: "+text);
-
-						//session.getBasicRemote().sendObject(eventObject);
-						//session.getBasicRemote().flushBatch();
-						session.getAsyncRemote().setBatchingAllowed(false);
-						
 						session.getAsyncRemote().sendText(text);
-						session.getAsyncRemote().flushBatch();
-						// session.getBasicRemote().sendText("Test");
 
 						// session.getBasicRemote().sendObject(eventObject);
-					} catch (IllegalStateException | IOException | EncodeException e) {
+					} catch (IllegalStateException | EncodeException e) {
 						LogManager.getLogger(this.getClass()).info("Sending failed", e);
 						// userSessions.remove(key);
 					}
