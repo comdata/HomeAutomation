@@ -26,6 +26,8 @@ import cm.homeautomation.logging.WebSocketEvent;
 public class EventBusEndpoint {
 
 	private ConcurrentHashMap<String, Session> userSessions = new ConcurrentHashMap<String, Session>();
+	private EventTranscoder eventTranscoder;
+	private WebSocketEventTranscoder webSocketEventTranscoder;
 
 	/**
 	 * register for {@link EventBus} messages
@@ -33,6 +35,8 @@ public class EventBusEndpoint {
 	public EventBusEndpoint() {
 		EventBusEndpointConfigurator.setEventBusEndpoint(this);
 		EventBusService.getEventBus().register(this);
+		eventTranscoder = new EventTranscoder();
+		webSocketEventTranscoder = new WebSocketEventTranscoder();
 	}
 
 	/**
@@ -86,18 +90,21 @@ public class EventBusEndpoint {
 			synchronized (session) {
 				if (session.isOpen()) {
 					try {
+						String text = eventTranscoder.encode(eventObject);
+						
 						LogManager.getLogger(this.getClass())
-								.info("Eventbus Sending to " + session.getId() + " key: " + key);
+								.info("Eventbus Sending to " + session.getId() + " key: " + key+ " text: "+text);
 
 						//session.getBasicRemote().sendObject(eventObject);
 						//session.getBasicRemote().flushBatch();
 						session.getAsyncRemote().setBatchingAllowed(false);
-						session.getAsyncRemote().sendObject(eventObject);
+						
+						session.getAsyncRemote().sendText(text);
 						session.getAsyncRemote().flushBatch();
 						// session.getBasicRemote().sendText("Test");
 
 						// session.getBasicRemote().sendObject(eventObject);
-					} catch (IllegalStateException | IOException e) {
+					} catch (IllegalStateException | IOException | EncodeException e) {
 						LogManager.getLogger(this.getClass()).info("Sending failed", e);
 						// userSessions.remove(key);
 					}
@@ -120,17 +127,18 @@ public class EventBusEndpoint {
 			synchronized (session) {
 				if (session.isOpen()) {
 					try {
+						String text = webSocketEventTranscoder.encode(eventObject);
 						LogManager.getLogger(this.getClass())
-								.info("Eventbus Sending to " + session.getId() + " key: " + key);
+								.info("Eventbus Sending to " + session.getId() + " key: " + key+ " text: "+text);
 
 						//session.getBasicRemote().sendObject(eventObject);
 						//session.getBasicRemote().flushBatch();
 
 						session.getAsyncRemote().setBatchingAllowed(false);
-						session.getAsyncRemote().sendObject(eventObject);
+						session.getAsyncRemote().sendText(text);
 						session.getAsyncRemote().flushBatch();
 						
-					} catch (IllegalStateException | IOException e) {
+					} catch (IllegalStateException | IOException | EncodeException e) {
 						LogManager.getLogger(this.getClass()).info("Sending failed", e);
 						// userSessions.remove(key);
 					}
