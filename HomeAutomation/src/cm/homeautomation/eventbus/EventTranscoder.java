@@ -51,7 +51,9 @@ public class EventTranscoder implements Encoder.Text<EventObject>, Decoder.Text<
 	public String encode(EventObject object) throws EncodeException {
 
 		try {
-			return mapper.writeValueAsString(object);
+			String writeValueAsString = mapper.writeValueAsString(object);
+			LogManager.getLogger(this.getClass()).info("encoded as: "+writeValueAsString);
+			return writeValueAsString;
 		} catch (JsonProcessingException e) {
 			LogManager.getLogger(this.getClass()).error("encoding failed.", e);
 		}
