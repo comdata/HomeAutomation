@@ -85,15 +85,11 @@ public class EventBusEndpoint {
 			if (session.isOpen()) {
 				try {
 					LogManager.getLogger(this.getClass()).info("Eventbus Sending to " + session.getId()+ " key: "+key);
-					//session.getAsyncRemote().sendObject(eventObject);
-					session.getBasicRemote().sendObject(eventObject);
+					synchronized (session) {
+						session.getAsyncRemote().sendObject(eventObject);
+					}
+					//session.getBasicRemote().sendObject(eventObject);
 				} catch (IllegalStateException e) {
-					LogManager.getLogger(this.getClass()).info("Sending failed", e);
-					userSessions.remove(key);
-				} catch (IOException e) {
-					LogManager.getLogger(this.getClass()).info("Sending failed", e);
-					userSessions.remove(key);
-				} catch (EncodeException e) {
 					LogManager.getLogger(this.getClass()).info("Sending failed", e);
 					userSessions.remove(key);
 				}
@@ -115,14 +111,10 @@ public class EventBusEndpoint {
 			if (session.isOpen()) {
 				try {
 					LogManager.getLogger(this.getClass()).info("Eventbus Sending to " + session.getId()+" key: "+key);
-					session.getBasicRemote().sendObject(eventObject);
+					synchronized (session) {
+						session.getAsyncRemote().sendObject(eventObject);
+					}
 				} catch (IllegalStateException e) {
-					LogManager.getLogger(this.getClass()).info("Sending failed", e);
-					userSessions.remove(key);
-				} catch (IOException e) {
-					LogManager.getLogger(this.getClass()).info("Sending failed", e);
-					userSessions.remove(key);
-				} catch (EncodeException e) {
 					LogManager.getLogger(this.getClass()).info("Sending failed", e);
 					userSessions.remove(key);
 				}
