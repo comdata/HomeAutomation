@@ -1,6 +1,7 @@
 package cm.homeautomation.eventbus;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
@@ -17,6 +18,7 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.apache.logging.log4j.LogManager;
 
+import com.fasterxml.jackson.databind.util.ByteBufferBackedInputStream;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -102,6 +104,7 @@ public class EventBusEndpoint {
 								.info("Eventbus Sending to " + session.getId() + " key: " + key + " text: " + text);
 						semaphore.acquire(1); 
 						session.getAsyncRemote().sendText(text, handler);
+						session.getAsyncRemote().sendPing(ByteBuffer.wrap("ping".getBytes()));
 						session.close();
 
 						// session.getBasicRemote().sendObject(eventObject);
