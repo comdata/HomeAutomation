@@ -21,7 +21,8 @@ import com.google.common.eventbus.Subscribe;
 import cm.homeautomation.logging.WebSocketEvent;
 
 @ServerEndpoint(value = "/eventbus/{clientId}", configurator = EventBusEndpointConfigurator.class, encoders = {
-		EventTranscoder.class, WebSocketEventTranscoder.class }, decoders = { EventTranscoder.class, WebSocketEventTranscoder.class })
+		EventTranscoder.class,
+		WebSocketEventTranscoder.class }, decoders = { EventTranscoder.class, WebSocketEventTranscoder.class })
 public class EventBusEndpoint {
 
 	private ConcurrentHashMap<String, Session> userSessions = new ConcurrentHashMap<String, Session>();
@@ -35,8 +36,8 @@ public class EventBusEndpoint {
 	}
 
 	/**
-	 * Callback hook for Connection open events. This method will be invoked
-	 * when a client requests for a WebSocket connection.
+	 * Callback hook for Connection open events. This method will be invoked when a
+	 * client requests for a WebSocket connection.
 	 * 
 	 * @param userSession
 	 *            the userSession which is opened.
@@ -47,8 +48,8 @@ public class EventBusEndpoint {
 	}
 
 	/**
-	 * Callback hook for Connection close events. This method will be invoked
-	 * when a client closes a WebSocket connection.
+	 * Callback hook for Connection close events. This method will be invoked when a
+	 * client closes a WebSocket connection.
 	 * 
 	 * @param userSession
 	 *            the userSession which is opened.
@@ -61,7 +62,7 @@ public class EventBusEndpoint {
 			String key = keySet.nextElement();
 
 			Session session = userSessions.get(key);
-			
+
 			if (session.equals(userSession)) {
 				userSessions.remove(key);
 			}
@@ -82,19 +83,23 @@ public class EventBusEndpoint {
 
 			Session session = userSessions.get(key);
 
-			if (session.isOpen()) {
-				try {
-					LogManager.getLogger(this.getClass()).info("Eventbus Sending to " + session.getId()+ " key: "+key);
-					synchronized (session) {
+			synchronized (session) {
+				if (session.isOpen()) {
+					try {
+						LogManager.getLogger(this.getClass())
+								.info("Eventbus Sending to " + session.getId() + " key: " + key);
+
 						session.getBasicRemote().sendObject(eventObject);
+						session.getBasicRemote().sendText("Test");
+
+						// session.getBasicRemote().sendObject(eventObject);
+					} catch (IllegalStateException | IOException | EncodeException e) {
+						LogManager.getLogger(this.getClass()).info("Sending failed", e);
+						// userSessions.remove(key);
 					}
-					//session.getBasicRemote().sendObject(eventObject);
-				} catch (IllegalStateException | IOException | EncodeException e) {
-					LogManager.getLogger(this.getClass()).info("Sending failed", e);
-					//userSessions.remove(key);
+				} else {
+					userSessions.remove(key);
 				}
-			} else {
-				userSessions.remove(key);
 			}
 		}
 	}
@@ -110,20 +115,21 @@ public class EventBusEndpoint {
 
 			if (session.isOpen()) {
 				try {
-					LogManager.getLogger(this.getClass()).info("Eventbus Sending to " + session.getId()+" key: "+key);
+					LogManager.getLogger(this.getClass())
+							.info("Eventbus Sending to " + session.getId() + " key: " + key);
 					synchronized (session) {
 						session.getBasicRemote().sendObject(eventObject);
 					}
 				} catch (IllegalStateException | IOException | EncodeException e) {
 					LogManager.getLogger(this.getClass()).info("Sending failed", e);
-					//userSessions.remove(key);
+					// userSessions.remove(key);
 				}
 			} else {
 				userSessions.remove(key);
 			}
 		}
 	}
-	
+
 	@OnMessage
 	public void onMessage(String message, Session userSession) {
 
