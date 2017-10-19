@@ -100,10 +100,13 @@ public class EventBusEndpoint {
 						LogManager.getLogger(this.getClass())
 								.info("Eventbus Sending to " + session.getId() + " key: " + key + " text: " + text);
 						semaphore.acquire(1); 
-						session.getAsyncRemote().sendText(text, handler);
+						session.getBasicRemote().sendText(text);
+						session.getBasicRemote().flushBatch();
+						session.getBasicRemote().sendText(text);
+						session.getBasicRemote().flushBatch();
 
 						// session.getBasicRemote().sendObject(eventObject);
-					} catch (IllegalStateException | EncodeException  | InterruptedException e) {
+					} catch (IllegalStateException | EncodeException  | InterruptedException | IOException e) {
 						LogManager.getLogger(this.getClass()).info("Sending failed", e);
 						// userSessions.remove(key);
 					}
@@ -130,7 +133,7 @@ public class EventBusEndpoint {
 			LogManager.getLogger(EventBusEndpoint.class)
 			.info("Eventbus Sent ok: "+ result.isOK());
 			try {
-				session.getAsyncRemote().flushBatch();
+				session.getBasicRemote().flushBatch();
 			} catch (IOException e) {
 				LogManager.getLogger(this.getClass()).info("Flushing failed", e);
 			}
