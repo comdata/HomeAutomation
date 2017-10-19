@@ -93,7 +93,7 @@ public class EventBusEndpoint {
 				if (session.isOpen()) {
 					try {
 						Semaphore semaphore = new Semaphore(1);
-						SendHandler handler = new SemaphoreSendHandler(semaphore);
+						SendHandler handler = new SemaphoreSendHandler(semaphore, session);
 
 						String text = eventTranscoder.encode(eventObject);
 
@@ -101,12 +101,9 @@ public class EventBusEndpoint {
 								.info("Eventbus Sending to " + session.getId() + " key: " + key + " text: " + text);
 						semaphore.acquire(1); 
 						session.getAsyncRemote().sendText(text, handler);
-						session.getAsyncRemote().sendPing(ByteBuffer.wrap("ping".getBytes()));
-						session.getAsyncRemote().flushBatch();
-
 
 						// session.getBasicRemote().sendObject(eventObject);
-					} catch (IllegalStateException | EncodeException | IOException | InterruptedException e) {
+					} catch (IllegalStateException | EncodeException  | InterruptedException e) {
 						LogManager.getLogger(this.getClass()).info("Sending failed", e);
 						// userSessions.remove(key);
 					}
@@ -121,15 +118,23 @@ public class EventBusEndpoint {
 	private class SemaphoreSendHandler implements SendHandler {
 
 		private final Semaphore semaphore;
+		private Session session;
 
-		private SemaphoreSendHandler(Semaphore semaphore) {
+		private SemaphoreSendHandler(Semaphore semaphore, Session session) {
 			this.semaphore = semaphore;
+			this.session = session;
 		}
 
 		@Override
 		public void onResult(SendResult result) {
 			LogManager.getLogger(EventBusEndpoint.class)
 			.info("Eventbus Sent ok: "+ result.isOK());
+			try {
+				session.getAsyncRemote().flushBatch();
+			} catch (IOException e) {
+				LogManager.getLogger(this.getClass()).info("Flushing failed", e);
+			}
+
 			semaphore.release(); 
 		}
 	}
