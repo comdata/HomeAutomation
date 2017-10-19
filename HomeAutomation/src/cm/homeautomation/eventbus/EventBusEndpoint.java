@@ -129,7 +129,7 @@ public class EventBusEndpoint {
 		@Override
 		public void onResult(SendResult result) {
 			LogManager.getLogger(EventBusEndpoint.class)
-			.info("Eventbus Sent");
+			.info("Eventbus Sent ok: "+ result.isOK());
 			semaphore.release(); 
 		}
 	}
