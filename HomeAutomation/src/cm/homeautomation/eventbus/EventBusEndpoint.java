@@ -18,12 +18,8 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.apache.logging.log4j.LogManager;
 
-import com.fasterxml.jackson.databind.util.ByteBufferBackedInputStream;
-import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-
-import cm.homeautomation.logging.WebSocketEvent;
 
 @ServerEndpoint(value = "/eventbus/{clientId}", configurator = EventBusEndpointConfigurator.class, encoders = {
 		EventTranscoder.class,
@@ -108,6 +104,7 @@ public class EventBusEndpoint {
 						session.getAsyncRemote().sendPing(ByteBuffer.wrap("ping".getBytes()));
 						session.getAsyncRemote().flushBatch();
 
+
 						// session.getBasicRemote().sendObject(eventObject);
 					} catch (IllegalStateException | EncodeException | IOException | InterruptedException e) {
 						LogManager.getLogger(this.getClass()).info("Sending failed", e);
@@ -131,6 +128,8 @@ public class EventBusEndpoint {
 
 		@Override
 		public void onResult(SendResult result) {
+			LogManager.getLogger(EventBusEndpoint.class)
+			.info("Eventbus Sent");
 			semaphore.release(); 
 		}
 	}
