@@ -94,9 +94,10 @@ sap.ui.define([
                 controller.wsOnClose.apply(controller, [evt, uri, callback, socket, state]);
             };
             socket.onmessage = function (evt) {
-                callback.apply(controller, [evt]);
                 controller.wsClose(socket, state);
                 controller.initWebSocket(uri, callback, socket, state);
+                callback.apply(controller, [evt]);
+
             };
             socket.onerror = function (evt) {
                 controller.wsOnClose.apply(controller, [evt, uri, callback, socket, state]);
