@@ -78,46 +78,46 @@ public class PowerMeterSensor {
 
 		BigDecimal oneMinute = (BigDecimal) em
 				.createNativeQuery(
-						"select count(*)/1000*60 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 1 MINUTE;")
+						"select sum(powerCounter)/1000*60 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 1 MINUTE;")
 				.getSingleResult();
 
 		BigDecimal oneMinuteTrend = (BigDecimal) em.createNativeQuery(
-				"select count(*)/1000*60 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 2 MINUTE and TIMESTAMP <= now() - INTERVAL 1 MINUTE;")
+				"select sum(powerCounter)/1000*60 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 2 MINUTE and TIMESTAMP <= now() - INTERVAL 1 MINUTE;")
 				.getSingleResult();
 
 		BigDecimal fiveMinute = (BigDecimal) em
 				.createNativeQuery(
-						"select count(*)/1000*12 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 5 MINUTE;")
+						"select sum(powerCounter)/1000*12 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 5 MINUTE;")
 				.getSingleResult();
 
 		BigDecimal fiveMinuteTrend = (BigDecimal) em.createNativeQuery(
-				"select count(*)/1000*12 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 6 MINUTE and TIMESTAMP <= now() - INTERVAL 1 MINUTE;")
+				"select sum(powerCounter)/1000*12 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 6 MINUTE and TIMESTAMP <= now() - INTERVAL 1 MINUTE;")
 				.getSingleResult();
 
 		BigDecimal sixtyMinute = (BigDecimal) em
 				.createNativeQuery(
-						"select count(*)/1000 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 60 MINUTE;")
+						"select sum(powerCounter)/1000 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 60 MINUTE;")
 				.getSingleResult();
 
 		BigDecimal sixtyMinuteTrend = (BigDecimal) em.createNativeQuery(
-				"select count(*)/1000 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 61 MINUTE and TIMESTAMP <= now() - INTERVAL 1 MINUTE;;")
+				"select sum(powerCounter)/1000 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 61 MINUTE and TIMESTAMP <= now() - INTERVAL 1 MINUTE;;")
 				.getSingleResult();
 
 		BigDecimal today = (BigDecimal) em
-				.createNativeQuery("select count(*)/1000 from POWERMETERPING where date(TIMESTAMP)=CURDATE() ;")
+				.createNativeQuery("select sum(powerCounter)/1000 from POWERMETERPING where date(TIMESTAMP)=CURDATE() ;")
 				.getSingleResult();
 
 		BigDecimal yesterday = (BigDecimal) em
 				.createNativeQuery(
-						"select count(*)/1000 from POWERMETERPING where date(TIMESTAMP)=date(now()- interval 1 day);")
+						"select sum(powerCounter)/1000 from POWERMETERPING where date(TIMESTAMP)=date(now()- interval 1 day);")
 				.getSingleResult();
 
 		BigDecimal lastSevenDays = (BigDecimal) em.createNativeQuery(
-				"select count(*)/1000 from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 8 day) and date(TIMESTAMP)<=date(now()- interval 1 day);")
+				"select sum(powerCounter)/1000 from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 8 day) and date(TIMESTAMP)<=date(now()- interval 1 day);")
 				.getSingleResult();
 
 		BigDecimal lastEightDaysBeforeTillYesterday = (BigDecimal) em.createNativeQuery(
-				"select count(*)/1000 from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 8 day) and date(TIMESTAMP)<CURDATE();")
+				"select sum(powerCounter)/1000 from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 8 day) and date(TIMESTAMP)<CURDATE();")
 				.getSingleResult();
 		
 		
