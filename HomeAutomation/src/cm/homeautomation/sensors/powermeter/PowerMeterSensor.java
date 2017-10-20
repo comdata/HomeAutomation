@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.PowerIntervalData;
 import cm.homeautomation.entities.PowerMeterPing;
@@ -64,30 +65,31 @@ public class PowerMeterSensor {
 			List<Object[]> rawResultList = em.createNativeQuery(
 					"select sum(POWERCOUNTER) as counter, FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(TIMESTAMP)/("
 							+ " 60 * 60))*60 *60) as TIMESLICE, MIN(TIMESTAMP), MAX(TIMESTAMP) "
-							+ "from POWERMETERPING where COMPRESSED=0 "
-							+ " and TIMESTAMP <= now() - INTERVAL 2 HOUR"
-							+ " GROUP BY FLOOR(UNIX_TIMESTAMP(TIMESTAMP)/("
-							+ "60" + " * 60)) order by TIMESTAMP asc limit "+numberOfEntriesToCompress)
+							+ "from POWERMETERPING where COMPRESSED=0 " + " and TIMESTAMP <= now() - INTERVAL 2 HOUR"
+							+ " GROUP BY FLOOR(UNIX_TIMESTAMP(TIMESTAMP)/(" + "60"
+							+ " * 60)) order by TIMESTAMP asc limit " + numberOfEntriesToCompress)
 					.getResultList();
 
-			
 			for (Object[] resultElement : rawResultList) {
 				PowerMeterPing compressPowerPing = new PowerMeterPing();
 				compressPowerPing.setTimestamp((Timestamp) resultElement[1]);
 				compressPowerPing.setCompressed(true);
-				int powerCounter = ((BigDecimal)resultElement[0]).intValue();
+				int powerCounter = ((BigDecimal) resultElement[0]).intValue();
 				compressPowerPing.setPowerCounter(powerCounter);
-				
+
 				System.out.println();
-				
-				Timestamp minTimestamp=(Timestamp) resultElement[2]; 
-				Timestamp maxTimestamp=(Timestamp) resultElement[3];
-				
-				LogManager.getLogger(PowerMeterSensor.class).error("Min Timestamp: "+minTimestamp.toString()+ " max timestamp:"+maxTimestamp.toString()+ " counter: "+powerCounter);
-				
-				em.createQuery("delete from PowerMeterPing p where p.timestamp>=:minTimestamp and p.timestamp<=:maxTimestamp").setParameter("minTimestamp", minTimestamp).setParameter("maxTimestamp", maxTimestamp).executeUpdate();
-				
-				
+
+				Timestamp minTimestamp = (Timestamp) resultElement[2];
+				Timestamp maxTimestamp = (Timestamp) resultElement[3];
+
+				LogManager.getLogger(PowerMeterSensor.class).error("Min Timestamp: " + minTimestamp.toString()
+						+ " max timestamp:" + maxTimestamp.toString() + " counter: " + powerCounter);
+
+				em.createQuery(
+						"delete from PowerMeterPing p where p.timestamp>=:minTimestamp and p.timestamp<=:maxTimestamp")
+						.setParameter("minTimestamp", minTimestamp).setParameter("maxTimestamp", maxTimestamp)
+						.executeUpdate();
+
 				em.persist(compressPowerPing);
 			}
 
@@ -120,9 +122,14 @@ public class PowerMeterSensor {
 			em.getTransaction().commit();
 			em.close();
 
-			boolean overLimit = requestRateLimiter.overLimitWhenIncremented(PowerMeterData.class.getName());
-			if (overLimit) {
-				// sendNewData();
+			boolean parseBoolean = Boolean
+					.parseBoolean(ConfigurationService.getConfigurationProperty("power", "sendSummaryData"));
+
+			if (parseBoolean) {
+				boolean overLimit = requestRateLimiter.overLimitWhenIncremented(PowerMeterData.class.getName());
+				if (overLimit) {
+					sendNewData();
+				}
 			}
 
 		}
