@@ -117,7 +117,7 @@
 			</Panel>
 
 			<Panel expandable="true" expanded="{currentRoom>/additionalUI}" headerText="{currentRoom>/additionalUIName}"
-				width="auto" class="sapUiResponsiveMargin" expand="expandAdditionalUI" visible="{= ${currentRoom>/additionalUI} !== ''}">
+				width="auto" class="sapUiResponsiveMargin" expand="expandAdditionalUI" visible="{= ${currentRoom>/additionalUIURL} !== ''}">
 				<content>
 					<core:HTML
 									content="&lt;iframe src=&quot;{currentRoom>/additionalUIURL}&quot; scrolling=&quot;no&quot; style=&quot;overflow: hidden;&quot; width=&quot;100%&quot; height=&quot;100%&quot; /&gt;"/>
