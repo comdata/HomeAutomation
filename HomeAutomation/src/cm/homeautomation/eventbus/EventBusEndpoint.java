@@ -100,7 +100,7 @@ public class EventBusEndpoint {
 					try {
 						Semaphore semaphore = new Semaphore(1);
 						Async async = session.getAsyncRemote();
-						SendHandler handler = new SemaphoreSendHandler(semaphore, async);
+						SendHandler handler = new SemaphoreSendHandler(semaphore, async, session);
 
 						String text = eventTranscoder.encode(eventObject);
 
@@ -133,18 +133,22 @@ public class EventBusEndpoint {
 
 		private final Semaphore semaphore;
 		private RemoteEndpoint remoteEndpoint;
+		private Session session;
 
-		private SemaphoreSendHandler(Semaphore semaphore, RemoteEndpoint remoteEndpoint) {
+		private SemaphoreSendHandler(Semaphore semaphore, RemoteEndpoint remoteEndpoint, Session session) {
 			this.semaphore = semaphore;
 			this.remoteEndpoint = remoteEndpoint;
+			this.session = session;
 		}
 
 		@Override
 		public void onResult(SendResult result) {
 			LogManager.getLogger(EventBusEndpoint.class).info("Eventbus Sent ok: " + result.isOK());
 			try {
-				remoteEndpoint.flushBatch();
-				remoteEndpoint.sendPing(ByteBuffer.wrap(new byte[0]));
+				if (session.isOpen()) {
+					remoteEndpoint.flushBatch();
+					remoteEndpoint.sendPing(ByteBuffer.wrap(new byte[0]));
+				}
 			} catch (IOException e) {
 				LogManager.getLogger(this.getClass()).info("Flushing failed", e);
 			}
