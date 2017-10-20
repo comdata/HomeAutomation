@@ -1721,6 +1721,7 @@ sap.ui.define([
             sap.ui.getCore().setModel(new JSONModel(), "networkDevices");
         },
         powerMeterDialogClose: function() {
+        		sap.ui.getCore().setModel(new JSONModel(), "powerdata");
             this._dialogs["powermeter"].close();
 
         },
