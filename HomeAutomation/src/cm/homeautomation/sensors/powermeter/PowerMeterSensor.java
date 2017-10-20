@@ -33,7 +33,7 @@ public class PowerMeterSensor {
 	private RequestRateLimiter requestRateLimiter;
 
 	public PowerMeterSensor() {
-		Set<RequestLimitRule> rules = Collections.singleton(RequestLimitRule.of(1, TimeUnit.MINUTES, 2)); // 2
+		Set<RequestLimitRule> rules = Collections.singleton(RequestLimitRule.of(1, TimeUnit.MINUTES, 1)); // 1 per minute
 		requestRateLimiter = new InMemorySlidingWindowRequestRateLimiter(rules);
 		EventBusService.getEventBus().register(this);
 	}
@@ -67,7 +67,7 @@ public class PowerMeterSensor {
 
 			boolean overLimit = requestRateLimiter.overLimitWhenIncremented(PowerMeterData.class.getName());
 			if (overLimit) {
-				// sendNewData();
+				 sendNewData();
 			}
 
 		}
@@ -119,6 +119,8 @@ public class PowerMeterSensor {
 		BigDecimal lastEightDaysBeforeTillYesterday = (BigDecimal) em.createNativeQuery(
 				"select count(*)/1000 from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 8 day) and date(TIMESTAMP)<CURDATE();")
 				.getSingleResult();
+		
+		
 
 		oneMinute = oneMinute.setScale(2, BigDecimal.ROUND_HALF_UP);
 		oneMinuteTrend = oneMinuteTrend.setScale(2, BigDecimal.ROUND_HALF_UP);
@@ -142,8 +144,10 @@ public class PowerMeterSensor {
 		powerMeterIntervalData.setYesterday(yesterday.floatValue());
 		powerMeterIntervalData.setLastSevenDays(lastSevenDays.floatValue());
 		powerMeterIntervalData.setLastSevenDaysTrend(lastSevenDays.compareTo(lastEightDaysBeforeTillYesterday));
-
+		
+		em.clear();
 		em.close();
+
 
 		EventObject intervalEventObject = new EventObject(powerMeterIntervalData);
 		EventBusService.getEventBus().post(intervalEventObject);
