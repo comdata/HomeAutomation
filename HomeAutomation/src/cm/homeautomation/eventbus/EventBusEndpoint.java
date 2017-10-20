@@ -88,44 +88,48 @@ public class EventBusEndpoint {
 	@AllowConcurrentEvents
 	public void handleEvent(EventObject eventObject) {
 		Enumeration<String> keySet = userSessions.keys();
+		try {
+			String text = eventTranscoder.encode(eventObject);
+			while (keySet.hasMoreElements()) {
+				String key = keySet.nextElement();
 
-		while (keySet.hasMoreElements()) {
-			String key = keySet.nextElement();
+				Session session = userSessions.get(key);
 
-			Session session = userSessions.get(key);
+				synchronized (session) {
 
-			synchronized (session) {
+					if (session.isOpen()) {
+						try {
+							Semaphore semaphore = new Semaphore(1);
+							Async async = session.getAsyncRemote();
+							SendHandler handler = new SemaphoreSendHandler(semaphore, async, session);
 
-				if (session.isOpen()) {
-					try {
-						Semaphore semaphore = new Semaphore(1);
-						Async async = session.getAsyncRemote();
-						SendHandler handler = new SemaphoreSendHandler(semaphore, async, session);
+							// LogManager.getLogger(this.getClass())
+							// .info("Eventbus Sending to " + session.getId() + " key: " + key + " text: " +
+							// text);
 
-						String text = eventTranscoder.encode(eventObject);
+							if (async.getBatchingAllowed()) {
+								async.setBatchingAllowed(false);
+							}
 
-						LogManager.getLogger(this.getClass())
-								.info("Eventbus Sending to " + session.getId() + " key: " + key + " text: " + text);
+							semaphore.acquireUninterruptibly();
 
-						if (async.getBatchingAllowed()) {
-							async.setBatchingAllowed(false);
+							async.sendText(text, handler);
+							async.flushBatch();
+
+							// session.getBasicRemote().sendObject(eventObject);
+						} catch (IllegalStateException | IOException e) {
+							LogManager.getLogger(this.getClass())
+									.error("Sending failed" + session.getId() + " key: " + key + " text: " + text, e);
+							// userSessions.remove(key);
 						}
-
-						semaphore.acquireUninterruptibly();
-
-						async.sendText(text, handler);
-						async.flushBatch();
-
-						// session.getBasicRemote().sendObject(eventObject);
-					} catch (IllegalStateException | EncodeException | IOException e) {
-						LogManager.getLogger(this.getClass()).info("Sending failed", e);
+					} else {
+						LogManager.getLogger(this.getClass()).error("Session not open" + key);
 						// userSessions.remove(key);
 					}
-				} else {
-					LogManager.getLogger(this.getClass()).info("Session not open" + key);
-					// userSessions.remove(key);
 				}
 			}
+		} catch (EncodeException e) {
+			LogManager.getLogger(this.getClass()).error("Encoding failed", e);
 		}
 	}
 
@@ -155,6 +159,7 @@ public class EventBusEndpoint {
 
 			semaphore.release();
 		}
+
 	}
 
 	@Subscribe
@@ -162,33 +167,41 @@ public class EventBusEndpoint {
 	public void handleEvent(WebSocketEvent eventObject) {
 		Enumeration<String> keySet = userSessions.keys();
 
-		while (keySet.hasMoreElements()) {
-			String key = keySet.nextElement();
+		try {
+			String text = webSocketEventTranscoder.encode(eventObject);
 
-			Session session = userSessions.get(key);
+			while (keySet.hasMoreElements()) {
+				String key = keySet.nextElement();
 
-			synchronized (session) {
-				if (session.isOpen()) {
-					try {
-						String text = webSocketEventTranscoder.encode(eventObject);
-						LogManager.getLogger(this.getClass())
-								.info("Eventbus Sending to " + session.getId() + " key: " + key + " text: " + text);
+				Session session = userSessions.get(key);
 
-						// session.getBasicRemote().sendObject(eventObject);
-						// session.getBasicRemote().flushBatch();
+				synchronized (session) {
+					if (session.isOpen()) {
+						try {
 
-						session.getAsyncRemote().setBatchingAllowed(false);
-						session.getAsyncRemote().sendText(text);
-						session.getAsyncRemote().flushBatch();
+							// LogManager.getLogger(this.getClass())
+							// .info("Eventbus Sending to " + session.getId() + " key: " + key + " text: " +
+							// text);
 
-					} catch (IllegalStateException | IOException | EncodeException e) {
-						LogManager.getLogger(this.getClass()).info("Sending failed", e); //
+							// session.getBasicRemote().sendObject(eventObject);
+							// session.getBasicRemote().flushBatch();
+
+							session.getAsyncRemote().setBatchingAllowed(false);
+							session.getAsyncRemote().sendText(text);
+
+						} catch (IllegalStateException | IOException e) {
+							LogManager.getLogger(this.getClass())
+									.error("Sending failed" + session.getId() + " key: " + key + " text: " + text, e); //
+							userSessions.remove(key);
+						}
+					} else {
 						userSessions.remove(key);
 					}
-				} else {
-					userSessions.remove(key);
 				}
+
 			}
+		} catch (EncodeException e) {
+			LogManager.getLogger(this.getClass()).error("Encoding failed", e);
 		}
 	}
 
