@@ -79,12 +79,15 @@ public class PowerMeterSensor {
 				
 				System.out.println();
 				
-				String minTimestamp=(String) resultElement[2]; 
-				String maxTimestamp=(String) resultElement[3];
+				Timestamp minTimestamp=(Timestamp) resultElement[2]; 
+				Timestamp maxTimestamp=(Timestamp) resultElement[3];
 				
-				LogManager.getLogger(PowerMeterSensor.class).error("Min Timestamp: "+minTimestamp+ " max timestamp:"+maxTimestamp);
+				LogManager.getLogger(PowerMeterSensor.class).error("Min Timestamp: "+minTimestamp.toString()+ " max timestamp:"+maxTimestamp.toString());
 				
-				//em.persist(compressPowerPing);
+				em.createQuery("delete from PowerMeterPing p where p.timestamp>=:minTimestamp and p.timestamp<=:maxTimestamp").setParameter("minTimestamp", minTimestamp).setParameter("maxTimestamp", maxTimestamp).executeUpdate();
+				
+				
+				em.persist(compressPowerPing);
 			}
 
 			em.getTransaction().commit();
