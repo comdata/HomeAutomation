@@ -20,8 +20,11 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.apache.logging.log4j.LogManager;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+
+import cm.homeautomation.logging.WebSocketEvent;
 
 @ServerEndpoint(value = "/eventbus/{clientId}", configurator = EventBusEndpointConfigurator.class, encoders = {
 		EventTranscoder.class,
@@ -82,6 +85,7 @@ public class EventBusEndpoint {
 	 * @param eventObject
 	 */
 	@Subscribe
+	@AllowConcurrentEvents
 	public void handleEvent(EventObject eventObject) {
 		Enumeration<String> keySet = userSessions.keys();
 
@@ -149,30 +153,40 @@ public class EventBusEndpoint {
 		}
 	}
 
-	/*
-	 * @Subscribe public void handleEvent(WebSocketEvent eventObject) {
-	 * Enumeration<String> keySet = userSessions.keys();
-	 * 
-	 * while (keySet.hasMoreElements()) { String key = keySet.nextElement();
-	 * 
-	 * Session session = userSessions.get(key);
-	 * 
-	 * synchronized (session) { if (session.isOpen()) { try { String text =
-	 * webSocketEventTranscoder.encode(eventObject);
-	 * LogManager.getLogger(this.getClass()) .info("Eventbus Sending to " +
-	 * session.getId() + " key: " + key+ " text: "+text);
-	 * 
-	 * //session.getBasicRemote().sendObject(eventObject);
-	 * //session.getBasicRemote().flushBatch();
-	 * 
-	 * session.getAsyncRemote().setBatchingAllowed(false);
-	 * session.getAsyncRemote().sendText(text);
-	 * session.getAsyncRemote().flushBatch();
-	 * 
-	 * } catch (IllegalStateException | IOException | EncodeException e) {
-	 * LogManager.getLogger(this.getClass()).info("Sending failed", e); //
-	 * userSessions.remove(key); } } else { userSessions.remove(key); } } } }
-	 */
+	@Subscribe
+	@AllowConcurrentEvents
+	public void handleEvent(WebSocketEvent eventObject) {
+		Enumeration<String> keySet = userSessions.keys();
+
+		while (keySet.hasMoreElements()) {
+			String key = keySet.nextElement();
+
+			Session session = userSessions.get(key);
+
+			synchronized (session) {
+				if (session.isOpen()) {
+					try {
+						String text = webSocketEventTranscoder.encode(eventObject);
+						LogManager.getLogger(this.getClass())
+								.info("Eventbus Sending to " + session.getId() + " key: " + key + " text: " + text);
+
+						// session.getBasicRemote().sendObject(eventObject);
+						// session.getBasicRemote().flushBatch();
+
+						session.getAsyncRemote().setBatchingAllowed(false);
+						session.getAsyncRemote().sendText(text);
+						session.getAsyncRemote().flushBatch();
+
+					} catch (IllegalStateException | IOException | EncodeException e) {
+						LogManager.getLogger(this.getClass()).info("Sending failed", e); //
+						userSessions.remove(key);
+					}
+				} else {
+					userSessions.remove(key);
+				}
+			}
+		}
+	}
 
 	@OnMessage
 	public void onMessage(String message, Session userSession) {
