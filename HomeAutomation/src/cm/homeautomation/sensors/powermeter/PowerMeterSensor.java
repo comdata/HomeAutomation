@@ -30,12 +30,16 @@ import cm.homeautomation.sensors.PowerMeterData;
  */
 public class PowerMeterSensor {
 
-	public PowerMeterSensor() {
+	private RequestRateLimiter requestRateLimiter;
 
+	public PowerMeterSensor() {
+		Set<RequestLimitRule> rules = Collections.singleton(RequestLimitRule.of(1, TimeUnit.MINUTES, 2)); // 2
+		requestRateLimiter = new InMemorySlidingWindowRequestRateLimiter(rules);
 		EventBusService.getEventBus().register(this);
 	}
 
 	public void destroy() {
+		requestRateLimiter = null;
 		EventBusService.getEventBus().unregister(this);
 
 	}
@@ -60,14 +64,6 @@ public class PowerMeterSensor {
 			em.persist(powerMeterPing);
 			em.getTransaction().commit();
 			em.close();
-
-			Set<RequestLimitRule> rules = Collections.singleton(RequestLimitRule.of(1, TimeUnit.MINUTES, 2)); // 2
-																												// request
-																												// per
-																												// minute,
-																												// per
-																												// key
-			RequestRateLimiter requestRateLimiter = new InMemorySlidingWindowRequestRateLimiter(rules);
 
 			boolean overLimit = requestRateLimiter.overLimitWhenIncremented(PowerMeterData.class.getName());
 			if (overLimit) {
