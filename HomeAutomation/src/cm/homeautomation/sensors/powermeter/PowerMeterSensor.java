@@ -65,7 +65,7 @@ public class PowerMeterSensor {
 			List<Object[]> rawResultList = em.createNativeQuery(
 					"select sum(POWERCOUNTER) as counter, FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(TIMESTAMP)/("
 							+ " 60 * 60))*60 *60) as TIMESLICE, MIN(TIMESTAMP), MAX(TIMESTAMP) "
-							+ "from POWERMETERPING where COMPRESSED=0 " + " and TIMESTAMP <= now() - INTERVAL 2 HOUR"
+							+ "from POWERMETERPING where COMPRESSED=0  and FLOOR(UNIX_TIMESTAMP(TIMESTAMP)/(60*60)) <= now() - INTERVAL 2 HOUR"
 							+ " GROUP BY FLOOR(UNIX_TIMESTAMP(TIMESTAMP)/(" + "60"
 							+ " * 60)) order by TIMESTAMP asc limit " + numberOfEntriesToCompress)
 					.getResultList();
