@@ -67,7 +67,7 @@ public class PowerMeterSensor {
 
 			boolean overLimit = requestRateLimiter.overLimitWhenIncremented(PowerMeterData.class.getName());
 			if (overLimit) {
-				sendNewData();
+				//sendNewData();
 			}
 
 		}
