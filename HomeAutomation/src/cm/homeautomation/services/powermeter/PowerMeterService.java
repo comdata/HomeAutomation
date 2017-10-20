@@ -30,9 +30,9 @@ public class PowerMeterService extends BaseService {
 		String minutes = "60";
 
 		List<Object[]> rawResultList = em.createNativeQuery(
-				"select sum(POWERCOUNTER)/1000 as KWH, FROM_UNIXTIME(ROUND(UNIX_TIMESTAMP(TIMESTAMP)/(" + minutes
+				"select sum(POWERCOUNTER)/1000 as KWH, FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(TIMESTAMP)/(" + minutes
 						+ " * 60))*" + minutes
-						+ "*60) as TIMESLICE from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 7 day) GROUP BY ROUND(UNIX_TIMESTAMP(TIMESTAMP)/("
+						+ "*60) as TIMESLICE from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 7 day) GROUP BY FLOOR(UNIX_TIMESTAMP(TIMESTAMP)/("
 						+ minutes + " * 60));")
 				.getResultList();
 
