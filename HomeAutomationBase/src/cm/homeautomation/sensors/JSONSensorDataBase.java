@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include=JsonTypeInfo.As.PROPERTY, property="@c")
-@JsonSubTypes({@Type(value=SensorDataRoomSaveRequest.class), @Type(value=SensorDataSaveRequest.class), @Type(value=WindowSensorData.class)})
+@JsonSubTypes({@Type(value=AliveMessage.class),@Type(value=SensorDataRoomSaveRequest.class), @Type(value=SensorDataSaveRequest.class), @Type(value=WindowSensorData.class)})
 @JsonInclude (JsonInclude.Include.USE_DEFAULTS)
 @XmlRootElement
 public abstract class JSONSensorDataBase {
