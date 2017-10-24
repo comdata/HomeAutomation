@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 
 @Entity
 public class IRCommand {
@@ -21,7 +22,7 @@ public class IRCommand {
 	private int command;
 
 	@ElementCollection
-	@CollectionTable(name = "IRCOMMANDVALUES")
+	@CollectionTable(name = "IRCOMMANDVALUES", joinColumns=@JoinColumn(name="IRCOMMAND_ID"))
 	private List<Integer> values;
 	private String name;
 	private String description;
