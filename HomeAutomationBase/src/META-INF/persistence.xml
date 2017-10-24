@@ -35,6 +35,7 @@
 		<class>cm.homeautomation.entities.DashButtonRange</class>
 		<class>cm.homeautomation.entities.DashButton</class>
 		<class>cm.homeautomation.entities.ScriptingEntity</class>
+		<class>cm.homeautomation.entities.IRCommand</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" />
 			<property name="javax.persistence.jdbc.url"
