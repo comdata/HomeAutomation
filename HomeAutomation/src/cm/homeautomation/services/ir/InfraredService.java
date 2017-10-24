@@ -21,7 +21,6 @@ import cm.homeautomation.services.base.BaseService;
  * @author christoph
  *
  */
-@AutoCreateInstance
 public class InfraredService extends BaseService {
 
 	public InfraredService() {
