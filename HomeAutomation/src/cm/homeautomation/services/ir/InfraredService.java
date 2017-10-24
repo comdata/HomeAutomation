@@ -60,7 +60,7 @@ public class InfraredService extends BaseService {
 				irCommand.setType(irData.getType());
 				
 				List<String> valuesString = new ArrayList<String>();
-				List<Integer> values = irData.getValues();
+				List<Integer> values = irData.getRawCode();
 				for (Integer integer : values) {
 					valuesString.add(integer.toString());
 				}

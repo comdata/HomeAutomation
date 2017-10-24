@@ -7,7 +7,8 @@ public class IRData extends JSONSensorDataBase {
 	private String typeClear;
 	private int address;
 	private int command;
-	private List<Integer> values;
+	
+	private List<Integer> rawCode;
 
 	public String getType() {
 		return type;
@@ -41,11 +42,11 @@ public class IRData extends JSONSensorDataBase {
 		this.command = command;
 	}
 
-	public List<Integer> getValues() {
-		return values;
+	public List<Integer> getRawCode() {
+		return rawCode;
 	}
 
-	public void setValues(List<Integer> values) {
-		this.values = values;
+	public void setRawCode(List<Integer> values) {
+		this.rawCode = values;
 	}
 }
