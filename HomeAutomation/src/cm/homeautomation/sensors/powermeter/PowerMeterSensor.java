@@ -107,29 +107,38 @@ public class PowerMeterSensor {
 
 		Object data = eventObject.getData();
 		if (data instanceof PowerMeterData) {
-			EntityManager em = EntityManagerService.getNewManager();
 
-			PowerMeterData powerData = (PowerMeterData) data;
+			try {
+				EntityManager em = EntityManagerService.getNewManager();
 
-			PowerMeterPing powerMeterPing = new PowerMeterPing();
+				PowerMeterData powerData = (PowerMeterData) data;
 
-			powerMeterPing.setTimestamp(new Date());
-			powerMeterPing.setPowermeter(powerData.getPowermeter());
+				PowerMeterPing powerMeterPing = new PowerMeterPing();
 
-			em.getTransaction().begin();
+				powerMeterPing.setTimestamp(new Date());
+				powerMeterPing.setPowermeter(powerData.getPowermeter());
 
-			em.persist(powerMeterPing);
-			em.getTransaction().commit();
-			em.close();
+				em.getTransaction().begin();
 
-			boolean parseBoolean = Boolean
-					.parseBoolean(ConfigurationService.getConfigurationProperty("power", "sendSummaryData"));
+				em.persist(powerMeterPing);
+				em.getTransaction().commit();
+				em.close();
 
-			if (parseBoolean) {
-				boolean overLimit = requestRateLimiter.overLimitWhenIncremented(PowerMeterData.class.getName());
-				if (overLimit) {
-					sendNewData();
+			} catch (Exception e) {
+				LogManager.getLogger(PowerMeterSensor.class).error("error persisting power data", e);
+			}
+
+			try {
+				boolean parseBoolean = Boolean
+						.parseBoolean(ConfigurationService.getConfigurationProperty("power", "sendSummaryData"));
+				if (parseBoolean) {
+					boolean overLimit = requestRateLimiter.overLimitWhenIncremented(PowerMeterData.class.getName());
+					if (overLimit) {
+						sendNewData();
+					}
 				}
+			} catch (Exception e) {
+				LogManager.getLogger(PowerMeterSensor.class).error("error creating and sending interval data", e);
 			}
 
 		}
