@@ -101,6 +101,11 @@ public class PowerMeterSensor {
 		}
 	}
 
+	/**
+	 * handle power meter data from the MQTT receiver
+	 * 
+	 * @param eventObject
+	 */
 	@Subscribe
 	@AllowConcurrentEvents
 	public void handlePowerMeterData(EventObject eventObject) {
@@ -184,9 +189,10 @@ public class PowerMeterSensor {
 				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 8 day) and date(TIMESTAMP)<=date(now()- interval 1 day);")
 				.getSingleResult();
 
-		BigDecimal lastEightDaysBeforeTillYesterday = (BigDecimal) em.createNativeQuery(
+		Object lastEightDaysBeforeTillYesterdayObject = em.createNativeQuery(
 				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 8 day) and date(TIMESTAMP)<CURDATE();")
 				.getSingleResult();
+		BigDecimal lastEightDaysBeforeTillYesterday = (lastEightDaysBeforeTillYesterdayObject!=null)? ((BigDecimal) lastEightDaysBeforeTillYesterdayObject) : new BigDecimal(0);
 
 		oneMinute = oneMinute.setScale(2, BigDecimal.ROUND_HALF_UP);
 		oneMinuteTrend = oneMinuteTrend.setScale(2, BigDecimal.ROUND_HALF_UP);
