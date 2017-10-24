@@ -21,7 +21,7 @@ public class IRCommand {
 	private int command;
 
 	@ElementCollection
-	@CollectionTable(name = "IRCOMMAND_VALUES")
+	@CollectionTable(name = "IRCOMMANDVALUES")
 	private List<Integer> values;
 	private String name;
 	private String description;
