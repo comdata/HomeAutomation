@@ -13,6 +13,7 @@ import org.eclipse.persistence.annotations.Index;
 @Entity
 @Table(name="LOGGING")
 @Index(name = "ix_timemillis", columnNames = { "timeMillis" })
+@Index(name = "ix_source", columnNames = { "source", "timeMillis" })
 public class LoggingEntity extends BasicLogEventEntity {
 
 	/**
