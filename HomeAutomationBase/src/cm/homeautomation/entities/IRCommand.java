@@ -23,7 +23,7 @@ public class IRCommand {
 
 	@ElementCollection
 	@CollectionTable(name = "IRCOMMANDVALUES", joinColumns=@JoinColumn(name="IRCOMMAND_ID"))
-	private List<Integer> values;
+	private List<String> values;
 	private String name;
 	private String description;
 
@@ -59,11 +59,11 @@ public class IRCommand {
 		this.command = command;
 	}
 
-	public List<Integer> getValues() {
+	public List<String> getValues() {
 		return values;
 	}
 
-	public void setValues(List<Integer> values) {
+	public void setValues(List<String> values) {
 		this.values = values;
 	}
 
