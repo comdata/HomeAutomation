@@ -15,11 +15,17 @@
 			<AppenderRef ref="databaseAppender" />
 			<AppenderRef ref="WebSocketAppender" />
 		</Logger>
-
+		
+		<Logger name="com.google.common.eventbus.EventBus" additivity="false" level="error">
+			<AppenderRef ref="STDOUT" />
+			<AppenderRef ref="databaseAppender" />
+			<AppenderRef ref="WebSocketAppender" />
+		</Logger>
+		
 		<Root>
 			<AppenderRef ref="databaseAppender" />
 			<AppenderRef ref="WebSocketAppender" />
-			<AppenderRef ref="STDOUT" />
+
 		</Root>
 	</Loggers>
 </Configuration>
