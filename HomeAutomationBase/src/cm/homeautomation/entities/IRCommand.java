@@ -2,6 +2,8 @@ package cm.homeautomation.entities;
 
 import java.util.List;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,6 +19,9 @@ public class IRCommand {
 	private String typeClear;
 	private int address;
 	private int command;
+
+	@ElementCollection
+	@CollectionTable(name = "IRCOMMAND_VALUES")
 	private List<Integer> values;
 	private String name;
 	private String description;
@@ -60,7 +65,7 @@ public class IRCommand {
 	public void setValues(List<Integer> values) {
 		this.values = values;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -84,6 +89,5 @@ public class IRCommand {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
-	
+
 }
