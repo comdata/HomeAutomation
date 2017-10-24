@@ -10,6 +10,7 @@ import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.DistanceSensorData;
 import cm.homeautomation.sensors.GasmeterData;
+import cm.homeautomation.sensors.IRData;
 import cm.homeautomation.sensors.JSONSensorDataBase;
 import cm.homeautomation.sensors.PowerMeterData;
 import cm.homeautomation.sensors.RainData;
@@ -87,6 +88,10 @@ public class JSONSensorDataReceiver {
 			
 			else if (sensorData instanceof WindowSensorData) {
 				EventObject eventObject=new EventObject((WindowSensorData)sensorData);
+				EventBusService.getEventBus().post(eventObject);	
+			}
+			else if (sensorData instanceof IRData) {
+				EventObject eventObject=new EventObject((IRData)sensorData);
 				EventBusService.getEventBus().post(eventObject);	
 			}
 		} catch (IOException e) {
