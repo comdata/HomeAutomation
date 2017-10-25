@@ -31,6 +31,7 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
+import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.sensors.ActorMessage;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.HTTPHelper;
@@ -214,34 +215,11 @@ public class ActorService extends BaseService implements MqttCallback {
 	
 		try {
 			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-			String json = ow.writeValueAsString(actorMessage);
+			String jsonMessage = ow.writeValueAsString(actorMessage);
 
-			UUID uuid = UUID.randomUUID();
-			String randomUUIDString = uuid.toString();
-
-			MqttClient client;
 			
-			client = new MqttClient("tcp://localhost:1883", "HomeAutomation/" + randomUUIDString);
-
-			client.setCallback(this);
-
-			MqttConnectOptions connOpt = new MqttConnectOptions();
-			connOpt.setAutomaticReconnect(true);
-			connOpt.setCleanSession(true);
-			connOpt.setKeepAliveInterval(60);
-			connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
-			// connOpt.setUserName(M2MIO_USERNAME);
-			// connOpt.setPassword(M2MIO_PASSWORD_MD5.toCharArray());
-
-			client.connect(connOpt);
+			MQTTSender.sendMQTTMessage("/switch", jsonMessage);
 			
-			MqttMessage message=new MqttMessage();
-			message.setPayload(json.getBytes());
-			client.publish("/switch", message);
-			client.disconnect();
-			client.close();
-		} catch (MqttException e) {
-			LogManager.getLogger(this.getClass()).error(e);
 		} catch (JsonProcessingException e) {
 			LogManager.getLogger(this.getClass()).error(e);
 		}
