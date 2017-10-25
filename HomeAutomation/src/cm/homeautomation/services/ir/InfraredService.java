@@ -57,7 +57,7 @@ public class InfraredService extends BaseService {
 			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 			String jsonMessage = ow.writeValueAsString(irCommand);
 			
-			MQTTSender.sendMQTTMessage("/ircommand", jsonMessage);
+			MQTTSender.sendMQTTMessage("/irmessage", jsonMessage);
 		}
 		
 		return new GenericStatus(true);
