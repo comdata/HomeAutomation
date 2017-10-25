@@ -36,6 +36,9 @@ public class Switch {
 	private String switchOffCode;
 	private String switchType;
 	
+	@Column(nullable=true)
+	private IRCommand irCommand;
+	
 	@Column(name="SWITCH_SET_URL")
 	private String switchSetUrl;
 	
@@ -193,5 +196,14 @@ public class Switch {
 	public void setSubType(String subType) {
 		this.subType = subType;
 	}
+
+	public IRCommand getIrCommand() {
+		return irCommand;
+	}
+
+	public void setIrCommand(IRCommand irCommand) {
+		this.irCommand = irCommand;
+	}
+
 
 }

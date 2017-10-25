@@ -32,8 +32,11 @@ import cm.homeautomation.services.base.GenericStatus;
 @Path("ir")
 public class InfraredService extends BaseService {
 
+	private static InfraredService instance;
+	
 	public InfraredService() {
 		EventBusService.getEventBus().register(this);
+		instance=this;
 	}
 
 	@GET
@@ -107,5 +110,13 @@ public class InfraredService extends BaseService {
 			}
 		}
 
+	}
+
+	public static InfraredService getInstance() {
+		return instance;
+	}
+
+	public static void setInstance(InfraredService instance) {
+		InfraredService.instance = instance;
 	}
 }

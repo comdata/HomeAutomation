@@ -35,6 +35,7 @@ import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.sensors.ActorMessage;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.HTTPHelper;
+import cm.homeautomation.services.ir.InfraredService;
 
 /**
  * everything necessary for handling actors and reading the statuses
@@ -62,9 +63,8 @@ public class ActorService extends BaseService implements MqttCallback {
 		SwitchStatuses switchStatuses = new SwitchStatuses();
 
 		@SuppressWarnings("unchecked")
-		List<Switch> switchList = (List<Switch>)em
-				.createQuery(
-						"select sw from Switch sw where sw.switchType IN ('SOCKET', 'LIGHT') and sw.room=(select r from Room r where r.id=:room)")
+		List<Switch> switchList = (List<Switch>) em.createQuery(
+				"select sw from Switch sw where sw.switchType IN ('SOCKET', 'LIGHT') and sw.room=(select r from Room r where r.id=:room)")
 				.setParameter("room", Long.parseLong(room)).getResultList();
 
 		for (Switch singleSwitch : switchList) {
@@ -74,7 +74,7 @@ public class ActorService extends BaseService implements MqttCallback {
 			switchStatuses.getSwitchStatuses().add(singleSwitch);
 		}
 		em.close();
-		
+
 		return switchStatuses;
 	}
 
@@ -91,9 +91,8 @@ public class ActorService extends BaseService implements MqttCallback {
 		SwitchStatuses switchStatuses = new SwitchStatuses();
 
 		@SuppressWarnings("unchecked")
-		List<Switch> switchList = (List<Switch>)em
-				.createQuery(
-						"select sw from Switch sw where sw.switchType IN ('THERMOSTAT') and sw.room=(select r from Room r where r.id=:room)")
+		List<Switch> switchList = (List<Switch>) em.createQuery(
+				"select sw from Switch sw where sw.switchType IN ('THERMOSTAT') and sw.room=(select r from Room r where r.id=:room)")
 				.setParameter("room", Long.parseLong(room)).getResultList();
 
 		switchStatuses.getSwitchStatuses().addAll(switchList);
@@ -136,31 +135,38 @@ public class ActorService extends BaseService implements MqttCallback {
 	@Path("press/{switch}/{status}")
 	public SwitchPressResponse pressSwitch(@PathParam("switch") String switchId,
 			@PathParam("status") String targetStatus) {
-		targetStatus=targetStatus.toUpperCase();
-		
+		targetStatus = targetStatus.toUpperCase();
+
 		Switch singleSwitch = updateBackendSwitchState(switchId, targetStatus);
-		
+
 		ActorMessage actorMessage = createActorMessage(targetStatus, singleSwitch);
 
-		//sendMulticastUDP(actorMessage);
-		if (singleSwitch.getHouseCode()!=null) {
-			sendMQTTMessage(actorMessage);			
-		}
-		
-		if(singleSwitch.getSwitchSetUrl()!=null) {
-			sendHTTPMessage(singleSwitch, actorMessage);
+		if ("SOCKET".equals(singleSwitch.getSwitchType())) {
+			// sendMulticastUDP(actorMessage);
+			if (singleSwitch.getHouseCode() != null) {
+				sendMQTTMessage(actorMessage);
+			}
+
+			if (singleSwitch.getSwitchSetUrl() != null) {
+				sendHTTPMessage(singleSwitch, actorMessage);
+			}
+		} else if ("IR".equals(singleSwitch.getSwitchType())) {
+			try {
+				InfraredService.getInstance().sendCommand(singleSwitch.getIrCommand().getId());
+			} catch (JsonProcessingException e) {
+				LogManager.getLogger(this.getClass()).error(e);
+			}
 		}
 
-		
 		SwitchPressResponse switchPressResponse = new SwitchPressResponse();
 		switchPressResponse.setSuccess(true);
 		return switchPressResponse;
 	}
 
 	private void sendHTTPMessage(Switch singleSwitch, ActorMessage actorMessage) {
-		String switchSetUrl = singleSwitch.getSwitchSetUrl();		
-		switchSetUrl=switchSetUrl.replace("{STATE}", ((actorMessage.getStatus()=="0") ? "off": "on"));
-		
+		String switchSetUrl = singleSwitch.getSwitchSetUrl();
+		switchSetUrl = switchSetUrl.replace("{STATE}", ((actorMessage.getStatus() == "0") ? "off" : "on"));
+
 		HTTPHelper.performHTTPRequest(switchSetUrl);
 	}
 
@@ -169,7 +175,7 @@ public class ActorService extends BaseService implements MqttCallback {
 		actorMessage.setHouseCode(singleSwitch.getHouseCode());
 		actorMessage.setStatus((targetStatus.equals("ON") ? "1" : "0"));
 		actorMessage.setSwitchNo(singleSwitch.getSwitchNo());
-		
+
 		return actorMessage;
 	}
 
@@ -184,9 +190,9 @@ public class ActorService extends BaseService implements MqttCallback {
 	@Path("updateBackend/{switch}/{status}")
 	public Switch updateBackendSwitchState(@PathParam("switch") String switchId,
 			@PathParam("status") String targetStatus) {
-		
-		targetStatus=targetStatus.toUpperCase();
-		
+
+		targetStatus = targetStatus.toUpperCase();
+
 		EntityManager em = EntityManagerService.getNewManager();
 
 		Switch singleSwitch = (Switch) em.createQuery("select sw from Switch sw where sw.id=:switchId")
@@ -197,7 +203,7 @@ public class ActorService extends BaseService implements MqttCallback {
 		singleSwitch.setLatestStatusFrom(new Date());
 		em.merge(singleSwitch);
 		em.getTransaction().commit();
-		
+
 		/**
 		 * post a switch information event
 		 */
@@ -211,21 +217,17 @@ public class ActorService extends BaseService implements MqttCallback {
 	}
 
 	private void sendMQTTMessage(ActorMessage actorMessage) {
-		
-	
+
 		try {
 			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 			String jsonMessage = ow.writeValueAsString(actorMessage);
 
-			
 			MQTTSender.sendMQTTMessage("/switch", jsonMessage);
-			
+
 		} catch (JsonProcessingException e) {
 			LogManager.getLogger(this.getClass()).error(e);
 		}
 	}
-
-	
 
 	/**
 	 * @return the instance
@@ -248,19 +250,19 @@ public class ActorService extends BaseService implements MqttCallback {
 	@Override
 	public void connectionLost(Throwable arg0) {
 		// do nothing
-		
+
 	}
 
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken arg0) {
 		// do nothing
-		
+
 	}
 
 	@Override
 	public void messageArrived(String arg0, MqttMessage arg1) throws Exception {
 		// do nothing
-		
+
 	}
 
 }
