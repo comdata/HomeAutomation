@@ -36,7 +36,8 @@ public class Switch {
 	private String switchOffCode;
 	private String switchType;
 	
-	@Column(nullable=true)
+	@JoinColumn(nullable=true)
+	@OneToOne
 	private IRCommand irCommand;
 	
 	@Column(name="SWITCH_SET_URL")
