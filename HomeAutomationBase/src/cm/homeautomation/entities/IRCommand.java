@@ -19,11 +19,11 @@ public class IRCommand {
 
 	private String type;
 	private String typeClear;
-	private int address;
-	private int command;
+	private String address;
+	private String command;
 	private int repeats;
 	private long repeatDelay;
-	private long data;
+	private String data;
 
 	@ElementCollection
 	@CollectionTable(name = "IRCOMMANDVALUES", joinColumns=@JoinColumn(name="IRCOMMAND_ID"))
@@ -48,19 +48,19 @@ public class IRCommand {
 		this.typeClear = typeClear;
 	}
 
-	public int getAddress() {
+	public String getAddress() {
 		return address;
 	}
 
-	public void setAddress(int address) {
+	public void setAddress(String address) {
 		this.address = address;
 	}
 
-	public int getCommand() {
+	public String getCommand() {
 		return command;
 	}
 
-	public void setCommand(int command) {
+	public void setCommand(String command) {
 		this.command = command;
 	}
 
@@ -112,11 +112,11 @@ public class IRCommand {
 		this.repeatDelay = repeatDelay;
 	}
 
-	public long getData() {
+	public String getData() {
 		return data;
 	}
 
-	public void setData(long data) {
+	public void setData(String data) {
 		this.data = data;
 	}
 

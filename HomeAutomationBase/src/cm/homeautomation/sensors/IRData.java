@@ -5,9 +5,9 @@ import java.util.List;
 public class IRData extends JSONSensorDataBase {
 	private String type;
 	private String typeClear;
-	private int address;
-	private int command;
-	private long data;
+	private String address;
+	private String command;
+	private String data;
 	
 	private List<Integer> rawCode;
 
@@ -27,19 +27,19 @@ public class IRData extends JSONSensorDataBase {
 		this.typeClear = typeClear;
 	}
 
-	public int getAddress() {
+	public String getAddress() {
 		return address;
 	}
 
-	public void setAddress(int address) {
+	public void setAddress(String address) {
 		this.address = address;
 	}
 
-	public int getCommand() {
+	public String getCommand() {
 		return command;
 	}
 
-	public void setCommand(int command) {
+	public void setCommand(String command) {
 		this.command = command;
 	}
 
@@ -51,11 +51,11 @@ public class IRData extends JSONSensorDataBase {
 		this.rawCode = values;
 	}
 
-	public long getData() {
+	public String getData() {
 		return data;
 	}
 
-	public void setData(long data) {
+	public void setData(String data) {
 		this.data = data;
 	}
 }
