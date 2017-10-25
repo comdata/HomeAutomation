@@ -43,7 +43,7 @@ public class InfraredService extends BaseService {
 			int command = irData.getCommand();
 			
 			@SuppressWarnings("unchecked")
-			List<IRCommand> resultList = (List<IRCommand>)em.createQuery("select ic from IRCommand ic where ic.typeClear=:typeClear and ic.address=:address and ic.command=:command").setParameter("typeClear", typeClear).setParameter("command", command).setParameter("address", address).getResultList();
+			List<IRCommand> resultList = (List<IRCommand>)em.createQuery("select ic from IRCommand ic where ic.typeClear=:typeClear and ic.address=:address and ic.command=:command and ic.data=:data").setParameter("data", irData.getData()).setParameter("typeClear", typeClear).setParameter("command", command).setParameter("address", address).getResultList();
 		
 			if (resultList!=null && !resultList.isEmpty()) {
 				
