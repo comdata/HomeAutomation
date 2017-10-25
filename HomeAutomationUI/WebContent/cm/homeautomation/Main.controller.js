@@ -1034,6 +1034,10 @@ sap.ui.define([
             } else {
                 newState = "OFF";
             }
+            
+            if(singleSwitch.switchType=="IR") {
+            		newState = "ON";
+            }
 
             var oModel = new RESTService();
             oModel.loadDataAsync("/HomeAutomation/services/actor/press/" + singleSwitch.id + "/"
