@@ -23,6 +23,7 @@ public class IRCommand {
 	private int command;
 	private int repeats;
 	private long repeatDelay;
+	private long data;
 
 	@ElementCollection
 	@CollectionTable(name = "IRCOMMANDVALUES", joinColumns=@JoinColumn(name="IRCOMMAND_ID"))
@@ -109,6 +110,14 @@ public class IRCommand {
 
 	public void setRepeatDelay(long repeatDelay) {
 		this.repeatDelay = repeatDelay;
+	}
+
+	public long getData() {
+		return data;
+	}
+
+	public void setData(long data) {
+		this.data = data;
 	}
 
 }

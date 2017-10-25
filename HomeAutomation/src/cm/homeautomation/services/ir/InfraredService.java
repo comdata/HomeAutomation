@@ -64,6 +64,7 @@ public class InfraredService extends BaseService {
 					valuesString.add(integer.toString());
 				}
 				irCommand.setValues(valuesString);
+				irCommand.setData(irData.getData());
 				
 				em.persist(irCommand);
 				em.getTransaction().commit();

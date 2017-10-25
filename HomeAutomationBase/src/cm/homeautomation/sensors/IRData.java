@@ -7,6 +7,7 @@ public class IRData extends JSONSensorDataBase {
 	private String typeClear;
 	private int address;
 	private int command;
+	private long data;
 	
 	private List<Integer> rawCode;
 
@@ -48,5 +49,13 @@ public class IRData extends JSONSensorDataBase {
 
 	public void setRawCode(List<Integer> values) {
 		this.rawCode = values;
+	}
+
+	public long getData() {
+		return data;
+	}
+
+	public void setData(long data) {
+		this.data = data;
 	}
 }
