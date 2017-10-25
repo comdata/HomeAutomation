@@ -15,7 +15,7 @@
 						<items>
 							<InputListItem label="{switches>name}" description="{switches>name}"
 								icon="sap-icon://lightbulb" iconDensityAware="false" iconInset="false">
-								<Switch state="{switches>switchState}" change="handleSwitchChange" visible="{= ${switches>switchType}=== 'SOCKET'}" />
+								<Switch state="{switches>switchState}" change="handleSwitchChange" visible="{= ${switches>switchType}=== 'SOCKET' || ${switches>switchType}=== 'LIGHT'}" />
 								<Button press="handleSwitchChange" visible="{= ${switches>switchType}=== 'BUTTON'}" />
 							</InputListItem>
 						</items>
