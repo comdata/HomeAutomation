@@ -4,16 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.IRCommand;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
+import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.sensors.IRData;
 import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.base.BaseService;
+import cm.homeautomation.services.base.GenericStatus;
 
 /**
  * Handle IR messages
@@ -21,12 +29,40 @@ import cm.homeautomation.services.base.BaseService;
  * @author christoph
  *
  */
+@Path("ir")
 public class InfraredService extends BaseService {
 
 	public InfraredService() {
 		EventBusService.getEventBus().register(this);
 	}
 
+	@GET
+	@Path("get")
+	public List<IRCommand> getIRCommands() {
+		EntityManager em = EntityManagerService.getNewManager();
+		@SuppressWarnings("unchecked")
+		List<IRCommand> resultList = (List<IRCommand>)em.createQuery("select ic from IRCommand ic").getResultList();
+		return resultList;
+	}
+	
+	@GET
+	@Path("sendCommand/{id}")
+	public GenericStatus sendCommand(@PathParam("id") Long id) throws JsonProcessingException {
+		EntityManager em = EntityManagerService.getNewManager();
+		@SuppressWarnings("unchecked")
+		List<IRCommand> resultList = (List<IRCommand>)em.createQuery("select ic from IRCommand ic where ic.id=:id").setParameter("id", id).getResultList();
+		
+		if (resultList!=null && !resultList.isEmpty()) {
+			IRCommand irCommand = resultList.get(0);
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			String jsonMessage = ow.writeValueAsString(irCommand);
+			
+			MQTTSender.sendMQTTMessage("/ircommand", jsonMessage);
+		}
+		
+		return new GenericStatus(true);
+	}
+	
 	@Subscribe
 	public void handleEvent(EventObject event) {
 
