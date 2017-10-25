@@ -64,7 +64,7 @@ public class ActorService extends BaseService implements MqttCallback {
 
 		@SuppressWarnings("unchecked")
 		List<Switch> switchList = (List<Switch>) em.createQuery(
-				"select sw from Switch sw where sw.switchType IN ('SOCKET', 'LIGHT') and sw.room=(select r from Room r where r.id=:room)")
+				"select sw from Switch sw where sw.switchType IN ('SOCKET', 'LIGHT', 'IR') and sw.room=(select r from Room r where r.id=:room)")
 				.setParameter("room", Long.parseLong(room)).getResultList();
 
 		for (Switch singleSwitch : switchList) {
