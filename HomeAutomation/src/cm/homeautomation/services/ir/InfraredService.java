@@ -39,6 +39,11 @@ public class InfraredService extends BaseService {
 		instance=this;
 	}
 
+	/**
+	 * provide a list of all IRCommands
+	 * 
+	 * @return
+	 */
 	@GET
 	@Path("get")
 	public List<IRCommand> getIRCommands() {
@@ -88,6 +93,11 @@ public class InfraredService extends BaseService {
 		}
 	}
 	
+	/**
+	 * receive IR events and register new values in DB
+	 * 
+	 * @param event
+	 */
 	@Subscribe
 	public void handleEvent(EventObject event) {
 
