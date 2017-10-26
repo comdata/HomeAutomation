@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 @Entity
 public class IRCommand {
@@ -24,6 +25,10 @@ public class IRCommand {
 	private int repeats;
 	private long repeatDelay;
 	private String data;
+	
+	@OneToOne
+	@JoinColumn(nullable=true)
+	private IRCommand followUpCommand;
 
 	@ElementCollection
 	@CollectionTable(name = "IRCOMMANDVALUES", joinColumns=@JoinColumn(name="IRCOMMAND_ID"))
@@ -118,6 +123,14 @@ public class IRCommand {
 
 	public void setData(String data) {
 		this.data = data;
+	}
+
+	public IRCommand getFollowUpCommand() {
+		return followUpCommand;
+	}
+
+	public void setFollowUpCommand(IRCommand followUpCommand) {
+		this.followUpCommand = followUpCommand;
 	}
 
 }
