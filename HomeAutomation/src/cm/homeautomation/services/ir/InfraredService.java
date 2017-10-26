@@ -48,6 +48,13 @@ public class InfraredService extends BaseService {
 		return resultList;
 	}
 	
+	/**
+	 * send an IR command
+	 * 
+	 * @param id
+	 * @return
+	 * @throws JsonProcessingException
+	 */
 	@GET
 	@Path("sendCommand/{id}")
 	public GenericStatus sendCommand(@PathParam("id") Long id) throws JsonProcessingException {
@@ -57,13 +64,28 @@ public class InfraredService extends BaseService {
 		
 		if (resultList!=null && !resultList.isEmpty()) {
 			IRCommand irCommand = resultList.get(0);
-			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-			String jsonMessage = ow.writeValueAsString(irCommand);
-			
-			MQTTSender.sendMQTTMessage("/irmessage", jsonMessage);
+			sendIRCommand(irCommand);
 		}
 		
 		return new GenericStatus(true);
+	}
+
+	/**
+	 * send IR command and if specified the follow up command
+	 * 
+	 * @param irCommand
+	 * @throws JsonProcessingException
+	 */
+	private void sendIRCommand(IRCommand irCommand) throws JsonProcessingException {
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		String jsonMessage = ow.writeValueAsString(irCommand);
+		
+		MQTTSender.sendMQTTMessage("/irmessage", jsonMessage);
+		
+		IRCommand followUpCommand = irCommand.getFollowUpCommand();
+		if (followUpCommand!=null) {
+			sendIRCommand(followUpCommand);
+		}
 	}
 	
 	@Subscribe
@@ -80,6 +102,10 @@ public class InfraredService extends BaseService {
 			String typeClear = irData.getTypeClear();
 			String address = irData.getAddress();
 			String command = irData.getCommand();
+			
+			if ("UNKNOWN".equals(typeClear)) {
+				return;
+			}
 			
 			@SuppressWarnings("unchecked")
 			List<IRCommand> resultList = (List<IRCommand>)em.createQuery("select ic from IRCommand ic where ic.typeClear=:typeClear and ic.address=:address and ic.command=:command and ic.data=:data").setParameter("data", irData.getData()).setParameter("typeClear", typeClear).setParameter("command", command).setParameter("address", address).getResultList();
