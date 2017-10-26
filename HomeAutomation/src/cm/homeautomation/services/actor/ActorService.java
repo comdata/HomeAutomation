@@ -157,6 +157,8 @@ public class ActorService extends BaseService implements MqttCallback {
 				LogManager.getLogger(this.getClass()).error(e);
 			}
 		}
+		
+		EventBusService.getEventBus().post(new EventObject(actorMessage));
 
 		SwitchPressResponse switchPressResponse = new SwitchPressResponse();
 		switchPressResponse.setSuccess(true);
