@@ -117,7 +117,7 @@
 				</content>
 			</Panel>
 
-			<Panel expandable="true" expanded="{currentRoom>/additionalUI}" headerText="{currentRoom>/additionalUIName} {currentRoom>/additionalUIURL} {= ${currentRoom>/additionalUIURL} !== ''}"
+			<Panel expandable="true" expanded="{currentRoom>/additionalUI}" headerText="{currentRoom>/additionalUIName} {currentRoom>/additionalUIURL} {= ${currentRoom>/additionalUIURL} !== null} {= ${currentRoom>/additionalUIURL} !== ''}"
 				width="auto" class="sapUiResponsiveMargin" expand="expandAdditionalUI" visible="{= ${currentRoom>/additionalUIURL} !== ''}">
 				<content>
 					<core:HTML
