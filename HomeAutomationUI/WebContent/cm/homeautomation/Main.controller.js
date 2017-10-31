@@ -1203,7 +1203,7 @@ sap.ui.define([
 
           var labels=[];
           var datasets=[];
-          var colors=["rgba(220,220,0,0.5)", "rgba(220,220,0,0.5)","rgba(220,220,220,0.5)","rgba(0,220,0,0.5)", "rgba(0,0,220,0.5)"];
+          var colors=["rgba(220,220,0,0.5)", "rgba(220,150,220,0.5)","rgba(120,220,220,0.5)","rgba(120,220,0,0.5)", "rgba(0,0,220,0.5)"];
 
           $.each(data.sensorData, function(i, element) {
             var dataseries=new Array();
