@@ -12,42 +12,62 @@ public class DashButton {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	private String mac;
 	private String actionEvent;
 	private String name;
-	
+
 	@ManyToOne
 	private Switch referencedSwitch;
-	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getMac() {
-		return mac;
-	}
-	public void setMac(String mac) {
-		this.mac = mac;
-	}
+
+	@ManyToOne
+	private NetworkDevice referencedNetworkDevice;
+
 	public String getActionEvent() {
 		return actionEvent;
 	}
-	public void setActionEvent(String actionEvent) {
-		this.actionEvent = actionEvent;
+
+	public Long getId() {
+		return id;
 	}
-	public Switch getReferencedSwitch() {
-		return referencedSwitch;
+
+	public String getMac() {
+		return mac;
 	}
-	public void setReferencedSwitch(Switch referencedSwitch) {
-		this.referencedSwitch = referencedSwitch;
-	}
+
 	public String getName() {
 		return name;
 	}
-	public void setName(String name) {
+
+	public NetworkDevice getReferencedNetworkDevice() {
+		return referencedNetworkDevice;
+	}
+
+	public Switch getReferencedSwitch() {
+		return referencedSwitch;
+	}
+
+	public void setActionEvent(final String actionEvent) {
+		this.actionEvent = actionEvent;
+	}
+
+	public void setId(final Long id) {
+		this.id = id;
+	}
+
+	public void setMac(final String mac) {
+		this.mac = mac;
+	}
+
+	public void setName(final String name) {
 		this.name = name;
+	}
+
+	public void setReferencedNetworkDevice(final NetworkDevice referencedNetworkDevice) {
+		this.referencedNetworkDevice = referencedNetworkDevice;
+	}
+
+	public void setReferencedSwitch(final Switch referencedSwitch) {
+		this.referencedSwitch = referencedSwitch;
 	}
 }
