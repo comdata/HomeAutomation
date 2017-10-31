@@ -11,11 +11,11 @@ import cm.homeautomation.services.light.LightService;
 @AutoCreateInstance
 public class TradfriStartupService {
 	private static final String TRADFRI = "TRADFRI";
-	private final EntityManager em;
+	private EntityManager em;
 
 	public TradfriStartupService() {
 		init();
-		em = EntityManagerService.getNewManager();
+
 	}
 
 	private void init() {
@@ -25,7 +25,7 @@ public class TradfriStartupService {
 				ConfigurationService.getConfigurationProperty("tradfri", "secret"));
 		gw.initCoap();
 		gw.dicoverBulbs();
-
+		em = EntityManagerService.getNewManager();
 		em.getTransaction().begin();
 
 		for (final LightBulb b : gw.bulbs) {
