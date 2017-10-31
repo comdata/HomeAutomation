@@ -83,6 +83,25 @@
 
 
 	<dependencies>
+
+		<!-- Tradfri dependencies -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>org.json</artifactId>
+			<version>chargebee-1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.californium</groupId>
+			<artifactId>californium-core</artifactId>
+			<version>2.0.0-M5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.californium</groupId>
+			<artifactId>scandium</artifactId>
+			<version>2.0.0-M5</version>
+		</dependency>
+
+		<!-- -->
 		<dependency>
 			<groupId>org.eclipse.smarthome.core</groupId>
 			<artifactId>org.eclipse.smarthome.core</artifactId>
