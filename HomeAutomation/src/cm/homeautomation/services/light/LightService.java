@@ -22,6 +22,9 @@ public class LightService extends BaseService {
 	private static LightService instance;
 
 	public static LightService getInstance() {
+		if (instance == null) {
+			instance = new LightService();
+		}
 		return instance;
 	}
 
