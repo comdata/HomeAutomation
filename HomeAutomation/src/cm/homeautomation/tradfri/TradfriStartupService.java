@@ -4,6 +4,7 @@ import javax.persistence.EntityManager;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.entities.DimmableLight;
 import cm.homeautomation.entities.Light;
 import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.light.LightService;
@@ -33,7 +34,7 @@ public class TradfriStartupService {
 
 			if (light == null) {
 
-				light = new Light();
+				light = new DimmableLight();
 				light.setName(b.getName());
 				light.setExternalId(Integer.toString(b.getId()));
 				light.setLightType(TRADFRI);
