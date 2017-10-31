@@ -19,10 +19,24 @@ import cm.homeautomation.services.base.HTTPHelper;
 @Path("light")
 public class LightService extends BaseService {
 
+	private static LightService instance;
+
+	public static LightService getInstance() {
+		return instance;
+	}
+
+	public static void setInstance(final LightService instance) {
+		LightService.instance = instance;
+	}
+
+	public LightService() {
+		setInstance(this);
+	}
+
 	@GET
 	@Path("create/{name}/{lightType}/{roomId}")
-	public Light createLight(@PathParam("name") String name, @PathParam("lightType") String lightType,
-			@PathParam("roomId") long roomId) {
+	public Light createLight(@PathParam("name") final String name, @PathParam("lightType") final String lightType,
+			@PathParam("roomId") final long roomId) {
 
 		Light light = null;
 
@@ -40,11 +54,11 @@ public class LightService extends BaseService {
 		}
 		light.setName(name);
 
-		EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getNewManager();
 		em.getTransaction().begin();
 
-		Room room = (Room) em.createQuery("select r from Room r where r.id=:roomId").setParameter("roomId", roomId)
-				.getSingleResult();
+		final Room room = (Room) em.createQuery("select r from Room r where r.id=:roomId")
+				.setParameter("roomId", roomId).getSingleResult();
 
 		room.getLights().add(light);
 		light.setRoom(room);
@@ -58,60 +72,72 @@ public class LightService extends BaseService {
 
 	@GET
 	@Path("dim/{lightId}/{dimValue}")
-	public GenericStatus dimLight(@PathParam("lightId") long lightId, @PathParam("dimValue") int dimValue) {
-		String powerState="off";
-		
-		if (dimValue==0) {
-			powerState="off";
-		}else {
-			powerState="on";
+	public GenericStatus dimLight(@PathParam("lightId") final long lightId, @PathParam("dimValue") int dimValue) {
+		String powerState = "off";
+
+		if (dimValue == 0) {
+			powerState = "off";
+		} else {
+			powerState = "on";
 		}
-		
-		EntityManager em = EntityManagerService.getNewManager();
+
+		final EntityManager em = EntityManagerService.getNewManager();
 		em.getTransaction().begin();
-		Light light = (Light) em.createQuery("select l from Light l where l.id=:lightId")
+		final Light light = (Light) em.createQuery("select l from Light l where l.id=:lightId")
 				.setParameter("lightId", lightId).getSingleResult();
-		
+
 		String dimUrl = light.getDimUrl();
-		
+
 		if (light instanceof DimmableLight) {
-			DimmableLight dimmableLight=(DimmableLight)light;
-			
-			if (dimValue>dimmableLight.getMaximumValue()) {
-				dimValue=dimmableLight.getMaximumValue();
+			final DimmableLight dimmableLight = (DimmableLight) light;
+
+			if (dimValue > dimmableLight.getMaximumValue()) {
+				dimValue = dimmableLight.getMaximumValue();
 			}
-			
 
 			dimmableLight.setBrightnessLevel(dimValue);
-			em.persist(dimmableLight);		
+			em.persist(dimmableLight);
 			dimUrl = dimmableLight.getDimUrl();
 		} else {
-			light.setPowerState(("off".equals(powerState))?false:true);
+			light.setPowerState(("off".equals(powerState)) ? false : true);
 		}
-		
 
-		
 		em.getTransaction().commit();
-		
-		
-		
+
 		dimUrl = dimUrl.replace("{DIMVALUE}", Integer.toString(dimValue));
 		dimUrl = dimUrl.replace("{STATE}", powerState);
-		
+
 		HTTPHelper.performHTTPRequest(dimUrl);
-		
+
 		return new GenericStatus(true);
 	}
-	
+
+	public Light getLightForTypeAndExternalId(final String type, final String externalId) {
+		final EntityManager em = EntityManagerService.getNewManager();
+
+		final List<Light> lights = em
+				.createQuery("select l from Light l where l.lightType=:type and l.externalId=:externalId")
+				.setParameter("type", type).setParameter("externalId", externalId).getResultList();
+
+		if ((lights != null) && !lights.isEmpty()) {
+			for (final Light light : lights) {
+				return light;
+			}
+		}
+
+		return null;
+	}
+
 	@GET
 	@Path("get/{roomId}")
-	public List<Light> getLights(@PathParam("roomId") Long roomId) {
-		
-		EntityManager em = EntityManagerService.getNewManager();
+	public List<Light> getLights(@PathParam("roomId") final Long roomId) {
+
+		final EntityManager em = EntityManagerService.getNewManager();
 		@SuppressWarnings("unchecked")
-		List<Light> resultList = (List<Light>)em.createQuery("select l from Light l where l.room=(select r from Room r where r.id=:roomId)")
+		final List<Light> resultList = em
+				.createQuery("select l from Light l where l.room=(select r from Room r where r.id=:roomId)")
 				.setParameter("roomId", roomId).getResultList();
-		
+
 		return resultList;
 	}
 

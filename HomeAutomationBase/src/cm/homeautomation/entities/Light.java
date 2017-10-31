@@ -1,5 +1,7 @@
 package cm.homeautomation.entities;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,37 +19,79 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-@JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="@class")
-@JsonSubTypes({
-    @JsonSubTypes.Type(value = DimmableLight.class, name = "DimmableLight")
-})
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+@JsonSubTypes({ @JsonSubTypes.Type(value = DimmableLight.class, name = "DimmableLight") })
 @Entity
 public class Light {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
-	@Column(name="POWERSTATE")
+
+	private String lightType;
+
+	@Column(name = "POWERSTATE")
 	private boolean powerState;
-	
+
 	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 	@JsonIdentityReference(alwaysAsId = true)
 	@JsonBackReference("room")
 	@ManyToOne
 	@JoinColumn(name = "ROOM_ID")
 	private Room room;
-	
+
 	@JsonIgnore
 	private String dimUrl;
-	
+
 	private String name;
 
-	public boolean isPowerState() {
-		return powerState;
+	// Dates
+	private Date dateInstalled;
+
+	private Date dateLastSeen;
+	private String manufacturer;
+
+	private String type;
+	private String firmware;
+	private String externalId;
+
+	// Status
+	private boolean online;
+
+	public Date getDateInstalled() {
+		return dateInstalled;
 	}
 
-	public void setPowerState(boolean powerState) {
-		this.powerState = powerState;
+	public Date getDateLastSeen() {
+		return dateLastSeen;
+	}
+
+	@JsonIgnore
+	public String getDimUrl() {
+		return dimUrl;
+	}
+
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public String getFirmware() {
+		return firmware;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getLightType() {
+		return lightType;
+	}
+
+	public String getManufacturer() {
+		return manufacturer;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	@XmlTransient
@@ -57,33 +101,68 @@ public class Light {
 		return room;
 	}
 
-	public void setRoom(Room room) {
-		this.room = room;
+	public String getType() {
+		return type;
 	}
 
-	public String getName() {
-		return name;
+	public boolean isOnline() {
+		return online;
 	}
 
-	public void setName(String name) {
+	public boolean isPowerState() {
+		return powerState;
+	}
+
+	public void setDateInstalled(final Date dateInstalled) {
+		this.dateInstalled = dateInstalled;
+	}
+
+	public void setDateLastSeen(final Date dateLastSeen) {
+		this.dateLastSeen = dateLastSeen;
+	}
+
+	public void setDimUrl(final String dimUrl) {
+		this.dimUrl = dimUrl;
+	}
+
+	public void setExternalId(final String externalId) {
+		this.externalId = externalId;
+	}
+
+	public void setFirmware(final String firmware) {
+		this.firmware = firmware;
+	}
+
+	public void setId(final Long id) {
+		this.id = id;
+	}
+
+	public void setLightType(final String lightType) {
+		this.lightType = lightType;
+	}
+
+	public void setManufacturer(final String manufacturer) {
+		this.manufacturer = manufacturer;
+	}
+
+	public void setName(final String name) {
 		this.name = name;
 	}
 
-	public Long getId() {
-		return id;
+	public void setOnline(final boolean online) {
+		this.online = online;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
-	@JsonIgnore
-	public String getDimUrl() {
-		return dimUrl;
+	public void setPowerState(final boolean powerState) {
+		this.powerState = powerState;
 	}
 
-	public void setDimUrl(String dimUrl) {
-		this.dimUrl = dimUrl;
+	public void setRoom(final Room room) {
+		this.room = room;
 	}
-	
+
+	public void setType(final String type) {
+		this.type = type;
+	}
+
 }
