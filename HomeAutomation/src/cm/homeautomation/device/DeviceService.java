@@ -24,7 +24,7 @@ public class DeviceService {
 
 			em.close();
 
-			if ((devices != null) && devices.isEmpty()) {
+			if ((devices != null) && !devices.isEmpty()) {
 				for (final Device device : devices) {
 					return device;
 				}
