@@ -15,6 +15,7 @@ import cm.homeautomation.entities.Room;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.base.HTTPHelper;
+import cm.homeautomation.tradfri.TradfriStartupService;
 
 @Path("light")
 public class LightService extends BaseService {
@@ -107,11 +108,15 @@ public class LightService extends BaseService {
 
 		em.getTransaction().commit();
 
-		dimUrl = dimUrl.replace("{DIMVALUE}", Integer.toString(dimValue));
-		dimUrl = dimUrl.replace("{STATE}", powerState);
+		if ("TRADFRI".equals(light.getLightType())) {
+			TradfriStartupService.getInstance().dimBulb(light.getExternalId(), dimValue);
+		} else {
 
-		HTTPHelper.performHTTPRequest(dimUrl);
+			dimUrl = dimUrl.replace("{DIMVALUE}", Integer.toString(dimValue));
+			dimUrl = dimUrl.replace("{STATE}", powerState);
 
+			HTTPHelper.performHTTPRequest(dimUrl);
+		}
 		return new GenericStatus(true);
 	}
 

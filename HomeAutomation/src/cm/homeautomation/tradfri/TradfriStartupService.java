@@ -12,17 +12,40 @@ import cm.homeautomation.services.light.LightService;
 @AutoCreateInstance
 public class TradfriStartupService {
 	private static final String TRADFRI = "TRADFRI";
+	private static TradfriStartupService instance;
+
+	public static TradfriStartupService getInstance() {
+		return instance;
+	}
+
+	public static void setInstance(final TradfriStartupService instance) {
+		TradfriStartupService.instance = instance;
+	}
+
 	private EntityManager em;
+
+	private TradfriGateway gw;
 
 	public TradfriStartupService() {
 		init();
+		instance = this;
+
+	}
+
+	public void dimBulb(final String id, final int dimValue) {
+
+		for (final LightBulb b : gw.bulbs) {
+			if (Integer.toString(b.getId()).equals(id)) {
+				b.setIntensity(dimValue);
+			}
+
+		}
 
 	}
 
 	private void init() {
 
-		final TradfriGateway gw = new TradfriGateway(
-				ConfigurationService.getConfigurationProperty("tradfri", "gateway"),
+		gw = new TradfriGateway(ConfigurationService.getConfigurationProperty("tradfri", "gateway"),
 				ConfigurationService.getConfigurationProperty("tradfri", "secret"));
 		gw.initCoap();
 		gw.dicoverBulbs();
