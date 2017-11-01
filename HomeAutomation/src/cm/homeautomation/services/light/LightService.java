@@ -123,6 +123,7 @@ public class LightService extends BaseService {
 	public Light getLightForTypeAndExternalId(final String type, final String externalId) {
 		final EntityManager em = EntityManagerService.getNewManager();
 
+		@SuppressWarnings("unchecked")
 		final List<Light> lights = em
 				.createQuery("select l from Light l where l.lightType=:type and l.externalId=:externalId")
 				.setParameter("type", type).setParameter("externalId", externalId).getResultList();
