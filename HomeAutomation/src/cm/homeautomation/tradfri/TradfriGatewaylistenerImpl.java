@@ -5,6 +5,7 @@ import javax.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.entities.DimmableColorLight;
 import cm.homeautomation.entities.DimmableLight;
 import cm.homeautomation.entities.Light;
 import cm.homeautomation.services.light.LightService;
@@ -28,7 +29,12 @@ public class TradfriGatewaylistenerImpl implements TradfriGatewayListener {
 
 		if (light == null) {
 
-			light = new DimmableLight();
+			if (b.isColorLight()) {
+				light = new DimmableColorLight();
+			} else {
+				light = new DimmableLight();
+			}
+
 			light.setName(b.getName());
 			light.setExternalId(Integer.toString(b.getId()));
 			light.setLightType(TRADFRI);

@@ -33,7 +33,7 @@ public class LightBulb {
 	private int intensity;
 
 	private String color;
-
+	private boolean colorLight = false;
 	// Dates
 	private Date dateInstalled;
 
@@ -84,12 +84,20 @@ public class LightBulb {
 		return intensity;
 	}
 
+	public String getManufacturer() {
+		return manufacturer;
+	}
+
 	public String getName() {
 		return name;
 	}
 
 	public String getType() {
 		return type;
+	}
+
+	public boolean isColorLight() {
+		return colorLight;
 	}
 
 	public boolean isOn() {
@@ -145,6 +153,7 @@ public class LightBulb {
 				online = false;
 			}
 			if (light.has(TradfriConstants.COLOR)) {
+				setColorLight(true);
 				final String new_color = light.getString(TradfriConstants.COLOR);
 				if ((color == null) || !color.equals(new_color)) {
 					updateListeners = true;
@@ -183,6 +192,10 @@ public class LightBulb {
 		this.color = color;
 	}
 
+	public void setColorLight(final boolean colorLight) {
+		this.colorLight = colorLight;
+	}
+
 	public void setIntensity(final int intensity) {
 		try {
 			final JSONObject json = new JSONObject();
@@ -198,6 +211,10 @@ public class LightBulb {
 			Logger.getLogger(TradfriGateway.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		this.intensity = intensity;
+	}
+
+	public void setManufacturer(final String manufacturer) {
+		this.manufacturer = manufacturer;
 	}
 
 	public void setOn(final boolean on) {
