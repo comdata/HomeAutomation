@@ -2,6 +2,8 @@ package cm.homeautomation.tradfri;
 
 import javax.persistence.EntityManager;
 
+import org.apache.logging.log4j.LogManager;
+
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DimmableLight;
 import cm.homeautomation.entities.Light;
@@ -16,6 +18,8 @@ public class TradfriBulbListenerImpl implements TradfriBulbListener {
 
 	@Override
 	public void bulb_state_changed(final LightBulb bulb) {
+		LogManager.getLogger(this.getClass()).error("Bulb event registered");
+
 		final Light light = LightService.getInstance().getLightForTypeAndExternalId(TRADFRI,
 				Integer.toString(bulb.getId()));
 
@@ -24,13 +28,13 @@ public class TradfriBulbListenerImpl implements TradfriBulbListener {
 
 		if (light instanceof DimmableLight) {
 			final DimmableLight dimLight = (DimmableLight) light;
-			int intensity = bulb.getIntensity();
-			
+			final int intensity = bulb.getIntensity();
+
 			dimLight.setBrightnessLevel(intensity);
-			
-			//set on or off
-			dimLight.setPowerState((intensity==dimLight.getMinimumValue())?false:true);
-			
+
+			// set on or off
+			dimLight.setPowerState((intensity == dimLight.getMinimumValue()) ? false : true);
+
 		}
 
 		EventBusService.getEventBus().post(new EventObject(new LightChangedEvent(light)));
@@ -38,6 +42,7 @@ public class TradfriBulbListenerImpl implements TradfriBulbListener {
 		em.merge(light);
 
 		em.getTransaction().commit();
+		LogManager.getLogger(this.getClass()).error("Bulb event done");
 
 	}
 
