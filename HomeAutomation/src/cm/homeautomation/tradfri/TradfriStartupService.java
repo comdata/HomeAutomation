@@ -44,5 +44,7 @@ public class TradfriStartupService {
 
 		gw.initCoap();
 		gw.dicoverBulbs();
+
+		gw.startTradfriGateway();
 	}
 }
