@@ -24,7 +24,13 @@ public class TradfriBulbListenerImpl implements TradfriBulbListener {
 
 		if (light instanceof DimmableLight) {
 			final DimmableLight dimLight = (DimmableLight) light;
-			dimLight.setBrightnessLevel(bulb.getIntensity());
+			int intensity = bulb.getIntensity();
+			
+			dimLight.setBrightnessLevel(intensity);
+			
+			//set on or off
+			dimLight.setPowerState((intensity==dimLight.getMinimumValue())?false:true);
+			
 		}
 
 		EventBusService.getEventBus().post(new EventObject(new LightChangedEvent(light)));
