@@ -2,12 +2,6 @@ package cm.homeautomation.sensors.powermeter;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-
-import es.moki.ratelimitj.core.limiter.request.RequestLimitRule;
-import es.moki.ratelimitj.core.limiter.request.RequestRateLimiter;
-import es.moki.ratelimitj.inmemory.request.InMemorySlidingWindowRequestRateLimiter;
-
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
