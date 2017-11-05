@@ -22,13 +22,21 @@ public class DeviceService {
 			final List<Device> devices = em.createQuery("select d from Device d where d.mac=:mac")
 					.setParameter("mac", mac).getResultList();
 
-			em.close();
-
 			if ((devices != null) && !devices.isEmpty()) {
 				for (final Device device : devices) {
 					return device;
 				}
 			}
+
+			em.getTransaction().begin();
+			final Device device = new Device();
+			device.setName("unnamed");
+			device.setMac(mac);
+			em.persist(device);
+
+			em.getTransaction().commit();
+
+			em.close();
 			return null;
 		} catch (final NoResultException e) {
 			LogManager.getLogger(DeviceService.class).error("Mac: " + mac, e);
