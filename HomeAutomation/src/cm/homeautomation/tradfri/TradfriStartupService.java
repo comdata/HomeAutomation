@@ -1,5 +1,7 @@
 package cm.homeautomation.tradfri;
 
+import org.apache.logging.log4j.LogManager;
+
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.services.base.AutoCreateInstance;
 
@@ -19,8 +21,8 @@ public class TradfriStartupService {
 	private TradfriGateway gw;
 
 	public TradfriStartupService() {
-		init();
 		instance = this;
+		init();
 
 	}
 
@@ -45,6 +47,18 @@ public class TradfriStartupService {
 		gw.initCoap();
 		gw.dicoverBulbs();
 
-		gw.startTradfriGateway();
+		final Runnable tradfriRunner = new Runnable() {
+			@Override
+			public void run() {
+				try {
+					gw.startTradfriGateway();
+				} catch (final Exception e) {
+					e.printStackTrace();
+					LogManager.getLogger(this.getClass()).info("Failed creating class");
+				}
+			}
+		};
+		new Thread(tradfriRunner).start();
+
 	}
 }
