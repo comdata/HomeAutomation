@@ -1,35 +1,45 @@
 package cm.homeautomation.sensors;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import java.util.Date;
 
 public class SensorDataRoomSaveRequest extends JSONSensorDataBase {
 	private Long roomID;
 	private SensorDataRoomPayload data;
-	
+
 	// mac address of the sensor
 	private String mac;
 
-	public Long getRoomID() {
-		return roomID;
-	}
-
-	public void setRoomID(Long roomID) {
-		this.roomID = roomID;
-	}
+	private Date timestamp;
 
 	public SensorDataRoomPayload getData() {
 		return data;
-	}
-
-	public void setData(SensorDataRoomPayload data) {
-		this.data = data;
 	}
 
 	public String getMac() {
 		return mac;
 	}
 
-	public void setMac(String mac) {
+	public Long getRoomID() {
+		return roomID;
+	}
+
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	public void setData(final SensorDataRoomPayload data) {
+		this.data = data;
+	}
+
+	public void setMac(final String mac) {
 		this.mac = mac;
+	}
+
+	public void setRoomID(final Long roomID) {
+		this.roomID = roomID;
+	}
+
+	public void setTimestamp(final Date timestamp) {
+		this.timestamp = timestamp;
 	}
 }
