@@ -308,25 +308,34 @@ public class Sensors extends BaseService {
 				.createQuery("select s from Sensor s where s.room=(select r from Room r where r.id=:roomId)")
 				.setParameter("roomId", roomID).getResultList();
 
+		// fix empty or wrong timestamps
+		if ((request.getTimestamp() == null) || (request.getTimestamp().getTime() < (10000 * 1000))) {
+			request.setTimestamp(new Date());
+		}
+
 		if (sensorList != null) {
 			for (final Sensor sensor : sensorList) {
 
 				if ("TEMPERATURE".equals(sensor.getSensorType())) {
 					LogManager.getLogger(this.getClass()).error("Saving temperature to sensor: " + sensor.getId());
-					saveSensorData(sensor.getId(), Float.toString(request.getData().getTemperature()));
+					saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getTemperature()),
+							request.getTimestamp());
 				}
 
 				if ("HUMIDITY".equals(sensor.getSensorType())) {
 					LogManager.getLogger(this.getClass()).error("Saving humidity to sensor: " + sensor.getId());
-					saveSensorData(sensor.getId(), Float.toString(request.getData().getHumidity()));
+					saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getHumidity()),
+							request.getTimestamp());
 				}
 
 				if ("PRESSURE".equals(sensor.getSensorType())) {
-					saveSensorData(sensor.getId(), Float.toString(request.getData().getPressure()));
+					saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getPressure()),
+							request.getTimestamp());
 				}
 
 				if ("VCC".equals(sensor.getSensorType())) {
-					saveSensorData(sensor.getId(), Float.toString(request.getData().getVcc()));
+					saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getVcc()),
+							request.getTimestamp());
 				}
 			}
 
@@ -340,16 +349,7 @@ public class Sensors extends BaseService {
 	@GET
 	@Path("forroom/save/{sensorId}/{value}")
 	public boolean saveSensorData(@PathParam("sensorId") final Long sensorId, @PathParam("value") final String value) {
-		final SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
-		sensorDataSaveRequest.setSensorId(sensorId);
-		final SensorData sensorData = new SensorData();
-		sensorData.setValue(value);
-		sensorData.setDateTime(new Date());
-		sensorDataSaveRequest.setSensorData(sensorData);
-
-		saveSensorData(sensorDataSaveRequest);
-
-		return true;
+		return saveSensorDataWithTime(sensorId, value, new Date());
 	}
 
 	@POST
@@ -407,5 +407,18 @@ public class Sensors extends BaseService {
 			LogManager.getLogger(this.getClass()).error("Not a sensor");
 		}
 		em.close();
+	}
+
+	private boolean saveSensorDataWithTime(final Long sensorId, final String value, final Date timestamp) {
+		final SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
+		sensorDataSaveRequest.setSensorId(sensorId);
+		final SensorData sensorData = new SensorData();
+		sensorData.setValue(value);
+		sensorData.setDateTime(timestamp);
+		sensorDataSaveRequest.setSensorData(sensorData);
+
+		saveSensorData(sensorDataSaveRequest);
+
+		return true;
 	}
 }
