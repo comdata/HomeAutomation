@@ -85,8 +85,8 @@ public class PowerMeterSensor {
 	private RequestRateLimiter requestRateLimiter;
 
 	public PowerMeterSensor() {
-		final Set<RequestLimitRule> rules = Collections.singleton(RequestLimitRule.of(1, TimeUnit.MINUTES, 1)); // 1 per
-		// minute
+		final Set<RequestLimitRule> rules = Collections.singleton(RequestLimitRule.of(2, TimeUnit.MINUTES, 1)); // 1 per
+		// 2 minutes
 		requestRateLimiter = new InMemorySlidingWindowRequestRateLimiter(rules);
 		EventBusService.getEventBus().register(this);
 	}
@@ -146,7 +146,7 @@ public class PowerMeterSensor {
 		}
 	}
 
-	private BigDecimal runQeryForBigDecimal(final EntityManager em, final String query) {
+	private BigDecimal runQueryForBigDecimal(final EntityManager em, final String query) {
 		final Object queryResultObject = em.createNativeQuery(query).getSingleResult();
 
 		BigDecimal result = (queryResultObject != null) ? ((BigDecimal) queryResultObject) : new BigDecimal(0);
@@ -157,34 +157,34 @@ public class PowerMeterSensor {
 	private void sendNewData() {
 		final EntityManager em = EntityManagerService.getNewManager();
 
-		final BigDecimal oneMinute = runQeryForBigDecimal(em,
+		final BigDecimal oneMinute = runQueryForBigDecimal(em,
 				"select sum(POWERCOUNTER)/1000*60 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 1 MINUTE;");
 
-		final BigDecimal oneMinuteTrend = runQeryForBigDecimal(em,
+		final BigDecimal oneMinuteTrend = runQueryForBigDecimal(em,
 				"select sum(POWERCOUNTER)/1000*60 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 2 MINUTE and TIMESTAMP <= now() - INTERVAL 1 MINUTE;");
 
-		final BigDecimal fiveMinute = runQeryForBigDecimal(em,
+		final BigDecimal fiveMinute = runQueryForBigDecimal(em,
 				"select sum(POWERCOUNTER)/1000*12 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 5 MINUTE;");
 
-		final BigDecimal fiveMinuteTrend = runQeryForBigDecimal(em,
+		final BigDecimal fiveMinuteTrend = runQueryForBigDecimal(em,
 				"select sum(POWERCOUNTER)/1000*12 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 6 MINUTE and TIMESTAMP <= now() - INTERVAL 1 MINUTE;");
 
-		final BigDecimal sixtyMinute = runQeryForBigDecimal(em,
+		final BigDecimal sixtyMinute = runQueryForBigDecimal(em,
 				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 60 MINUTE;");
 
-		final BigDecimal sixtyMinuteTrend = runQeryForBigDecimal(em,
+		final BigDecimal sixtyMinuteTrend = runQueryForBigDecimal(em,
 				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 61 MINUTE and TIMESTAMP <= now() - INTERVAL 1 MINUTE;;");
 
-		final BigDecimal today = runQeryForBigDecimal(em,
+		final BigDecimal today = runQueryForBigDecimal(em,
 				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where date(TIMESTAMP)=CURDATE() ;");
 
-		final BigDecimal yesterday = runQeryForBigDecimal(em,
+		final BigDecimal yesterday = runQueryForBigDecimal(em,
 				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where date(TIMESTAMP)=date(now()- interval 1 day);");
 
-		final BigDecimal lastSevenDays = runQeryForBigDecimal(em,
+		final BigDecimal lastSevenDays = runQueryForBigDecimal(em,
 				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 8 day) and date(TIMESTAMP)<=date(now()- interval 1 day);");
 
-		final BigDecimal lastEightDaysBeforeTillYesterday = runQeryForBigDecimal(em,
+		final BigDecimal lastEightDaysBeforeTillYesterday = runQueryForBigDecimal(em,
 				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 8 day) and date(TIMESTAMP)<CURDATE();");
 
 		final PowerMeterIntervalData powerMeterIntervalData = new PowerMeterIntervalData();
