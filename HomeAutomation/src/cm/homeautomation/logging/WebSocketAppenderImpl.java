@@ -5,7 +5,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.log4j.Logger;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
@@ -18,15 +17,34 @@ import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import cm.homeautomation.eventbus.EventBusEndpoint;
-import cm.homeautomation.eventbus.EventBusService;
 
 @Plugin(name = "WebSocketAppender", category = "Core", elementType = "appender", printObject = true)
 public class WebSocketAppenderImpl extends AbstractAppender {
 
+	// Your custom appender needs to declare a factory method
+	// annotated with `@PluginFactory`. Log4j will parse the configuration
+	// and call this factory method to construct an appender instance with
+	// the configured attributes.
+	@PluginFactory
+	public static WebSocketAppenderImpl createAppender(@PluginAttribute("name") final String name,
+			@PluginElement("Layout") Layout<? extends Serializable> layout,
+			@PluginElement("Filter") final Filter filter,
+			@PluginAttribute("otherAttribute") final String otherAttribute) {
+		if (name == null) {
+			LOGGER.error("No name provided for MyCustomAppenderImpl");
+			return null;
+		}
+		if (layout == null) {
+			layout = PatternLayout.createDefaultLayout();
+		}
+		return new WebSocketAppenderImpl(name, filter, layout, true);
+	}
+
 	private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
+
 	private final Lock readLock = rwLock.readLock();
 
-	protected WebSocketAppenderImpl(String name, Filter filter, Layout<? extends Serializable> layout,
+	protected WebSocketAppenderImpl(final String name, final Filter filter, final Layout<? extends Serializable> layout,
 			final boolean ignoreExceptions) {
 		super(name, filter, layout, ignoreExceptions);
 	}
@@ -38,9 +56,9 @@ public class WebSocketAppenderImpl extends AbstractAppender {
 	// 2. How to use layouts
 	// 3. Error handling
 	@Override
-	public void append(LogEvent event) {
+	public void append(final LogEvent event) {
 
-		StackTraceElement source = event.getSource();
+		final StackTraceElement source = event.getSource();
 
 		// do nothing in case this comes from the eventbus endpoint
 		if (EventBusEndpoint.class.getName().equals(source.getClassName())) {
@@ -50,36 +68,18 @@ public class WebSocketAppenderImpl extends AbstractAppender {
 		readLock.lock();
 		try {
 			final byte[] bytes = getLayout().toByteArray(event);
-			String message = new String(bytes);
+			final String message = new String(bytes);
 
-			WebSocketEvent webSocketEvent = new WebSocketEvent(message);
+			new WebSocketEvent(message);
 
-			EventBusService.getEventBus().post(webSocketEvent);
-		} catch (Exception ex) {
+			// EventBusService.getEventBus().post(webSocketEvent);
+		} catch (final Exception ex) {
 			if (!ignoreExceptions()) {
 				throw new AppenderLoggingException(ex);
 			}
 		} finally {
 			readLock.unlock();
 		}
-	}
-
-	// Your custom appender needs to declare a factory method
-	// annotated with `@PluginFactory`. Log4j will parse the configuration
-	// and call this factory method to construct an appender instance with
-	// the configured attributes.
-	@PluginFactory
-	public static WebSocketAppenderImpl createAppender(@PluginAttribute("name") String name,
-			@PluginElement("Layout") Layout<? extends Serializable> layout,
-			@PluginElement("Filter") final Filter filter, @PluginAttribute("otherAttribute") String otherAttribute) {
-		if (name == null) {
-			LOGGER.error("No name provided for MyCustomAppenderImpl");
-			return null;
-		}
-		if (layout == null) {
-			layout = PatternLayout.createDefaultLayout();
-		}
-		return new WebSocketAppenderImpl(name, filter, layout, true);
 	}
 
 }
