@@ -1036,6 +1036,7 @@ sap.ui.define([
         
 	    		var controller=new cm.homeautomation.ColorPicker();
 	    		controller.setMainController(this);
+	    		controller.setLight(singleLight);
 	    	
 	        if (!this._dialogs["colorPicker"]) {
 	            this._dialogs["colorPicker"] = sap.ui.xmlfragment("cm.homeautomation.ColorPicker", controller);
