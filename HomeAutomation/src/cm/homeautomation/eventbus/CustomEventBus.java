@@ -9,21 +9,28 @@ import com.google.common.eventbus.EventBus;
 
 public class CustomEventBus {
 
-	private Map<String, Class> classes = new HashMap<String, Class>();
+	static EventBus eventBus = null;
 
-	static EventBus eventBus=null;
+	private final Map<String, Class> classes = new HashMap<>();
 
 	public CustomEventBus() {
-		if (eventBus==null) {
-			eventBus=new AsyncEventBus(Executors.newCachedThreadPool());
+		if (eventBus == null) {
+			eventBus = new AsyncEventBus(Executors.newSingleThreadExecutor());
 		}
 	}
 
-	
-	public void register(Object object) {
+	public Map<String, Class> getClasses() {
+		return classes;
+	}
 
-		Class clazz = object.getClass();
-		String clazzName = clazz.getName();
+	public void post(final Object event) {
+		eventBus.post(event);
+	}
+
+	public void register(final Object object) {
+
+		final Class clazz = object.getClass();
+		final String clazzName = clazz.getName();
 
 		if (getClasses().containsKey(clazzName)) {
 			System.out.println("Class already registered on eventbus: " + clazzName);
@@ -34,18 +41,9 @@ public class CustomEventBus {
 		}
 	}
 
-	public void unregister(Object object) {
+	public void unregister(final Object object) {
 		eventBus.unregister(object);
 		getClasses().remove(object.getClass().getName());
 
-	}
-	
-	 public void post(Object event) {
-		 eventBus.post(event);
-	 }
-
-
-	public Map<String, Class> getClasses() {
-		return classes;
 	}
 }
