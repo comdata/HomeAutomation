@@ -61,8 +61,10 @@
 
 								<Switch state="{= ${lights>brightnessLevel}>0}" change="handleLightSwitchChange" />
 								<Slider min="{lights>minimumValue}" max="{lights>maximumValue}" value="{lights>brightnessLevel}"
-									width="100px" change="handleLightChange" visible="{= ${lights>@class} === 'DimmableLight'}"/>
-								<Label text="{lights>brightnessLevel}" visible="{= ${lights>@class} === 'DimmableLight'}"></Label>
+									width="100px" change="handleLightChange" visible="{= ${lights>@class} === 'DimmableLight' || ${lights>@class} === 'RGBLight'}"/>
+								<Label text="{lights>brightnessLevel}" visible="{= ${lights>@class} === 'DimmableLight' || ${lights>@class} === 'RGBLight'}"></Label>
+								<Button press="handleLightRGBButton" visible="{= ${lights>@class} === 'RGBLight'}" text="Send" />
+						
 							</InputListItem>
 						</items>
 

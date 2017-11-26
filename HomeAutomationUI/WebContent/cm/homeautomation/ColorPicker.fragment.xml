@@ -1,0 +1,19 @@
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core" 
+	xmlns:custom="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	xmlns:u="sap.ui.unified"
+	xmlns:layout="sap.ui.layout"
+	xmlns:mvc="sap.ui.core.mvc"
+	>
+	<Dialog title="Scripting" afterClose="afterDialogClose"
+		stretch="true">
+		<content>
+			<u:ColorPicker/>
+
+		</content>
+		<buttons>
+			<Button text="Ok" press="dialogClose" />
+
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

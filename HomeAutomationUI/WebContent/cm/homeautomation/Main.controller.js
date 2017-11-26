@@ -1031,6 +1031,19 @@ sap.ui.define([
             var oModel = new RESTService();
             oModel.loadDataAsync("/HomeAutomation/services/networkdevices/wake/" + networkDevice.mac, "", "GET", null, null, this);
         },
+        handleLightRGBButton: function (event) {
+            var singleLight = sap.ui.getCore().getModel("lights").getProperty(event.getSource().oPropagatedProperties.oBindingContexts.switches.sPath);
+        
+	    		var controller=new cm.homeautomation.ColorPicker();
+	    		controller.setMainController(this);
+	    	
+	        if (!this._dialogs["colorPicker"]) {
+	            this._dialogs["colorPicker"] = sap.ui.xmlfragment("cm.homeautomation.ColorPicker", controller);
+	            controller.setDialog(this._dialogs["colorPicker"]);
+	        }
+	        this._dialogs["colorPicker"].open(); 
+	        controller.onBeforeRendering();
+        },
         handleSwitchChange: function (event) {
             var singleSwitch = sap.ui.getCore().getModel("switches").getProperty(event.getSource().oPropagatedProperties.oBindingContexts.switches.sPath);
 
