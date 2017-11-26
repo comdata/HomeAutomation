@@ -1032,7 +1032,7 @@ sap.ui.define([
             oModel.loadDataAsync("/HomeAutomation/services/networkdevices/wake/" + networkDevice.mac, "", "GET", null, null, this);
         },
         handleLightRGBButton: function (event) {
-            var singleLight = sap.ui.getCore().getModel("lights").getProperty(event.getSource().oPropagatedProperties.oBindingContexts.switches.sPath);
+            var singleLight = sap.ui.getCore().getModel("lights").getProperty(event.getSource().oPropagatedProperties.oBindingContexts.lights.sPath);
         
 	    		var controller=new cm.homeautomation.ColorPicker();
 	    		controller.setMainController(this);
