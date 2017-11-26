@@ -4,6 +4,7 @@ var imageFullScreen = false;
 jQuery.sap.require("sap.ui.core.UIComponent");
 jQuery.sap.require("sap.m.Dialog");
 jQuery.sap.require("cm.homeautomation.Scripting");
+jQuery.sap.require("cm.homeautomation.ColorPicker");
 
 function resize(element) {
 
