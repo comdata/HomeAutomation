@@ -16,7 +16,7 @@ sap.ui.define([
 		},
 		setLight: function (light) {
 			this._light=light;
-		}
+		},
 
 		setDialog: function(dialog) {
 			this._dialog=dialog;
