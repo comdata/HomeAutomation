@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-@JsonSubTypes({ @JsonSubTypes.Type(value = DimmableLight.class, name = "DimmableLight") })
+@JsonSubTypes({ @JsonSubTypes.Type(value = DimmableLight.class, name = "DimmableLight"), @JsonSubTypes.Type(value = DimmableColorLight.class, name = "DimmableColorLight")  })
 @Entity
 public class Light {
 	@Id
