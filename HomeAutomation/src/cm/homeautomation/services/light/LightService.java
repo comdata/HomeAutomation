@@ -76,7 +76,7 @@ public class LightService extends BaseService {
 	}
 
 	@GET
-	@Path("color/{lightid}/{hex}")
+	@Path("color/{lightId}/{hex}")
 	public GenericStatus setColor(@PathParam("lightId") final long lightId, @PathParam("hex") String hex) {
 		final EntityManager em = EntityManagerService.getNewManager();
 		em.getTransaction().begin();
