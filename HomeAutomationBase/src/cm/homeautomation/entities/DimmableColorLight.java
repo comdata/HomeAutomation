@@ -23,11 +23,5 @@ public class DimmableColorLight extends DimmableLight {
 		this.color = color;
 	}
 
-	public String getColorUrl() {
-		return colorUrl;
-	}
 
-	public void setColorUrl(String colorUrl) {
-		this.colorUrl = colorUrl;
-	}
 }

@@ -168,4 +168,12 @@ public class Light {
 		this.type = type;
 	}
 
+	
+	public String getColorUrl() {
+		return colorUrl;
+	}
+
+	public void setColorUrl(String colorUrl) {
+		this.colorUrl = colorUrl;
+	}
 }
