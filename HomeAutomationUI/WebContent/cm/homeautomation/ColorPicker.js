@@ -29,7 +29,7 @@ sap.ui.define([
 	       
 		},
 		liveChange: function(event) {
-			var hex=event.getParameters("hex");
+			var hex=event.getParameters().hex.substr(1);
 			console.log("live change to: " + hex);
 			
 			 var oModel = new RESTService();
