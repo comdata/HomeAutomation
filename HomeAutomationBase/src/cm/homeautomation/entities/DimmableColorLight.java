@@ -11,8 +11,7 @@ public class DimmableColorLight extends DimmableLight {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "COLOR_VALUE")
-	private String colorUrl;
+
 
 	private String color;
 

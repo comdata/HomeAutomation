@@ -54,6 +54,9 @@ public class Light {
 	private String firmware;
 	private String externalId;
 
+	@Column(name = "COLOR_VALUE")
+	private String colorUrl;
+	
 	// Status
 	private boolean online;
 
