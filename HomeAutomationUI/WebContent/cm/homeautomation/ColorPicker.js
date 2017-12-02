@@ -36,7 +36,7 @@ sap.ui.define([
 	         var lightId=( this._light=.id==null) ? 0 : light.id;
 	         oModel.loadDataAsync("/HomeAutomation/services/light/color/" + lightId + "/"
 	                + hex, "", "GET", null, null, this);
-		}
+		},
 		dialogClose: function() {
 	        this._mainController._dialogs["colorPicker"].close();
 	       
