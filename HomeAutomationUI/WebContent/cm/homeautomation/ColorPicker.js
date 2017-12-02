@@ -33,7 +33,7 @@ sap.ui.define([
 			console.log("live change to: " + hex);
 			
 			 var oModel = new RESTService();
-	         var lightId=( this._light=.id==null) ? 0 : light.id;
+	         var lightId=( this._light.id==null) ? 0 : this._light.id;
 	         oModel.loadDataAsync("/HomeAutomation/services/light/color/" + lightId + "/"
 	                + hex, "", "GET", null, null, this);
 		},
