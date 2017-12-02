@@ -8,7 +8,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import cm.homeautomation.db.EntityManagerService;
-import cm.homeautomation.entities.DimmableColorLight;
 import cm.homeautomation.entities.DimmableLight;
 import cm.homeautomation.entities.Light;
 import cm.homeautomation.entities.RGBLight;
@@ -75,36 +74,6 @@ public class LightService extends BaseService {
 		return light;
 	}
 
-	@GET
-	@Path("color/{lightId}/{hex}")
-	public GenericStatus setColor(@PathParam("lightId") final long lightId, @PathParam("hex") String hex) {
-		final EntityManager em = EntityManagerService.getNewManager();
-		em.getTransaction().begin();
-		final Light light = (Light) em.createQuery("select l from Light l where l.id=:lightId")
-				.setParameter("lightId", lightId).getSingleResult();
-
-		
-		
-		if (light instanceof DimmableColorLight) {
-			DimmableColorLight colorLight=(DimmableColorLight)light;
-			
-			colorLight.setColor(hex);
-			
-			em.merge(colorLight);
-			
-			
-			String colorUrl = colorLight.getColorUrl();
-			if (colorUrl!=null) {
-				colorUrl = colorUrl.replace("{HEXVALUE}", hex);
-				HTTPHelper.performHTTPRequest(colorUrl);
-			}
-			
-		}
-		em.getTransaction().commit();
-		
-		return new GenericStatus(true);
-	}
-	
 	@GET
 	@Path("dim/{lightId}/{dimValue}")
 	public GenericStatus dimLight(@PathParam("lightId") final long lightId, @PathParam("dimValue") int dimValue) {
@@ -179,6 +148,33 @@ public class LightService extends BaseService {
 				.setParameter("roomId", roomId).getResultList();
 
 		return resultList;
+	}
+
+	@GET
+	@Path("color/{lightId}/{hex}")
+	public GenericStatus setColor(@PathParam("lightId") final long lightId, @PathParam("hex") final String hex) {
+		final EntityManager em = EntityManagerService.getNewManager();
+		em.getTransaction().begin();
+		final Light light = (Light) em.createQuery("select l from Light l where l.id=:lightId")
+				.setParameter("lightId", lightId).getSingleResult();
+
+		if (light instanceof RGBLight) {
+			final RGBLight colorLight = (RGBLight) light;
+
+			colorLight.setColor(hex);
+
+			em.merge(colorLight);
+
+			String colorUrl = colorLight.getColorUrl();
+			if (colorUrl != null) {
+				colorUrl = colorUrl.replace("{HEXVALUE}", hex);
+				HTTPHelper.performHTTPRequest(colorUrl);
+			}
+
+		}
+		em.getTransaction().commit();
+
+		return new GenericStatus(true);
 	}
 
 }
