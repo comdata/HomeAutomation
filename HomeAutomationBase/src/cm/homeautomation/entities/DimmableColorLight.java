@@ -9,6 +9,7 @@ public class DimmableColorLight extends DimmableLight {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	private String colorUrl;
 
 	private String color;
 
@@ -18,5 +19,13 @@ public class DimmableColorLight extends DimmableLight {
 
 	public void setColor(final String color) {
 		this.color = color;
+	}
+
+	public String getColorUrl() {
+		return colorUrl;
+	}
+
+	public void setColorUrl(String colorUrl) {
+		this.colorUrl = colorUrl;
 	}
 }

@@ -28,6 +28,15 @@ sap.ui.define([
 		loadData: function() {
 	       
 		},
+		liveChange: function(event) {
+			var hex=event.getParameters("hex");
+			console.log("live change to: " + hex);
+			
+			 var oModel = new RESTService();
+	         var lightId=( this._light=.id==null) ? 0 : light.id;
+	         oModel.loadDataAsync("/HomeAutomation/services/light/color/" + lightId + "/"
+	                + hex, "", "GET", null, null, this);
+		}
 		dialogClose: function() {
 	        this._mainController._dialogs["colorPicker"].close();
 	       
