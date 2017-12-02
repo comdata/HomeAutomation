@@ -42,7 +42,7 @@ public class Light {
 
 	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 	@JsonIdentityReference(alwaysAsId = true)
-	@JsonBackReference("switch")
+	@JsonBackReference("referencedSwitch")
 	@ManyToOne
 	@JoinColumn(name = "SWITCH_ID")
 	private Switch referencedSwitch;
@@ -111,7 +111,7 @@ public class Light {
 
 	@XmlTransient
 	@JsonIgnore
-	@JsonBackReference("switch")
+	@JsonBackReference("referencedSwitch")
 	public Switch getReferencedSwitch() {
 		return referencedSwitch;
 	}

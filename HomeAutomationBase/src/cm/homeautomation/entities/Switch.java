@@ -38,8 +38,8 @@ public class Switch {
 	private String switchOffCode;
 	private String switchType;
 
-	@OneToMany(mappedBy = "switch", cascade = CascadeType.ALL)
-	@JsonManagedReference("switch")
+	@OneToMany(mappedBy = "referencedSwitch", cascade = CascadeType.ALL)
+	@JsonManagedReference("referencedSwitch")
 	private List<Light> lights;
 
 	@JoinColumn(nullable = true)
