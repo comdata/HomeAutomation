@@ -163,7 +163,7 @@ public class LightService extends BaseService {
 
 			colorLight.setColor(hex);
 
-			em.merge(colorLight);
+			em.persist(colorLight);
 
 			String colorUrl = colorLight.getColorUrl();
 			if (colorUrl != null) {
