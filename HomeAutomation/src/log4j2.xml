@@ -10,7 +10,7 @@
 	</Appenders>
 
 	<Loggers>
-		<Logger name="cm.homeautomation" additivity="false" level="trace">
+		<Logger name="cm.homeautomation" additivity="false" level="error">
 			<AppenderRef ref="STDOUT" />
 			<AppenderRef ref="databaseAppender" />
 			<AppenderRef ref="WebSocketAppender" />
@@ -18,7 +18,7 @@
 		
 		
 		
-		<Logger name="com.google.common.eventbus.EventBus" additivity="false" level="trace">
+		<Logger name="com.google.common.eventbus.EventBus" additivity="false" level="error">
 			<AppenderRef ref="STDOUT" />
 			<AppenderRef ref="databaseAppender" />
 			<AppenderRef ref="WebSocketAppender" />
