@@ -59,7 +59,7 @@ public class TradfriGatewaylistenerImpl implements TradfriGatewayListener {
 				((RGBLight) light).setColorUrl(b.getColor());
 			}
 
-			em.persist(light);
+			em.merge(light);
 		}
 		em.getTransaction().commit();
 	}
