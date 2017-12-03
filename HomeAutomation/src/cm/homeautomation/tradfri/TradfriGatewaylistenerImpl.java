@@ -8,6 +8,7 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DimmableColorLight;
 import cm.homeautomation.entities.DimmableLight;
 import cm.homeautomation.entities.Light;
+import cm.homeautomation.entities.RGBLight;
 import cm.homeautomation.services.light.LightService;
 
 public class TradfriGatewaylistenerImpl implements TradfriGatewayListener {
@@ -30,7 +31,7 @@ public class TradfriGatewaylistenerImpl implements TradfriGatewayListener {
 		if (light == null) {
 
 			if (b.isColorLight()) {
-				light = new DimmableColorLight();
+				light = new RGBLight();
 			} else {
 				light = new DimmableLight();
 			}

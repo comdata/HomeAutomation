@@ -12,7 +12,7 @@ public class DimmableColorLight extends DimmableLight {
 	private Long id;
 	
 
-
+	@Column(name="COLOR")
 	private String color;
 
 	public String getColor() {
