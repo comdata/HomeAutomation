@@ -36,17 +36,6 @@ public class TradfriStartupService {
 		}
 
 	}
-	
-	public void setColor(final String id, final String color) {
-
-		for (final LightBulb b : gw.bulbs) {
-			if (Integer.toString(b.getId()).equals(id)) {
-				b.setColor(color);
-			}
-
-		}
-
-	}
 
 	private void init() {
 
@@ -70,6 +59,18 @@ public class TradfriStartupService {
 			}
 		};
 		new Thread(tradfriRunner).start();
+
+	}
+
+	public void setColor(final String id, final String color) {
+
+		for (final LightBulb b : gw.bulbs) {
+			if (Integer.toString(b.getId()).equals(id)) {
+				b.setColor("#" + color.toUpperCase());
+				LogManager.getLogger(this.getClass()).error("setting color: " + b.getColor());
+			}
+
+		}
 
 	}
 }
