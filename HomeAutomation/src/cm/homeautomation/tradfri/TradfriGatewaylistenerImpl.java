@@ -5,7 +5,6 @@ import javax.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.db.EntityManagerService;
-import cm.homeautomation.entities.DimmableColorLight;
 import cm.homeautomation.entities.DimmableLight;
 import cm.homeautomation.entities.Light;
 import cm.homeautomation.entities.RGBLight;
@@ -43,9 +42,24 @@ public class TradfriGatewaylistenerImpl implements TradfriGatewayListener {
 			light.setDateLastSeen(b.getDateLastSeen());
 			light.setFirmware(b.getFirmware());
 			light.setOnline(b.isOnline());
+			light.setPowerState(b.isOn());
 
 			em.persist(light);
 
+		} else {
+			light.setName(b.getName());
+			light.setExternalId(Integer.toString(b.getId()));
+			light.setLightType(TRADFRI);
+			light.setDateInstalled(b.getDateInstalled());
+			light.setDateLastSeen(b.getDateLastSeen());
+			light.setFirmware(b.getFirmware());
+			light.setOnline(b.isOnline());
+			light.setPowerState(b.isOn());
+			if (b.isColorLight() && (light instanceof RGBLight)) {
+				((RGBLight) light).setColorUrl(b.getColor());
+			}
+
+			em.persist(light);
 		}
 		em.getTransaction().commit();
 	}
