@@ -68,6 +68,7 @@ public class TradfriStartupService {
 			if (Integer.toString(b.getId()).equals(id)) {
 				b.setColor(color.toLowerCase());
 				LogManager.getLogger(this.getClass()).error("setting color: " + b.getColor());
+				return;
 			}
 
 		}
