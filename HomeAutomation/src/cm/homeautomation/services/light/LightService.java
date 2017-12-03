@@ -166,11 +166,15 @@ public class LightService extends BaseService {
 			em.persist(colorLight);
 
 			String colorUrl = colorLight.getColorUrl();
-			if (colorUrl != null) {
-				colorUrl = colorUrl.replace("{HEXVALUE}", hex);
-				HTTPHelper.performHTTPRequest(colorUrl);
-			}
 
+			if ("TRADFRI".equals(colorLight.getLightType())) {
+				TradfriStartupService.getInstance().setColor(light.getExternalId(), hex);
+			} else {
+				if (colorUrl != null) {
+					colorUrl = colorUrl.replace("{HEXVALUE}", hex);
+					HTTPHelper.performHTTPRequest(colorUrl);
+				}
+			}
 		}
 		em.getTransaction().commit();
 

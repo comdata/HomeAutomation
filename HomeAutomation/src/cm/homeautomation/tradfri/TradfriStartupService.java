@@ -36,6 +36,17 @@ public class TradfriStartupService {
 		}
 
 	}
+	
+	public void setColor(final String id, final String color) {
+
+		for (final LightBulb b : gw.bulbs) {
+			if (Integer.toString(b.getId()).equals(id)) {
+				b.setColor(color);
+			}
+
+		}
+
+	}
 
 	private void init() {
 
