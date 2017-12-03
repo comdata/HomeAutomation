@@ -23,7 +23,7 @@ public class TradfriGateway implements Runnable {
 	 */
 	protected String gateway_ip;
 	protected String security_key;
-	protected int polling_rate = 5000;
+	protected int polling_rate = 15000;
 
 	private boolean running = false;
 
