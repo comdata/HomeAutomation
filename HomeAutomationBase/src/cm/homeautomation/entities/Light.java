@@ -20,7 +20,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-@JsonSubTypes({ @JsonSubTypes.Type(value = DimmableLight.class, name = "DimmableLight"), @JsonSubTypes.Type(value = DimmableColorLight.class, name = "DimmableColorLight")  })
+@JsonSubTypes({ @JsonSubTypes.Type(value = DimmableLight.class, name = "DimmableLight"),
+		@JsonSubTypes.Type(value = DimmableColorLight.class, name = "DimmableColorLight") })
 @Entity
 public class Light {
 	@Id
@@ -39,6 +40,13 @@ public class Light {
 	@JoinColumn(name = "ROOM_ID")
 	private Room room;
 
+	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+	@JsonIdentityReference(alwaysAsId = true)
+	@JsonBackReference("referencedSwitch")
+	@ManyToOne
+	@JoinColumn(name = "SWITCH_ID")
+	private Switch referencedSwitch;
+
 	@JsonIgnore
 	private String dimUrl;
 
@@ -56,9 +64,13 @@ public class Light {
 
 	@Column(name = "COLOR_VALUE")
 	private String colorUrl;
-	
+
 	// Status
 	private boolean online;
+
+	public String getColorUrl() {
+		return colorUrl;
+	}
 
 	public Date getDateInstalled() {
 		return dateInstalled;
@@ -99,6 +111,13 @@ public class Light {
 
 	@XmlTransient
 	@JsonIgnore
+	@JsonBackReference("referencedSwitch")
+	public Switch getReferencedSwitch() {
+		return referencedSwitch;
+	}
+
+	@XmlTransient
+	@JsonIgnore
 	@JsonBackReference("room")
 	public Room getRoom() {
 		return room;
@@ -114,6 +133,10 @@ public class Light {
 
 	public boolean isPowerState() {
 		return powerState;
+	}
+
+	public void setColorUrl(final String colorUrl) {
+		this.colorUrl = colorUrl;
 	}
 
 	public void setDateInstalled(final Date dateInstalled) {
@@ -160,20 +183,15 @@ public class Light {
 		this.powerState = powerState;
 	}
 
+	public void setReferencedSwitch(final Switch referencedSwitch) {
+		this.referencedSwitch = referencedSwitch;
+	}
+
 	public void setRoom(final Room room) {
 		this.room = room;
 	}
 
 	public void setType(final String type) {
 		this.type = type;
-	}
-
-	
-	public String getColorUrl() {
-		return colorUrl;
-	}
-
-	public void setColorUrl(String colorUrl) {
-		this.colorUrl = colorUrl;
 	}
 }
