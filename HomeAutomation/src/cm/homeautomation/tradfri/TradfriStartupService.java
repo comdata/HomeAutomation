@@ -66,7 +66,7 @@ public class TradfriStartupService {
 
 		for (final LightBulb b : gw.bulbs) {
 			if (Integer.toString(b.getId()).equals(id)) {
-				b.setColor("#" + color.toUpperCase());
+				b.setColor(color.toLowerCase());
 				LogManager.getLogger(this.getClass()).error("setting color: " + b.getColor());
 			}
 
