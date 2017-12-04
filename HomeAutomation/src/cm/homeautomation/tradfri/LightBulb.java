@@ -60,6 +60,35 @@ public class LightBulb {
 		listners.clear();
 	}
 
+	public TradfriColorPoint convertRGBToCIE(double red, double green, double blue) {
+
+		// Apply a gamma correction to the RGB values, which makes the color more vivid
+		// and more the like the color displayed on the screen of your device
+		red = (red > 0.04045) ? Math.pow((red + 0.055) / (1.0 + 0.055), 2.4) : (red / 12.92);
+		green = (green > 0.04045) ? Math.pow((green + 0.055) / (1.0 + 0.055), 2.4) : (green / 12.92);
+		blue = (blue > 0.04045) ? Math.pow((blue + 0.055) / (1.0 + 0.055), 2.4) : (blue / 12.92);
+
+		// RGB values to XYZ using the Wide RGB D65 conversion formula
+		final double X = (red * 0.664511) + (green * 0.154324) + (blue * 0.162028);
+		final double Y = (red * 0.283881) + (green * 0.668433) + (blue * 0.047685);
+		final double Z = (red * 0.000088) + (green * 0.072310) + (blue * 0.986039);
+
+		// Calculate the xy values from the XYZ values
+		double x = Math.round((X / (X + Y + Z)) * 1000) / 1000;
+		double y = Math.round((Y / (X + Y + Z)) * 1000) / 1000;
+
+		if (Double.isNaN(x)) {
+			x = 0;
+		}
+
+		if (Double.isNaN(y)) {
+			y = 0;
+		}
+
+		return new TradfriColorPoint(x, y);
+
+	}
+
 	public String getColor() {
 		return color;
 	}
@@ -177,12 +206,19 @@ public class LightBulb {
 
 	public void setColor(final String color) {
 		try {
+
 			final JSONObject json = new JSONObject();
 			final JSONObject settings = new JSONObject();
 			final JSONArray array = new JSONArray();
+
+			final TradfriColorPoint colorPoint = convertRGBToCIE(Integer.valueOf(color.substring(1, 3), 16),
+					Integer.valueOf(color.substring(3, 5), 16), Integer.valueOf(color.substring(5, 7), 16));
+
 			array.put(settings);
 			json.put(TradfriConstants.LIGHT, array);
-			settings.put(TradfriConstants.COLOR, color);
+			// settings.put(TradfriConstants.COLOR, color);
+			settings.put(TradfriConstants.COLOR_X, colorPoint.getX());
+			settings.put(TradfriConstants.COLOR_Y, colorPoint.getY());
 			final String payload = json.toString();
 			gateway.set(TradfriConstants.DEVICES + "/" + this.getId(), payload);
 
