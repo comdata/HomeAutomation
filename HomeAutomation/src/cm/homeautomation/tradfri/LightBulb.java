@@ -12,16 +12,68 @@ import org.json.JSONObject;
 
 public class LightBulb {
 
-	private final ArrayList<TradfriBulbListener> listners = new ArrayList<>();
+	public static TradfriColorPoint convertRGBToCIE(double red, double green, double blue) {
 
+		// Apply a gamma correction to the RGB values, which makes the color more vivid
+		// and more the like the color displayed on the screen of your device
+		red = (red > 0.04045) ? Math.pow((red + 0.055) / (1.0 + 0.055), 2.4) : (red / 12.92);
+		green = (green > 0.04045) ? Math.pow((green + 0.055) / (1.0 + 0.055), 2.4) : (green / 12.92);
+		blue = (blue > 0.04045) ? Math.pow((blue + 0.055) / (1.0 + 0.055), 2.4) : (blue / 12.92);
+
+		System.out.println("red: " + red);
+		System.out.println("green: " + green);
+		System.out.println("blue: " + blue);
+
+		// RGB values to XYZ using the Wide RGB D65 conversion formula
+		final double X = (red * 0.664511) + (green * 0.154324) + (blue * 0.162028);
+		final double Y = (red * 0.283881) + (green * 0.668433) + (blue * 0.047685);
+		final double Z = (red * 0.000088) + (green * 0.072310) + (blue * 0.986039);
+
+		System.out.println("X " + X + " Y " + Y + " Z " + Z);
+
+		System.out.println((X / (X + Y + Z)) * 1000);
+		System.out.println((Y / (X + Y + Z)) * 1000);
+		System.out.println(Math.round((X / (X + Y + Z)) * 1000));
+		// Calculate the xy values from the XYZ values
+		double x = new Long(Math.round((X / (X + Y + Z)) * 1000)).doubleValue() / 1000;
+		double y = new Long(Math.round((Y / (X + Y + Z)) * 1000)).doubleValue() / 1000;
+
+		System.out.println("x: " + x + " y: " + y);
+
+		if (Double.isNaN(x)) {
+			x = 0;
+		}
+
+		if (Double.isNaN(y)) {
+			y = 0;
+		}
+
+		return new TradfriColorPoint(x, y);
+
+	}
+
+	public static void main(final String[] args) {
+		final String color = "ff0000";
+		final Integer red = Integer.valueOf(color.substring(0, 2), 16);
+		final Integer green = Integer.valueOf(color.substring(2, 4), 16);
+		final Integer blue = Integer.valueOf(color.substring(4, 6), 16);
+		final TradfriColorPoint convertRGBToCIE = convertRGBToCIE(red, green, blue);
+
+		System.out.println(
+				red + " " + green + " " + blue + "x: " + convertRGBToCIE.getX() + " y: " + convertRGBToCIE.getY());
+	}
+
+	private final ArrayList<TradfriBulbListener> listners = new ArrayList<>();
 	private final TradfriGateway gateway;
+
 	// Immutable information
 	private final int id;
-	private String name;
 
+	private String name;
 	private String manufacturer;
 
 	private String type;
+
 	private String firmware;
 
 	// Status
@@ -29,11 +81,11 @@ public class LightBulb {
 
 	// State of the bulb
 	private boolean on;
-
 	private int intensity;
-
 	private String color;
+
 	private boolean colorLight = false;
+
 	// Dates
 	private Date dateInstalled;
 
@@ -58,35 +110,6 @@ public class LightBulb {
 
 	public void clearLightBulbListners() {
 		listners.clear();
-	}
-
-	public TradfriColorPoint convertRGBToCIE(double red, double green, double blue) {
-
-		// Apply a gamma correction to the RGB values, which makes the color more vivid
-		// and more the like the color displayed on the screen of your device
-		red = (red > 0.04045) ? Math.pow((red + 0.055) / (1.0 + 0.055), 2.4) : (red / 12.92);
-		green = (green > 0.04045) ? Math.pow((green + 0.055) / (1.0 + 0.055), 2.4) : (green / 12.92);
-		blue = (blue > 0.04045) ? Math.pow((blue + 0.055) / (1.0 + 0.055), 2.4) : (blue / 12.92);
-
-		// RGB values to XYZ using the Wide RGB D65 conversion formula
-		final double X = (red * 0.664511) + (green * 0.154324) + (blue * 0.162028);
-		final double Y = (red * 0.283881) + (green * 0.668433) + (blue * 0.047685);
-		final double Z = (red * 0.000088) + (green * 0.072310) + (blue * 0.986039);
-
-		// Calculate the xy values from the XYZ values
-		double x = Math.round((X / (X + Y + Z)) * 1000) / 1000;
-		double y = Math.round((Y / (X + Y + Z)) * 1000) / 1000;
-
-		if (Double.isNaN(x)) {
-			x = 0;
-		}
-
-		if (Double.isNaN(y)) {
-			y = 0;
-		}
-
-		return new TradfriColorPoint(x, y);
-
 	}
 
 	public String getColor() {
@@ -211,8 +234,8 @@ public class LightBulb {
 			final JSONObject settings = new JSONObject();
 			final JSONArray array = new JSONArray();
 
-			final TradfriColorPoint colorPoint = convertRGBToCIE(Integer.valueOf(color.substring(1, 3), 16),
-					Integer.valueOf(color.substring(3, 5), 16), Integer.valueOf(color.substring(5, 7), 16));
+			final TradfriColorPoint colorPoint = convertRGBToCIE(Integer.valueOf(color.substring(0, 2), 16),
+					Integer.valueOf(color.substring(2, 4), 16), Integer.valueOf(color.substring(4, 6), 16));
 
 			array.put(settings);
 			json.put(TradfriConstants.LIGHT, array);
