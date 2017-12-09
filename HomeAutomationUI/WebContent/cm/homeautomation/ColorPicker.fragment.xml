@@ -5,8 +5,8 @@
 	xmlns:layout="sap.ui.layout"
 	xmlns:mvc="sap.ui.core.mvc"
 	>
-	<Dialog title="Scripting" afterClose="afterDialogClose"
-		stretch="true">
+	<Dialog title="{i18n>colorPickerHeader}" afterClose="afterDialogClose"
+		stretch="false">
 		<content>
 			<u:ColorPicker change="liveChange" colorString="singleLight>/color"/>
 
