@@ -71,6 +71,7 @@
 		<httpcompontents.version>4.5.2</httpcompontents.version>
 		<telegrambots.version>2.4.2</telegrambots.version>
 		<ratelimitj-inmemory.version>0.4.0</ratelimitj-inmemory.version>
+		<odata.version>4.4.0</odata.version>
 
 	</properties>
 
@@ -83,7 +84,28 @@
 
 
 	<dependencies>
+		<dependency>
+			<groupId>org.apache.olingo</groupId>
+			<artifactId>odata-server-api</artifactId>
+			<version>${odata.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.olingo</groupId>
+			<artifactId>odata-server-core</artifactId>
+			<version>${odata.version}</version>
+			<scope>runtime</scope>
+		</dependency>
 
+		<dependency>
+			<groupId>org.apache.olingo</groupId>
+			<artifactId>odata-commons-api</artifactId>
+			<version>${odata.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.olingo</groupId>
+			<artifactId>odata-commons-core</artifactId>
+			<version>${odata.version}</version>
+		</dependency>
 		<!-- Tradfri dependencies -->
 		<dependency>
 			<groupId>org.json</groupId>
