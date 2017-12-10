@@ -65,8 +65,15 @@ public class Light {
 	@Column(name = "COLOR_VALUE")
 	private String colorUrl;
 
+	@Column(name = "COLOR")
+	private String color;
+
 	// Status
 	private boolean online;
+
+	public String getColor() {
+		return color;
+	}
 
 	public String getColorUrl() {
 		return colorUrl;
@@ -133,6 +140,10 @@ public class Light {
 
 	public boolean isPowerState() {
 		return powerState;
+	}
+
+	public void setColor(final String color) {
+		this.color = color;
 	}
 
 	public void setColorUrl(final String colorUrl) {
