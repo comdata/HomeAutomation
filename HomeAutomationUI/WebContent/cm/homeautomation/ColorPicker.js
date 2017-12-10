@@ -31,7 +31,7 @@ sap.ui.define([
 			sap.ui.getCore().setModel(model, "singleLight", this);
 		},
 		liveChange: function(event) {
-			var hex=event.getParameters().hex.substr(1);
+			var hex=event.getParameters().hex;
 			console.log("live change to: " + hex);
 			
 			 var oModel = new RESTService();
