@@ -28,7 +28,7 @@ sap.ui.define([
 		loadData: function() {
 			var model=new JSONModel();
 			model.setData(this._light);
-			sap.ui.getCore().setModel(model, "scriptingEntities", this);
+			sap.ui.getCore().setModel(model, "singleLight", this);
 		},
 		liveChange: function(event) {
 			var hex=event.getParameters().hex.substr(1);
