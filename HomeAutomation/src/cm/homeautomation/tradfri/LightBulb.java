@@ -227,21 +227,24 @@ public class LightBulb {
 		listners.remove(l);
 	}
 
-	public void setColor(final String color) {
+	public void setColor(final String color, final int brightness) {
 		try {
 
 			final JSONObject json = new JSONObject();
 			final JSONObject settings = new JSONObject();
 			final JSONArray array = new JSONArray();
 
-			final TradfriColorPoint colorPoint = convertRGBToCIE(Integer.valueOf(color.substring(0, 2), 16),
-					Integer.valueOf(color.substring(2, 4), 16), Integer.valueOf(color.substring(4, 6), 16));
+			final int red = Integer.valueOf(color.substring(0, 2), 16).intValue();
+			final int green = Integer.valueOf(color.substring(2, 4), 16).intValue();
+			final int blue = Integer.valueOf(color.substring(4, 6), 16).intValue();
+
+			final TradfriColor colorPoint = TradfriColor.fromRGBValues(red, green, blue, 254);
 
 			array.put(settings);
 			json.put(TradfriConstants.LIGHT, array);
 			// settings.put(TradfriConstants.COLOR, color);
-			settings.put(TradfriConstants.COLOR_X, colorPoint.getX());
-			settings.put(TradfriConstants.COLOR_Y, colorPoint.getY());
+			settings.put(TradfriConstants.COLOR_X, colorPoint.xyX.intValue());
+			settings.put(TradfriConstants.COLOR_Y, colorPoint.xyY.intValue());
 			final String payload = json.toString();
 			gateway.set(TradfriConstants.DEVICES + "/" + this.getId(), payload);
 

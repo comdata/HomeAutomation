@@ -62,11 +62,12 @@ public class TradfriStartupService {
 
 	}
 
-	public void setColor(final String id, final String color) {
+	public void setColor(final String id, final String color, final int brightness) {
 
 		for (final LightBulb b : gw.bulbs) {
 			if (Integer.toString(b.getId()).equals(id)) {
-				b.setColor(color.toLowerCase());
+				b.setColor(color.toLowerCase(), brightness);
+
 				LogManager.getLogger(this.getClass()).error("setting color: " + b.getColor());
 				return;
 			}
