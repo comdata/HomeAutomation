@@ -31,13 +31,13 @@ sap.ui.define([
 			sap.ui.getCore().setModel(model, "singleLight", this);
 		},
 		liveChange: function(event) {
-			var hex=event.getParameters().hex;
+			var hex=event.getParameters().hex.replace("#", "%23");
 			console.log("live change to: " + hex);
 			
 			 var oModel = new RESTService();
 	         var lightId=( this._light.id==null) ? 0 : this._light.id;
 	         oModel.loadDataAsync("/HomeAutomation/services/light/color/" + lightId + "/"
-	                + encodeURI(hex), "", "GET", null, null, this);
+	                + hex, "", "GET", null, null, this);
 		},
 		dialogClose: function() {
 	        this._mainController._dialogs["colorPicker"].close();
