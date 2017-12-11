@@ -168,43 +168,43 @@ public class ActorService extends BaseService implements MqttCallback {
 		final ActorMessage actorMessage = createActorMessage(targetStatus, singleSwitch);
 
 		// support lights in the switches list and switch them as well
-		List<Light> lights = singleSwitch.getLights();
-		if (lights != null && !lights.isEmpty()) {
+		final List<Light> lights = singleSwitch.getLights();
+		if ((lights != null) && !lights.isEmpty()) {
 			boolean on = false;
 			if ("ON".equals(targetStatus)) {
 				on = true;
 			}
 
-			LightService lightService = LightService.getInstance();
+			final LightService lightService = LightService.getInstance();
 
-			for (Light light : lights) {
+			for (final Light light : lights) {
 				if (light instanceof DimmableLight) {
-					DimmableLight dimmableLight = (DimmableLight) light;
-					int dimValue = (on) ? dimmableLight.getMaximumValue() : dimmableLight.getMinimumValue();
+					final DimmableLight dimmableLight = (DimmableLight) light;
+					final int dimValue = (on) ? dimmableLight.getMaximumValue() : dimmableLight.getMinimumValue();
 					lightService.dimLight(light.getId(), dimValue);
 				}
 			}
-		} else {
-			// standard lights
-			if ("SOCKET".equals(singleSwitch.getSwitchType()) || "LIGHT".equals(singleSwitch.getSwitchType())) {
-				// sendMulticastUDP(actorMessage);
-				if (singleSwitch.getHouseCode() != null) {
-					sendMQTTMessage(actorMessage);
-				}
+		}
 
-				if (singleSwitch.getSwitchSetUrl() != null) {
-					sendHTTPMessage(singleSwitch, actorMessage);
-				}
-			} else if ("IR".equals(singleSwitch.getSwitchType())) {
-				try {
-					InfraredService.getInstance().sendCommand(singleSwitch.getIrCommand().getId());
-				} catch (final JsonProcessingException e) {
-					LogManager.getLogger(this.getClass()).error(e);
-				}
+		// standard lights
+		if ("SOCKET".equals(singleSwitch.getSwitchType()) || "LIGHT".equals(singleSwitch.getSwitchType())) {
+			// sendMulticastUDP(actorMessage);
+			if (singleSwitch.getHouseCode() != null) {
+				sendMQTTMessage(actorMessage);
 			}
 
-			EventBusService.getEventBus().post(new EventObject(actorMessage));
+			if (singleSwitch.getSwitchSetUrl() != null) {
+				sendHTTPMessage(singleSwitch, actorMessage);
+			}
+		} else if ("IR".equals(singleSwitch.getSwitchType())) {
+			try {
+				InfraredService.getInstance().sendCommand(singleSwitch.getIrCommand().getId());
+			} catch (final JsonProcessingException e) {
+				LogManager.getLogger(this.getClass()).error(e);
+			}
 		}
+
+		EventBusService.getEventBus().post(new EventObject(actorMessage));
 		final SwitchPressResponse switchPressResponse = new SwitchPressResponse();
 		switchPressResponse.setSuccess(true);
 		return switchPressResponse;
