@@ -119,18 +119,18 @@
 				</content>
 			</Panel>
 
-			<Panel expandable="true" expanded="{currentRoom>/additionalUI}" headerText=""
+<!-- 			<Panel expandable="true" expanded="{currentRoom>/additionalUI}" headerText=""
 				width="auto" class="sapUiResponsiveMargin" expand="expandAdditionalUI" visible="{= ${currentRoom>/additionalUIURL} !== ''}">
 				<content>
 					<core:HTML
 									content="&lt;iframe src=&quot;{currentRoom>/additionalUIURL}&quot; scrolling=&quot;no&quot; style=&quot;overflow: hidden;&quot; width=&quot;100%&quot; height=&quot;100%&quot; /&gt;"/>
 
-			<!--		<core:HTML
+					<core:HTML
 						content="&lt;div id='chart'&gt;
     &lt;svg style='height:300px; width:100%;'&gt;&lt;/svg&gt;
-&lt;/div&gt;"></core:HTML>-->
+&lt;/div&gt;"></core:HTML>
 				</content>
-			</Panel>
+			</Panel> -->
 
 		</content>
 		<beginButton>
