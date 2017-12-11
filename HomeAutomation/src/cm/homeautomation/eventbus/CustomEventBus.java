@@ -15,7 +15,7 @@ public class CustomEventBus {
 
 	public CustomEventBus() {
 		if (eventBus == null) {
-			eventBus = new AsyncEventBus(Executors.newSingleThreadExecutor());
+			eventBus = new AsyncEventBus(Executors.newFixedThreadPool(4));
 		}
 	}
 
