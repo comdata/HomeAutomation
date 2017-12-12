@@ -1430,6 +1430,8 @@ sap.ui.define([
         	// set empty model
             var model = new sap.ui.model.json.JSONModel();
             sap.ui.getCore().setModel(model, "switches");
+            sap.ui.getCore().setModel(model, "windowBlinds");
+            sap.ui.getCore().setModel(model, "lights");
 
             var selectedElement = this.getView().getModel().getProperty(event.getSource().oBindingContexts["undefined"].sPath);
 
