@@ -12,6 +12,7 @@ pipeline {
 		sh 'apk add rsync openssh mariadb mariadb-client openrc'
 		sh 'mysql_install_db --user=mysql --rpm'
 		sh '/usr/bin/mysqld_safe &'
+		sh 'sleep 5' // for mysql to startup
 		sh 'mysql -u root -e "CREATE DATABASE HA;"'
 		sh 'mysql -u root HA < HomeAutomation/WebContent/WEB-INF/log4j.sql'
 	    } 
