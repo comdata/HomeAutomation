@@ -24,9 +24,7 @@ addons:
 
 script:
   # the following command line builds the project, runs the tests with coverage and then execute the SonarQube analysis
-  - mvn install -DskipTests=true
-#sonar:sonar
-#org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
+  - mvn install -DskipTests=true sonar:sonar org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
 
 before_script:
   - mysql -u root -e 'CREATE DATABASE HA;'
