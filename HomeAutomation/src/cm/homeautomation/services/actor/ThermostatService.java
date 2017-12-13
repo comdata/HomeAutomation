@@ -24,57 +24,50 @@ import cm.homeautomation.services.base.GenericStatus;
 @Path("thermostat")
 public class ThermostatService extends BaseService {
 
-	private void performHTTPSetPoint(String value, Switch singleSwitch, String setURL) {
+	private void performHTTPSetPoint(final String value, final Switch singleSwitch, final String setURL) {
 		try {
-			HttpGet getMethod = new HttpGet(setURL);
-			HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-			
-			
-			String[] userPassword = setURL.split("@")[0].replace("http://", "").split(":");
-			
-			CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		        credsProvider.setCredentials(
-		                new AuthScope(getMethod.getURI().getHost(), getMethod.getURI().getPort()),
-		                new UsernamePasswordCredentials(userPassword[0], userPassword[1]));
-		    clientBuilder.setDefaultCredentialsProvider(credsProvider);   
-			HttpClient httpClient = clientBuilder.build();
+			final HttpGet getMethod = new HttpGet(setURL);
+			final HttpClientBuilder clientBuilder = HttpClientBuilder.create();
 
-			
+			final String[] userPassword = setURL.split("@")[0].replace("http://", "").split(":");
 
-
+			final CredentialsProvider credsProvider = new BasicCredentialsProvider();
+			credsProvider.setCredentials(new AuthScope(getMethod.getURI().getHost(), getMethod.getURI().getPort()),
+					new UsernamePasswordCredentials(userPassword[0], userPassword[1]));
+			clientBuilder.setDefaultCredentialsProvider(credsProvider);
+			final HttpClient httpClient = clientBuilder.build();
 
 			httpClient.execute(getMethod);
-			
-			
+
 			singleSwitch.setLatestStatus(value);
-			
-			
-		} catch (IOException e) {
+
+		} catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+
 	@GET
 	@Path("setValue/{id}/{value}")
-	public GenericStatus setValue(@PathParam("id") Long id, @PathParam("value") String value) {
+	public GenericStatus setValue(@PathParam("id") final Long id, @PathParam("value") final String value) {
 
-		EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getNewManager();
 		em.getTransaction().begin();
-		Switch singleSwitch = (Switch)em.createQuery("select s from Switch s where s.id=:id").setParameter("id", id).getSingleResult();
-		
-		String setURL=singleSwitch.getSwitchSetUrl().replace("{SETVALUE}", value);
-		
+		final Switch singleSwitch = (Switch) em.createQuery("select s from Switch s where s.id=:id")
+				.setParameter("id", id).getSingleResult();
+
+		final String setURL = singleSwitch.getSwitchSetUrl().replace("{SETVALUE}", value);
+
 		performHTTPSetPoint(value, singleSwitch, setURL);
-		
+
 		em.persist(singleSwitch);
-		
+
 		em.getTransaction().commit();
-		
-		//TODO bind FHEM
-		LogManager.getLogger(this.getClass()).info("Set "+id+" to value: "+value);
+
+		// TODO bind FHEM
+		LogManager.getLogger(this.getClass()).info("Set " + id + " to value: " + value);
 		em.close();
-		return new GenericStatus();
+		return new GenericStatus(true);
 	}
 
 }
