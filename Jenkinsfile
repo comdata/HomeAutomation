@@ -26,7 +26,7 @@ pipeline {
         stage('Deploy') {
             steps {
 		
-                sh 'rsync -auv HomeAutomationUI/WebContent/* root@192.168.1.76:/var/lib/tomcat8/webapps/HomeAutomationUI/WebContent/'
+                sh 'rsync -auv HomeAutomationUI/WebContent root@192.168.1.76:/var/lib/tomcat8/webapps/HomeAutomationUI'
             	sh 'rsync -auv HomeAutomation/target/HomeAutomation-0.0.1-SNAPSHOT/WEB-INF/* root@192.168.1.76:/var/lib/tomcat8/webapps/HomeAutomation/WEB-INF/'
 	    	sh 'ssh root@192.168.1.76 /etc/init.d/tomcat8 restart'
 	    }
