@@ -12,15 +12,14 @@ pipeline {
 		sh 'apk add rsync openssh mariadb mariadb-client openrc'
 		sh 'mysql_install_db --user=mysql --rpm'
 		sh '/usr/bin/mysqld_safe &'
-//		sh '/etc/init.d/mariadb start'
-//		sh 'mysql -u root -e "CREATE DATABASE HA;"'
-//		sh 'mysql -u root HA < HomeAutomation/WebContent/WEB-INF/log4j.sql'
+		sh 'mysql -u root -e "CREATE DATABASE HA;"'
+		sh 'mysql -u root HA < HomeAutomation/WebContent/WEB-INF/log4j.sql'
 	    } 
 	}
 
         stage('Build') { 
             steps {
-                sh 'mvn -B -DskipTests clean package' 
+                sh 'mvn -B clean package' 
             }
         }
         stage('Deploy') {
