@@ -517,7 +517,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<argLine>${argLine} -Xmx512m -XX:MaxPermSize=256m</argLine>
+					<argLine>${argLine} -Xmx1024m -XX:MaxPermSize=256m</argLine>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
