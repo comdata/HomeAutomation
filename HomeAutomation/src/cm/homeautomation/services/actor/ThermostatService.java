@@ -25,6 +25,27 @@ import cm.homeautomation.services.base.GenericStatus;
 @Path("thermostat")
 public class ThermostatService extends BaseService {
 
+	private static ThermostatService instance;
+
+	public static ThermostatService getInstance() {
+
+		if (instance == null) {
+			new ThermostatService();
+		}
+
+		return instance;
+	}
+
+	public ThermostatService() {
+		instance = this;
+	}
+
+	public void cronSetStatus(final String[] args) {
+		final Long id = new Long(args[0]);
+		final String value = args[1];
+		getInstance().setValue(id, value);
+	}
+
 	private void performHTTPSetPoint(final String value, final Switch singleSwitch, final String setURL) {
 		try {
 			final HttpGet getMethod = new HttpGet(setURL);
