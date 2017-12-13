@@ -1,19 +1,13 @@
 package cm.homeautomation.eventbus;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Semaphore;
 
 import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
-import javax.websocket.RemoteEndpoint;
-import javax.websocket.RemoteEndpoint.Async;
-import javax.websocket.SendHandler;
-import javax.websocket.SendResult;
 import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
@@ -29,36 +23,6 @@ import cm.homeautomation.logging.WebSocketEvent;
 		EventTranscoder.class,
 		WebSocketEventTranscoder.class }, decoders = { EventTranscoder.class, WebSocketEventTranscoder.class })
 public class EventBusEndpoint {
-
-	private class SemaphoreSendHandler implements SendHandler {
-
-		private final Semaphore semaphore;
-		private final RemoteEndpoint remoteEndpoint;
-		private final Session session;
-
-		private SemaphoreSendHandler(final Semaphore semaphore, final RemoteEndpoint remoteEndpoint,
-				final Session session) {
-			this.semaphore = semaphore;
-			this.remoteEndpoint = remoteEndpoint;
-			this.session = session;
-		}
-
-		@Override
-		public void onResult(final SendResult result) {
-			LogManager.getLogger(EventBusEndpoint.class).info("Eventbus Sent ok: " + result.isOK());
-			try {
-				if (session.isOpen()) {
-					remoteEndpoint.flushBatch();
-					remoteEndpoint.sendPing(ByteBuffer.wrap(new byte[0]));
-				}
-			} catch (final IOException e) {
-				LogManager.getLogger(this.getClass()).info("Flushing failed", e);
-			}
-
-			semaphore.release();
-		}
-
-	}
 
 	private final ConcurrentHashMap<String, Session> userSessions = new ConcurrentHashMap<>();
 	private final EventTranscoder eventTranscoder;
@@ -82,48 +46,53 @@ public class EventBusEndpoint {
 	 */
 	@Subscribe
 	public void handleEvent(final EventObject eventObject) {
-		final Enumeration<String> keySet = userSessions.keys();
+		userSessions.keys();
 		try {
 			final String text = eventTranscoder.encode(eventObject);
-			while (keySet.hasMoreElements()) {
-				final String key = keySet.nextElement();
 
-				final Session session = userSessions.get(key);
-
-				synchronized (session) {
-
-					if (session.isOpen()) {
-						try {
-							final Semaphore semaphore = new Semaphore(1);
-							final Async async = session.getAsyncRemote();
-							final SendHandler handler = new SemaphoreSendHandler(semaphore, async, session);
-
-							// LogManager.getLogger(this.getClass())
-							// .info("Eventbus Sending to " + session.getId() + " key: " + key + " text: " +
-							// text);
-
-							if (async.getBatchingAllowed()) {
-								async.setBatchingAllowed(false);
-							}
-
-							semaphore.acquireUninterruptibly();
-
-							async.sendText(text, handler);
-							async.flushBatch();
-							session.getBasicRemote().flushBatch();
-
-							// session.getBasicRemote().sendObject(eventObject);
-						} catch (IllegalStateException | IOException e) {
-							LogManager.getLogger(this.getClass())
-									.error("Sending failed" + session.getId() + " key: " + key + " text: " + text, e);
-							// userSessions.remove(key);
-						}
-					} else {
-						LogManager.getLogger(this.getClass()).error("Session not open" + key);
-						// userSessions.remove(key);
-					}
-				}
-			}
+			sendTextToAllSession(text);
+			// while (keySet.hasMoreElements()) {
+			// final String key = keySet.nextElement();
+			//
+			// final Session session = userSessions.get(key);
+			//
+			// synchronized (session) {
+			//
+			// if (session.isOpen()) {
+			// try {
+			// final Semaphore semaphore = new Semaphore(1);
+			// final Async async = session.getAsyncRemote();
+			// final SendHandler handler = new SemaphoreSendHandler(semaphore, async,
+			// session);
+			//
+			// // LogManager.getLogger(this.getClass())
+			// // .info("Eventbus Sending to " + session.getId() + " key: " + key + " text:
+			// " +
+			// // text);
+			//
+			// if (async.getBatchingAllowed()) {
+			// async.setBatchingAllowed(false);
+			// }
+			//
+			// semaphore.acquireUninterruptibly();
+			//
+			// async.sendText(text, handler);
+			// async.flushBatch();
+			// session.getBasicRemote().flushBatch();
+			//
+			// // session.getBasicRemote().sendObject(eventObject);
+			// } catch (IllegalStateException | IOException e) {
+			// LogManager.getLogger(this.getClass())
+			// .error("Sending failed" + session.getId() + " key: " + key + " text: " +
+			// text, e);
+			// // userSessions.remove(key);
+			// }
+			// } else {
+			// LogManager.getLogger(this.getClass()).error("Session not open" + key);
+			// // userSessions.remove(key);
+			// }
+			// }
+			// }
 		} catch (final EncodeException e) {
 			LogManager.getLogger(this.getClass()).error("Encoding failed", e);
 		}
@@ -131,43 +100,11 @@ public class EventBusEndpoint {
 
 	@Subscribe
 	public void handleEvent(final WebSocketEvent eventObject) {
-		final Enumeration<String> keySet = userSessions.keys();
 
 		try {
 			final String text = webSocketEventTranscoder.encode(eventObject);
 
-			while (keySet.hasMoreElements()) {
-				final String key = keySet.nextElement();
-
-				final Session session = userSessions.get(key);
-
-				synchronized (session) {
-					if (session.isOpen()) {
-						try {
-
-							// LogManager.getLogger(this.getClass())
-							// .info("Eventbus Sending to " + session.getId() + " key: " + key + " text: " +
-							// text);
-
-							// session.getBasicRemote().sendObject(eventObject);
-							// session.getBasicRemote().flushBatch();
-
-							session.getAsyncRemote().setBatchingAllowed(false);
-							session.getAsyncRemote().sendText(text);
-							session.getAsyncRemote().flushBatch();
-							session.getBasicRemote().flushBatch();
-
-						} catch (IllegalStateException | IOException e) {
-							LogManager.getLogger(this.getClass())
-									.error("Sending failed" + session.getId() + " key: " + key + " text: " + text, e); //
-							userSessions.remove(key);
-						}
-					} else {
-						userSessions.remove(key);
-					}
-				}
-
-			}
+			sendTextToAllSession(text);
 		} catch (final EncodeException e) {
 			LogManager.getLogger(this.getClass()).error("Encoding failed", e);
 		}
@@ -209,6 +146,39 @@ public class EventBusEndpoint {
 	 */
 	@OnOpen
 	public void onOpen(@PathParam("clientId") final String clientId, final Session userSession) {
+		try {
+			userSession.getBasicRemote().setBatchingAllowed(false);
+		} catch (final IOException e) {
+			LogManager.getLogger(this.getClass()).error("Setting batching allowed to false failed.", e); //
+		}
 		userSessions.put(clientId, userSession);
+	}
+
+	private void sendTextToAllSession(final String text) {
+		final Enumeration<String> sessionKeys = userSessions.keys();
+		while (sessionKeys.hasMoreElements()) {
+			final String key = sessionKeys.nextElement();
+
+			final Session session = userSessions.get(key);
+
+			synchronized (session) {
+				if (session.isOpen()) {
+					try {
+
+						session.getBasicRemote().setBatchingAllowed(false);
+						session.getBasicRemote().sendText(text);
+						session.getBasicRemote().flushBatch();
+
+					} catch (IllegalStateException | IOException e) {
+						LogManager.getLogger(this.getClass())
+								.error("Sending failed" + session.getId() + " key: " + key + " text: " + text, e); //
+						userSessions.remove(key);
+					}
+				} else {
+					userSessions.remove(key);
+				}
+			}
+
+		}
 	}
 }
