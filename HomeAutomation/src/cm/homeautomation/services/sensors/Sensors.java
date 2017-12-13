@@ -301,7 +301,7 @@ public class Sensors extends BaseService {
 			}
 		}
 
-		LogManager.getLogger(this.getClass()).error("Found roomId" + roomID);
+		LogManager.getLogger(this.getClass()).info("Found roomId" + roomID);
 
 		@SuppressWarnings("unchecked")
 		final List<Sensor> sensorList = em
@@ -317,13 +317,13 @@ public class Sensors extends BaseService {
 			for (final Sensor sensor : sensorList) {
 
 				if ("TEMPERATURE".equals(sensor.getSensorType())) {
-					LogManager.getLogger(this.getClass()).error("Saving temperature to sensor: " + sensor.getId());
+					LogManager.getLogger(this.getClass()).info("Saving temperature to sensor: " + sensor.getId());
 					saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getTemperature()),
 							request.getTimestamp());
 				}
 
 				if ("HUMIDITY".equals(sensor.getSensorType())) {
-					LogManager.getLogger(this.getClass()).error("Saving humidity to sensor: " + sensor.getId());
+					LogManager.getLogger(this.getClass()).info("Saving humidity to sensor: " + sensor.getId());
 					saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getHumidity()),
 							request.getTimestamp());
 				}
@@ -385,7 +385,7 @@ public class Sensors extends BaseService {
 			if ((existingSensorData != null) && existingSensorData.getValue().equals(requestSensorData.getValue())) {
 				existingSensorData.setValidThru(new Date());
 				em.merge(existingSensorData);
-				LogManager.getLogger(this.getClass()).error("Committing data: " + existingSensorData.getValue());
+				LogManager.getLogger(this.getClass()).info("Committing data: " + existingSensorData.getValue());
 			} else {
 				if ((existingSensorData != null) && (requestSensorData != null)
 						&& (requestSensorData.getDateTime() != null)) {
@@ -398,13 +398,13 @@ public class Sensors extends BaseService {
 				em.persist(sensorData);
 
 				EventBusService.getEventBus().post(new EventObject(sensorData));
-				LogManager.getLogger(this.getClass()).error("Committing data: " + sensorData.getValue());
+				LogManager.getLogger(this.getClass()).info("Committing data: " + sensorData.getValue());
 			}
 
 			em.getTransaction().commit();
 
 		} else {
-			LogManager.getLogger(this.getClass()).error("Not a sensor");
+			LogManager.getLogger(this.getClass()).debug("Not a sensor");
 		}
 		em.close();
 	}
