@@ -51,48 +51,6 @@ public class EventBusEndpoint {
 			final String text = eventTranscoder.encode(eventObject);
 
 			sendTextToAllSession(text);
-			// while (keySet.hasMoreElements()) {
-			// final String key = keySet.nextElement();
-			//
-			// final Session session = userSessions.get(key);
-			//
-			// synchronized (session) {
-			//
-			// if (session.isOpen()) {
-			// try {
-			// final Semaphore semaphore = new Semaphore(1);
-			// final Async async = session.getAsyncRemote();
-			// final SendHandler handler = new SemaphoreSendHandler(semaphore, async,
-			// session);
-			//
-			// // LogManager.getLogger(this.getClass())
-			// // .info("Eventbus Sending to " + session.getId() + " key: " + key + " text:
-			// " +
-			// // text);
-			//
-			// if (async.getBatchingAllowed()) {
-			// async.setBatchingAllowed(false);
-			// }
-			//
-			// semaphore.acquireUninterruptibly();
-			//
-			// async.sendText(text, handler);
-			// async.flushBatch();
-			// session.getBasicRemote().flushBatch();
-			//
-			// // session.getBasicRemote().sendObject(eventObject);
-			// } catch (IllegalStateException | IOException e) {
-			// LogManager.getLogger(this.getClass())
-			// .error("Sending failed" + session.getId() + " key: " + key + " text: " +
-			// text, e);
-			// // userSessions.remove(key);
-			// }
-			// } else {
-			// LogManager.getLogger(this.getClass()).error("Session not open" + key);
-			// // userSessions.remove(key);
-			// }
-			// }
-			// }
 		} catch (final EncodeException e) {
 			LogManager.getLogger(this.getClass()).error("Encoding failed", e);
 		}
@@ -156,29 +114,33 @@ public class EventBusEndpoint {
 
 	private void sendTextToAllSession(final String text) {
 		final Enumeration<String> sessionKeys = userSessions.keys();
-		while (sessionKeys.hasMoreElements()) {
-			final String key = sessionKeys.nextElement();
 
-			final Session session = userSessions.get(key);
+		synchronized (this) {
 
-			synchronized (session) {
-				if (session.isOpen()) {
-					try {
-						LogManager.getLogger(this.getClass()).error("Websocket: trigger message: " + text);
-						session.getBasicRemote().sendText(text);
-						session.getBasicRemote().flushBatch();
-						LogManager.getLogger(this.getClass()).error("Websocket: message triggered");
+			while (sessionKeys.hasMoreElements()) {
+				final String key = sessionKeys.nextElement();
 
-					} catch (IllegalStateException | IOException e) {
-						LogManager.getLogger(this.getClass())
-								.error("Sending failed" + session.getId() + " key: " + key + " text: " + text, e); //
+				final Session session = userSessions.get(key);
+
+				synchronized (session) {
+					if (session.isOpen()) {
+						try {
+							LogManager.getLogger(this.getClass()).error("Websocket: trigger message: " + text);
+							session.getBasicRemote().sendText(text);
+							session.getBasicRemote().flushBatch();
+							LogManager.getLogger(this.getClass()).error("Websocket: message triggered");
+
+						} catch (IllegalStateException | IOException e) {
+							LogManager.getLogger(this.getClass())
+									.error("Sending failed" + session.getId() + " key: " + key + " text: " + text, e); //
+							userSessions.remove(key);
+						}
+					} else {
 						userSessions.remove(key);
 					}
-				} else {
-					userSessions.remove(key);
 				}
-			}
 
+			}
 		}
 	}
 }

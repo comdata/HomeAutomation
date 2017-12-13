@@ -13,18 +13,21 @@ import org.apache.logging.log4j.LogManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 public class EventTranscoder implements Encoder.Text<EventObject>, Decoder.Text<EventObject> {
 	private ObjectMapper mapper;
 
 	public EventTranscoder() {
 		init(null);
 	}
-	
+
 	@Override
-	public void init(EndpointConfig config) {
-		mapper = new ObjectMapper();
-		//mapper.setSerializationInclusion(Include.NON_NULL);
+	public EventObject decode(final String s) throws DecodeException {
+		try {
+			return mapper.readValue(s, EventObject.class);
+		} catch (final IOException e) {
+			LogManager.getLogger(this.getClass()).error("decoding failed: " + s, e);
+		}
+		return null;
 	}
 
 	@Override
@@ -33,31 +36,27 @@ public class EventTranscoder implements Encoder.Text<EventObject>, Decoder.Text<
 	}
 
 	@Override
-	public EventObject decode(String s) throws DecodeException {
-		try {
-			return mapper.readValue(s, EventObject.class);
-		} catch (IOException e) {
-			LogManager.getLogger(this.getClass()).error("decoding failed: "+s, e);
-		}
-		return null;
-	}
-
-	@Override
-	public boolean willDecode(String s) {
-		return true;
-	}
-
-	@Override
-	public String encode(EventObject object) throws EncodeException {
+	public String encode(final EventObject object) throws EncodeException {
 
 		try {
-			String writeValueAsString = mapper.writeValueAsString(object);
-			LogManager.getLogger(this.getClass()).trace("encoded as: "+writeValueAsString);
+			final String writeValueAsString = mapper.writeValueAsString(object);
+			LogManager.getLogger(this.getClass()).trace("encoded as: " + writeValueAsString);
 			return writeValueAsString;
-		} catch (JsonProcessingException e) {
+		} catch (final JsonProcessingException e) {
 			LogManager.getLogger(this.getClass()).error("encoding failed.", e);
 		}
 		return null;
+	}
+
+	@Override
+	public void init(final EndpointConfig config) {
+		mapper = new ObjectMapper();
+		// mapper.setSerializationInclusion(Include.NON_NULL);
+	}
+
+	@Override
+	public boolean willDecode(final String s) {
+		return true;
 	}
 
 }
