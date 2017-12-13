@@ -1143,7 +1143,7 @@ sap.ui.define([
         handleThermostatChange: function (event) {
             var thermostat = sap.ui.getCore().getModel("thermostats").getProperty(event.getSource().oPropagatedProperties.oBindingContexts.thermostats.sPath);
 
-            var value = thermostat.currentValue;
+            var value = event.getParameter("value");;
             console.log("new value: " + value);
 
             var oModel = new RESTService();
