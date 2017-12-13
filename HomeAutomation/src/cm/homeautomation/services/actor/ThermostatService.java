@@ -1,6 +1,7 @@
 package cm.homeautomation.services.actor;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
@@ -59,6 +60,9 @@ public class ThermostatService extends BaseService {
 		final String setURL = singleSwitch.getSwitchSetUrl().replace("{SETVALUE}", value);
 
 		performHTTPSetPoint(value, singleSwitch, setURL);
+
+		singleSwitch.setLatestStatus(value);
+		singleSwitch.setLatestStatusFrom(new Date());
 
 		em.persist(singleSwitch);
 

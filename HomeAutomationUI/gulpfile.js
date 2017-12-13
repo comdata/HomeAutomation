@@ -14,7 +14,7 @@ rm = require('gulp-rimraf');
 var gulps = require("gulp-series");
 var prettify = require('gulp-prettify');
 
-var your_project = 'HomeAutomation';
+var your_project = 'HomeAutomationUI';
  
 gulp.task(
     'ui5preload',
@@ -28,18 +28,20 @@ gulp.task(
                     '!model/metadata.xml',
                     '!node_modules/**',
                     '!resources/**',
-		    '!target/**'
+		    '!target/**',
+		
+		    '!**/pom.xml',	
                 ]
             )
             .pipe(gulpif('./**/*.js', uglify())) //only pass .js files to uglify
             //.pipe(gulpif('**/*.xml', prettydata({type: 'minify'}))) // only pass .xml to prettydata
             .pipe(ui5preload({
-                base: './',
+                base: './WebContent',
                 namespace: your_project,
                 fileName: 'WebContent/Component-preload.js'
             
             }))
-            .pipe(gulp.dest('.'));
+            .pipe(gulp.dest('WebContent'));
     }
 );
 
@@ -54,7 +56,9 @@ gulp.task('1compres', function() {
                   '!model/metadata.xml',
                   '!node_modules/**',
                   '!resources/**',
-                    '!target/**'
+                    '!target/**',
+
+                    '!**/pom.xml',
               ]	  
 	  )
 	    .pipe(minify({
@@ -81,25 +85,27 @@ gulp.task(
 	                    '!model/metadata.xml',
 	                    '!node_modules/**',
 	                    '!resources/**',
-                    '!target/**'
+                    '!target/**',
+
+                    '!**/pom.xml',
 	                ]
 	            )
 	            .pipe(gulpif('./**/*.js', uglify())) //only pass .js files to uglify
 	            //.pipe(gulpif('**/*.xml', prettydata({type: 'minify'}))) // only pass .xml to prettydata
 	            .pipe(ui5preload({
-	                base: './',
+	                base: './WebContent',
 	                namespace: your_project,
 	                fileName: 'WebContent/Component-preload.js'
 	            
 	            }))
-	            .pipe(gulp.dest('./'));
+	            .pipe(gulp.dest('WebContent/'));
 	    }
 	);
 
 gulp.task('3prepareComponentPreload',['2ui5preloadCompresed'], function(){
 	return gulp.src(['WebContent/Component-preload.js'])
 	    .pipe(replace('/distTmp/', '/'))
-	    .pipe(gulp.dest('.'));
+	    .pipe(gulp.dest('WebContent/'));
 	  
 	});
 
