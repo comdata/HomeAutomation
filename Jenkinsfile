@@ -9,7 +9,7 @@ pipeline {
 	stage('Prepare') {
 	    steps {
 		sh 'apk update'
-		sh 'apk add rsync openssh mariadb'
+		sh 'apk add rsync openssh mariadb mariadb-client'
 		sh 'mysql -u root -e "CREATE DATABASE HA;"'
 		sh 'mysql -u root HA < HomeAutomation/WebContent/WEB-INF/log4j.sql'
 	    } 
