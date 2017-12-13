@@ -1,12 +1,30 @@
 {
-  "name": "HomeAutomation",
-  "version": "0.0.1",
-  "description": "",
-  "main": "index.html",
-  "author": "Christoph Mertins",
-  "license": "Not specified",
+  "name": "homeautomation-ui",
+  "version": "1.0.0",
+  "description": "HomeAutomation UI",
+  "author": "Christoph Mertins c.mertins@gmail.com",
+  "private": false,
+  "scripts": {},
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-openui5": "^0.10.0"
-   }
- }
+    "del": "*",
+    "gulp": "^3.9.1",
+    "gulp-concat": "*",
+    "gulp-if": "*",
+    "gulp-jshint": "*",
+    "gulp-minify": "*",
+    "gulp-prettify": "*",
+    "gulp-pretty-data": "*",
+    "gulp-rename": "*",
+    "gulp-replace": "*",
+    "gulp-rimraf": "*",
+    "gulp-series": "*",
+    "gulp-tap": "*",
+    "gulp-uglify": "*",
+    "gulp-ui5-preload": "*",
+    "path": "*",
+    "writefile": "*"
+  },
+  "dependencies": {
+    "grunt": "^1.0.1"
+  }
+}
