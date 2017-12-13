@@ -9,7 +9,9 @@ pipeline {
 	stage('Prepare') {
 	    steps {
 		sh 'apk update'
-		sh 'apk add rsync openssh mariadb mariadb-client'
+		sh 'apk add rsync openssh mariadb mariadb-client openrc'
+		sh 'mysql_install_db --user=mysql --rpm'
+		sh '/usr/bin/mysqld_safe &'
 //		sh '/etc/init.d/mariadb start'
 //		sh 'mysql -u root -e "CREATE DATABASE HA;"'
 //		sh 'mysql -u root HA < HomeAutomation/WebContent/WEB-INF/log4j.sql'
