@@ -27,6 +27,12 @@ public class ThermostatService extends BaseService {
 
 	private static ThermostatService instance;
 
+	public static void cronSetStatus(final String[] args) {
+		final Long id = new Long(args[0]);
+		final String value = args[1];
+		getInstance().setValue(id, value);
+	}
+
 	public static ThermostatService getInstance() {
 
 		if (instance == null) {
@@ -38,12 +44,6 @@ public class ThermostatService extends BaseService {
 
 	public ThermostatService() {
 		instance = this;
-	}
-
-	public void cronSetStatus(final String[] args) {
-		final Long id = new Long(args[0]);
-		final String value = args[1];
-		getInstance().setValue(id, value);
 	}
 
 	private void performHTTPSetPoint(final String value, final Switch singleSwitch, final String setURL) {
@@ -64,8 +64,7 @@ public class ThermostatService extends BaseService {
 			singleSwitch.setLatestStatus(value);
 
 		} catch (final IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error(e);
 		}
 	}
 
