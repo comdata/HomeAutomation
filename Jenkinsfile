@@ -19,10 +19,24 @@ pipeline {
 	}
 
         stage('Build') { 
-            steps {
-                sh 'mvn -B clean package' 
-            }
+            parallel {
+		 stage('Build Backend') {
+			steps {
+				sh 'cd HomeAutomationBase && mvn -B clean install'
+                		sh 'cd ..'
+				sh 'cd HomeAutomation && mvn -B clean package'
+				sh 'cd ..'
+				junit '**/target/*.xml'  
+            		}
+		}
+		stage('Build Frontend') {
+            		steps {
+                		sh 'cd HomeAutomationUI && mvn -B clean package'
+            		}
+		}
+	    }
         }
+
         stage('Deploy') {
             steps {
 		
