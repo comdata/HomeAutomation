@@ -1028,7 +1028,7 @@ sap.ui.define([
             var modelData=model.oData;
             
             for (var i=0; i<modelData.switchStatuses.length;i++) {
-            		modelData.switchStatuses[i]=parseFloat(modelData.switchStatuses[i]);
+            		modelData.switchStatuses[i].latestStatus=parseFloat(modelData.switchStatuses[i].latestStatus);
             }
             
             model.setData(modelData);
