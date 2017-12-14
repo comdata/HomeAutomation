@@ -48,9 +48,9 @@ public class EventBusEndpoint {
 	public void handleEvent(final EventObject eventObject) {
 		userSessions.keys();
 		try {
-			final String text = eventTranscoder.encode(eventObject);
+			eventTranscoder.encode(eventObject);
 
-			sendTextToAllSession(text);
+			sendObjectToAllSession(eventObject);
 		} catch (final EncodeException e) {
 			LogManager.getLogger(this.getClass()).error("Encoding failed", e);
 		}
@@ -60,9 +60,9 @@ public class EventBusEndpoint {
 	public void handleEvent(final WebSocketEvent eventObject) {
 
 		try {
-			final String text = webSocketEventTranscoder.encode(eventObject);
+			webSocketEventTranscoder.encode(eventObject);
 
-			sendTextToAllSession(text);
+			sendObjectToAllSession(eventObject);
 		} catch (final EncodeException e) {
 			LogManager.getLogger(this.getClass()).error("Encoding failed", e);
 		}
@@ -112,16 +112,8 @@ public class EventBusEndpoint {
 		userSessions.put(clientId, userSession);
 	}
 
-	private void sendTextToAllSession(final String text) {
+	private void sendObjectToAllSession(final Object object) {
 		final Enumeration<String> sessionKeys = userSessions.keys();
-
-		String newText = text;
-		if (newText.length() < 1024) {
-			for (int i = 0; i < 9000; i++) {
-				newText += " ";
-			}
-
-		}
 
 		synchronized (this) {
 
@@ -133,14 +125,14 @@ public class EventBusEndpoint {
 				synchronized (session) {
 					if (session.isOpen()) {
 						try {
-							LogManager.getLogger(this.getClass()).error("Websocket: trigger message: " + text);
-							session.getBasicRemote().sendText(newText);
+							LogManager.getLogger(this.getClass()).error("Websocket: trigger message");
+							session.getBasicRemote().sendObject(object);
 							session.getBasicRemote().flushBatch();
 							LogManager.getLogger(this.getClass()).error("Websocket: message triggered");
 
-						} catch (IllegalStateException | IOException e) {
+						} catch (IllegalStateException | IOException | EncodeException e) {
 							LogManager.getLogger(this.getClass())
-									.error("Sending failed" + session.getId() + " key: " + key + " text: " + text, e); //
+									.error("Sending failed" + session.getId() + " key: " + key, e); //
 							userSessions.remove(key);
 						}
 					} else {
