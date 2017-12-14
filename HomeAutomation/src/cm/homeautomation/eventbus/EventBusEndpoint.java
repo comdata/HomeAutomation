@@ -117,7 +117,7 @@ public class EventBusEndpoint {
 
 		String newText = text;
 		if (newText.length() < 1024) {
-			for (int i = 0; i < 1000; i++) {
+			for (int i = 0; i < 9000; i++) {
 				newText += " ";
 			}
 
