@@ -26,7 +26,7 @@ pipeline {
                 		sh 'cd ..'
 				sh 'cd HomeAutomation && mvn -B clean package'
 				sh 'cd ..'
-				junit '**/target/*.xml'  
+//				junit '**/target/*.xml'  
             		}
 		}
 		stage('Build Frontend') {
