@@ -95,8 +95,8 @@ sap.ui.define([
                 controller.wsOnClose.apply(controller, [evt, uri, callback, socket, state]);
             };
             socket.onmessage = function (evt) {
-                //controller.wsClose(socket, state);
-                //controller.initWebSocket(uri, callback, socket, state);
+                // controller.wsClose(socket, state);
+                // controller.initWebSocket(uri, callback, socket, state);
                 callback.apply(controller, [evt]);
 
             };
@@ -1025,6 +1025,14 @@ sap.ui.define([
                 thermostatsList.setProperty("visible", false);
             }
 
+            var modelData=model.oData;
+            
+            for (var i=0; i<modelData.switchStatuses.length;i++) {
+            		modelData.switchStatuses[i]=parseFloat(modelData.switchStatuses[i]);
+            }
+            
+            model.setData(modelData);
+            
             sap.ui.getCore().setModel(model, "thermostats");
         },
         networkDeviceWakeUp: function (event) {
