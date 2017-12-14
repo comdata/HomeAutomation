@@ -115,6 +115,14 @@ public class EventBusEndpoint {
 	private void sendTextToAllSession(final String text) {
 		final Enumeration<String> sessionKeys = userSessions.keys();
 
+		String newText = text;
+		if (newText.length() < 1024) {
+			for (int i = 0; i < 1000; i++) {
+				newText += " ";
+			}
+
+		}
+
 		synchronized (this) {
 
 			while (sessionKeys.hasMoreElements()) {
@@ -126,7 +134,7 @@ public class EventBusEndpoint {
 					if (session.isOpen()) {
 						try {
 							LogManager.getLogger(this.getClass()).error("Websocket: trigger message: " + text);
-							session.getBasicRemote().sendText(text);
+							session.getBasicRemote().sendText(newText);
 							session.getBasicRemote().flushBatch();
 							LogManager.getLogger(this.getClass()).error("Websocket: message triggered");
 
