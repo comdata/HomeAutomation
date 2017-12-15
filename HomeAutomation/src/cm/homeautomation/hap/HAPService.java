@@ -14,7 +14,6 @@ import com.beowulfe.hap.HomekitAuthInfo;
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
 import com.beowulfe.hap.HomekitRoot;
 import com.beowulfe.hap.HomekitServer;
-import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Sensor;
@@ -33,73 +32,27 @@ public class HAPService {
 
 	private static HAPService instance;
 
-	private EntityManager em;
-
-	private HomekitRoot bridge;
-	private Map<Long, HAPTemperatureSensor> temperatureSensors = new HashMap<Long, HAPTemperatureSensor>();
-	private Map<Long, HAPHumiditySensor> humiditySensors = new HashMap<Long, HAPHumiditySensor>();
-
-	public HAPService() {
-		System.out.println("Starting HAP");
-		if (instance==null) {
-			instance=this;
+	/**
+	 * @return the instance
+	 */
+	public static HAPService getInstance() {
+		if (instance == null) {
+			instance = new HAPService();
 		}
-		
-		init();
-		EventBusService.getEventBus().register(this);
-	}
 
-	public void addWindowCovering(HomekitRoot bridge) {
-		WindowBlindService windowBlindService = new WindowBlindService();
-		WindowBlindsList allWindowBlinds = windowBlindService.getAll();
-
-		List<WindowBlind> windowBlindsList = allWindowBlinds.getWindowBlinds();
-
-		for (WindowBlind windowBlind : windowBlindsList) {
-			int id = 3000 + windowBlind.getId().intValue();
-			String name = replaceUmlaut(windowBlind.getName());
-			HAPWindowBlind hapWindowBlind = new HAPWindowBlind(windowBlind, id, name);
-			System.out.println("Adding Windowblind: " + id + " - " + hapWindowBlind.getLabel());
-
-			bridge.addAccessory(hapWindowBlind);
-		}
-	}
-
-	//@Subscribe
-	public void handleSensorDataChanged(EventObject eventObject) {
-
-		Object eventData = eventObject.getData();
-		if (eventData instanceof SensorData) {
-
-			SensorData sensorData = (SensorData) eventData;
-			if ("TEMPERATURE".equals(sensorData.getSensor().getSensorType())) {
-
-				HAPTemperatureSensor hapTemperatureSensor = HAPService.getInstance().getTemperatureSensors()
-						.get(sensorData.getSensor().getId());
-
-				if (hapTemperatureSensor != null) {
-					double valueAsDouble = Double.parseDouble(sensorData.getValue().replace(",", "."));
-					hapTemperatureSensor.setTemperature(new Double(valueAsDouble));
-					HomekitCharacteristicChangeCallback subscribeCallback = hapTemperatureSensor.getSubscribeCallback();
-					if (subscribeCallback != null) {
-						subscribeCallback.changed();
-					}
-				}
-			}
-		}
+		return instance;
 	}
 
 	/**
-	 * Replaces all german umlaute in the input string with the usual
-	 * replacement scheme, also taking into account capitilization. A test
-	 * String such as "Käse Köln Füße Öl Übel Äü Üß ÄÖÜ Ä Ö Ü ÜBUNG" will yield
-	 * the result
-	 * "Kaese Koeln Fuesse Oel Uebel Aeue Uess AEOEUe Ae Oe Ue UEBUNG"
-	 * 
+	 * Replaces all german umlaute in the input string with the usual replacement
+	 * scheme, also taking into account capitilization. A test String such as "Käse
+	 * Köln Füße Öl Übel Äü Üß ÄÖÜ Ä Ö Ü ÜBUNG" will yield the result "Kaese Koeln
+	 * Fuesse Oel Uebel Aeue Uess AEOEUe Ae Oe Ue UEBUNG"
+	 *
 	 * @param input
 	 * @return the input string with replaces umlaute
 	 */
-	private static String replaceUmlaut(String input) {
+	private static String replaceUmlaut(final String input) {
 
 		// replace all lower Umlauts
 		String o_strResult = input.replaceAll("ü", "ue").replaceAll("ö", "oe").replaceAll("ä", "ae").replaceAll("ß",
@@ -116,47 +69,42 @@ public class HAPService {
 		return o_strResult;
 	}
 
-	public void addTemperatureSensor(HomekitRoot bridge) {
-		System.out.println("Loading Temperature");
-		@SuppressWarnings("unchecked")
-		List<Sensor> sensorList = em.createQuery("select s from Sensor s where s.sensorType='TEMPERATURE'")
-				.getResultList();
-
-		if (sensorList != null) {
-			for (Sensor singleSensor : sensorList) {
-				@SuppressWarnings("unchecked")
-				List<SensorData> latestDataList = em
-						.createQuery("select sd from SensorData sd where sd.sensor=:sensor order by sd.dateTime desc")
-						.setParameter("sensor", singleSensor).setMaxResults(1).getResultList();
-
-				if (latestDataList != null && !latestDataList.isEmpty()) {
-					SensorData sensorData = latestDataList.get(0);
-
-					String name = replaceUmlaut(singleSensor.getSensorName());
-					name += " in " + singleSensor.getRoom().getRoomName();
-
-					System.out.println("Adding Sensor: " + name);
-
-					HAPTemperatureSensor hapTemperature = new HAPTemperatureSensor(name, singleSensor.getId());
-					hapTemperature.setTemperature(new Double(sensorData.getValue().replace(",", ".")));
-					getTemperatureSensors().put(singleSensor.getId(), hapTemperature);
-					bridge.addAccessory(hapTemperature);
-				}
-			}
-
-		}
+	/**
+	 * @param instance
+	 *            the instance to set
+	 */
+	public static void setInstance(final HAPService instance) {
+		HAPService.instance = instance;
 	}
 
-	public void addHumiditySensor(HomekitRoot bridge) {
+	private EntityManager em;
+
+	private HomekitRoot bridge;
+
+	private Map<Long, HAPTemperatureSensor> temperatureSensors = new HashMap<>();
+
+	private Map<Long, HAPHumiditySensor> humiditySensors = new HashMap<>();
+
+	public HAPService() {
+		System.out.println("Starting HAP");
+		if (instance == null) {
+			instance = this;
+		}
+
+		init();
+		EventBusService.getEventBus().register(this);
+	}
+
+	public void addHumiditySensor(final HomekitRoot bridge) {
 		System.out.println("Loading Humidity");
 		@SuppressWarnings("unchecked")
-		List<Sensor> sensorList = em.createQuery("select s from Sensor s where s.sensorType='HUMIDITY'")
+		final List<Sensor> sensorList = em.createQuery("select s from Sensor s where s.sensorType='HUMIDITY'")
 				.getResultList();
 
 		if (sensorList != null) {
-			for (Sensor singleSensor : sensorList) {
+			for (final Sensor singleSensor : sensorList) {
 				@SuppressWarnings("unchecked")
-				List<SensorData> latestDataList = em
+				final List<SensorData> latestDataList = em
 						.createQuery("select sd from SensorData sd where sd.sensor=:sensor order by sd.dateTime desc")
 						.setParameter("sensor", singleSensor).setMaxResults(1).getResultList();
 
@@ -165,11 +113,11 @@ public class HAPService {
 
 				System.out.println("Adding Sensor: " + name);
 
-				HAPHumiditySensor hapHumiditySensor = new HAPHumiditySensor(name, singleSensor.getId());
+				final HAPHumiditySensor hapHumiditySensor = new HAPHumiditySensor(name, singleSensor.getId());
 
-				if (latestDataList != null && !latestDataList.isEmpty()) {
+				if ((latestDataList != null) && !latestDataList.isEmpty()) {
 
-					SensorData sensorData = latestDataList.get(0);
+					final SensorData sensorData = latestDataList.get(0);
 					hapHumiditySensor.setHumidity(new Double(sensorData.getValue().replace(",", ".")));
 				}
 
@@ -180,14 +128,14 @@ public class HAPService {
 		}
 	}
 
-	public void addLightsToBridge(HomekitRoot bridge) {
+	public void addLightsToBridge(final HomekitRoot bridge) {
 		System.out.println("Loading Lights");
 		@SuppressWarnings("unchecked")
-		List<Switch> switchList = em.createQuery("select sw from Switch sw where sw.switchType='LIGHT'")
+		final List<Switch> switchList = em.createQuery("select sw from Switch sw where sw.switchType='LIGHT'")
 				.getResultList();
 
 		if (switchList != null) {
-			for (Switch singleSwitch : switchList) {
+			for (final Switch singleSwitch : switchList) {
 				boolean status = false;
 				if ("ON".equals(singleSwitch.getLatestStatus())) {
 					status = true;
@@ -198,7 +146,7 @@ public class HAPService {
 
 				System.out.println("Adding Light: " + name);
 
-				HAPLight hapSwitch = new HAPLight(name, status, singleSwitch.getId());
+				final HAPLight hapSwitch = new HAPLight(name, status, singleSwitch.getId());
 
 				bridge.addAccessory(hapSwitch);
 			}
@@ -206,14 +154,14 @@ public class HAPService {
 		}
 	}
 
-	public void addSocketsToBridge(HomekitRoot bridge) {
+	public void addSocketsToBridge(final HomekitRoot bridge) {
 		System.out.println("Loading Switches");
 		@SuppressWarnings("unchecked")
-		List<Switch> switchList = em.createQuery("select sw from Switch sw where sw.switchType='SOCKET'")
+		final List<Switch> switchList = em.createQuery("select sw from Switch sw where sw.switchType='SOCKET'")
 				.getResultList();
 
 		if (switchList != null) {
-			for (Switch singleSwitch : switchList) {
+			for (final Switch singleSwitch : switchList) {
 				boolean status = false;
 				if ("ON".equals(singleSwitch.getLatestStatus())) {
 					status = true;
@@ -224,7 +172,7 @@ public class HAPService {
 
 				System.out.println("Adding Switch: " + name);
 
-				HAPSwitch hapSwitch = new HAPSwitch(name, status, singleSwitch.getId());
+				final HAPSwitch hapSwitch = new HAPSwitch(name, status, singleSwitch.getId());
 
 				bridge.addAccessory(hapSwitch);
 			}
@@ -232,39 +180,122 @@ public class HAPService {
 		}
 	}
 
+	public void addTemperatureSensor(final HomekitRoot bridge) {
+		System.out.println("Loading Temperature");
+		@SuppressWarnings("unchecked")
+		final List<Sensor> sensorList = em.createQuery("select s from Sensor s where s.sensorType='TEMPERATURE'")
+				.getResultList();
+
+		if (sensorList != null) {
+			for (final Sensor singleSensor : sensorList) {
+				@SuppressWarnings("unchecked")
+				final List<SensorData> latestDataList = em
+						.createQuery("select sd from SensorData sd where sd.sensor=:sensor order by sd.dateTime desc")
+						.setParameter("sensor", singleSensor).setMaxResults(1).getResultList();
+
+				if ((latestDataList != null) && !latestDataList.isEmpty()) {
+					final SensorData sensorData = latestDataList.get(0);
+
+					String name = replaceUmlaut(singleSensor.getSensorName());
+					name += " in " + singleSensor.getRoom().getRoomName();
+
+					System.out.println("Adding Sensor: " + name);
+
+					final HAPTemperatureSensor hapTemperature = new HAPTemperatureSensor(name, singleSensor.getId());
+					hapTemperature.setTemperature(new Double(sensorData.getValue().replace(",", ".")));
+					getTemperatureSensors().put(singleSensor.getId(), hapTemperature);
+					bridge.addAccessory(hapTemperature);
+				}
+			}
+
+		}
+	}
+
+	public void addWindowCovering(final HomekitRoot bridge) {
+		final WindowBlindService windowBlindService = new WindowBlindService();
+		final WindowBlindsList allWindowBlinds = windowBlindService.getAll();
+
+		final List<WindowBlind> windowBlindsList = allWindowBlinds.getWindowBlinds();
+
+		for (final WindowBlind windowBlind : windowBlindsList) {
+			final int id = 3000 + windowBlind.getId().intValue();
+			final String name = replaceUmlaut(windowBlind.getName());
+			final HAPWindowBlind hapWindowBlind = new HAPWindowBlind(windowBlind, id, name);
+			System.out.println("Adding Windowblind: " + id + " - " + hapWindowBlind.getLabel());
+
+			bridge.addAccessory(hapWindowBlind);
+		}
+	}
+
+	public Map<Long, HAPHumiditySensor> getHumiditySensors() {
+		return humiditySensors;
+	}
+
 	public InetAddress getLocalAddress() {
 		InetAddress address = null;
 
 		try {
-			Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
+			final Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
 
 			while (e.hasMoreElements()) {
-				NetworkInterface n = e.nextElement();
-				Enumeration<InetAddress> ee = n.getInetAddresses();
+				final NetworkInterface n = e.nextElement();
+				final Enumeration<InetAddress> ee = n.getInetAddresses();
 				while (ee.hasMoreElements()) {
-					InetAddress i = ee.nextElement();
-					String hostAddress = i.getHostAddress();
+					final InetAddress i = ee.nextElement();
+					final String hostAddress = i.getHostAddress();
 					if (hostAddress.startsWith("192.168")) {
 						address = i;
 						System.out.println(hostAddress);
 					}
 				}
 			}
-		} catch (SocketException e1) {
+		} catch (final SocketException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		return address;
 	}
 
+	/**
+	 * @return the temperatureSensors
+	 */
+	public Map<Long, HAPTemperatureSensor> getTemperatureSensors() {
+		return temperatureSensors;
+	}
+
+	// @Subscribe
+	public void handleSensorDataChanged(final EventObject eventObject) {
+
+		final Object eventData = eventObject.getData();
+		if (eventData instanceof SensorData) {
+
+			final SensorData sensorData = (SensorData) eventData;
+			if ("TEMPERATURE".equals(sensorData.getSensor().getSensorType())) {
+
+				final HAPTemperatureSensor hapTemperatureSensor = HAPService.getInstance().getTemperatureSensors()
+						.get(sensorData.getSensor().getId());
+
+				if (hapTemperatureSensor != null) {
+					final double valueAsDouble = Double.parseDouble(sensorData.getValue().replace(",", "."));
+					hapTemperatureSensor.setTemperature(new Double(valueAsDouble));
+					final HomekitCharacteristicChangeCallback subscribeCallback = hapTemperatureSensor
+							.getSubscribeCallback();
+					if (subscribeCallback != null) {
+						subscribeCallback.changed();
+					}
+				}
+			}
+		}
+	}
+
 	public void init() {
 		try {
 			em = EntityManagerService.getNewManager();
 
-			InetAddress inetAddress = getLocalAddress();
-			HomekitServer homekit = new HomekitServer(inetAddress, PORT);
+			final InetAddress inetAddress = getLocalAddress();
+			final HomekitServer homekit = new HomekitServer(inetAddress, PORT);
 			// AuthInfoService authInfo = new AuthInfoService();
-			HomekitAuthInfo authInfo = new HomekitAuthInfoImpl("032-45-154");
+			final HomekitAuthInfo authInfo = new HomekitAuthInfoImpl("032-45-154");
 			bridge = homekit.createBridge(authInfo, "Haus", "CM, Inc.", "1.0", "111a2222be2341");
 			// bridge.allowUnauthenticatedRequests(true);
 			addLightsToBridge(bridge);
@@ -276,55 +307,25 @@ public class HAPService {
 			System.out.println("Starting bridge");
 			bridge.start();
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void stop() {
-		// bridge.getAdvertiser().getJmdns().unregisterAllServices();
-		bridge.stop();
-	}
-
-	/**
-	 * @return the instance
-	 */
-	public static HAPService getInstance() {
-		if (instance == null) {
-			instance = new HAPService();
-		}
-
-		return instance;
-	}
-
-	/**
-	 * @param instance
-	 *            the instance to set
-	 */
-	public static void setInstance(HAPService instance) {
-		HAPService.instance = instance;
-	}
-
-	/**
-	 * @return the temperatureSensors
-	 */
-	public Map<Long, HAPTemperatureSensor> getTemperatureSensors() {
-		return temperatureSensors;
+	public void setHumiditySensors(final Map<Long, HAPHumiditySensor> humiditySensors) {
+		this.humiditySensors = humiditySensors;
 	}
 
 	/**
 	 * @param temperatureSensors
 	 *            the temperatureSensors to set
 	 */
-	public void setTemperatureSensors(Map<Long, HAPTemperatureSensor> temperatureSensors) {
+	public void setTemperatureSensors(final Map<Long, HAPTemperatureSensor> temperatureSensors) {
 		this.temperatureSensors = temperatureSensors;
 	}
 
-	public Map<Long, HAPHumiditySensor> getHumiditySensors() {
-		return humiditySensors;
-	}
-
-	public void setHumiditySensors(Map<Long, HAPHumiditySensor> humiditySensors) {
-		this.humiditySensors = humiditySensors;
+	public void stop() {
+		// bridge.getAdvertiser().getJmdns().unregisterAllServices();
+		bridge.stop();
 	}
 }
