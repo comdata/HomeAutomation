@@ -104,6 +104,7 @@ public class EventBusEndpoint {
 	@OnOpen
 	public void onOpen(@PathParam("clientId") final String clientId, final Session userSession) {
 		try {
+			userSession.getUserProperties().put("org.apache.tomcat.websocket.BLOCKING_SEND_TIMEOUT", 10);
 			userSession.getBasicRemote().setBatchingAllowed(false);
 		} catch (final IOException e) {
 			LogManager.getLogger(this.getClass()).error("Setting batching allowed to false failed.", e); //
