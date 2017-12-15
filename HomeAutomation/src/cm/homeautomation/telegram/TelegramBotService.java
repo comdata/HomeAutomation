@@ -65,7 +65,6 @@ public class TelegramBotService {
 	}
 
 	@Subscribe
-	@AllowConcurrentEvents
 	public void handleEvent(final EventObject eventObject) {
 		// try {
 		if (eventObject.getData() instanceof HumanMessageGenerationInterface) {

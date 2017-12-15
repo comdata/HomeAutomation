@@ -83,7 +83,6 @@ public class TVService extends BaseService {
 	}
 
 	@Subscribe
-	@AllowConcurrentEvents
 	public void phoneEventHandler(final EventObject eventObject) {
 
 		final Object eventData = eventObject.getData();

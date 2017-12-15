@@ -1,3 +1,5 @@
 /s/
 /node_modules/
 /target/
+/distTmp/
+/package-lock.json
