@@ -4,6 +4,7 @@ import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.websocket.OnClose;
+import javax.websocket.OnError;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.PathParam;
@@ -82,6 +83,11 @@ public class OverviewWebSocket {
 	@OnClose
 	public void onClose(final Session userSession) {
 		userSessions.remove(userSession);
+	}
+
+	@OnError
+	public void onError(final Session session, final Throwable thr) {
+		onClose(session);
 	}
 
 	/**
