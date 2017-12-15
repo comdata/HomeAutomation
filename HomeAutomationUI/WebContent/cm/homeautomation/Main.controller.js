@@ -240,7 +240,10 @@ sap.ui.define([
         },
         handleHumanMessageEventEvent: function (data) {
         	var message=data.message;
-        	 this.messageToast.show(message);
+        		if (message!==undefined && message !=null) {
+               	 this.messageToast.show(message);        			
+        		}
+
         },
         handleWindowStateEvent: function (data) {
           var state=data.state;
