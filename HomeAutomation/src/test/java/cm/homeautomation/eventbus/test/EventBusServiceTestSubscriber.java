@@ -1,6 +1,6 @@
 package cm.homeautomation.eventbus.test;
 
-import com.google.common.eventbus.Subscribe;
+import org.greenrobot.eventbus.Subscribe;
 
 public class EventBusServiceTestSubscriber {
 	
