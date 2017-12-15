@@ -11,9 +11,7 @@ import java.util.concurrent.TimeUnit;
 import javax.persistence.EntityManager;
 
 import org.apache.logging.log4j.LogManager;
-
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
+import org.greenrobot.eventbus.Subscribe;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
@@ -103,7 +101,6 @@ public class PowerMeterSensor {
 	 * @param eventObject
 	 */
 	@Subscribe
-	@AllowConcurrentEvents
 	public void handlePowerMeterData(final EventObject eventObject) {
 
 		final Object data = eventObject.getData();

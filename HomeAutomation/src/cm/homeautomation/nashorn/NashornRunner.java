@@ -9,52 +9,73 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.apache.logging.log4j.LogManager;
-
-import com.google.common.eventbus.Subscribe;
+import org.apache.logging.log4j.Logger;
+import org.greenrobot.eventbus.Subscribe;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.ScriptingEntity;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.AutoCreateInstance;
-import org.apache.logging.log4j.Logger;
 
 @AutoCreateInstance
 public class NashornRunner {
 
-	private ScriptEngine engine;
 	private static NashornRunner instance;
-	private Logger logger=LogManager.getLogger(this.getClass());
+
+	public static NashornRunner getInstance() {
+		if (instance == null) {
+			instance = new NashornRunner();
+		}
+
+		return instance;
+	}
+
+	public static void main(final String[] args) throws Exception {
+		// Script Engine Manager
+
+		// Evaluate JavaScript code
+		getInstance().run("print(\"This is a hello from JavaScript in Java\");");
+	}
+
+	public static void setInstance(final NashornRunner instance) {
+		NashornRunner.instance = instance;
+	}
+
+	private final ScriptEngine engine;
+
+	private final Logger logger = LogManager.getLogger(this.getClass());
 
 	public NashornRunner() {
-		ScriptEngineManager factory = new ScriptEngineManager();
+		final ScriptEngineManager factory = new ScriptEngineManager();
 		engine = factory.getEngineByName("nashorn");
-		
-		instance=this;
+
+		instance = this;
 		EventBusService.getEventBus().register(this);
 	}
 
 	@Subscribe
-	public void handleEvent(EventObject event) {
+	public void handleEvent(final EventObject event) {
 
-		EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getNewManager();
 
-		List<ScriptingEntity> resultList = (List<ScriptingEntity>) em
-				.createQuery("select se from ScriptingEntity se where se.scriptType=:scriptType").setParameter("scriptType", ScriptingEntity.ScriptingType.EVENTHANDLER).getResultList();
+		final List<ScriptingEntity> resultList = em
+				.createQuery("select se from ScriptingEntity se where se.scriptType=:scriptType")
+				.setParameter("scriptType", ScriptingEntity.ScriptingType.EVENTHANDLER).getResultList();
 
 		if (resultList != null) {
 
-			for (ScriptingEntity scriptingEntity : resultList) {
+			for (final ScriptingEntity scriptingEntity : resultList) {
 
 				try {
 					engine.eval(scriptingEntity.getJsCode());
 
-					Invocable invocable = (Invocable) engine;
+					final Invocable invocable = (Invocable) engine;
 
 					invocable.invokeFunction("eventFunction", event);
-				} catch (ScriptException e) {
+				} catch (final ScriptException e) {
 					logger.error("ScriptException", e);
-				} catch (NoSuchMethodException e) {
+				} catch (final NoSuchMethodException e) {
 					logger.error("NoSuchMethodException", e);
 				}
 			}
@@ -65,26 +86,7 @@ public class NashornRunner {
 
 	}
 
-	public static void main(String[] args) throws Exception {
-		// Script Engine Manager
-
-		// Evaluate JavaScript code
-		getInstance().run("print(\"This is a hello from JavaScript in Java\");");
-	}
-
-	public void run(String jsCode) throws ScriptException {
+	public void run(final String jsCode) throws ScriptException {
 		engine.eval(jsCode);
-	}
-
-	public static NashornRunner getInstance() {
-		if (instance == null) {
-			instance = new NashornRunner();
-		}
-
-		return instance;
-	}
-
-	public static void setInstance(NashornRunner instance) {
-		NashornRunner.instance = instance;
 	}
 }

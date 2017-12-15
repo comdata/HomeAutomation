@@ -7,13 +7,11 @@ import java.util.concurrent.Executors;
 
 import javax.persistence.EntityManager;
 
+import org.greenrobot.eventbus.Subscribe;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
-
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
@@ -21,16 +19,40 @@ import cm.homeautomation.entities.TelegramUser;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
-import cm.homeautomation.services.base.AutoCreateInstance;
 
 //@AutoCreateInstance
 public class TelegramBotService {
 
 	private static TelegramBotService instance;
-	private TelegramBotsApi telegramBotApi;
-	private CommandsHandler bot;
 	private static String token;
 	private static String user;
+
+	public static TelegramBotService getInstance() {
+		if (instance == null) {
+			instance = new TelegramBotService();
+		}
+		return instance;
+	}
+
+	public static String getToken() {
+		return token;
+	}
+
+	public static String getUser() {
+		return user;
+	}
+
+	public static void setToken(final String token) {
+		TelegramBotService.token = token;
+	}
+
+	public static void setUser(final String user) {
+		TelegramBotService.user = user;
+	}
+
+	private TelegramBotsApi telegramBotApi;
+
+	private CommandsHandler bot;
 
 	public TelegramBotService() {
 		token = ConfigurationService.getConfigurationProperty("telegram", "token");
@@ -42,92 +64,13 @@ public class TelegramBotService {
 		EventBusService.getEventBus().register(this);
 	}
 
-	public static TelegramBotService getInstance() {
-		if (instance == null) {
-			instance = new TelegramBotService();
-		}
-		return instance;
-	}
-
-	public void init() {
-		try {
-			ApiContextInitializer.init();
-			telegramBotApi = new TelegramBotsApi();
-			try {
-				bot = new CommandsHandler(user, token);
-				telegramBotApi.registerBot(bot);
-
-				sendMessage("Bot is alive");
-
-			} catch (TelegramApiException e) {
-
-			}
-		} catch (Exception e) {
-		}
-	}
-
-	/**
-	 * send a message
-	 * 
-	 * @param message
-	 */
-	public void sendMessage(String message) {
-		EntityManager em = EntityManagerService.getNewManager();
-		@SuppressWarnings("unchecked")
-		List<TelegramUser> resultList = (List<TelegramUser>) em.createQuery("select t from TelegramUser t")
-				.getResultList();
-
-		String pattern = "yyyy-MM-dd HH:mm:ss";
-		Date date = new Date();
-		String defaultFmt = new SimpleDateFormat(pattern).format(date);
-
-		if (resultList != null && !resultList.isEmpty()) {
-
-			for (TelegramUser telegramUser : resultList) {
-
-				SendMessage sendMessage = new SendMessage();
-				sendMessage.enableMarkdown(true);
-
-				sendMessage.setChatId(telegramUser.getUserId());
-				sendMessage.setText(defaultFmt + ": " + message);
-
-				Executors.newSingleThreadExecutor().execute(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							bot.sendMessage(sendMessage);
-						} catch (TelegramApiException e) {
-						}
-					}
-				});
-			}
-		}
-
-		em.close();
-	}
-
-	public static String getToken() {
-		return token;
-	}
-
-	public static void setToken(String token) {
-		TelegramBotService.token = token;
-	}
-
-	public static String getUser() {
-		return user;
-	}
-
-	public static void setUser(String user) {
-		TelegramBotService.user = user;
-	}
-
 	@Subscribe
 	@AllowConcurrentEvents
-	public void handleEvent(EventObject eventObject) {
+	public void handleEvent(final EventObject eventObject) {
 		// try {
 		if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
-			HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventObject.getData();
+			final HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventObject
+					.getData();
 			TelegramBotService.getInstance().sendMessage(humanMessage.getMessageString());
 		}
 
@@ -143,5 +86,58 @@ public class TelegramBotService {
 		// // TODO Auto-generated catch block
 		// e.printStackTrace();
 		// }
+	}
+
+	public void init() {
+		try {
+			ApiContextInitializer.init();
+			telegramBotApi = new TelegramBotsApi();
+			try {
+				bot = new CommandsHandler(user, token);
+				telegramBotApi.registerBot(bot);
+
+				sendMessage("Bot is alive");
+
+			} catch (final TelegramApiException e) {
+
+			}
+		} catch (final Exception e) {
+		}
+	}
+
+	/**
+	 * send a message
+	 *
+	 * @param message
+	 */
+	public void sendMessage(final String message) {
+		final EntityManager em = EntityManagerService.getNewManager();
+		@SuppressWarnings("unchecked")
+		final List<TelegramUser> resultList = em.createQuery("select t from TelegramUser t").getResultList();
+
+		final String pattern = "yyyy-MM-dd HH:mm:ss";
+		final Date date = new Date();
+		final String defaultFmt = new SimpleDateFormat(pattern).format(date);
+
+		if ((resultList != null) && !resultList.isEmpty()) {
+
+			for (final TelegramUser telegramUser : resultList) {
+
+				final SendMessage sendMessage = new SendMessage();
+				sendMessage.enableMarkdown(true);
+
+				sendMessage.setChatId(telegramUser.getUserId());
+				sendMessage.setText(defaultFmt + ": " + message);
+
+				Executors.newSingleThreadExecutor().execute(() -> {
+					try {
+						bot.sendMessage(sendMessage);
+					} catch (final TelegramApiException e) {
+					}
+				});
+			}
+		}
+
+		em.close();
 	}
 }

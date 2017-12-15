@@ -12,8 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.logging.log4j.LogManager;
-
-import com.google.common.eventbus.Subscribe;
+import org.greenrobot.eventbus.Subscribe;
 
 import cm.homeautomation.dashbutton.DashButtonEvent;
 import cm.homeautomation.db.EntityManagerService;

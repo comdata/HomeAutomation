@@ -1,32 +1,28 @@
 package cm.homeautomation.sensors.window;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.EntityManager;
 
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
+import org.greenrobot.eventbus.Subscribe;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.device.DeviceService;
-import cm.homeautomation.entities.PowerMeterPing;
 import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.WindowState;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
-import cm.homeautomation.sensors.PowerMeterData;
 import cm.homeautomation.sensors.WindowSensorData;
 
 /**
  * receiver power meter data and save it to the database
- * 
+ *
  * @author christoph
  *
  */
 public class WindowStateSensor {
 
-	private EntityManager em;
+	private final EntityManager em;
 
 	public WindowStateSensor() {
 		em = EntityManagerService.getNewManager();
@@ -39,17 +35,16 @@ public class WindowStateSensor {
 	}
 
 	@Subscribe
-	@AllowConcurrentEvents
-	public void handleWindowState(EventObject eventObject) {
+	public void handleWindowState(final EventObject eventObject) {
 
-		Object data = eventObject.getData();
+		final Object data = eventObject.getData();
 		if (data instanceof WindowSensorData) {
 
-			WindowSensorData windowSensorData = (WindowSensorData) data;
-			String mac = windowSensorData.getMac();
-			Room room = DeviceService.getRoomForMac(mac);
+			final WindowSensorData windowSensorData = (WindowSensorData) data;
+			final String mac = windowSensorData.getMac();
+			final Room room = DeviceService.getRoomForMac(mac);
 
-			WindowState windowState = new WindowState();
+			final WindowState windowState = new WindowState();
 			windowState.setRoom(room);
 			windowState.setState(windowSensorData.getState());
 			windowState.setTimestamp(new Date());
@@ -61,12 +56,12 @@ public class WindowStateSensor {
 				em.getTransaction().commit();
 			}
 
-			WindowStateData windowStateData = new WindowStateData();
+			final WindowStateData windowStateData = new WindowStateData();
 			windowStateData.setMac(mac);
 			windowStateData.setState(windowSensorData.getState());
 			windowStateData.setRoom(room);
 
-			EventObject intervalEventObject = new EventObject(windowStateData);
+			final EventObject intervalEventObject = new EventObject(windowStateData);
 			EventBusService.getEventBus().post(intervalEventObject);
 
 		}

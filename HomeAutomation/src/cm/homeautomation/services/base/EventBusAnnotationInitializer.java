@@ -6,12 +6,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
+import org.greenrobot.eventbus.Subscribe;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
-import com.google.common.eventbus.Subscribe;
 
 @AutoCreateInstance
 public class EventBusAnnotationInitializer extends Thread {

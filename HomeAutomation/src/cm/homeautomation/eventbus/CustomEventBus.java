@@ -2,10 +2,8 @@ package cm.homeautomation.eventbus;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executors;
 
-import com.google.common.eventbus.AsyncEventBus;
-import com.google.common.eventbus.EventBus;
+import org.greenrobot.eventbus.EventBus;
 
 public class CustomEventBus {
 
@@ -15,7 +13,9 @@ public class CustomEventBus {
 
 	public CustomEventBus() {
 		if (eventBus == null) {
-			eventBus = new AsyncEventBus(Executors.newFixedThreadPool(4));
+			// eventBus = new AsyncEventBus(Executors.newFixedThreadPool(4));
+
+			eventBus = EventBus.getDefault();
 		}
 	}
 

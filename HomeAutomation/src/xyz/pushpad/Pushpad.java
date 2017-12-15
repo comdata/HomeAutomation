@@ -1,27 +1,23 @@
 package xyz.pushpad;
 
-import javax.crypto.spec.SecretKeySpec;
-
-import org.apache.logging.log4j.LogManager;
-
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
-
-import cm.homeautomation.eventbus.EventBusService;
-import cm.homeautomation.eventbus.EventObject;
-import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
-import cm.homeautomation.telegram.TelegramBotService;
-
-import javax.crypto.Mac;
-import java.security.SignatureException;
-import java.security.NoSuchAlgorithmException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Properties;
 import java.util.concurrent.Executors;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.apache.logging.log4j.LogManager;
+import org.greenrobot.eventbus.Subscribe;
+
+import cm.homeautomation.eventbus.EventBusService;
+import cm.homeautomation.eventbus.EventObject;
+import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
 
 public class Pushpad {
 	public String authToken;
@@ -37,6 +33,15 @@ public class Pushpad {
 		initialize("/home/hap/pushpad.properties");
 	}
 
+	public Notification buildNotification(String title, final String body, final String targetUrl) {
+
+		if (title == null) {
+			title = "";
+		}
+
+		return new Notification(this, title, body, targetUrl);
+	}
+
 	/**
 	 * do an unregister
 	 */
@@ -45,52 +50,16 @@ public class Pushpad {
 
 	}
 
-	protected void initialize(String fileName) {
-		try {
-			Properties props = new Properties();
-			File file = new File(fileName);
-			FileReader fileReader = new FileReader(file);
-
-			props.load(fileReader);
-
-			authToken = props.getProperty("authToken");
-			projectId = props.getProperty("projectId");
-			notificationUrl = props.getProperty("notificationUrl");
-			iconUrl = props.getProperty("iconUrl");
-
-			LogManager.getLogger(this.getClass()).info("Notification setup using authToken: " + authToken
-					+ " projectId: " + projectId + " url: " + notificationUrl);
-
-			EventBusService.getEventBus().register(this);
-		} catch (IOException e) {
-			LogManager.getLogger(this.getClass()).info("Could not find pushpad properties!");
-		}
-	}
-
-	public String signatureFor(String data) {
-		SecretKeySpec signingKey = new SecretKeySpec(this.authToken.getBytes(), "HmacSHA1");
-		String encoded = null;
-		try {
-			Mac mac = Mac.getInstance("HmacSHA1");
-			mac.init(signingKey);
-			byte[] rawHmac = mac.doFinal(data.getBytes());
-			encoded = Base64.getEncoder().withoutPadding().encodeToString(rawHmac);
-		} catch (NoSuchAlgorithmException | InvalidKeyException e) {
-			e.printStackTrace();
-		}
-
-		return encoded;
-	}
-
 	@Subscribe
 	@AllowConcurrentEvents
-	public void handleEvent(EventObject eventObject) {
+	public void handleEvent(final EventObject eventObject) {
 		// try {
 		if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
-			HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventObject.getData();
+			final HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventObject
+					.getData();
 
-			Notification notification = this.buildNotification(humanMessage.getTitle(), humanMessage.getMessageString(),
-					notificationUrl);
+			final Notification notification = this.buildNotification(humanMessage.getTitle(),
+					humanMessage.getMessageString(), notificationUrl);
 
 			// optional, defaults to the project icon
 			// notification.iconUrl = notificationUrl;
@@ -108,7 +77,7 @@ public class Pushpad {
 						notification.broadcast();
 						LogManager.getLogger(this.getClass()).info("Notification sent.");
 
-					} catch (DeliveryException e) {
+					} catch (final DeliveryException e) {
 						e.printStackTrace();
 					}
 				}
@@ -117,21 +86,49 @@ public class Pushpad {
 		}
 	}
 
+	protected void initialize(final String fileName) {
+		try {
+			final Properties props = new Properties();
+			final File file = new File(fileName);
+			final FileReader fileReader = new FileReader(file);
+
+			props.load(fileReader);
+
+			authToken = props.getProperty("authToken");
+			projectId = props.getProperty("projectId");
+			notificationUrl = props.getProperty("notificationUrl");
+			iconUrl = props.getProperty("iconUrl");
+
+			LogManager.getLogger(this.getClass()).info("Notification setup using authToken: " + authToken
+					+ " projectId: " + projectId + " url: " + notificationUrl);
+
+			EventBusService.getEventBus().register(this);
+		} catch (final IOException e) {
+			LogManager.getLogger(this.getClass()).info("Could not find pushpad properties!");
+		}
+	}
+
 	public String path() {
 		return "https://pushpad.xyz/projects/" + this.projectId + "/subscription/edit";
 	}
 
-	public String pathFor(String uid) {
-		String uidSignature = this.signatureFor(uid);
+	public String pathFor(final String uid) {
+		final String uidSignature = this.signatureFor(uid);
 		return this.path() + "?uid=" + uid + "&uid_signature=" + uidSignature;
 	}
 
-	public Notification buildNotification(String title, String body, String targetUrl) {
-		
-		if (title==null) {
-			title="";
+	public String signatureFor(final String data) {
+		final SecretKeySpec signingKey = new SecretKeySpec(this.authToken.getBytes(), "HmacSHA1");
+		String encoded = null;
+		try {
+			final Mac mac = Mac.getInstance("HmacSHA1");
+			mac.init(signingKey);
+			final byte[] rawHmac = mac.doFinal(data.getBytes());
+			encoded = Base64.getEncoder().withoutPadding().encodeToString(rawHmac);
+		} catch (NoSuchAlgorithmException | InvalidKeyException e) {
+			e.printStackTrace();
 		}
-		
-		return new Notification(this, title, body, targetUrl);
+
+		return encoded;
 	}
 }

@@ -10,9 +10,7 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import org.apache.logging.log4j.LogManager;
-
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
+import org.greenrobot.eventbus.Subscribe;
 
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.eventbus.EventBusService;
@@ -21,7 +19,7 @@ import cm.homeautomation.eventbus.EventObject;
 @ServerEndpoint(value = "/overview/{clientId}", configurator = OverviewEndPointConfiguration.class, encoders = {
 		OverviewMessageTranscoder.class }, decoders = { OverviewMessageTranscoder.class })
 public class OverviewWebSocket {
-	private ConcurrentHashMap<String, Session> userSessions = new ConcurrentHashMap<String, Session>();
+	private final ConcurrentHashMap<String, Session> userSessions = new ConcurrentHashMap<>();
 
 	private OverviewEndPointConfiguration overviewEndPointConfiguration;
 	private OverviewWebSocket overviewEndpoint;
@@ -36,7 +34,7 @@ public class OverviewWebSocket {
 			}
 
 			OverviewEndPointConfiguration.setOverviewEndpoint(this);
-		} catch (InstantiationException e) {
+		} catch (final InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -45,18 +43,18 @@ public class OverviewWebSocket {
 	}
 
 	@Subscribe
-	@AllowConcurrentEvents
-	public void handleSensorDataChanged(EventObject eventObject) {
+	public void handleSensorDataChanged(final EventObject eventObject) {
 
 		LogManager.getLogger(this.getClass()).info("Overview got event");
-		Object eventData = eventObject.getData();
+		final Object eventData = eventObject.getData();
 		if (eventData instanceof SensorData) {
 
-			SensorData sensorData = (SensorData) eventData;
-			OverviewTile overviewTileForRoom = new OverviewService()
+			final SensorData sensorData = (SensorData) eventData;
+			final OverviewTile overviewTileForRoom = new OverviewService()
 					.getOverviewTileForRoom(sensorData.getSensor().getRoom());
 
-			LogManager.getLogger(this.getClass()).info("Got eventbus for room: " + sensorData.getSensor().getRoom().getRoomName());
+			LogManager.getLogger(this.getClass())
+					.info("Got eventbus for room: " + sensorData.getSensor().getRoom().getRoomName());
 
 			try {
 
@@ -65,7 +63,7 @@ public class OverviewWebSocket {
 				LogManager.getLogger(this.getClass()).info(
 						"Sending tile: " + overviewTileForRoom.getRoomName() + " - " + overviewTileForRoom.getNumber());
 				overviewEndpoint.sendTile(overviewTileForRoom);
-			} catch (InstantiationException e) {
+			} catch (final InstantiationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -74,56 +72,38 @@ public class OverviewWebSocket {
 		}
 	}
 
-	private void forwardSensorData(OverviewWebSocket overviewEndpoint, SensorData sensorData) {
-		OverviewTile overviewTileForRoom = new OverviewService()
-				.getOverviewTileForRoom(sensorData.getSensor().getRoom());
-
-		try {
-			if (overviewEndPointConfiguration == null) {
-				overviewEndPointConfiguration = new OverviewEndPointConfiguration();
-				overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
-				overviewEndpoint.sendTile(overviewTileForRoom);
-			}
-
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
 	/**
-	 * Callback hook for Connection open events. This method will be invoked
-	 * when a client requests for a WebSocket connection.
-	 * 
-	 * @param userSession
-	 *            the userSession which is opened.
-	 */
-	@OnOpen
-	public void onOpen(@PathParam("clientId") String clientId, Session userSession) {
-		userSessions.put(clientId, userSession);
-	}
-
-	/**
-	 * Callback hook for Connection close events. This method will be invoked
-	 * when a client closes a WebSocket connection.
-	 * 
+	 * Callback hook for Connection close events. This method will be invoked when a
+	 * client closes a WebSocket connection.
+	 *
 	 * @param userSession
 	 *            the userSession which is opened.
 	 */
 	@OnClose
-	public void onClose(Session userSession) {
+	public void onClose(final Session userSession) {
 		userSessions.remove(userSession);
 	}
 
-	public void sendTile(OverviewTile tile) {
+	/**
+	 * Callback hook for Connection open events. This method will be invoked when a
+	 * client requests for a WebSocket connection.
+	 *
+	 * @param userSession
+	 *            the userSession which is opened.
+	 */
+	@OnOpen
+	public void onOpen(@PathParam("clientId") final String clientId, final Session userSession) {
+		userSessions.put(clientId, userSession);
+	}
 
-		Enumeration<String> keySet = userSessions.keys();
+	public void sendTile(final OverviewTile tile) {
+
+		final Enumeration<String> keySet = userSessions.keys();
 
 		while (keySet.hasMoreElements()) {
-			String key = keySet.nextElement();
+			final String key = keySet.nextElement();
 
-			Session session = userSessions.get(key);
+			final Session session = userSessions.get(key);
 
 			if (session.isOpen()) {
 
@@ -137,7 +117,7 @@ public class OverviewWebSocket {
 					} else {
 						userSessions.remove(session);
 					}
-				} catch (Exception e) {
+				} catch (final Exception e) {
 
 				}
 			}

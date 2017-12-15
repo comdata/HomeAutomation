@@ -13,9 +13,8 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import org.apache.logging.log4j.LogManager;
-
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import cm.homeautomation.logging.WebSocketEvent;
 
