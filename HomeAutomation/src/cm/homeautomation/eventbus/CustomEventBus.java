@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.EventBusException;
 
 public class CustomEventBus {
 
@@ -36,7 +37,11 @@ public class CustomEventBus {
 			System.out.println("Class already registered on eventbus: " + clazzName);
 		} else {
 			System.out.println("Registering Class on eventbus: " + clazz.getName());
-			eventBus.register(object);
+			try {
+				eventBus.register(object);
+			} catch (final EventBusException e) {
+
+			}
 			getClasses().put(clazzName, clazz);
 		}
 	}
