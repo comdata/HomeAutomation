@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
@@ -100,7 +101,7 @@ public class PowerMeterSensor {
 	 *
 	 * @param eventObject
 	 */
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void handlePowerMeterData(final EventObject eventObject) {
 
 		final Object data = eventObject.getData();
@@ -133,7 +134,19 @@ public class PowerMeterSensor {
 					final boolean overLimit = requestRateLimiter
 							.overLimitWhenIncremented(PowerMeterData.class.getName());
 					if (overLimit) {
-						sendNewData();
+						final Runnable sendNewDataService = new Runnable() {
+							@Override
+							public void run() {
+								try {
+									sendNewData();
+								} catch (final Exception e) {
+									e.printStackTrace();
+									LogManager.getLogger(this.getClass()).info("Failed sending new data");
+								}
+							}
+						};
+						new Thread(sendNewDataService).start();
+
 					}
 				}
 			} catch (final Exception e) {
