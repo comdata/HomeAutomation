@@ -133,10 +133,10 @@ public class EventBusEndpoint {
 				synchronized (session) {
 					if (session.isOpen()) {
 						try {
-							LogManager.getLogger(this.getClass()).error("Websocket: trigger message");
+							// LogManager.getLogger(this.getClass()).error("Websocket: trigger message");
 							session.getBasicRemote().sendObject(object);
 							session.getBasicRemote().flushBatch();
-							LogManager.getLogger(this.getClass()).error("Websocket: message triggered");
+							// LogManager.getLogger(this.getClass()).error("Websocket: message triggered");
 
 						} catch (IllegalStateException | IOException | EncodeException e) {
 							LogManager.getLogger(this.getClass())
