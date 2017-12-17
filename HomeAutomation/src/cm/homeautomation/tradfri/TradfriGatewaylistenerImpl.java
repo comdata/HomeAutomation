@@ -43,15 +43,23 @@ public class TradfriGatewaylistenerImpl implements TradfriGatewayListener {
 			light.setFirmware(b.getFirmware());
 			light.setOnline(b.isOnline());
 			light.setPowerState(b.isOn());
+			if (light instanceof DimmableLight) {
+				((DimmableLight) light).setMaximumValue(254);
+			}
 
 			em.persist(light);
 
 		} else {
-			light.setName(b.getName());
+			if ((b.getName() != null) && !"".equals(b.getName())) {
+				light.setName(b.getName());
+			}
 			light.setExternalId(Integer.toString(b.getId()));
 			light.setLightType(TRADFRI);
 			light.setDateInstalled(b.getDateInstalled());
 			light.setDateLastSeen(b.getDateLastSeen());
+			if (light instanceof DimmableLight) {
+				((DimmableLight) light).setMaximumValue(254);
+			}
 			light.setFirmware(b.getFirmware());
 			light.setOnline(b.isOnline());
 			light.setPowerState(b.isOn());

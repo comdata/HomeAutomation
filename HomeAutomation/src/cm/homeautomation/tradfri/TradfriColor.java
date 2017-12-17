@@ -249,6 +249,13 @@ public class TradfriColor {
 		return new TradfriColor(rgbR, rgbG, rgbB, xyX, xyY, brightness, hsbTypeConcreteValues);
 	}
 
+	public static void main(String[] args) {
+		final TradfriColor fromRGBValues = TradfriColor.fromRGBValues(255, 0, 0, 254);
+		System.out.println("xyX: " + fromRGBValues.xyX);
+		System.out.println("xyY: " + fromRGBValues.xyY);
+
+	}
+
 	/**
 	 * Normalize value to the tradfri range.
 	 *
