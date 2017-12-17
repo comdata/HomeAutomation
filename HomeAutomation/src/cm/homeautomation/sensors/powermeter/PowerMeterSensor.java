@@ -101,7 +101,7 @@ public class PowerMeterSensor {
 	 *
 	 * @param eventObject
 	 */
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@Subscribe(threadMode = ThreadMode.BACKGROUND)
 	public void handlePowerMeterData(final EventObject eventObject) {
 
 		final Object data = eventObject.getData();
@@ -138,7 +138,7 @@ public class PowerMeterSensor {
 							@Override
 							public void run() {
 								try {
-									// sendNewData();
+									sendNewData();
 								} catch (final Exception e) {
 									e.printStackTrace();
 									LogManager.getLogger(this.getClass()).info("Failed sending new data");
@@ -154,6 +154,66 @@ public class PowerMeterSensor {
 			}
 
 		}
+	}
+
+	private BigDecimal runQueryForBigDecimal(final EntityManager em, final String query) {
+		final Object queryResultObject = em.createNativeQuery(query).getSingleResult();
+
+		BigDecimal result = (queryResultObject != null) ? ((BigDecimal) queryResultObject) : new BigDecimal(0);
+		result = result.setScale(2, BigDecimal.ROUND_HALF_UP);
+		return result;
+	}
+
+	private void sendNewData() {
+		final EntityManager em = EntityManagerService.getNewManager();
+
+		final BigDecimal oneMinute = runQueryForBigDecimal(em,
+				"select sum(POWERCOUNTER)/1000*60 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 1 MINUTE;");
+
+		final BigDecimal oneMinuteTrend = runQueryForBigDecimal(em,
+				"select sum(POWERCOUNTER)/1000*60 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 2 MINUTE and TIMESTAMP <= now() - INTERVAL 1 MINUTE;");
+
+		final BigDecimal fiveMinute = runQueryForBigDecimal(em,
+				"select sum(POWERCOUNTER)/1000*12 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 5 MINUTE;");
+
+		final BigDecimal fiveMinuteTrend = runQueryForBigDecimal(em,
+				"select sum(POWERCOUNTER)/1000*12 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 6 MINUTE and TIMESTAMP <= now() - INTERVAL 1 MINUTE;");
+
+		final BigDecimal sixtyMinute = runQueryForBigDecimal(em,
+				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 60 MINUTE;");
+
+		final BigDecimal sixtyMinuteTrend = runQueryForBigDecimal(em,
+				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 61 MINUTE and TIMESTAMP <= now() - INTERVAL 1 MINUTE;;");
+
+		final BigDecimal today = runQueryForBigDecimal(em,
+				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where date(TIMESTAMP)=CURDATE() ;");
+
+		final BigDecimal yesterday = runQueryForBigDecimal(em,
+				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where date(TIMESTAMP)=date(now()- interval 1 day);");
+
+		final BigDecimal lastSevenDays = runQueryForBigDecimal(em,
+				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 8 day) and date(TIMESTAMP)<=date(now()- interval 1 day);");
+
+		final BigDecimal lastEightDaysBeforeTillYesterday = runQueryForBigDecimal(em,
+				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 8 day) and date(TIMESTAMP)<CURDATE();");
+
+		final PowerMeterIntervalData powerMeterIntervalData = new PowerMeterIntervalData();
+		powerMeterIntervalData.setOneMinute(oneMinute.floatValue());
+		powerMeterIntervalData.setOneMinuteTrend(oneMinute.compareTo(oneMinuteTrend));
+		powerMeterIntervalData.setFiveMinute(fiveMinute.floatValue());
+		powerMeterIntervalData.setFiveMinuteTrend(fiveMinute.compareTo(fiveMinuteTrend));
+		powerMeterIntervalData.setSixtyMinute(sixtyMinute.floatValue());
+		powerMeterIntervalData.setSixtyMinuteTrend(sixtyMinute.compareTo(sixtyMinuteTrend));
+		powerMeterIntervalData.setToday(today.floatValue());
+		powerMeterIntervalData.setYesterday(yesterday.floatValue());
+		powerMeterIntervalData.setLastSevenDays(lastSevenDays.floatValue());
+		powerMeterIntervalData.setLastSevenDaysTrend(lastSevenDays.compareTo(lastEightDaysBeforeTillYesterday));
+
+		em.clear();
+		em.close();
+
+		final EventObject intervalEventObject = new EventObject(powerMeterIntervalData);
+		EventBusService.getEventBus().post(intervalEventObject);
 	}
 
 }
