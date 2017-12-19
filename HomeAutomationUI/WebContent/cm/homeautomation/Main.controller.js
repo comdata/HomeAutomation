@@ -240,7 +240,7 @@ sap.ui.define([
         },
         handleHumanMessageEventEvent: function (data) {
         	var message=data.message;
-        		if (message!==undefined && message !=null) {
+        		if (message!==undefined && message !="undefined" && message!="" && message !=null) {
                	 this.messageToast.show(message);        			
         		}
 
