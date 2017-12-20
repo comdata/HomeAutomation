@@ -53,10 +53,12 @@ public class TelegramBotService {
 	private TelegramBotsApi telegramBotApi;
 
 	private CommandsHandler bot;
+	private final boolean enabled;
 
 	public TelegramBotService() {
 		token = ConfigurationService.getConfigurationProperty("telegram", "token");
 		user = ConfigurationService.getConfigurationProperty("telegram", "user");
+		this.enabled = Boolean.parseBoolean(ConfigurationService.getConfigurationProperty("telegram", "enabled"));
 
 		instance = this;
 		init();
@@ -89,16 +91,19 @@ public class TelegramBotService {
 
 	public void init() {
 		try {
-			ApiContextInitializer.init();
-			telegramBotApi = new TelegramBotsApi();
-			try {
-				bot = new CommandsHandler(user, token);
-				telegramBotApi.registerBot(bot);
 
-				sendMessage("Bot is alive");
+			if (this.enabled) {
+				ApiContextInitializer.init();
+				telegramBotApi = new TelegramBotsApi();
+				try {
+					bot = new CommandsHandler(user, token);
+					telegramBotApi.registerBot(bot);
 
-			} catch (final TelegramApiException e) {
+					sendMessage("Bot is alive");
 
+				} catch (final TelegramApiException e) {
+
+				}
 			}
 		} catch (final Exception e) {
 		}
