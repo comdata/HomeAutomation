@@ -9,7 +9,7 @@ pipeline {
 	stage('Prepare') {
 	    steps {
 		sh 'apk update'
-		sh 'apk add rsync openssh mariadb mariadb-client openrc'
+		sh 'apk add rsync openssh mariadb mariadb-client openrc git'
 		sh 'mysql_install_db --user=mysql --rpm'
 		sh '/usr/bin/mysqld_safe &'
 		sh 'sleep 5' // for mysql to startup
@@ -18,6 +18,16 @@ pipeline {
 	    } 
 	}
 
+	stage('Build dependencies') {
+	    steps {
+		sh 'rm -rf obera-base zwave'
+		sh 'git clone https://github.com/oberasoftware/obera-base.git'
+		sh 'cd obera-base && mvn -DskipTests install'
+		sh 'git clone https://github.com/comdata/zwave.git'
+		sh 'cd zwave && mvn -DskipTests install'
+		sh 'mvn -DskipTests install'
+	    }
+	}
         stage('Build') { 
             parallel {
 		 stage('Build Backend') {
