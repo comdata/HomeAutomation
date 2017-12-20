@@ -85,6 +85,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>HomeAutomationZWave</groupId>
+			<artifactId>HomeAutomationZWave</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.olingo</groupId>
 			<artifactId>odata-server-api</artifactId>
 			<version>${odata.version}</version>
