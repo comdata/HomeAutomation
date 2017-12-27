@@ -31,12 +31,18 @@ public class TradfriBulbListenerImpl implements TradfriBulbListener {
 			final DimmableLight dimLight = (DimmableLight) light;
 			final int intensity = bulb.getIntensity();
 
-			dimLight.setBrightnessLevel(intensity);
+			if (bulb.isOnline()) {
+				dimLight.setBrightnessLevel(intensity);
+			} else {
+				dimLight.setBrightnessLevel(dimLight.getMinimumValue());
+			}
+
 		}
 
 		if (light instanceof RGBLight) {
 			final RGBLight rgbLight = (RGBLight) light;
 			rgbLight.setColor(bulb.getColor());
+
 		}
 
 		if (bulb.isOnline()) {
