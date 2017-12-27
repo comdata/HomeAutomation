@@ -10,11 +10,11 @@ install:
 - cd ..
 - rm -rf obera-base zwave
 - git clone https://github.com/oberasoftware/obera-base.git
-- cd obera-base && mvn -DskipTests install
+- cd obera-base && mvn -DskipTests install && cd ..
 - git clone https://github.com/comdata/zwave.git
-- cd zwave && mvn -DskipTests install
+- cd zwave && mvn -DskipTests install && cd ..
 - pwd
-#- cd HomeAutomation
+- cd HomeAutomation
 
 #sudo: false
 
