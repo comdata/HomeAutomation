@@ -13,7 +13,8 @@ install:
 - cd obera-base && mvn -DskipTests install
 - git clone https://github.com/comdata/zwave.git
 - cd zwave && mvn -DskipTests install
-- cd HomeAutomation
+- pwd
+#- cd HomeAutomation
 
 #sudo: false
 
