@@ -22,9 +22,11 @@ pipeline {
 	    steps {
 		sh 'rm -rf obera-base zwave'
 		sh 'git clone https://github.com/oberasoftware/obera-base.git'
-		sh 'cd obera-base && mvn -DskipTests install'
+		sh 'cd obera-base && mvn -DskipTests install && cd ..'
 		sh 'git clone https://github.com/comdata/zwave.git'
-		sh 'cd zwave && mvn -DskipTests install'
+		sh 'cd zwave && mvn -DskipTests install && cd ..'
+		sh 'git clone https://github.com/comdata/HomeAutomationZWave.git'
+		sh 'cd HomeAutomationZWave && mvn -DskipTests install && cd ..'
 		sh 'mvn -DskipTests install'
 	    }
 	}
