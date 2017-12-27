@@ -2,11 +2,18 @@ sudo: required
 language: java
 jdk:
   - oraclejdk8
-#install:
+install:
 #- git clone https://github.com/beowulfe/HAP-Java.git
 #- cd HAP-Java
 #- mvn install
 #- cd ..
+- rm -rf obera-base zwave
+- git clone https://github.com/oberasoftware/obera-base.git
+- cd obera-base && mvn -DskipTests install
+- git clone https://github.com/comdata/zwave.git
+- cd zwave && mvn -DskipTests install
+- mvn -DskipTests install
+
 
 #sudo: false
 
