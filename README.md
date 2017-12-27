@@ -5,8 +5,6 @@
 
 [![Stories in Ready](https://badge.waffle.io/comdata/HomeAutomation.png?label=ready&title=Ready)](https://waffle.io/comdata/HomeAutomation)
 
-[![buddy pipeline](https://app.buddy.works/cmertins/homeautomation/pipelines/pipeline/41420/badge.svg?token=749a9b557f3f7c1d1501841a45579947928dd2762c51f6343db062c8503fcdde "buddy pipeline")](https://app.buddy.works/cmertins/homeautomation/pipelines/pipeline/41420)
-
 [![Documentation Status](https://readthedocs.org/projects/homeautomation/badge/?version=latest)](http://homeautomation.readthedocs.io/en/latest/?badge=latest)
 
 This is my first approach to automate my home.
