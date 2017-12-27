@@ -13,7 +13,7 @@ install:
 - git clone https://github.com/comdata/zwave.git
 - cd zwave && mvn -DskipTests install
 - mvn -DskipTests install
-
+- cd ..
 
 #sudo: false
 
