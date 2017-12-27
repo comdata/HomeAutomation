@@ -20,6 +20,9 @@ pipeline {
 
 	stage('Build dependencies') {
 	    steps {
+		sh 'rm -rf /root/git'
+		sh 'mkdir -p /root/git'
+		sh 'cd /root/git'
 		sh 'rm -rf obera-base zwave'
 		sh 'git clone https://github.com/oberasoftware/obera-base.git'
 		sh 'cd obera-base && mvn -DskipTests install && cd ..'
