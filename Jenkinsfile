@@ -27,7 +27,7 @@ pipeline {
 		sh 'cd zwave && mvn -DskipTests install && cd ..'
 		sh 'git clone https://github.com/comdata/HomeAutomationZWave.git'
 		sh 'cd HomeAutomationZWave && mvn -DskipTests install && cd ..'
-		sh 'mvn -DskipTests install'
+		#sh 'mvn -DskipTests install'
 	    }
 	}
         stage('Build') { 
