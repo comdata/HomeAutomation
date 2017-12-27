@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DimmableLight;
 import cm.homeautomation.entities.Light;
+import cm.homeautomation.entities.RGBLight;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.light.LightService;
@@ -31,10 +32,18 @@ public class TradfriBulbListenerImpl implements TradfriBulbListener {
 			final int intensity = bulb.getIntensity();
 
 			dimLight.setBrightnessLevel(intensity);
+		}
 
+		if (light instanceof RGBLight) {
+			final RGBLight rgbLight = (RGBLight) light;
+			rgbLight.setColor(bulb.getColor());
+		}
+
+		if (bulb.isOnline()) {
 			// set on or off
-			dimLight.setPowerState((intensity == dimLight.getMinimumValue()) ? false : true);
-
+			light.setPowerState(bulb.isOn());
+		} else {
+			light.setPowerState(false);
 		}
 
 		EventBusService.getEventBus().post(new EventObject(new LightChangedEvent(light)));
