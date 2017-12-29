@@ -19,7 +19,7 @@ public class TradfriBulbListenerImpl implements TradfriBulbListener {
 
 	@Override
 	public void bulb_state_changed(final LightBulb bulb) {
-		LogManager.getLogger(this.getClass()).error("Bulb event registered");
+		LogManager.getLogger(this.getClass()).trace("Bulb event registered");
 
 		final Light light = LightService.getInstance().getLightForTypeAndExternalId(TRADFRI,
 				Integer.toString(bulb.getId()));
@@ -57,7 +57,7 @@ public class TradfriBulbListenerImpl implements TradfriBulbListener {
 		em.merge(light);
 
 		em.getTransaction().commit();
-		LogManager.getLogger(this.getClass()).error("Bulb event done");
+		LogManager.getLogger(this.getClass()).trace("Bulb event done");
 
 	}
 

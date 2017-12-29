@@ -23,7 +23,7 @@ public class TradfriGatewaylistenerImpl implements TradfriGatewayListener {
 		em = EntityManagerService.getNewManager();
 		em.getTransaction().begin();
 
-		LogManager.getLogger(this.getClass()).error("Bulb discovered: " + b.toString());
+		LogManager.getLogger(this.getClass()).trace("Bulb discovered: " + b.toString());
 
 		Light light = LightService.getInstance().getLightForTypeAndExternalId(TRADFRI, Integer.toString(b.getId()));
 
@@ -74,43 +74,43 @@ public class TradfriGatewaylistenerImpl implements TradfriGatewayListener {
 
 	@Override
 	public void bulb_discovery_completed() {
-		LogManager.getLogger(this.getClass()).error("Bulb discovery complete");
+		LogManager.getLogger(this.getClass()).trace("Bulb discovery complete");
 
 	}
 
 	@Override
 	public void bulb_discovery_started(final int total_devices) {
-		LogManager.getLogger(this.getClass()).error("Bulb discovery started. Total devices: " + total_devices);
+		LogManager.getLogger(this.getClass()).trace("Bulb discovery started. Total devices: " + total_devices);
 
 	}
 
 	@Override
 	public void gateway_initializing() {
-		LogManager.getLogger(this.getClass()).error("Gateway initializing");
+		LogManager.getLogger(this.getClass()).trace("Gateway initializing");
 
 	}
 
 	@Override
 	public void gateway_started() {
-		LogManager.getLogger(this.getClass()).error("Gateway started");
+		LogManager.getLogger(this.getClass()).trace("Gateway started");
 
 	}
 
 	@Override
 	public void gateway_stoped() {
-		LogManager.getLogger(this.getClass()).error("Gateway stopped");
+		LogManager.getLogger(this.getClass()).trace("Gateway stopped");
 
 	}
 
 	@Override
 	public void polling_completed(final int bulb_count, final int total_time) {
-		LogManager.getLogger(this.getClass()).error("Gateway polling completed");
+		LogManager.getLogger(this.getClass()).trace("Gateway polling completed");
 
 	}
 
 	@Override
 	public void polling_started() {
-		LogManager.getLogger(this.getClass()).error("Gateway polling started");
+		LogManager.getLogger(this.getClass()).trace("Gateway polling started");
 	}
 
 }
