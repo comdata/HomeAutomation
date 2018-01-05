@@ -47,6 +47,8 @@ public class Light {
 	@JoinColumn(name = "SWITCH_ID")
 	private Switch referencedSwitch;
 
+	private String lightGroup;
+
 	@JsonIgnore
 	private String dimUrl;
 
@@ -102,6 +104,10 @@ public class Light {
 
 	public Long getId() {
 		return id;
+	}
+
+	public String getLightGroup() {
+		return lightGroup;
 	}
 
 	public String getLightType() {
@@ -172,6 +178,10 @@ public class Light {
 
 	public void setId(final Long id) {
 		this.id = id;
+	}
+
+	public void setLightGroup(String lightGroup) {
+		this.lightGroup = lightGroup;
 	}
 
 	public void setLightType(final String lightType) {
