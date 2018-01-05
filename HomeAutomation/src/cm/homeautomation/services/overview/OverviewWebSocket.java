@@ -36,8 +36,7 @@ public class OverviewWebSocket {
 
 			OverviewEndPointConfiguration.setOverviewEndpoint(this);
 		} catch (final InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error("Overview Websocket initialization failed", e);
 		}
 
 		EventBusService.getEventBus().register(this);
