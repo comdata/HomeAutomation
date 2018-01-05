@@ -77,47 +77,7 @@ public class LightService extends BaseService {
 	@GET
 	@Path("dim/{lightId}/{dimValue}")
 	public GenericStatus dimLight(@PathParam("lightId") final long lightId, @PathParam("dimValue") int dimValue) {
-		String powerState = "off";
-
-		if (dimValue == 0) {
-			powerState = "off";
-		} else {
-			powerState = "on";
-		}
-
-		final EntityManager em = EntityManagerService.getNewManager();
-		em.getTransaction().begin();
-		final Light light = (Light) em.createQuery("select l from Light l where l.id=:lightId")
-				.setParameter("lightId", lightId).getSingleResult();
-
-		String dimUrl = light.getDimUrl();
-
-		if (light instanceof DimmableLight) {
-			final DimmableLight dimmableLight = (DimmableLight) light;
-
-			if (dimValue > dimmableLight.getMaximumValue()) {
-				dimValue = dimmableLight.getMaximumValue();
-			}
-
-			dimmableLight.setBrightnessLevel(dimValue);
-			em.persist(dimmableLight);
-			dimUrl = dimmableLight.getDimUrl();
-		} else {
-			light.setPowerState(("off".equals(powerState)) ? false : true);
-		}
-
-		em.getTransaction().commit();
-
-		if ("TRADFRI".equals(light.getLightType())) {
-			TradfriStartupService.getInstance().dimBulb(light.getExternalId(), dimValue);
-		} else {
-
-			dimUrl = dimUrl.replace("{DIMVALUE}", Integer.toString(dimValue));
-			dimUrl = dimUrl.replace("{STATE}", powerState);
-
-			HTTPHelper.performHTTPRequest(dimUrl);
-		}
-		return new GenericStatus(true);
+		return internalDimLight(lightId, dimValue, false);
 	}
 
 	public Light getLightForTypeAndExternalId(final String type, final String externalId) {
@@ -148,6 +108,68 @@ public class LightService extends BaseService {
 				.setParameter("roomId", roomId).getResultList();
 
 		return resultList;
+	}
+
+	private GenericStatus internalDimLight(final long lightId, int dimValue, boolean calledForGroup) {
+
+		String powerState = "off";
+
+		if (dimValue == 0) {
+			powerState = "off";
+		} else {
+			powerState = "on";
+		}
+
+		final EntityManager em = EntityManagerService.getNewManager();
+		em.getTransaction().begin();
+		final Light light = (Light) em.createQuery("select l from Light l where l.id=:lightId")
+				.setParameter("lightId", lightId).getSingleResult();
+
+		// if part of a group then call for the others as well
+		if (!calledForGroup) {
+			final String lightGroup = light.getLightGroup();
+
+			if ((lightGroup != null) && lightGroup.isEmpty()) {
+				final List<Light> resultList = em
+						.createQuery("select l from Light l where l.id!=:lightId and l.lightGroup=:lightGroup")
+						.setParameter("lightId", lightId).setParameter("lightGroup", lightGroup).getResultList();
+
+				if ((resultList != null) && !resultList.isEmpty()) {
+					for (final Light lightGroupMember : resultList) {
+						internalDimLight(lightGroupMember.getId(), dimValue, true);
+					}
+				}
+			}
+		}
+
+		String dimUrl = light.getDimUrl();
+
+		if (light instanceof DimmableLight) {
+			final DimmableLight dimmableLight = (DimmableLight) light;
+
+			if (dimValue > dimmableLight.getMaximumValue()) {
+				dimValue = dimmableLight.getMaximumValue();
+			}
+
+			dimmableLight.setBrightnessLevel(dimValue);
+			em.persist(dimmableLight);
+			dimUrl = dimmableLight.getDimUrl();
+		} else {
+			light.setPowerState(("off".equals(powerState)) ? false : true);
+		}
+
+		em.getTransaction().commit();
+
+		if ("TRADFRI".equals(light.getLightType())) {
+			TradfriStartupService.getInstance().dimBulb(light.getExternalId(), dimValue);
+		} else {
+
+			dimUrl = dimUrl.replace("{DIMVALUE}", Integer.toString(dimValue));
+			dimUrl = dimUrl.replace("{STATE}", powerState);
+
+			HTTPHelper.performHTTPRequest(dimUrl);
+		}
+		return new GenericStatus(true);
 	}
 
 	@GET
