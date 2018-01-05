@@ -129,7 +129,7 @@ public class LightService extends BaseService {
 		if (!calledForGroup) {
 			final String lightGroup = light.getLightGroup();
 
-			if ((lightGroup != null) && lightGroup.isEmpty()) {
+			if ((lightGroup != null) && !lightGroup.isEmpty()) {
 				final List<Light> resultList = em
 						.createQuery("select l from Light l where l.id!=:lightId and l.lightGroup=:lightGroup")
 						.setParameter("lightId", lightId).setParameter("lightGroup", lightGroup).getResultList();
