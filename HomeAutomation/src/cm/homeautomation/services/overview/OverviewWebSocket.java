@@ -51,8 +51,7 @@ public class OverviewWebSocket {
 		if (eventData instanceof SensorData) {
 
 			final SensorData sensorData = (SensorData) eventData;
-			final OverviewTile overviewTileForRoom = new OverviewService()
-					.getOverviewTileForRoom(sensorData.getSensor().getRoom());
+			final OverviewTile overviewTileForRoom = new OverviewService().updateOverviewTile(sensorData);
 
 			LogManager.getLogger(this.getClass())
 					.info("Got eventbus for room: " + sensorData.getSensor().getRoom().getRoomName());
@@ -65,8 +64,7 @@ public class OverviewWebSocket {
 						"Sending tile: " + overviewTileForRoom.getRoomName() + " - " + overviewTileForRoom.getNumber());
 				overviewEndpoint.sendTile(overviewTileForRoom);
 			} catch (final InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LogManager.getLogger(this.getClass()).error("Sending eventbus updates failed", e);
 			}
 		} else {
 			LogManager.getLogger(this.getClass()).info("Eventdata not SensorData: " + eventData.getClass().getName());

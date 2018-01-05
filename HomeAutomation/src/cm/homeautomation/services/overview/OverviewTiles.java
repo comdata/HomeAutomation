@@ -12,16 +12,23 @@ public class OverviewTiles {
 
 	public List<OverviewTile> getOverviewTiles() {
 		if (overviewTiles == null) {
-			overviewTiles=new ArrayList<OverviewTile>();
+			overviewTiles = new ArrayList<>();
 		}
-		
+
 		return overviewTiles;
+	}
+
+	public OverviewTile getTileForRoom(String roomId) {
+		for (final OverviewTile overviewTile : overviewTiles) {
+			if (overviewTile.getRoomId().equals(roomId)) {
+				return overviewTile;
+			}
+		}
+		return null;
 	}
 
 	public void setOverviewTiles(List<OverviewTile> overviewTiles) {
 		this.overviewTiles = overviewTiles;
 	}
-	
-	
-	
+
 }

@@ -2,6 +2,8 @@ package cm.homeautomation.services.overview;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
@@ -12,24 +14,153 @@ import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.Switch;
+import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.base.BaseService;
 
+@AutoCreateInstance
 @Path("overview")
 public class OverviewService extends BaseService {
+
+	private OverviewTiles overviewTiles;
+
+	public OverviewService() {
+		super();
+		init();
+	}
+
+	private void decorateRoomTile(OverviewTile roomTile) {
+		final Map<Sensor, SensorData> sensorData = roomTile.getSensorData();
+		String temperature = null;
+		String humidity = null;
+		Date sensorDate = null;
+		String icon = null;
+
+		if (sensorData != null) {
+			final Set<Sensor> sensorKeys = sensorData.keySet();
+
+			for (final Sensor sensor : sensorKeys) {
+				final SensorData data = sensorData.get(sensor);
+
+				if ("TEMPERATURE".equals(sensor.getSensorType())) {
+
+					temperature = data.getValue();
+					sensorDate = data.getValidThru();
+				}
+				if ("HUMIDITY".equals(sensor.getSensorType())) {
+					humidity = data.getValue();
+					sensorDate = data.getValidThru();
+				}
+			}
+		}
+
+		icon = getIconForRoomTile(roomTile, icon);
+
+		final String number = ((temperature != null) && !"".equals(temperature))
+				? (temperature.replace(",", ".")
+						+ (((humidity != null) && !"".equals(humidity)) ? " / " + humidity.replace(",", ".") : ""))
+				: "";
+		roomTile.setNumber(number);
+		roomTile.setNumberUnit("°C " + (number.contains("/") ? "/ %" : ""));
+		roomTile.setTitle(roomTile.getRoom().getRoomName());
+		roomTile.setRoomName(roomTile.getRoom().getRoomName());
+		roomTile.setInfo((sensorDate != null) ? sensorDate.toLocaleString() : "");
+		roomTile.setInfoState("Success");
+		roomTile.setRoomId(Long.toString(roomTile.getRoom().getId()));
+		roomTile.setIcon(icon);
+		roomTile.setTileType("room");
+
+	}
+
+	private String getIconForRoomTile(OverviewTile roomTile, String icon) {
+		final Set<Switch> switches = roomTile.getSwitches();
+
+		for (final Switch singleSwitch : switches) {
+			if ("LIGHT".equals(singleSwitch.getSwitchType())) {
+				if ("ON".equals(singleSwitch.getLatestStatus())) {
+					icon = "sap-icon://lightbulb";
+				}
+
+			}
+
+			if ("SPEAKER".equals(singleSwitch.getSwitchType())) {
+				if ("ON".equals(singleSwitch.getLatestStatus())) {
+					icon = "sap-icon://marketing-campaign";
+				}
+
+			}
+		}
+		return icon;
+	}
+
+	private OverviewTile getOverviewTileForRoom(EntityManager em, Room room) {
+		final OverviewTile roomTile = new OverviewTile();
+		roomTile.setRoom(room);
+
+		final List<Sensor> sensors = roomTile.getRoom().getSensors();
+
+		if (sensors != null) {
+			for (final Sensor sensor : sensors) {
+
+				@SuppressWarnings("rawtypes")
+				final List latestDataList = em
+						.createQuery("select sd from SensorData sd where sd.sensor=:sensor order by sd.dateTime desc")
+						.setParameter("sensor", sensor).setMaxResults(1).getResultList();
+				if ((latestDataList != null) && !latestDataList.isEmpty()) {
+
+					final Object latestData = latestDataList.get(0);
+
+					if (latestData != null) {
+						if (latestData instanceof SensorData) {
+							final SensorData data = (SensorData) latestData;
+
+							roomTile.getSensorData().put(sensor, data);
+
+						}
+					}
+				}
+
+			}
+		}
+
+		@SuppressWarnings("rawtypes")
+		final List switchResult = em.createQuery("select sw from Switch sw where sw.room=:room")
+				.setParameter("room", room).getResultList();
+
+		if (switchResult != null) {
+			for (final Object singleSwitchAnon : switchResult) {
+
+				if (singleSwitchAnon instanceof Switch) {
+					final Switch singleSwitch = (Switch) singleSwitchAnon;
+					roomTile.getSwitches().add(singleSwitch);
+
+				}
+
+			}
+		}
+
+		decorateRoomTile(roomTile);
+
+		return roomTile;
+	}
 
 	@Path("get")
 	@GET
 	public OverviewTiles getOverviewTiles() {
-		OverviewTiles overviewTiles = new OverviewTiles();
+		return overviewTiles;
+	}
 
-		EntityManager em = EntityManagerService.getNewManager();
+	private void init() {
+		overviewTiles = new OverviewTiles();
+
+		final EntityManager em = EntityManagerService.getNewManager();
 
 		em.getTransaction().begin();
-		List<Room> results = (List<Room>)em.createQuery("select r FROM Room r where r.visible=true").getResultList();
+		@SuppressWarnings("unchecked")
+		final List<Room> results = em.createQuery("select r FROM Room r where r.visible=true").getResultList();
 
-		for (Room room : results) {
+		for (final Room room : results) {
 
-			OverviewTile roomTile = getOverviewTileForRoom(em, room);
+			final OverviewTile roomTile = getOverviewTileForRoom(em, room);
 
 			overviewTiles.getOverviewTiles().add(roomTile);
 
@@ -37,100 +168,16 @@ public class OverviewService extends BaseService {
 
 		em.getTransaction().commit();
 		em.close();
-		return overviewTiles;
 	}
 
-	public OverviewTile getOverviewTileForRoom(Room room) {
-		EntityManager em = EntityManagerService.getNewManager();
+	public OverviewTile updateOverviewTile(SensorData sensorData) {
+		final OverviewTile tileForRoom = overviewTiles
+				.getTileForRoom(sensorData.getSensor().getRoom().getId().toString());
 
+		tileForRoom.getSensorData().put(sensorData.getSensor(), sensorData);
 
-		OverviewTile roomTile = getOverviewTileForRoom(em, room);
-		em.close();
-		return roomTile;
-	}
+		decorateRoomTile(tileForRoom);
 
-	public OverviewTile getOverviewTileForRoom(EntityManager em, Room room) {
-		OverviewTile roomTile = new OverviewTile();
-
-		
-		String temperature = "";
-		String humidity = "";
-		String icon = "";
-
-		Date sensorDate = null;
-
-		List<Sensor> sensors = room.getSensors();
-
-		if (sensors!=null) {
-			for (Sensor sensor : sensors) {
-	
-				@SuppressWarnings("rawtypes")
-				List latestDataList = em
-						.createQuery("select sd from SensorData sd where sd.sensor=:sensor order by sd.dateTime desc")
-						.setParameter("sensor", sensor).setMaxResults(1).getResultList();
-				if (latestDataList != null && !latestDataList.isEmpty()) {
-	
-					Object latestData = latestDataList.get(0);
-	
-					if (latestData != null) {
-						if (latestData instanceof SensorData) {
-							SensorData data = (SensorData) latestData;
-	
-							if ("TEMPERATURE".equals(sensor.getSensorType())) {
-								temperature = data.getValue();
-								sensorDate = data.getValidThru();
-							}
-							if ("HUMIDITY".equals(sensor.getSensorType())) {
-								humidity = data.getValue();
-								sensorDate = data.getValidThru();
-							}
-	
-						}
-					}
-				}
-	
-			}
-		}
-
-		@SuppressWarnings("rawtypes")
-		List switchResult = em.createQuery("select sw from Switch sw where sw.room=:room").setParameter("room", room)
-				.getResultList();
-
-		if (switchResult!=null) {
-			for (Object singleSwitchAnon : switchResult) {
-				if (singleSwitchAnon instanceof Switch) {
-					Switch singleSwitch = (Switch) singleSwitchAnon;
-	
-					if ("LIGHT".equals(singleSwitch.getSwitchType())) {
-						if ("ON".equals(singleSwitch.getLatestStatus())) {
-							icon = "sap-icon://lightbulb";
-						}
-	
-					}
-	
-					if ("SPEAKER".equals(singleSwitch.getSwitchType())) {
-						if ("ON".equals(singleSwitch.getLatestStatus())) {
-							icon = "sap-icon://marketing-campaign";
-						}
-	
-					}
-				}
-	
-			}
-		}
-		
-		String number = (temperature != null && !"".equals(temperature))
-				? (temperature.replace(",", ".") + ((humidity != null && !"".equals(humidity)) ? " / " + humidity.replace(",", ".") : ""))
-				: "";
-		roomTile.setNumber(number);
-		roomTile.setNumberUnit("°C "+ (number.contains("/")? "/ %": ""));
-		roomTile.setTitle(room.getRoomName());
-		roomTile.setRoomName(room.getRoomName());
-		roomTile.setInfo((sensorDate != null) ? sensorDate.toLocaleString() : "");
-		roomTile.setInfoState("Success");
-		roomTile.setRoomId(Long.toString(room.getId()));
-		roomTile.setIcon(icon);
-		roomTile.setTileType("room");
-		return roomTile;
+		return tileForRoom;
 	}
 }
