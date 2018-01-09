@@ -236,10 +236,12 @@ sap.ui.define([
         },
         handleActorMessage: function (data) {
         	var message=data.message;
-        	 this.messageToast.show(message);
+        		if (message!==undefined && message !="undefined" && message!="" && message !=null) {
+        			this.messageToast.show(message);
+        		}
         },
         handleHumanMessageEventEvent: function (data) {
-        	var message=data.message;
+        		var message=data.message;
         		if (message!==undefined && message !="undefined" && message!="" && message !=null) {
                	 this.messageToast.show(message);        			
         		}
