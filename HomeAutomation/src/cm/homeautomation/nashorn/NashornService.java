@@ -3,9 +3,11 @@ package cm.homeautomation.nashorn;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.script.ScriptException;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.ScriptingEntity;
@@ -17,37 +19,44 @@ public class NashornService extends BaseService {
 	@GET
 	@Path("getAll")
 	public List<ScriptingEntity> getAllEntities() {
-		EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getNewManager();
 
-		List<ScriptingEntity> resultList = (List<ScriptingEntity>) em
-				.createQuery("select se from ScriptingEntity se").getResultList();
+		final List<ScriptingEntity> resultList = em.createQuery("select se from ScriptingEntity se").getResultList();
 
 		return resultList;
+	}
+
+	@GET
+	@Path("run/{id}")
+	public void run(@PathParam("id") Long id) throws ScriptException {
+		final EntityManager em = EntityManagerService.getNewManager();
+
+		final ScriptingEntity scriptingEntity = em.find(ScriptingEntity.class, id);
+
+		NashornRunner.getInstance().run(scriptingEntity.getJsCode());
 	}
 
 	@POST
 	@Path("update")
 	public void updateEntity(ScriptingEntity entity) {
-		EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getNewManager();
 
 		em.getTransaction().begin();
-		ScriptingEntity modifiedEntity=entity;
-		
-		List<ScriptingEntity> resultList = (List<ScriptingEntity>) em
-				.createQuery("select se from ScriptingEntity se where se.id=:id").setParameter("id", entity.getId()).getResultList();
+		ScriptingEntity modifiedEntity = entity;
 
-		
-		if (resultList!=null) {
-			modifiedEntity=resultList.get(0);
+		final List<ScriptingEntity> resultList = em.createQuery("select se from ScriptingEntity se where se.id=:id")
+				.setParameter("id", entity.getId()).getResultList();
+
+		if (resultList != null) {
+			modifiedEntity = resultList.get(0);
 			modifiedEntity.setJsCode(entity.getJsCode());
 			modifiedEntity.setName(entity.getName());
-			
+
 		}
-		
+
 		em.persist(modifiedEntity);
 		em.getTransaction().commit();
-		
-		
+
 	}
-	
+
 }
