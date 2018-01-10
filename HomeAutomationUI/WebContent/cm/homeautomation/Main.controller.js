@@ -49,7 +49,7 @@ formatter.dateTimeHourFormatter=function(sDate) {
 	if (sDate==null) {
 		return "";
 	}
-	return moment(new Date(sDate)).format('DD.MM.YYYY HH')+':00';
+	return moment(new Date(sDate)).format('DD.MM HH')+':00';
 }
 
 
@@ -235,7 +235,7 @@ sap.ui.define([
             }
         },
         handleActorMessage: function (data) {
-        	var message=data.message;
+        		var message=data.message;
         		if (message!==undefined && message !="undefined" && message!="" && message !=null) {
         			this.messageToast.show(message);
         		}
