@@ -62,6 +62,9 @@ public class Switch {
 	@JsonIgnore
 	private Room room;
 
+	@Column(name = "VISIBLE", nullable = false)
+	private final boolean visible = true;
+
 	@Transient
 	private boolean switchState;
 
@@ -143,6 +146,10 @@ public class Switch {
 
 	public boolean isSwitchState() {
 		return switchState;
+	}
+
+	public boolean isVisible() {
+		return visible;
 	}
 
 	public void setHouseCode(final String houseCode) {
