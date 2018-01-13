@@ -110,65 +110,69 @@ public class LightService extends BaseService {
 		return resultList;
 	}
 
-	private GenericStatus internalDimLight(final long lightId, int dimValue, boolean calledForGroup) {
+	private GenericStatus internalDimLight(final long lightId, final int dimValue, boolean calledForGroup) {
 
-		String powerState = "off";
+		final Runnable httpRequestThread = () -> {
+			String powerState = "off";
 
-		if (dimValue == 0) {
-			powerState = "off";
-		} else {
-			powerState = "on";
-		}
+			if (dimValue == 0) {
+				powerState = "off";
+			} else {
+				powerState = "on";
+			}
 
-		final EntityManager em = EntityManagerService.getNewManager();
-		em.getTransaction().begin();
-		final Light light = (Light) em.createQuery("select l from Light l where l.id=:lightId")
-				.setParameter("lightId", lightId).getSingleResult();
+			final EntityManager em = EntityManagerService.getNewManager();
+			em.getTransaction().begin();
+			final Light light = (Light) em.createQuery("select l from Light l where l.id=:lightId")
+					.setParameter("lightId", lightId).getSingleResult();
 
-		// if part of a group then call for the others as well
-		if (!calledForGroup) {
-			final String lightGroup = light.getLightGroup();
+			// if part of a group then call for the others as well
+			if (!calledForGroup) {
+				final String lightGroup = light.getLightGroup();
 
-			if ((lightGroup != null) && !lightGroup.isEmpty()) {
-				final List<Light> resultList = em
-						.createQuery("select l from Light l where l.id!=:lightId and l.lightGroup=:lightGroup")
-						.setParameter("lightId", lightId).setParameter("lightGroup", lightGroup).getResultList();
+				if ((lightGroup != null) && !lightGroup.isEmpty()) {
+					final List<Light> resultList = em
+							.createQuery("select l from Light l where l.id!=:lightId and l.lightGroup=:lightGroup")
+							.setParameter("lightId", lightId).setParameter("lightGroup", lightGroup).getResultList();
 
-				if ((resultList != null) && !resultList.isEmpty()) {
-					for (final Light lightGroupMember : resultList) {
-						internalDimLight(lightGroupMember.getId(), dimValue, true);
+					if ((resultList != null) && !resultList.isEmpty()) {
+						for (final Light lightGroupMember : resultList) {
+							internalDimLight(lightGroupMember.getId(), dimValue, true);
+						}
 					}
 				}
 			}
-		}
 
-		String dimUrl = light.getDimUrl();
+			String dimUrl = light.getDimUrl();
 
-		if (light instanceof DimmableLight) {
-			final DimmableLight dimmableLight = (DimmableLight) light;
+			if (light instanceof DimmableLight) {
+				final DimmableLight dimmableLight = (DimmableLight) light;
 
-			if (dimValue > dimmableLight.getMaximumValue()) {
-				dimValue = dimmableLight.getMaximumValue();
+				int newDimValue = dimValue;
+				if (newDimValue > dimmableLight.getMaximumValue()) {
+					newDimValue = dimmableLight.getMaximumValue();
+				}
+
+				dimmableLight.setBrightnessLevel(newDimValue);
+				em.persist(dimmableLight);
+				dimUrl = dimmableLight.getDimUrl();
+			} else {
+				light.setPowerState(("off".equals(powerState)) ? false : true);
 			}
 
-			dimmableLight.setBrightnessLevel(dimValue);
-			em.persist(dimmableLight);
-			dimUrl = dimmableLight.getDimUrl();
-		} else {
-			light.setPowerState(("off".equals(powerState)) ? false : true);
-		}
+			em.getTransaction().commit();
 
-		em.getTransaction().commit();
+			if ("TRADFRI".equals(light.getLightType())) {
+				TradfriStartupService.getInstance().dimBulb(light.getExternalId(), dimValue);
+			} else {
 
-		if ("TRADFRI".equals(light.getLightType())) {
-			TradfriStartupService.getInstance().dimBulb(light.getExternalId(), dimValue);
-		} else {
+				dimUrl = dimUrl.replace("{DIMVALUE}", Integer.toString(dimValue));
+				dimUrl = dimUrl.replace("{STATE}", powerState);
 
-			dimUrl = dimUrl.replace("{DIMVALUE}", Integer.toString(dimValue));
-			dimUrl = dimUrl.replace("{STATE}", powerState);
-
-			HTTPHelper.performHTTPRequest(dimUrl);
-		}
+				HTTPHelper.performHTTPRequest(dimUrl);
+			}
+		};
+		new Thread(httpRequestThread).start();
 		return new GenericStatus(true);
 	}
 
