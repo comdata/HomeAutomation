@@ -64,10 +64,10 @@ public class TradfriGatewaylistenerImpl implements TradfriGatewayListener {
 			light.setOnline(b.isOnline());
 			light.setPowerState(b.isOn());
 			if (b.isColorLight() && (light instanceof RGBLight)) {
-				((RGBLight) light).setColorUrl(b.getColor());
+				((RGBLight) light).setColor(b.getColor());
 			}
 
-			em.merge(light);
+			em.persist(light);
 		}
 		em.getTransaction().commit();
 	}
