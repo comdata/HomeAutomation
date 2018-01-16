@@ -54,7 +54,7 @@ public class TradfriBulbListenerImpl implements TradfriBulbListener {
 
 		EventBusService.getEventBus().post(new EventObject(new LightChangedEvent(light)));
 
-		em.persist(light);
+		em.merge(light);
 
 		em.getTransaction().commit();
 		LogManager.getLogger(this.getClass()).trace("Bulb event done");
