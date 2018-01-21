@@ -1,5 +1,7 @@
 package cm.homeautomation.entities;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,12 +25,18 @@ public class DashButton {
 	@ManyToOne
 	private NetworkDevice referencedNetworkDevice;
 
+	private Date lastSeen = new Date();
+
 	public String getActionEvent() {
 		return actionEvent;
 	}
 
 	public Long getId() {
 		return id;
+	}
+
+	public Date getLastSeen() {
+		return lastSeen;
 	}
 
 	public String getMac() {
@@ -53,6 +61,10 @@ public class DashButton {
 
 	public void setId(final Long id) {
 		this.id = id;
+	}
+
+	public void setLastSeen(Date lastSeen) {
+		this.lastSeen = lastSeen;
 	}
 
 	public void setMac(final String mac) {

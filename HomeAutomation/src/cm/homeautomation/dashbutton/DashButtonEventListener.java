@@ -57,6 +57,7 @@ public class DashButtonEventListener {
 
 				dashButton = new DashButton();
 				dashButton.setMac(mac);
+
 				em.persist(dashButton);
 				em.getTransaction().commit();
 			} else {
@@ -67,6 +68,11 @@ public class DashButtonEventListener {
 			}
 
 			if (dashButton != null) {
+				em.getTransaction().begin();
+				dashButton.setLastSeen(new Date());
+				em.merge(dashButton);
+				em.getTransaction().commit();
+
 				final Switch referencedSwitch = dashButton.getReferencedSwitch();
 
 				if (referencedSwitch != null) {
