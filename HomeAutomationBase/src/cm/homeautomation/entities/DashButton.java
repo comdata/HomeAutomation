@@ -23,6 +23,9 @@ public class DashButton {
 	private Switch referencedSwitch;
 
 	@ManyToOne
+	private ScriptingEntity referencedScript;
+
+	@ManyToOne
 	private NetworkDevice referencedNetworkDevice;
 
 	private Date lastSeen = new Date();
@@ -51,6 +54,10 @@ public class DashButton {
 		return referencedNetworkDevice;
 	}
 
+	public ScriptingEntity getReferencedScript() {
+		return referencedScript;
+	}
+
 	public Switch getReferencedSwitch() {
 		return referencedSwitch;
 	}
@@ -77,6 +84,10 @@ public class DashButton {
 
 	public void setReferencedNetworkDevice(final NetworkDevice referencedNetworkDevice) {
 		this.referencedNetworkDevice = referencedNetworkDevice;
+	}
+
+	public void setReferencedScript(ScriptingEntity referencedScript) {
+		this.referencedScript = referencedScript;
 	}
 
 	public void setReferencedSwitch(final Switch referencedSwitch) {

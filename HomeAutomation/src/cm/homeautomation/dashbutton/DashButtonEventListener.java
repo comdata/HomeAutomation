@@ -4,14 +4,18 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.script.ScriptException;
 
+import org.apache.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DashButton;
+import cm.homeautomation.entities.ScriptingEntity;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
+import cm.homeautomation.nashorn.NashornRunner;
 import cm.homeautomation.services.actor.ActorService;
 
 /**
@@ -74,6 +78,7 @@ public class DashButtonEventListener {
 				em.getTransaction().commit();
 
 				final Switch referencedSwitch = dashButton.getReferencedSwitch();
+				final ScriptingEntity referencedScript = dashButton.getReferencedScript();
 
 				if (referencedSwitch != null) {
 
@@ -88,6 +93,18 @@ public class DashButtonEventListener {
 
 						ActorService.getInstance().pressSwitch(referencedSwitch.getId().toString(), newStatus);
 					}
+
+				}
+
+				if (referencedScript != null) {
+					final String jsCode = referencedScript.getJsCode();
+					try {
+
+						NashornRunner.getInstance().run(jsCode);
+					} catch (final ScriptException e) {
+						LogManager.getLogger(this.getClass()).error("error running code: " + jsCode, e);
+					}
+
 				}
 			}
 
