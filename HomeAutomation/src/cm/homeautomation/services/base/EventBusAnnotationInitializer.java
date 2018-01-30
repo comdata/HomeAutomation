@@ -12,39 +12,43 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
-
 @AutoCreateInstance
 public class EventBusAnnotationInitializer extends Thread {
 
-	private static Map<Class, Object> instances = new HashMap<Class, Object>();
+	private static Map<Class, Object> instances = new HashMap<>();
 
 	public EventBusAnnotationInitializer() {
 		this.run();
 	}
 
+	public Map<Class, Object> getInstances() {
+		return instances;
+	}
+
+	@Override
 	public void run() {
-		Reflections reflections = new Reflections(new ConfigurationBuilder()
+		final Reflections reflections = new Reflections(new ConfigurationBuilder()
 				.setUrls(ClasspathHelper.forPackage("cm.homeautomation")).setScanners(new MethodAnnotationsScanner()));
 
 		// MethodAnnotationsScanner
-		Set<Method> resources = reflections.getMethodsAnnotatedWith(Subscribe.class);
+		final Set<Method> resources = reflections.getMethodsAnnotatedWith(Subscribe.class);
 
-		for (Method method : resources) {
-			Class<?> declaringClass = method.getDeclaringClass();
+		for (final Method method : resources) {
+			final Class<?> declaringClass = method.getDeclaringClass();
 
 			// check if the class has already been initialized
 			if (!instances.containsKey(declaringClass)) {
 
 				LogManager.getLogger(this.getClass()).info("Creating class: " + declaringClass.getName());
 
-				Runnable singleInstanceCreator = new Runnable() {
+				final Runnable singleInstanceCreator = new Runnable() {
+					@Override
 					public void run() {
 						try {
-							Object classInstance = declaringClass.newInstance();
+							final Object classInstance = declaringClass.newInstance();
 
 							instances.put(declaringClass, classInstance);
 						} catch (InstantiationException | IllegalAccessException e) {
-							e.printStackTrace();
 							LogManager.getLogger(this.getClass()).info("Failed creating class");
 						}
 					}
@@ -52,9 +56,5 @@ public class EventBusAnnotationInitializer extends Thread {
 				new Thread(singleInstanceCreator).start();
 			}
 		}
-	}
-
-	public Map<Class, Object> getInstances() {
-		return instances;
 	}
 }
