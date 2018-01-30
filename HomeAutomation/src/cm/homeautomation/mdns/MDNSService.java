@@ -10,6 +10,9 @@ import java.util.Enumeration;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
 
+import org.apache.log4j.LogManager;
+
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.services.base.AutoCreateInstance;
 
 @AutoCreateInstance
@@ -19,29 +22,36 @@ public class MDNSService {
 
 	public MDNSService() {
 		try {
-			jmdns = JmDNS.create(this.getIp());
-			this.registerServices();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			final boolean enableJMDNS = Boolean
+					.parseBoolean(ConfigurationService.getConfigurationProperty("jmdns", "enabled"));
+
+			if (enableJMDNS) {
+				jmdns = JmDNS.create(this.getIp());
+				this.registerServices();
+			}
+		} catch (final UnknownHostException e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		} catch (final IOException e) {
+			LogManager.getLogger(this.getClass()).error(e);
 		}
+	}
+
+	public void destroy() {
+		jmdns.unregisterAllServices();
 	}
 
 	private InetAddress getIp() {
 		try {
-			String localhosts = InetAddress.getLocalHost().getHostAddress();
+			final String localhosts = InetAddress.getLocalHost().getHostAddress();
 
-			Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
+			final Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
 			while (e.hasMoreElements()) {
-				NetworkInterface n = e.nextElement();
-				Enumeration<InetAddress> ee = n.getInetAddresses();
+				final NetworkInterface n = e.nextElement();
+				final Enumeration<InetAddress> ee = n.getInetAddresses();
 				while (ee.hasMoreElements()) {
 
-					InetAddress i = ee.nextElement();
-					String hostAddress = i.getHostAddress();
+					final InetAddress i = ee.nextElement();
+					final String hostAddress = i.getHostAddress();
 
 					if (hostAddress.equals(localhosts)) {
 						System.out.println(hostAddress);
@@ -49,37 +59,31 @@ public class MDNSService {
 					}
 				}
 			}
-		} catch (SocketException e) {
-
-		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		} catch (final SocketException e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		} catch (final UnknownHostException e) {
+			LogManager.getLogger(this.getClass()).error(e);
 		}
 		return null;
-	}
-
-	public void registerServices() {
-		try {
-			// Register a service
-			ServiceInfo serviceInfo = ServiceInfo.create("_http._tcp.local.", "HomeAutomation", 8080,
-					"path=index.html");
-			registerService(serviceInfo);
-
-			ServiceInfo mqttService = ServiceInfo.create("_mqtt._tcp.local.", "HomeAutomation", 1883,
-					"/sensordata");
-			registerService(mqttService);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	private void registerService(ServiceInfo serviceInfo) throws IOException {
 		jmdns.registerService(serviceInfo);
 	}
 
-	public void destroy() {
-		jmdns.unregisterAllServices();
+	public void registerServices() {
+		try {
+			// Register a service
+			final ServiceInfo serviceInfo = ServiceInfo.create("_http._tcp.local.", "HomeAutomation", 8080,
+					"path=index.html");
+			registerService(serviceInfo);
+
+			final ServiceInfo mqttService = ServiceInfo.create("_mqtt._tcp.local.", "HomeAutomation", 1883,
+					"/sensordata");
+			registerService(mqttService);
+		} catch (final IOException e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		}
 	}
 
 }
