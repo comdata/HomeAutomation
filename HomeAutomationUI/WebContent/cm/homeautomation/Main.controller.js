@@ -78,7 +78,8 @@ sap.ui.define([
         loadDataInProgress: false,
         _dialogs: [],
         _cameraRefreshDisabled: false,
-        _mopidyEnabled: false;
+        _mopidyEnabled: false,
+        _legoTrainEnabled: false,
         cameraRefreshToggle: function(oEvent) {
         	this._cameraRefreshDisabled=!oEvent.getParameter("state");
         },
@@ -798,20 +799,21 @@ sap.ui.define([
             this.getView().getModel().refresh(false);
         },
         _initLegoTrainTile: function() {
+        		if (this._legoTrainEnabled) {
 
-
-        	  this.legoTrainTile = {
-                    tileType: "legotrain",
-                    roomId: "train",
-                    title: "Lego Train",
-                    numberUnit: "",
-                    eventHandler: null,
-                    infoState: sap.ui.core.ValueState.Success,
-                    icon: "sap-icon://passenger-train"
-                };
-
-            this.getView().getModel().getData().overviewTiles.push(this.legoTrainTile);
-            this.getView().getModel().refresh(false);
+        			this.legoTrainTile = {
+	                    tileType: "legotrain",
+	                    roomId: "train",
+	                    title: "Lego Train",
+	                    numberUnit: "",
+	                    eventHandler: null,
+	                    infoState: sap.ui.core.ValueState.Success,
+	                    icon: "sap-icon://passenger-train"
+	                };
+	
+	            this.getView().getModel().getData().overviewTiles.push(this.legoTrainTile);
+	            this.getView().getModel().refresh(false);
+        		}
         },
         _initWindowTile: function() {
             this._openWindows=[];
