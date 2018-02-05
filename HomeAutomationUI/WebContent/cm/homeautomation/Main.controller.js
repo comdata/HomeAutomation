@@ -78,6 +78,7 @@ sap.ui.define([
         loadDataInProgress: false,
         _dialogs: [],
         _cameraRefreshDisabled: false,
+        _mopidyEnabled: false;
         cameraRefreshToggle: function(oEvent) {
         	this._cameraRefreshDisabled=!oEvent.getParameter("state");
         },
@@ -654,17 +655,19 @@ sap.ui.define([
             this.getView().getModel().refresh(false);
         },
         _initMPDTile: function () {
-            this.mpdTile = {
-                    tileType: "mpd",
-                    roomId: "mpd",
-                    title: "Mopidy",
-                    numberUnit: "",
-                    eventHandler: null,
-                    infoState: sap.ui.core.ValueState.Success,
-                    icon: "sap-icon://media-play"
-                };
-            this.getView().getModel().getData().overviewTiles.push(this.mpdTile);
-            this.getView().getModel().refresh(false);
+        		if (this._mopidyEnabled) {
+	            this.mpdTile = {
+	                    tileType: "mpd",
+	                    roomId: "mpd",
+	                    title: "Mopidy",
+	                    numberUnit: "",
+	                    eventHandler: null,
+	                    infoState: sap.ui.core.ValueState.Success,
+	                    icon: "sap-icon://media-play"
+	                };
+	            this.getView().getModel().getData().overviewTiles.push(this.mpdTile);
+	            this.getView().getModel().refresh(false);
+        		}
         },
         _initDistanceTile: function () {
         	this.distanceTile = {
