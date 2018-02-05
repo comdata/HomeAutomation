@@ -3,6 +3,7 @@ var imageFullScreen = false;
 
 jQuery.sap.require("sap.ui.core.UIComponent");
 jQuery.sap.require("sap.m.Dialog");
+jQuery.sap.require("sap.m.MessageToast");
 jQuery.sap.require("cm.homeautomation.Scripting");
 jQuery.sap.require("cm.homeautomation.ColorPicker");
 
@@ -448,7 +449,7 @@ sap.ui.define([
                 this._bKeyboard = oEvent.type == "keyup";
             }, this);
 
-            jQuery.sap.require("sap.m.MessageToast");
+
             this.messageToast = sap.m.MessageToast;
 
 
