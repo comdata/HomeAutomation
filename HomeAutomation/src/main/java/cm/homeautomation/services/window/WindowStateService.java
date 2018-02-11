@@ -8,6 +8,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import org.apache.log4j.LogManager;
+
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.device.DeviceService;
 import cm.homeautomation.entities.WindowState;
@@ -51,9 +53,11 @@ public class WindowStateService extends BaseService {
 	}
 
 	@GET
-	@Path("setState/{windowState}/{state}")
-	public GenericStatus handleWindowState(@PathParam("windowState") Long windowState,
-			@PathParam("state") String state) {
+	@Path("setState/{windowId}/{state}")
+	public GenericStatus handleWindowState(@PathParam("windowId") Long windowId, @PathParam("state") String state) {
+
+		LogManager.getLogger(this.getClass()).error("window: " + windowId + " state: " + state);
+		;
 
 		return new GenericStatus(true);
 	}
