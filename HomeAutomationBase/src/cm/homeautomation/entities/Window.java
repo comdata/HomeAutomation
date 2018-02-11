@@ -28,8 +28,14 @@ public class Window {
 
 	private String name;
 
+	private String mac;
+
 	public Long getId() {
 		return id;
+	}
+
+	public String getMac() {
+		return mac;
 	}
 
 	public String getName() {

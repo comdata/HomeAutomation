@@ -63,4 +63,12 @@ public class WindowState {
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
 	}
+
+	public Window getWindow() {
+		return window;
+	}
+
+	public void setWindow(Window window) {
+		this.window = window;
+	}
 }
