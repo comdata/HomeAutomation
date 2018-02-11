@@ -364,7 +364,7 @@ public class Sensors extends BaseService {
 			em.getTransaction().begin();
 			final Sensor sensor = (Sensor) singleResult;
 
-			SensorData sensorData;
+			final SensorData sensorData;
 
 			@SuppressWarnings("unchecked")
 			final List<SensorData> existingSensorDataList = em.createQuery(
@@ -382,7 +382,29 @@ public class Sensors extends BaseService {
 			df.setRoundingMode(RoundingMode.CEILING);
 
 			requestSensorData.setValue(df.format(valueAsDouble).toString());
-			if ((existingSensorData != null) && existingSensorData.getValue().equals(requestSensorData.getValue())) {
+
+			boolean mergeExisting = false;
+			if ((existingSensorData != null)) {
+
+				if (existingSensorData.getValue().equals(requestSensorData.getValue())) {
+					mergeExisting = true;
+				} else {
+					// only merge changes bigger than 10 percent
+					final double existingValueAsDouble = Double
+							.parseDouble(existingSensorData.getValue().replace(",", "."));
+
+					final double difference = Math.abs(existingValueAsDouble - valueAsDouble);
+
+					if ((existingValueAsDouble + (existingValueAsDouble * 0.1)) <= (existingValueAsDouble
+							+ difference)) {
+						mergeExisting = true;
+					}
+
+				}
+
+			}
+
+			if (mergeExisting) {
 				existingSensorData.setValidThru(new Date());
 				em.merge(existingSensorData);
 				LogManager.getLogger(this.getClass()).info("Committing data: " + existingSensorData.getValue());
@@ -403,7 +425,9 @@ public class Sensors extends BaseService {
 
 			em.getTransaction().commit();
 
-		} else {
+		} else
+
+		{
 			LogManager.getLogger(this.getClass()).debug("Not a sensor");
 		}
 		em.close();
