@@ -393,10 +393,10 @@ public class Sensors extends BaseService {
 					final double existingValueAsDouble = Double
 							.parseDouble(existingSensorData.getValue().replace(",", "."));
 
-					final double difference = Math.abs(existingValueAsDouble - valueAsDouble);
-
-					if ((existingValueAsDouble + (existingValueAsDouble * 0.1)) <= (existingValueAsDouble
-							+ difference)) {
+					if (((valueAsDouble >= existingValueAsDouble)
+							&& ((existingValueAsDouble + (existingValueAsDouble * 0.1)) <= (valueAsDouble)))
+							|| ((valueAsDouble <= existingValueAsDouble)
+									&& ((existingValueAsDouble - (existingValueAsDouble * 0.1)) >= (valueAsDouble)))) {
 						mergeExisting = true;
 					}
 
