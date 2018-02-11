@@ -45,7 +45,6 @@ public class WindowStateSensor {
 			final Room room = DeviceService.getRoomForMac(mac);
 
 			final WindowState windowState = new WindowState();
-			windowState.setRoom(room);
 			windowState.setState(windowSensorData.getState());
 			windowState.setTimestamp(new Date());
 			windowState.setMac(mac);

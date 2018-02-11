@@ -21,6 +21,7 @@
 		<class>cm.homeautomation.entities.PowerMeterPing</class>
 		<class>cm.homeautomation.entities.GasMeterPing</class>
 		<class>cm.homeautomation.entities.WindowState</class>
+		<class>cm.homeautomation.entities.Window</class>
 		<class>cm.homeautomation.entities.Package</class>
 		<class>cm.homeautomation.entities.PackagePK</class>
 		<class>cm.homeautomation.entities.PackageHistory</class>
