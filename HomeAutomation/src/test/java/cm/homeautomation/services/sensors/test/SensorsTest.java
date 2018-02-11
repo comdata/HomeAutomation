@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Room;
+import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.sensors.RFEvent;
 import cm.homeautomation.services.sensors.Sensors;
@@ -49,5 +50,19 @@ public class SensorsTest {
 		RFEvent rfEvent=new RFEvent();
 		rfEvent.setCode(onCode);
 		sensors.registerRFEvent(rfEvent);
+	}
+	
+	@Test
+	public void testSensorDifferenceNotBigEnough() throws Exception {
+		SensorData existingSensorData=new SensorData();
+		SensorData requestSensorData=new SensorData();
+		
+		existingSensorData.setValue("20");
+		existingSensorData.setValue("21");
+		
+		boolean mergeExistingData = sensors.mergeExistingData(existingSensorData, requestSensorData);
+		
+		assertTrue( "merging possible", mergeExistingData);
+		
 	}
 }
