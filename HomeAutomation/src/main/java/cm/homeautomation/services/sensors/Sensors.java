@@ -235,14 +235,14 @@ public class Sensors extends BaseService {
 			if (existingSensorData.getValue().equals(requestSensorData.getValue())) {
 				mergeExisting = true;
 			} else {
-				// only merge changes bigger than 10 percent
+				// only merge changes bigger than 1 percent
 				final double existingValueAsDouble = Double
 						.parseDouble(existingSensorData.getValue().replace(",", "."));
 
 				if (((valueAsDouble >= existingValueAsDouble)
-						&& ((existingValueAsDouble + (existingValueAsDouble * 0.1)) <= (valueAsDouble)))
+						&& ((existingValueAsDouble + (existingValueAsDouble * 0.01)) <= (valueAsDouble)))
 						|| ((valueAsDouble <= existingValueAsDouble)
-								&& ((existingValueAsDouble - (existingValueAsDouble * 0.1)) >= (valueAsDouble)))) {
+								&& ((existingValueAsDouble - (existingValueAsDouble * 0.01)) >= (valueAsDouble)))) {
 					mergeExisting = true;
 				}
 
