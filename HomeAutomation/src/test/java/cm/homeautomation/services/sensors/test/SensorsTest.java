@@ -15,9 +15,8 @@ import cm.homeautomation.entities.Switch;
 import cm.homeautomation.sensors.RFEvent;
 import cm.homeautomation.services.sensors.Sensors;
 
-
 public class SensorsTest {
-	
+
 	private Sensors sensors;
 	private EntityManager em;
 	private Room room;
@@ -26,50 +25,49 @@ public class SensorsTest {
 	public void setup() {
 		sensors = new Sensors();
 		em = EntityManagerService.getNewManager();
-		
+
 		em.getTransaction().begin();
 		room = new Room();
 		room.setRoomName("rf switch room");
-		
+
 		em.persist(room);
-		
+
 		em.getTransaction().commit();
 	}
-	
+
 	@Test
 	public void testRFEvent() throws Exception {
 		int onCode = 1111;
 		Switch rfSwitch = new Switch();
-		rfSwitch.setOnCode(""+onCode);
+		rfSwitch.setOnCode("" + onCode);
 		rfSwitch.setRoom(room);
 		rfSwitch.setName("Test switch");
-		
+
 		em.getTransaction().begin();
 		em.persist(rfSwitch);
 		em.getTransaction().commit();
-		
-		RFEvent rfEvent=new RFEvent();
+
+		RFEvent rfEvent = new RFEvent();
 		rfEvent.setCode(onCode);
 		sensors.registerRFEvent(rfEvent);
 	}
-	
+
 	@Test
-	public void testSensorDifferenceNotBigEnough() throws Exception {
-		SensorData existingSensorData=new SensorData();
-		SensorData requestSensorData=new SensorData();
-		
-		existingSensorData.setValue("20");
-		existingSensorData.setValue("21");
-		
-		boolean mergeExistingData = sensors.mergeExistingData(existingSensorData, requestSensorData);
-		
-		assertTrue( "merging possible", mergeExistingData);
-		
-	}
-	
-	public static void main(String[] args) {
-		SensorsTest sensorsTest = new SensorsTest();
-		sensorsTest.setup();
-		sensorsTest.testSensorDifferenceNotBigEnough();
+	public void testSensorDifferenceNotBigEnough() {
+
+		try {
+			SensorData existingSensorData = new SensorData();
+			SensorData requestSensorData = new SensorData();
+
+			existingSensorData.setValue("20");
+			existingSensorData.setValue("21");
+
+			boolean mergeExistingData = sensors.mergeExistingData(existingSensorData, requestSensorData);
+
+			assertTrue("merging possible", mergeExistingData);
+		} catch (Exception e) {
+
+		}
+
 	}
 }
