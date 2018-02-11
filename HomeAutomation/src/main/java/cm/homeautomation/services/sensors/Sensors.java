@@ -235,14 +235,16 @@ public class Sensors extends BaseService {
 			if (existingSensorData.getValue().equals(requestSensorData.getValue())) {
 				mergeExisting = true;
 			} else {
+				final int deadbandPercent = existingSensorData.getSensor().getDeadbandPercent();
+
 				// only merge changes bigger than 1 percent
 				final double existingValueAsDouble = Double
 						.parseDouble(existingSensorData.getValue().replace(",", "."));
 
-				if (((valueAsDouble >= existingValueAsDouble)
-						&& ((existingValueAsDouble + (existingValueAsDouble * 0.01)) <= (valueAsDouble)))
-						|| ((valueAsDouble <= existingValueAsDouble)
-								&& ((existingValueAsDouble - (existingValueAsDouble * 0.01)) >= (valueAsDouble)))) {
+				if (((valueAsDouble >= existingValueAsDouble) && ((existingValueAsDouble
+						+ (existingValueAsDouble * (deadbandPercent / 100))) <= (valueAsDouble)))
+						|| ((valueAsDouble <= existingValueAsDouble) && ((existingValueAsDouble
+								- (existingValueAsDouble * (deadbandPercent / 100))) >= (valueAsDouble)))) {
 					mergeExisting = true;
 				}
 

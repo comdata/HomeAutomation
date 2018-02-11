@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import javax.persistence.EntityManager;
 
+import org.apache.catalina.deploy.SessionConfig;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -64,5 +65,11 @@ public class SensorsTest {
 		
 		assertTrue( "merging possible", mergeExistingData);
 		
+	}
+	
+	public static void main(String[] args) {
+		SensorsTest sensorsTest = new SensorsTest();
+		sensorsTest.setup();
+		sensorsTest.testSensorDifferenceNotBigEnough();
 	}
 }
