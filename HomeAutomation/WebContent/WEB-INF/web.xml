@@ -102,7 +102,7 @@
 		<servlet-class>cm.homeautomation.web.HttpProxyServlet</servlet-class>
 		<init-param>
 			<param-name>url</param-name>
-			<param-value>http://192.168.1.61:8080/data.json</param-value>
+			<param-value>http://192.168.1.61:8080/data/aircraft.json</param-value>
 		</init-param>
 	</servlet>
 
