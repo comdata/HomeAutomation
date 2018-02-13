@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Room;
+import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.sensors.RFEvent;
@@ -58,13 +59,40 @@ public class SensorsTest {
 		try {
 			SensorData existingSensorData = new SensorData();
 			SensorData requestSensorData = new SensorData();
-
+			Sensor sensor = new Sensor();
+			sensor.setDeadbandPercent(1);
+			
 			existingSensorData.setValue("20");
-			existingSensorData.setValue("21");
+			requestSensorData.setValue("21");
 
 			boolean mergeExistingData = sensors.mergeExistingData(existingSensorData, requestSensorData);
+			System.out.println(mergeExistingData);
 
 			assertTrue("merging possible", mergeExistingData);
+		} catch (Exception e) {
+
+		}
+
+	}
+
+	@Test
+	public void testSensorDifferenceBigEnough() {
+
+		try {
+			SensorData existingSensorData = new SensorData();
+			SensorData requestSensorData = new SensorData();
+
+			Sensor sensor = new Sensor();
+			sensor.setDeadbandPercent(1);
+			existingSensorData.setSensor(sensor);
+
+			existingSensorData.setValue("20");
+			requestSensorData.setValue("25");
+
+			boolean mergeExistingData = sensors.mergeExistingData(existingSensorData, requestSensorData);
+			System.out.println(mergeExistingData);
+
+			assertFalse("merging not possible", mergeExistingData);
 		} catch (Exception e) {
 
 		}
