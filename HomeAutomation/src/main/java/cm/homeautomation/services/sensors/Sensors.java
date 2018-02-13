@@ -229,8 +229,7 @@ public class Sensors extends BaseService {
 
 		final double valueAsDouble = Double.parseDouble(requestSensorData.getValue().replace(",", "."));
 
-		System.err.println("value: " + valueAsDouble);
-		;
+		// System.err.println("value: " + valueAsDouble);
 
 		boolean mergeExisting = false;
 		if ((existingSensorData != null)) {
@@ -240,20 +239,21 @@ public class Sensors extends BaseService {
 			} else {
 				final double deadbandPercent = existingSensorData.getSensor().getDeadbandPercent();
 
-				System.err.println("deadband value: " + deadbandPercent);
+				// System.err.println("deadband value: " + deadbandPercent);
 				// only merge changes bigger than 1 percent
 				final double existingValueAsDouble = Double
 						.parseDouble(existingSensorData.getValue().replace(",", "."));
-				System.err.println("existing value: " + existingValueAsDouble);
+				// System.err.println("existing value: " + existingValueAsDouble);
 
-				final double difference = existingValueAsDouble * (deadbandPercent / 100);
+				final double difference = existingValueAsDouble * (deadbandPercent / 1000);
 
-				System.err.println("difference value: " + difference);
+				// System.err.println("difference value: " + difference);
 
 				final double lowerLimit = existingValueAsDouble - difference;
 				final double higherLimit = existingValueAsDouble + difference;
 
-				System.err.println(lowerLimit + " < " + existingValueAsDouble + " < " + higherLimit);
+				// System.err.println(lowerLimit + " < " + existingValueAsDouble + " < " +
+				// higherLimit);
 
 				if ((lowerLimit <= valueAsDouble) && (valueAsDouble <= higherLimit)) {
 					mergeExisting = true;
