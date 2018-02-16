@@ -74,7 +74,7 @@ public class WindowStateService extends BaseService {
 			state = (state != null) ? state.trim() : state;
 
 			windowState.setWindow(window);
-			windowState.setState(("closed".equals(state) ? 0 : 1));
+			windowState.setState(("closed,".equals(state) ? 0 : 1));
 			windowState.setTimestamp(new Date());
 
 			em.getTransaction().begin();
