@@ -70,6 +70,8 @@ public class WindowStateService extends BaseService {
 
 			final WindowState windowState = new WindowState();
 
+			state = (state != null) ? state.trim() : state;
+
 			windowState.setWindow(window);
 			windowState.setState(("closed".equals(state) ? 0 : 1));
 			windowState.setTimestamp(new Date());
