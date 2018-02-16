@@ -14,6 +14,10 @@ import cm.homeautomation.entities.Room;
 public class DeviceService {
 
 	public static Device getDeviceForMac(String mac) {
+		if (mac == null) {
+			return null;
+		}
+
 		try {
 			final EntityManager em = EntityManagerService.getNewManager();
 			mac = mac.toLowerCase();
