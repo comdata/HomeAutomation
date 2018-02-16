@@ -58,7 +58,7 @@ public class WindowStateService extends BaseService {
 	@Path("setState/{windowId}/{state}")
 	public GenericStatus handleWindowState(@PathParam("windowId") Long windowId, @PathParam("state") String state) {
 
-		LogManager.getLogger(this.getClass()).error("window: " + windowId + " state: " + state);
+		LogManager.getLogger(this.getClass()).error("window: " + windowId + " state: ---" + state + "---");
 
 		final EntityManager em = EntityManagerService.getNewManager();
 
