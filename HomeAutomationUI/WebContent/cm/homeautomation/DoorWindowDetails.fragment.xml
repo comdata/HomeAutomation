@@ -52,6 +52,7 @@
 
 		</beginButton>
 		<endButton>
+		<Button text="Aktualisieren" press="doorWindowDialogReload" />
 			<Button text="Schliessen" press="doorWindowDialogClose" />
 		</endButton>
 

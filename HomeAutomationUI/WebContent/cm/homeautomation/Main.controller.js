@@ -831,6 +831,9 @@ sap.ui.define([
             this.getView().getModel().getData().overviewTiles.push(this.windowStateTile);
             this.getView().getModel().refresh(false);
 
+            this.doorWindowDialogLoadState();
+        },
+        doorWindowDialogLoadState: function() {
             var subject=this;
             $.ajax({
 
@@ -1433,6 +1436,9 @@ sap.ui.define([
           var doorWindowModel = new RESTService();
           doorWindowModel.loadDataAsync("/HomeAutomation/services/window/readAll", "", "GET", subject.handleDoorWindowLoaded, null, subject);
 
+        },
+        doorWindowDialogReload: function() {
+        		this.doorWindowLoad();
         },
         packageListLoad: function() {
           var subject = this;
