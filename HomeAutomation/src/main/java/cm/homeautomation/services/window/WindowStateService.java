@@ -59,28 +59,36 @@ public class WindowStateService extends BaseService {
 	@Path("setState/{windowId}/{state}")
 	public GenericStatus handleWindowState(@PathParam("windowId") Long windowId, @PathParam("state") String state) {
 
-		LogManager.getLogger(this.getClass()).error("window: " + windowId + " state: ---" + state + "---");
+		synchronized (this) {
 
-		final EntityManager em = EntityManagerService.getNewManager();
+			LogManager.getLogger(this.getClass()).error("window: " + windowId + " state: ---" + state + "---");
 
-		final List resultList = em.createQuery("select w from Window w where w.id=:id").setParameter("id", windowId)
-				.getResultList();
+			final EntityManager em = EntityManagerService.getNewManager();
 
-		if ((resultList != null) && !resultList.isEmpty()) {
-			final Window window = (Window) resultList.get(0);
+			final List resultList = em.createQuery("select w from Window w where w.id=:id").setParameter("id", windowId)
+					.getResultList();
 
-			final WindowState windowState = new WindowState();
+			if ((resultList != null) && !resultList.isEmpty()) {
+				final Window window = (Window) resultList.get(0);
 
-			state = (state != null) ? state.trim() : state;
+				final WindowState windowState = new WindowState();
 
-			windowState.setWindow(window);
-			windowState.setState(("closed,".equals(state) ? 0 : 1));
-			windowState.setTimestamp(new Date());
+				state = (state != null) ? state.trim() : "";
 
-			em.getTransaction().begin();
-			em.persist(windowState);
+				if (state.length() >= 4) {
+					state = state.substring(0, 4);
+				}
 
-			em.getTransaction().commit();
+				windowState.setWindow(window);
+				windowState.setState(("open".equals(state) ? 1 : 0));
+				windowState.setTimestamp(new Date());
+
+				em.getTransaction().begin();
+				em.persist(windowState);
+
+				em.getTransaction().commit();
+
+			}
 
 		}
 
