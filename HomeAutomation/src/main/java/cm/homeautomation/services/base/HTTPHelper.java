@@ -19,7 +19,16 @@ import org.apache.log4j.LogManager;
  *
  */
 public class HTTPHelper {
+
+	public interface HTTPHelperCallback {
+		public void handleResponse(HttpResponse response);
+	}
+
 	public static void performHTTPRequest(String url) {
+		performHTTPRequest(url, null);
+	}
+
+	public static void performHTTPRequest(String url, HTTPHelperCallback callback) {
 
 		final Runnable httpRequestThread = () -> {
 			try {
@@ -37,6 +46,10 @@ public class HTTPHelper {
 				final HttpClient httpClient = clientBuilder.build();
 
 				final HttpResponse httpResponse = httpClient.execute(getMethod);
+
+				if (callback != null) {
+					callback.handleResponse(httpResponse);
+				}
 
 				LogManager.getLogger(HTTPHelper.class).debug("http called done: " + httpResponse.getStatusLine());
 
