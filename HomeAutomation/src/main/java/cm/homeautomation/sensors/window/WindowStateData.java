@@ -7,8 +7,9 @@ import javax.persistence.Transient;
 import cm.homeautomation.entities.Device;
 import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.Window;
+import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
 
-public class WindowStateData {
+public class WindowStateData implements HumanMessageGenerationInterface {
 	private int state;
 	private String mac;
 	private Room room;
@@ -31,12 +32,23 @@ public class WindowStateData {
 		return mac;
 	}
 
+	@Override
+	public String getMessageString() {
+		return "Fenster: " + window.getName() + " Status: " + ((getState() == 0) ? "geschlossen" : "offen");
+	}
+
 	public Room getRoom() {
 		return room;
 	}
 
 	public int getState() {
 		return state;
+	}
+
+	@Override
+	public String getTitle() {
+
+		return "Window state changed";
 	}
 
 	public Window getWindow() {

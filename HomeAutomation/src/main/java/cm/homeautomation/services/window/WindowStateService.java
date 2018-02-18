@@ -15,6 +15,8 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.device.DeviceService;
 import cm.homeautomation.entities.Window;
 import cm.homeautomation.entities.WindowState;
+import cm.homeautomation.eventbus.EventBusService;
+import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.window.WindowStateData;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
@@ -85,6 +87,15 @@ public class WindowStateService extends BaseService {
 
 				em.getTransaction().begin();
 				em.persist(windowState);
+
+				final WindowStateData windowStateData = new WindowStateData();
+
+				windowStateData.setState(windowState.getState());
+				windowStateData.setRoom(windowState.getWindow().getRoom());
+				windowStateData.setWindow(window);
+
+				final EventObject intervalEventObject = new EventObject(windowStateData);
+				EventBusService.getEventBus().post(intervalEventObject);
 
 				em.getTransaction().commit();
 
