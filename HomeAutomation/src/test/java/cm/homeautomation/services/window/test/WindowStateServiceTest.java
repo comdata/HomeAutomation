@@ -76,7 +76,6 @@ public class WindowStateServiceTest {
 
 		final List<WindowStateData> list = windowStateService.get();
 		for (final WindowStateData windowStateData : list) {
-
 			if (windowStateData.getWindow().equals(window)) {
 				assertTrue(windowStateData.getState() == 1);
 			}
