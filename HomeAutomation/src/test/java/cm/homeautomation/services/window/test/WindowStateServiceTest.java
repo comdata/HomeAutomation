@@ -23,7 +23,7 @@ public class WindowStateServiceTest {
 	private Window window;
 
 	@Before
-	private void setup() {
+	public void setup() {
 		windowStateService = new WindowStateService();
 		em = EntityManagerService.getNewManager();
 
