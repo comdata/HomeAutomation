@@ -6,6 +6,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -25,6 +26,9 @@ public class Window {
 	@ManyToOne
 	@JoinColumn(name = "ROOM_ID")
 	private Room room;
+
+	@OneToOne
+	private Sensor stateSensor;
 
 	private String name;
 
@@ -46,6 +50,10 @@ public class Window {
 		return room;
 	}
 
+	public Sensor getStateSensor() {
+		return stateSensor;
+	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -57,4 +65,9 @@ public class Window {
 	public void setRoom(Room room) {
 		this.room = room;
 	}
+
+	public void setStateSensor(Sensor stateSensor) {
+		this.stateSensor = stateSensor;
+	}
+
 }
