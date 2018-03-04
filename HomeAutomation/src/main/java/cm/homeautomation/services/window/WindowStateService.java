@@ -13,10 +13,13 @@ import org.apache.log4j.LogManager;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.device.DeviceService;
+import cm.homeautomation.entities.Sensor;
+import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.Window;
 import cm.homeautomation.entities.WindowState;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
+import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.sensors.window.WindowStateData;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
@@ -73,6 +76,15 @@ public class WindowStateService extends BaseService {
 			if ((resultList != null) && !resultList.isEmpty()) {
 				final Window window = (Window) resultList.get(0);
 
+				if (window.getStateSensor() == null) {
+					final Sensor stateSensor = new Sensor();
+					stateSensor.setRoom(window.getRoom());
+					stateSensor.setSensorName(window.getName());
+					window.setStateSensor(stateSensor);
+					em.persist(stateSensor);
+				}
+
+				final Sensor stateSensor = window.getStateSensor();
 				final WindowState windowState = new WindowState();
 
 				state = (state != null) ? state.trim() : "";
@@ -84,6 +96,17 @@ public class WindowStateService extends BaseService {
 				windowState.setWindow(window);
 				windowState.setState(("open".equals(state) ? 1 : 0));
 				windowState.setTimestamp(new Date());
+
+				final SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
+				sensorDataSaveRequest.setSensorId(stateSensor.getId());
+				final SensorData sensorData = new SensorData();
+				sensorData.setValue(state);
+				sensorData.setSensor(stateSensor);
+				sensorData.setDateTime(new Date());
+
+				sensorDataSaveRequest.setSensorData(sensorData);
+
+				EventBusService.getEventBus().post(new EventObject(sensorDataSaveRequest));
 
 				em.getTransaction().begin();
 				em.persist(windowState);
