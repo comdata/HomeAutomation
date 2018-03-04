@@ -77,14 +77,19 @@ public class WindowStateService extends BaseService {
 				final Window window = (Window) resultList.get(0);
 
 				if (window.getStateSensor() == null) {
+					em.getTransaction().begin();
 					final Sensor stateSensor = new Sensor();
 					stateSensor.setRoom(window.getRoom());
 					stateSensor.setSensorName(window.getName());
 					stateSensor.setShowData(true);
 					window.setStateSensor(stateSensor);
 					em.persist(stateSensor);
+					em.merge(window);
+					em.getTransaction().commit();
+
 				}
 
+				em.getTransaction().begin();
 				final Sensor stateSensor = window.getStateSensor();
 				final WindowState windowState = new WindowState();
 
@@ -109,7 +114,6 @@ public class WindowStateService extends BaseService {
 
 				EventBusService.getEventBus().post(new EventObject(sensorDataSaveRequest));
 
-				em.getTransaction().begin();
 				em.persist(windowState);
 
 				final WindowStateData windowStateData = new WindowStateData();

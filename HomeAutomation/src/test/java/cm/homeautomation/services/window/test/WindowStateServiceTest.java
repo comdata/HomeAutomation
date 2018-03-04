@@ -51,7 +51,16 @@ public class WindowStateServiceTest {
 
 		windowStateService.handleWindowState(window.getId(), "open");
 
-		assertNotNull(window.getStateSensor());
+		assertNotNull(window.getId());
+
+		em = EntityManagerService.getNewManager();
+
+		final List<Window> resultList = em.createQuery("select w from Window w where w.id=:id")
+				.setParameter("id", window.getId()).getResultList();
+
+		for (final Window window : resultList) {
+			assertNotNull(window.getStateSensor());
+		}
 	}
 
 	@Test
