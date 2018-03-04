@@ -23,6 +23,7 @@ import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.sensors.window.WindowStateData;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
+import cm.homeautomation.services.sensors.Sensors;
 
 @Path("window")
 public class WindowStateService extends BaseService {
@@ -112,7 +113,7 @@ public class WindowStateService extends BaseService {
 
 				sensorDataSaveRequest.setSensorData(sensorData);
 
-				EventBusService.getEventBus().post(new EventObject(sensorDataSaveRequest));
+				Sensors.getInstance().saveSensorData(sensorDataSaveRequest);
 
 				em.persist(windowState);
 

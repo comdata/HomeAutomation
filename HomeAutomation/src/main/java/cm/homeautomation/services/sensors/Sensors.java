@@ -68,6 +68,16 @@ public class Sensors extends BaseService {
 		}
 	}
 
+	private static Sensors instance;
+
+	public static Sensors getInstance() {
+		return instance;
+	}
+
+	public Sensors() {
+		instance = this;
+	}
+
 	/**
 	 * load sensor data for a room
 	 *
