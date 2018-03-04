@@ -34,7 +34,7 @@ public class Window {
 	@JoinColumn(nullable = true)
 	private Sensor stateSensor;
 
-	@Column(name = "WINDOW_NAME")
+	@Column(name = "NAME")
 	private String name;
 
 	@Column(nullable = true)
