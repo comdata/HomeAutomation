@@ -101,7 +101,7 @@ public class WindowStateService extends BaseService {
 				final SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
 				sensorDataSaveRequest.setSensorId(stateSensor.getId());
 				final SensorData sensorData = new SensorData();
-				sensorData.setValue(state);
+				sensorData.setValue("" + ("open".equals(state) ? 1 : 0));
 				sensorData.setSensor(stateSensor);
 				sensorData.setDateTime(new Date());
 
