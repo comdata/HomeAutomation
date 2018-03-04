@@ -80,6 +80,7 @@ public class WindowStateService extends BaseService {
 					final Sensor stateSensor = new Sensor();
 					stateSensor.setRoom(window.getRoom());
 					stateSensor.setSensorName(window.getName());
+					stateSensor.setShowData(true);
 					window.setStateSensor(stateSensor);
 					em.persist(stateSensor);
 				}
