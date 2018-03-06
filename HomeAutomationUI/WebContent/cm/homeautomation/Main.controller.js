@@ -1286,6 +1286,7 @@ sap.ui.define([
                           // Overrides the global setting
                           mode: "index"
                       },
+                      steppedLine: 'before',
                       scales: {
                           xAxes: [{
                              display: true,
@@ -1299,7 +1300,7 @@ sap.ui.define([
     							display: true,
     							labelString: 'Date'
     						},
-    						steppedLine: 'before',
+    						
                              position: 'bottom',
                                ticks: {
                                       callback: function(dataLabel, index) {
