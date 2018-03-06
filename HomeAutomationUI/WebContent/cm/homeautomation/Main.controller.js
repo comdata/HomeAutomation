@@ -1299,6 +1299,7 @@ sap.ui.define([
     							display: true,
     							labelString: 'Date'
     						},
+    						steppedLine: 'before',
                              position: 'bottom',
                                ticks: {
                                       callback: function(dataLabel, index) {
