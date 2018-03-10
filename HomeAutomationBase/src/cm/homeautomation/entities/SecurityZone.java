@@ -18,6 +18,8 @@ public class SecurityZone {
 
 	@OneToMany
 	private List<SecurityZoneMember> zoneMembers;
+	
+	private boolean state;
 
 	public Long getId() {
 		return id;
@@ -41,6 +43,14 @@ public class SecurityZone {
 
 	public void setZoneMembers(List<SecurityZoneMember> zoneMembers) {
 		this.zoneMembers = zoneMembers;
+	}
+
+	public boolean isState() {
+		return state;
+	}
+
+	public void setState(boolean state) {
+		this.state = state;
 	}
 
 }
