@@ -39,6 +39,8 @@
 		<class>cm.homeautomation.entities.ScriptingEntity</class>
 		<class>cm.homeautomation.entities.IRCommand</class>
 		<class>cm.homeautomation.entities.HAZWaveNode</class>
+		<class>cm.homeautomation.entities.SecurityZone</class>
+		<class>cm.homeautomation.entities.SecurityZoneMember</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" />
 			<property name="javax.persistence.jdbc.url"
@@ -54,8 +56,9 @@
 		</properties>
 
 	</persistence-unit>
-	<persistence-unit name="loggingPersistenceUnit" transaction-type="RESOURCE_LOCAL">
-		 <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+	<persistence-unit name="loggingPersistenceUnit"
+		transaction-type="RESOURCE_LOCAL">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.ContextDataAttributeConverter</class>
 		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.ContextDataJsonAttributeConverter</class>
 		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.ContextMapAttributeConverter</class>
@@ -83,5 +86,5 @@
 			<property name="eclipselink.jdbc.timeout" value="60" />
 		</properties>
 
-	</persistence-unit>	
+	</persistence-unit>
 </persistence>
