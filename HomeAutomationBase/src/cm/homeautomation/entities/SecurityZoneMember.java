@@ -1,13 +1,11 @@
 package cm.homeautomation.entities;
 
-import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 @Entity
 public class SecurityZoneMember {
@@ -18,9 +16,8 @@ public class SecurityZoneMember {
 
 	@ManyToOne
 	private SecurityZone securityZone;
-
-	@OneToMany
-	private List<Window> windows;
+	@OneToOne
+	private Window window;
 
 	public Long getId() {
 		return id;
@@ -28,10 +25,6 @@ public class SecurityZoneMember {
 
 	public SecurityZone getSecurityZone() {
 		return securityZone;
-	}
-
-	public List<Window> getWindows() {
-		return windows;
 	}
 
 	public void setId(Long id) {
@@ -42,7 +35,12 @@ public class SecurityZoneMember {
 		this.securityZone = securityZone;
 	}
 
-	public void setWindows(List<Window> windows) {
-		this.windows = windows;
+	public Window getWindow() {
+		return window;
 	}
+
+	public void setWindow(Window window) {
+		this.window = window;
+	}
+
 }
