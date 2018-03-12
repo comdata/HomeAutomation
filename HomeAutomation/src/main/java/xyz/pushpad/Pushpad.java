@@ -15,6 +15,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
 
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
@@ -25,10 +26,12 @@ public class Pushpad {
 
 	private String notificationUrl;
 	private String iconUrl;
+	private boolean enabled = true;
 
 	public Pushpad() {
-
 		EventBusService.getEventBus().register(this);
+
+		enabled = Boolean.parseBoolean(ConfigurationService.getConfigurationProperty("pushpad", "enabled"));
 
 		initialize("/home/hap/pushpad.properties");
 	}
@@ -52,36 +55,38 @@ public class Pushpad {
 
 	@Subscribe
 	public void handleEvent(final EventObject eventObject) {
-		// try {
-		if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
-			final HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventObject
-					.getData();
+		if (enabled) {
+			// try {
+			if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
+				final HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventObject
+						.getData();
 
-			final Notification notification = this.buildNotification(humanMessage.getTitle(),
-					humanMessage.getMessageString(), notificationUrl);
+				final Notification notification = this.buildNotification(humanMessage.getTitle(),
+						humanMessage.getMessageString(), notificationUrl);
 
-			// optional, defaults to the project icon
-			// notification.iconUrl = notificationUrl;
-			notification.iconUrl = iconUrl;
-			// optional, drop the notification after this number of seconds if a
-			// device is offline
-			notification.ttl = 5 * 3600;
+				// optional, defaults to the project icon
+				// notification.iconUrl = notificationUrl;
+				notification.iconUrl = iconUrl;
+				// optional, drop the notification after this number of seconds if a
+				// device is offline
+				notification.ttl = 5 * 3600;
 
-			Executors.newSingleThreadExecutor().execute(new Runnable() {
-				@Override
-				public void run() {
-					try {
+				Executors.newSingleThreadExecutor().execute(new Runnable() {
+					@Override
+					public void run() {
+						try {
 
-						// deliver to everyone
-						notification.broadcast();
-						LogManager.getLogger(this.getClass()).info("Notification sent.");
+							// deliver to everyone
+							notification.broadcast();
+							LogManager.getLogger(this.getClass()).info("Notification sent.");
 
-					} catch (final DeliveryException e) {
-						e.printStackTrace();
+						} catch (final DeliveryException e) {
+							e.printStackTrace();
+						}
 					}
-				}
-			});
+				});
 
+			}
 		}
 	}
 
