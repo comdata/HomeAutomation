@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.annotations.Indexes;
@@ -19,6 +21,7 @@ public class PowerMeterPing {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date timestamp;
 	private int powermeter;
 
@@ -32,32 +35,16 @@ public class PowerMeterPing {
 		return id;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Date getTimestamp() {
-		return timestamp;
-	}
-
-	public void setTimestamp(Date timestamp) {
-		this.timestamp = timestamp;
+	public int getPowerCounter() {
+		return powerCounter;
 	}
 
 	public int getPowermeter() {
 		return powermeter;
 	}
 
-	public void setPowermeter(int powermeter) {
-		this.powermeter = powermeter;
-	}
-
-	public int getPowerCounter() {
-		return powerCounter;
-	}
-
-	public void setPowerCounter(int powerCounter) {
-		this.powerCounter = powerCounter;
+	public Date getTimestamp() {
+		return timestamp;
 	}
 
 	public boolean isCompressed() {
@@ -66,5 +53,21 @@ public class PowerMeterPing {
 
 	public void setCompressed(boolean compressed) {
 		this.compressed = compressed;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setPowerCounter(int powerCounter) {
+		this.powerCounter = powerCounter;
+	}
+
+	public void setPowermeter(int powermeter) {
+		this.powermeter = powermeter;
+	}
+
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
 	}
 }
