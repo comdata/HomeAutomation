@@ -7,7 +7,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
+/**
+ * SecurityZones provide the ability to build a custom security solution out of
+ * it
+ *
+ * @author christoph
+ *
+ */
 @Entity
 public class SecurityZone {
 	@Id
@@ -16,9 +24,18 @@ public class SecurityZone {
 
 	private String name;
 
+	/*
+	 * elements that make up a security zone
+	 */
 	@OneToMany
 	private List<SecurityZoneMember> zoneMembers;
-	
+
+	/*
+	 * scripting entity to be called in case of security zone violations
+	 */
+	@OneToOne
+	private ScriptingEntity scriptingEntity;
+
 	private boolean state;
 
 	public Long getId() {
@@ -29,6 +46,18 @@ public class SecurityZone {
 		return name;
 	}
 
+	public ScriptingEntity getScriptingEntity() {
+		return scriptingEntity;
+	}
+
+	public List<SecurityZoneMember> getZoneMembers() {
+		return zoneMembers;
+	}
+
+	public boolean isState() {
+		return state;
+	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -37,20 +66,16 @@ public class SecurityZone {
 		this.name = name;
 	}
 
-	public List<SecurityZoneMember> getZoneMembers() {
-		return zoneMembers;
-	}
-
-	public void setZoneMembers(List<SecurityZoneMember> zoneMembers) {
-		this.zoneMembers = zoneMembers;
-	}
-
-	public boolean isState() {
-		return state;
+	public void setScriptingEntity(ScriptingEntity scriptingEntity) {
+		this.scriptingEntity = scriptingEntity;
 	}
 
 	public void setState(boolean state) {
 		this.state = state;
+	}
+
+	public void setZoneMembers(List<SecurityZoneMember> zoneMembers) {
+		this.zoneMembers = zoneMembers;
 	}
 
 }
