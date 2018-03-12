@@ -21,6 +21,12 @@ import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 
+/**
+ * Manage Security Services
+ *
+ * @author christoph
+ *
+ */
 @Path("security")
 @AutoCreateInstance
 public class SecurityService extends BaseService {
@@ -76,9 +82,27 @@ public class SecurityService extends BaseService {
 
 	}
 
+	/**
+	 * set the state of a security state
+	 *
+	 * @param id
+	 * @param state
+	 *            boolean true=active, false=inactive
+	 * @return
+	 */
 	@GET
 	@Path("setZoneState/{id}/{state}")
-	public GenericStatus setZoneState(@PathParam("id") Long id, @PathParam("state") String state) {
+	public GenericStatus setZoneState(@PathParam("id") Long id, @PathParam("state") boolean state) {
+		final SecurityZone securityZone = em.find(SecurityZone.class, id);
+
+		em.getTransaction().begin();
+
+		securityZone.setState(state);
+
+		em.persist(securityZone);
+
+		em.getTransaction().commit();
+
 		return new GenericStatus(true);
 	}
 
