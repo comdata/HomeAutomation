@@ -18,6 +18,8 @@ public class SecurityZoneMember {
 	private SecurityZone securityZone;
 	@OneToOne
 	private Window window;
+	
+	private boolean violated;
 
 	public Long getId() {
 		return id;
@@ -41,6 +43,14 @@ public class SecurityZoneMember {
 
 	public void setWindow(Window window) {
 		this.window = window;
+	}
+
+	public boolean isViolated() {
+		return violated;
+	}
+
+	public void setViolated(boolean violated) {
+		this.violated = violated;
 	}
 
 }
