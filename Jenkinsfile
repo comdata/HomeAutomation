@@ -22,14 +22,14 @@ pipeline {
 	    steps {
 		sh 'rm -rf /root/git'
 		sh 'mkdir -p /root/git'
-		sh 'cd /root/git'
-		sh 'cd /root/git && rm -rf obera-base zwave'
-		sh 'cd /root/git && git clone https://github.com/oberasoftware/obera-base.git'
-		sh 'cd /root/git && cd obera-base && mvn -DskipTests install && cd ..'
-		sh 'cd /root/git && git clone https://github.com/comdata/zwave.git'
-		sh 'cd /root/git && cd zwave && mvn -DskipTests install && cd ..'
-		sh 'cd /root/git && git clone https://github.com/comdata/HomeAutomationZWave.git'
-		sh 'cd /root/git && cd HomeAutomationZWave && mvn -DskipTests install && cd ..'
+//		sh 'cd /root/git'
+//		sh 'cd /root/git && rm -rf obera-base zwave'
+//		sh 'cd /root/git && git clone https://github.com/oberasoftware/obera-base.git'
+//		sh 'cd /root/git && cd obera-base && mvn -DskipTests install && cd ..'
+//		sh 'cd /root/git && git clone https://github.com/comdata/zwave.git'
+//		sh 'cd /root/git && cd zwave && mvn -DskipTests install && cd ..'
+//		sh 'cd /root/git && git clone https://github.com/comdata/HomeAutomationZWave.git'
+//		sh 'cd /root/git && cd HomeAutomationZWave && mvn -DskipTests install && cd ..'
 	    }
 	}
         stage('Build') { 
