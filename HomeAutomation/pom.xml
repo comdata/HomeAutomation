@@ -456,11 +456,6 @@
 			<artifactId>jersey-media-sse</artifactId>
 			<version>${version.jersey}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.odata4j</groupId>
-			<artifactId>odata4j-jersey</artifactId>
-			<version>0.7.0</version>
-		</dependency>
 	</dependencies>
 
 	<build>
