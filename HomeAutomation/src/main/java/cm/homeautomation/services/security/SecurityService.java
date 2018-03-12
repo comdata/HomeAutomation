@@ -56,8 +56,17 @@ public class SecurityService extends BaseService {
 			LogManager.getLogger(this.getClass())
 					.debug("Security Zone: " + securityZone.getName() + " state: " + securityZone.isState());
 
+			em.getTransaction().begin();
+
+			securityZoneMember.setViolated((windowStateData.getState() == 1) ? true : false);
+
+			em.merge(securityZoneMember);
+
+			em.getTransaction().commit();
+
 			if (securityZone.isState()) {
 				if (windowStateData.getState() == 1) {
+
 					final Object securityEvent = new EventObject(new SecurityAlarmEvent(securityZone, window));
 					EventBusService.getEventBus().post(securityEvent);
 				}
