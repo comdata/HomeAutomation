@@ -16,19 +16,6 @@ public class WeatherRequest {
 
 	private final static String BASE_URL = "http://api.wunderground.com/api/";
 
-	public static void main(String[] args) {
-
-		/*
-		 * WeatherRequest req = new WeatherRequest(); req.setApiKey("your_api_key");
-		 * req.addFeature(Feature.CONDITIONS); req.addFeature(Feature.FORECAST);
-		 * req.addFeature(Feature.ALERTS); WeatherResponse resp = req.query("17084");
-		 * 
-		 * System.out.println("Current weather: " + resp.getConditions().getWeather());
-		 * System.out.println("Current temp(F): " + resp.getConditions().getTempF());
-		 */
-
-	}
-
 	private String apiKey;
 
 	private String zmw;
@@ -79,7 +66,7 @@ public class WeatherRequest {
 
 		final WebTarget r = c.target(url);
 		final Response response = r.request(MediaType.APPLICATION_JSON).get(); // .readEntity(ClientResponse.class);
-		final WeatherResponse w = (WeatherResponse) response.getEntity();
+		final WeatherResponse w = response.readEntity(WeatherResponse.class);
 		return w;
 
 	}
