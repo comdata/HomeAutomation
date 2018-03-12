@@ -6,8 +6,8 @@ import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
 
 public class SecurityAlarmEvent implements HumanMessageGenerationInterface {
 
-	private SecurityZone zone;
-	private Window window;
+	private SecurityZone zone = null;
+	private Window window = null;
 
 	public SecurityAlarmEvent() {
 
