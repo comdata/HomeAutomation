@@ -32,24 +32,24 @@ pipeline {
 //		sh 'cd /root/git && cd HomeAutomationZWave && mvn -DskipTests install && cd ..'
 	    }
 	}
-        stage('Build') { 
-            parallel {
+        //stage('Build') { 
+        //    parallel {
 		 stage('Build Backend') {
 			steps {
-				sh 'cd HomeAutomationBase && mvn -B clean install'
+				sh 'cd HomeAutomationBase && mvn -T 1C -B clean install'
                 		sh 'cd ..'
-				sh 'cd HomeAutomation && mvn -B clean package'
+				sh 'cd HomeAutomation && mvn -T 1C -B clean package'
 				sh 'cd ..'
 				junit '**/target/surefire-reports/**/*.xml'  
             		}
 		}
 		stage('Build Frontend') {
             		steps {
-                		sh 'cd HomeAutomationUI && mvn -B clean package'
+                		sh 'cd HomeAutomationUI && mvn -T 1C -B clean package'
             		}
 		}
-	    }
-        }
+	//   }
+        //}
 
         stage('Deploy') {
             steps {
