@@ -36,7 +36,7 @@ pipeline {
         //    parallel {
 		 stage('Build Backend') {
 			steps {
-				sh 'mvn -T 1C -m homeautomation-parent install'
+				sh 'mvn -T 1C -N install'
 				sh 'cd HomeAutomationBase && mvn -T 1C -B clean install'
                 		sh 'cd ..'
 				sh 'cd HomeAutomation && mvn -T 1C -B clean package'
