@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>HomeAutomation</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<!-- <packaging>war</packaging> -->
+	<packaging>jar</packaging>
 
 	<repositories>
 		<repository>
@@ -509,15 +509,15 @@
 			</plugin> -->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.0.0</version>
-				<executions>
+				<version>3.1.0</version>
+				<!-- <executions>
 					<execution>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
 					</execution>
-				</executions>
+				</executions> -->
 				<!-- <configuration>
 					<argLine>${argLine} -Xmx1024m -XX:MaxPermSize=256m</argLine>
 					<descriptorRefs>
