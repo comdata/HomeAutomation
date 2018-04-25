@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>HomeAutomation</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<!-- <packaging>war</packaging> -->
 
 	<repositories>
 		<repository>
@@ -552,4 +552,5 @@
 		<artifactId>homeautomation-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
+	<packaging>pom</packaging>
 </project>
