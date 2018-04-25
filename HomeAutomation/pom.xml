@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>HomeAutomation</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<repositories>
 		<repository>
@@ -498,7 +498,7 @@
 					<argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
 				</configuration>
 			</plugin>
-			<!-- <plugin>
+			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>3.0.0</version>
 				<configuration>
@@ -506,7 +506,7 @@
 					<packagingIncludes>WEB-INF/lib/*.jar</packagingIncludes>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
-			</plugin> -->
+			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>3.1.0</version>
