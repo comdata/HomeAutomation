@@ -69,7 +69,7 @@
 		<version.jersey>2.27</version.jersey>
 		<version.servlet.api>4.0.1</version.servlet.api>
 		<httpcompontents.version>4.5.5</httpcompontents.version>
-		<telegrambots.version>3.6.1</telegrambots.version>
+		<telegrambots.version>2.4.2</telegrambots.version>
 		<ratelimitj-inmemory.version>0.4.2</ratelimitj-inmemory.version>
 		<odata.version>4.4.2</odata.version>
 
