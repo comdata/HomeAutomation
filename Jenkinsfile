@@ -42,8 +42,7 @@ pipeline {
 		    parallel {
 				stage('Build Backend') {
 					steps {
-						sh 'cd HomeAutomationBase && mvn -T 1C -B clean install'
-						sh 'mvn deploy:deploy-file -Dfile=target/HomeAutomationBase-0.0.1-SNAPSHOT.jar -DpomFile=pom.xml -DrepositoryId=archiva.snapshots -Durl=http://192.168.1.36:8080/repository/snapshots'
+						sh 'cd HomeAutomationBase && mvn -T 1C -B clean install && mvn deploy:deploy-file -Dfile=target/HomeAutomationBase-0.0.1-SNAPSHOT.jar -DpomFile=pom.xml -DrepositoryId=archiva.snapshots -Durl=http://192.168.1.36:8080/repository/snapshots'
 		                		sh 'cd ..'
 						sh 'cd HomeAutomation && mvn -T 1C -B clean package'
 						
