@@ -5,7 +5,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 
-	<!--  <repositories>
+	<repositories>
 		<repository>
 			<id>eclipsesmarthome</id>
 
@@ -61,7 +61,7 @@
 			</snapshots>
 		</repository>
 
-	</repositories>-->
+	</repositories>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
