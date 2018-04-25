@@ -552,5 +552,4 @@
 		<artifactId>homeautomation-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<packaging>pom</packaging>
 </project>
