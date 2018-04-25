@@ -110,10 +110,11 @@
 			<version>${odata.version}</version> </dependency> -->
 		<!-- Tradfri dependencies -->
 		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>org.json</artifactId>
-			<version>1.0</version>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <version>20180130</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.eclipse.californium</groupId>
 			<artifactId>californium-core</artifactId>
