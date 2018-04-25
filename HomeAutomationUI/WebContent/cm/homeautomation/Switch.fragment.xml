@@ -108,7 +108,7 @@
 			</Panel>
 
 			<Panel expandable="true" expanded="{currentRoom>/historicDataExpanded}" headerText="Historic Data"
-				width="100%" height="400px" class="sapUiResponsiveMargin" expand="expandHistoricData">
+				width="100%" height="100%" class="sapUiResponsiveMargin" expand="expandHistoricData">
 				<content>
 					<agraebe.custom:ChartJSControl width="100%"
 						height="100%" responsive="true" chartType="Line" data="{historicalData>/lineData}" options="{historicalData>/options}"/>
