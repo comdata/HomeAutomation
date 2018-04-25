@@ -32,8 +32,8 @@ pipeline {
 //		sh 'cd /root/git && cd HomeAutomationZWave && mvn -DskipTests install && cd ..'
 	    }
 	}
-        //stage('Build') { 
-        //    parallel {
+	stage('Build') { 
+	    parallel {
 		 stage('Build Backend') {
 			steps {
 				sh 'mvn -T 1C -N install'
@@ -49,8 +49,8 @@ pipeline {
                 		sh 'cd HomeAutomationUI && mvn -T 1C -B clean package'
             		}
 		}
-	//   }
-        //}
+	   }
+        }
 
         stage('Deploy') {
             steps {
