@@ -72,7 +72,7 @@ public class StartupAnnotationInitializer extends Thread {
 
 				Object singleInstance = instances.get(clazz);
 
-				instances.remove(clazz);
+				//instances.remove(clazz);
 			}
 		}
 	}
