@@ -6,7 +6,7 @@
 	<groupId>cm.homeautomation</groupId>
 	<artifactId>homeautomation-parent</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>pom</packaging>
 <repositories>
     <repository>
       <id>internal</id>
