@@ -15,6 +15,8 @@ install:
 - cd zwave && mvn -DskipTests install && cd ..
 - git clone https://github.com/comdata/HomeAutomationZWave.git
 - cd HomeAutomationZWave && mvn -DskipTests install && cd ..
+- git clone https://github.com/comdata/HomeAutomationBase.git
+- cd HomeAutomationBase && mvn -DskipTests install && cd ..
 - pwd
 - cd HomeAutomation
 
