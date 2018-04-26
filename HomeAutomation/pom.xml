@@ -9,7 +9,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<sapui5.version>1.38.4</sapui5.version>
 		<version.jersey>2.27</version.jersey>
-		<version.servlet.api>4.0.1</version.servlet.api>
+		<version.servlet.api>3.1.0</version.servlet.api>
 		<httpcompontents.version>4.5.5</httpcompontents.version>
 		<telegrambots.version>2.4.2</telegrambots.version>
 		<ratelimitj-inmemory.version>0.4.2</ratelimitj-inmemory.version>
