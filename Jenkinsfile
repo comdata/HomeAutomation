@@ -54,11 +54,11 @@ pipeline {
 	
 	    stage('Deploy') {
 	       parallel {
-	      		 stage('JUnit') {
-					steps {
+	      		 //stage('JUnit') {
+			//		steps {
 						//junit '**/target/surefire-reports/**/*.xml'  
-		            }
-				}
+		          //  }
+			//	}
 				stage('Deploy Backend') {
 	        		steps {
 	        			sh 'rsync -auv HomeAutomation/target/HomeAutomation-0.0.1-SNAPSHOT/WEB-INF/* root@192.168.1.76:/var/lib/tomcat8/webapps/HomeAutomation/WEB-INF/'
