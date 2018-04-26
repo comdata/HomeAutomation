@@ -42,13 +42,13 @@ pipeline {
 		    parallel {
 				stage('Build Backend') {
 					steps {
-						sh 'cd HomeAutomation && mvn -T 1C -B clean package'
+						sh 'cd HomeAutomation && mvn -T 1C -B clean install'
 						
 		            }
 				}
 				stage('Build Frontend') {
 		            	steps {
-		                		sh 'cd HomeAutomationUI && mvn -T 1C -B clean package'
+		                		sh 'cd HomeAutomationUI && mvn -T 1C -B clean install'
 		            	}
 		       
 				}
