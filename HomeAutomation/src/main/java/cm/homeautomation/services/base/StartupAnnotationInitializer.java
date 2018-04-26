@@ -48,7 +48,7 @@ public class StartupAnnotationInitializer extends Thread {
 					try {
 						Object classInstance = declaringClass.newInstance();
 
-						instances.put(declaringClass, classInstance);
+						//instances.put(declaringClass, classInstance);
 					} catch (InstantiationException | IllegalAccessException e) {
 						e.printStackTrace();
 						LogManager.getLogger(this.getClass()).info("Failed creating class");
