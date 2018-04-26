@@ -64,7 +64,6 @@
 	</prerequisites>-->
 
 	<modules>
-		<module>HomeAutomationBase</module>
 		<module>HomeAutomationClient</module>
 		<module>HomeAutomation</module>
 	
