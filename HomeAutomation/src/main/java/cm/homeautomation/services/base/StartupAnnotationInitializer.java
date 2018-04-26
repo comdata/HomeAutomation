@@ -1,7 +1,7 @@
 package cm.homeautomation.services.base;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
+import java.util.ConcurrentHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,7 +15,7 @@ import org.reflections.util.ConfigurationBuilder;
 
 public class StartupAnnotationInitializer extends Thread {
 
-	private Map<Class, Object> instances = new HashMap<Class, Object>();
+	private Map<Class, Object> instances = new ConcurrentHashMap<Class, Object>();
 
 	public StartupAnnotationInitializer() {
 	}
