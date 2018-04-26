@@ -65,13 +65,15 @@ public class StartupAnnotationInitializer extends Thread {
 	}
 
 	public void disposeInstances() {
-		Set<Class> keySet = instances.keySet();
+		synchronized(this) {
+			Set<Class> keySet = instances.keySet();
 
-		for (Class clazz : keySet) {
+			for (Class clazz : keySet) {
 
-			Object singleInstance = instances.get(clazz);
+				Object singleInstance = instances.get(clazz);
 
-			instances.remove(clazz);
+				instances.remove(clazz);
+			}
 		}
 	}
 }
