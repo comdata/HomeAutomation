@@ -39,8 +39,6 @@ pipeline {
 			}
 		}
 		
-		stage('Build') { 
-		    parallel {
 				stage('Build Backend') {
 					steps {
 						sh 'cd HomeAutomation && mvn -T 1C -B clean install'
@@ -53,8 +51,6 @@ pipeline {
 		            	}
 		       
 				}
-			}
-		}
 	
 	    stage('Deploy') {
 	       parallel {
@@ -68,11 +64,11 @@ pipeline {
 	        			sh 'rsync -auv HomeAutomation/target/HomeAutomation-0.0.1-SNAPSHOT/WEB-INF/* root@192.168.1.76:/var/lib/tomcat8/webapps/HomeAutomation/WEB-INF/'
 	   				}
 	   			}
-	   			stage('Deploy Frontend') {
-	        		steps {
-	       				sh 'rsync -auv HomeAutomationUI/WebContent/* root@192.168.1.76:/var/lib/tomcat8/webapps/HomeAutomationUI'
-	   				}
-	   			}
+	   			//stage('Deploy Frontend') {
+	        		//steps {
+	       				//sh 'rsync -auv HomeAutomationUI/WebContent/* root@192.168.1.76:/var/lib/tomcat8/webapps/HomeAutomationUI'
+	   			//	}
+	   			//}
 	   		}	
 	    }
 	    stage('Restart') {
