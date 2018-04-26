@@ -2,7 +2,8 @@ pipeline {
     agent {
         docker {
             image 'maven:3.5.2-jdk-8-alpine' 
-            args '-v /var/jenkins_home/.m2:/root/.m2 -v /root/.ssh:/root/.ssh' 
+		//-v /var/jenkins_home/.m2:/root/.m2 
+            args '-v /root/.ssh:/root/.ssh' 
         }
     }
     stages {
