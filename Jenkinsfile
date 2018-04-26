@@ -56,7 +56,7 @@ pipeline {
 	       parallel {
 	      		 stage('JUnit') {
 					steps {
-						junit '**/target/surefire-reports/**/*.xml'  
+						//junit '**/target/surefire-reports/**/*.xml'  
 		            }
 				}
 				stage('Deploy Backend') {
