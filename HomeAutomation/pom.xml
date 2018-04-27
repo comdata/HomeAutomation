@@ -433,14 +433,14 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>3.1.0</version>
-				<!-- <executions>
+				<executions>
 					<execution>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
 					</execution>
-				</executions> -->
+				</executions>
 				<configuration>
 					<argLine>${argLine} -Xmx1024m -XX:MaxPermSize=256m</argLine>
 					<descriptorRefs>
