@@ -1,4 +1,4 @@
-package cm.homeautomation.tv.panasonic.test;
+package cm.homeautomation.services.tv.test;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
