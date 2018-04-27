@@ -406,7 +406,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.6.0</version>
+				<version>3.7.0</version>
 				<configuration>
 					<fork>true</fork>
 					<source>1.8</source>
@@ -423,7 +423,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>3.0.0</version>
+				<version>3.2.0</version>
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
 					<packagingIncludes>WEB-INF/lib/*.jar</packagingIncludes>
