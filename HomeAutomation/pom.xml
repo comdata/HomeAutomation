@@ -441,12 +441,12 @@
 						</goals>
 					</execution>
 				</executions> -->
-				<!-- <configuration>
+				<configuration>
 					<argLine>${argLine} -Xmx1024m -XX:MaxPermSize=256m</argLine>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
-				</configuration> -->
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
