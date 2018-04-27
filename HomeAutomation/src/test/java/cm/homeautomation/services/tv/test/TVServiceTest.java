@@ -12,7 +12,6 @@ import cm.homeautomation.entities.PhoneCallEvent;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.tv.TVService;
-import cm.homeautomation.tv.panasonic.test.TVServer;
 
 /**
  * Test the TV service
