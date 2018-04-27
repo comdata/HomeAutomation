@@ -1,7 +1,7 @@
 package cm.homeautomation.services.base;
 
 import java.lang.reflect.Method;
-import java.util.ConcurrentHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,7 +15,7 @@ import org.reflections.util.ConfigurationBuilder;
 
 public class StartupAnnotationInitializer extends Thread {
 
-	private Map<Class, Object> instances = new ConcurrentHashMap<Class, Object>();
+	private Map<Class, Object> instances = new HashMap<Class, Object>();
 
 	public StartupAnnotationInitializer() {
 	}
@@ -48,7 +48,7 @@ public class StartupAnnotationInitializer extends Thread {
 					try {
 						Object classInstance = declaringClass.newInstance();
 
-						//instances.put(declaringClass, classInstance);
+						instances.put(declaringClass, classInstance);
 					} catch (InstantiationException | IllegalAccessException e) {
 						e.printStackTrace();
 						LogManager.getLogger(this.getClass()).info("Failed creating class");
@@ -72,7 +72,7 @@ public class StartupAnnotationInitializer extends Thread {
 
 				Object singleInstance = instances.get(clazz);
 
-				//instances.remove(clazz);
+				instances.remove(clazz);
 			}
 		}
 	}
