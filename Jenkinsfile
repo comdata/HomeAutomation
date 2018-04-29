@@ -2,7 +2,6 @@ pipeline {
     agent {
         docker {
             image 'maven:3.5.2-jdk-8-alpine' 
-		//-v /var/jenkins_home/.m2:/root/.m2 
             args '-v /root/.ssh:/root/.ssh' 
         }
     }
@@ -18,24 +17,16 @@ pipeline {
 			sh 'mysql -u root HA < HomeAutomation/WebContent/WEB-INF/log4j.sql'
 		    } 
 		}
-	
-		stage('Build dependencies') {
-		    steps {
-	
-		    }
-		}
 		stage('Build-Parent') { 
 			steps {
 					sh 'mvn -T 1C -N install'
 			}
 		}
-		
-				stage('Build Backend') {
-					steps {
-						sh 'cd HomeAutomation && mvn -T 1C -B clean install'
-						
-		            }
-				}‚
+		stage('Build Backend') {
+			steps {
+				sh 'cd HomeAutomation && mvn -T 1C -B clean install'
+            }
+		}
 	
 	    stage('Deploy') {
 	       parallel {
