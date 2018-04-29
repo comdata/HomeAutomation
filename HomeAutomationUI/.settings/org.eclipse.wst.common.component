@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
-    <wb-module deploy-name="HomeAutomationUI">
+    <wb-module deploy-name="HomeAutomationUI old">
         <wb-resource deploy-path="/" source-path="/s"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-        <property name="context-root" value="HomeAutomationUI"/>
-        <property name="java-output-path" value="/HomeAutomationUI/build/classes"/>
+        <property name="java-output-path" value="/HomeAutomationUI old/build/classes"/>
+        <property name="context-root" value="HomeAutomationUI old"/>
     </wb-module>
 </project-modules>

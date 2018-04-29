@@ -21,16 +21,7 @@ pipeline {
 	
 		stage('Build dependencies') {
 		    steps {
-			sh 'rm -rf /root/git'
-			sh 'mkdir -p /root/git'
-	//		sh 'cd /root/git'
-	//		sh 'cd /root/git && rm -rf obera-base zwave'
-	//		sh 'cd /root/git && git clone https://github.com/oberasoftware/obera-base.git'
-	//		sh 'cd /root/git && cd obera-base && mvn -DskipTests install && cd ..'
-	//		sh 'cd /root/git && git clone https://github.com/comdata/zwave.git'
-	//		sh 'cd /root/git && cd zwave && mvn -DskipTests install && cd ..'
-	//		sh 'cd /root/git && git clone https://github.com/comdata/HomeAutomationZWave.git'
-	//		sh 'cd /root/git && cd HomeAutomationZWave && mvn -DskipTests install && cd ..'
+	
 		    }
 		}
 		stage('Build-Parent') { 
@@ -44,13 +35,7 @@ pipeline {
 						sh 'cd HomeAutomation && mvn -T 1C -B clean install'
 						
 		            }
-				}
-				stage('Build Frontend') {
-		            	steps {
-		                		sh 'cd HomeAutomationUI && mvn -T 1C -B clean install'
-		            	}
-		       
-				}
+				}‚
 	
 	    stage('Deploy') {
 	       parallel {
@@ -64,11 +49,6 @@ pipeline {
 	        			sh 'rsync -auv --delete --exclude "*.java" HomeAutomation/target/HomeAutomation-0.0.1-SNAPSHOT/WEB-INF/* root@192.168.1.76:/var/lib/tomcat8/webapps/HomeAutomation/WEB-INF/'
 	   				}
 	   			}
-	   			//stage('Deploy Frontend') {
-	        		//steps {
-	       				//sh 'rsync -auv HomeAutomationUI/WebContent/* root@192.168.1.76:/var/lib/tomcat8/webapps/HomeAutomationUI'
-	   			//	}
-	   			//}
 	   		}	
 	    }
 	    stage('Restart') {

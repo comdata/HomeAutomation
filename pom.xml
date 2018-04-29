@@ -67,7 +67,7 @@
 		<module>HomeAutomationClient</module>
 		<module>HomeAutomation</module>
 	
-<module>HomeAutomationUI</module>
+<!-- <module>HomeAutomationUI</module> -->
 </modules>
 
 
