@@ -41,7 +41,7 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1525024226286</id>
+			<id>1525024507684</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -50,7 +50,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1525024226293</id>
+			<id>1525024507692</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -59,16 +59,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1525024226301</id>
-			<name></name>
-			<type>26</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-HomeAutomationBase</arguments>
-			</matcher>
-		</filter>
-		<filter>
-			<id>1525024226309</id>
+			<id>1525024507701</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
@@ -77,7 +68,7 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1525024226317</id>
+			<id>1525024507711</id>
 			<name></name>
 			<type>26</type>
 			<matcher>
