@@ -1,0 +1,10 @@
+<mvc:View controllerName="cm.homeautomation.Main" xmlns="sap.m"
+	width="100%" height="100%" xmlns:mvc="sap.ui.core.mvc" xmlns:l="sap.ui.layout"
+	xmlns:u="sap.ui.unified">
+	<TileContainer id="container" tileDelete="handleTileDelete"
+		tiles="{/overviewTiles}" width="100%" height="100%">
+		<StandardTile press="handleSelect" type="{type}" number="{number}"
+			numberUnit="{numberUnit}" title="{title}" info="{info}" infoState="{infoState}" />
+	</TileContainer>
+
+</mvc:View>

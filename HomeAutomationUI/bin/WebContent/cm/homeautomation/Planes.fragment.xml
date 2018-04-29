@@ -1,0 +1,17 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+    <Dialog title="Flugzeuge" afterClose="afterPlanesDialogClose" stretch="true" horizontalScrolling="false" verticalScrolling="false" contentHeight="100%">
+        <content>
+
+
+            <core:HTML
+                    content="&lt;iframe src=&quot;http://192.168.1.77:8080&quot; scrolling=&quot;no&quot; style=&quot;overflow: hidden;&quot; width=&quot;100%&quot; height=&quot;100%&quot; /&gt;"/>
+
+<!--/HomeAutomation/cameraproxy-->
+        </content>
+        <beginButton>
+            <Button text="Schliessen" press="planesDialogClose"/>
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>

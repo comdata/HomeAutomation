@@ -1,0 +1,17 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+    <Dialog title="Kamera" afterClose="afterCameraDialogClose" stretch="true">
+        <content>
+
+
+            <core:HTML id="cameraContent"
+                    content=""/>
+
+<!--/HomeAutomation/cameraproxy-->
+        </content>
+        <beginButton>
+            <Button text="Schliessen" press="cameraDialogClose"/>
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>

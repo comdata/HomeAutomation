@@ -1,0 +1,17 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+    <Dialog title="Download" afterClose="afterDownloadsDialogClose" stretch="true" horizontalScrolling="false" verticalScrolling="false" contentHeight="100%">
+        <content>
+
+
+            <core:HTML
+                    content="&lt;iframe src=&quot;http://192.168.1.36:9091&quot; scrolling=&quot;no&quot; style=&quot;overflow: hidden;&quot; width=&quot;100%&quot; height=&quot;100%&quot; /&gt;"/>
+
+<!--/HomeAutomation/cameraproxy-->
+        </content>
+        <beginButton>
+            <Button text="Schliessen" press="downloadsDialogClose"/>
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>

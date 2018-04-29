@@ -1,0 +1,58 @@
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core" 
+	xmlns:custom="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<Dialog title="Scripting" afterClose="afterScriptingAdminDialogClose"
+		stretch="true">
+		<content>
+			<Table id="idScriptingEntitiesTable" inset="false"
+				items="{
+			path: 'scriptingEntities>/',
+			sorter: {
+				path: 'Name'
+			}
+		}">
+				<headerToolbar>
+					<Toolbar>
+						<Title text="Scripts" level="H2" />
+					</Toolbar>
+				</headerToolbar>
+				<columns>
+					<Column width="12em">
+						<Text text="ID" />
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true">
+						<Text text="Name" />
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true" hAlign="End">
+						<Text text="Script" />
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true" hAlign="End">
+						<Text text="Script Type" />
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
+						
+					</Column>
+				</columns>
+				<items>
+					<ColumnListItem>
+						<cells>
+							<Text text="{scriptingEntities>id}" />
+							<Text text="{scriptingEntities>name}" />
+							<Text text="{scriptingEntities>jsCode}" maxLines="2" />
+							<Text text="{scriptingEntities>scriptType}" />
+							<Button text="Edit" custom:scriptId="{scriptingEntities>id}" press="handleScriptingEditButtonPress" />
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>
+
+
+		</content>
+		<buttons>
+
+
+			<Button text="Ok" press="scriptingDialogClose" />
+
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

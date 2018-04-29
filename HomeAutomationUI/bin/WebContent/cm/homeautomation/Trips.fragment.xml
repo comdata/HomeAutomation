@@ -1,0 +1,70 @@
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<Dialog title="{i18n>Trips}" afterClose="afterTripsDialogClose"
+		stretch="true" horizontalScrolling="false" verticalScrolling="true"
+		contentHeight="100%">
+		<content>
+			<Panel expandable="false" expanded="true"
+				width="auto" class="sapUiResponsiveMargin" id="trips">
+				<content>
+
+					<Table
+						items="{
+			path: 'trips>/',
+			sorter: {
+				path: 'start'
+			}
+		}"
+						title="Trips" selectionMode="MultiToggle">
+						<columns>
+							<Column>
+								<Text text="Description" />
+							</Column>
+							<Column>
+								<Text text="Start" />
+							</Column>
+							<Column>
+								<Text text="End" />
+							</Column>
+							<Column>
+								<Text text="Location" />
+							</Column>
+						</columns>
+
+						<items>
+							<ColumnListItem>
+								<cells>
+									<Text text="{trips>summary}" />
+									<Text
+										text="{
+											path: 'trips>start',
+											formatter: 'formatter.dateTimeFormatter'
+}" />
+<Text
+	text="{
+		path: 'trips>end',
+		formatter: 'formatter.dateTimeFormatter'
+}" />
+								</cells>
+							</ColumnListItem>
+						</items>
+					</Table>
+
+
+
+
+				</content>
+			</Panel>
+
+
+		</content>
+		<beginButton>
+			<!--<Button text="Aktualisieren" press="networkDevicesLoad" />-->
+
+		</beginButton>
+		<endButton>
+			<Button text="Schliessen" press="tripsDialogClose" />
+		</endButton>
+
+	</Dialog>
+</core:FragmentDefinition>

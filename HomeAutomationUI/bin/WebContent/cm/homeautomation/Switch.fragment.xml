@@ -1,0 +1,140 @@
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core" xmlns:agraebe.custom="agraebe.custom.control" xmlns:commons="sap.ui.commons">
+	<Dialog title="{currentRoom>/roomName}" afterClose="afterDialogClose"
+		stretch="true">
+		<content>
+
+			<Panel expandable="true" expanded="false" headerText="Einstellungen"
+				width="auto" class="sapUiResponsiveMargin" id="switchPanel">
+				<content>
+					<List visible="false" id="switchList"
+
+						items="{
+			path: 'switches>/switchStatuses'
+		}">
+						<items>
+							<InputListItem label="{switches>name}" description="{switches>name}"
+								icon="sap-icon://lightbulb" iconDensityAware="false" iconInset="false">
+								<Switch state="{switches>switchState}" change="handleSwitchChange" visible="{= ${switches>switchType}=== 'SOCKET' || ${switches>switchType}=== 'LIGHT'}" />
+								<Button press="handleSwitchChange" visible="{= ${switches>switchType}=== 'IR'}" text="Send" />
+							</InputListItem>
+						</items>
+						<headerToolbar>
+							<Toolbar>
+								<Title text="Schalter" level="H2" />
+								<ToolbarSpacer />
+
+							</Toolbar>
+						</headerToolbar>
+
+					</List>
+					<List visible="false" id="windowBlinds"
+
+						items="{
+			path: 'windowBlinds>/windowBlinds'
+		}">
+						<items>
+							<InputListItem label="{windowBlinds>name}"
+								description="{windowBlinds>name}" icon="sap-icon://lightbulb"
+								iconDensityAware="false" iconInset="false">
+
+								<Slider min="0" max="99" value="{windowBlinds>currentValue}"
+									width="100px" change="handleBlindChange" />
+								<Label text="{windowBlinds>currentValue}"></Label>
+							</InputListItem>
+						</items>
+						<headerToolbar>
+							<Toolbar>
+								<Title text="Rolläden" level="H2" />
+								<ToolbarSpacer />
+
+							</Toolbar>
+						</headerToolbar>
+					</List>
+
+					<List visible="false" id="lights" items="{
+			path: 'lights>/'
+		}">
+						<items>
+							<InputListItem label="{lights>name}" description="{lights>name}"
+								icon="sap-icon://lightbulb" iconDensityAware="false" iconInset="false">
+
+								<Switch state="{= ${lights>brightnessLevel}>0}" change="handleLightSwitchChange" />
+								<Slider min="{lights>minimumValue}" max="{lights>maximumValue}" value="{lights>brightnessLevel}"
+									width="100px" change="handleLightChange" visible="{= ${lights>@class} === 'DimmableLight' || ${lights>@class} === 'RGBLight'}"/>
+								<Label text="{lights>brightnessLevel}" visible="{= ${lights>@class} === 'DimmableLight' || ${lights>@class} === 'RGBLight'}"></Label>
+								<Button press="handleLightRGBButton" visible="{= ${lights>@class} === 'RGBLight'}" text="Color" />
+						
+							</InputListItem>
+						</items>
+
+						<headerToolbar>
+							<Toolbar>
+								<Title text="Licht" level="H2" />
+								<ToolbarSpacer />
+
+							</Toolbar>
+						</headerToolbar>
+					</List>
+
+					<List visible="false" id="thermostats"
+
+						items="{
+			path: 'thermostats>/switchStatuses'
+		}">
+						<items>
+							<InputListItem label="{thermostats>name}"
+								description="{thermostats>name}" icon="sap-icon://lightbulb"
+								iconDensityAware="false" iconInset="false">
+								<Label text="{thermostats>latestStatus}"></Label>
+								<Slider min="16" max="28" step="0.5"
+									value="{thermostats>latestStatus}" width="100px"
+									change="handleThermostatChange" progress="true"
+									showHandleTooltip="true" />
+							</InputListItem>
+						</items>
+						<headerToolbar>
+							<Toolbar>
+								<Title text="Thermostat" level="H2" />
+								<ToolbarSpacer />
+
+							</Toolbar>
+						</headerToolbar>
+					</List>
+
+					<!-- <commons:ColorPicker id="lampe" name="Wohnzimmer" change="handleColorPickerChange"
+						/> -->
+				</content>
+			</Panel>
+
+			<Panel expandable="true" expanded="{currentRoom>/historicDataExpanded}" headerText="Historic Data"
+				width="100%" height="100%" class="sapUiResponsiveMargin" expand="expandHistoricData">
+				<content>
+					<agraebe.custom:ChartJSControl width="100%"
+						height="100%" responsive="true" chartType="Line" data="{historicalData>/lineData}" options="{historicalData>/options}"/>
+			<!--		<core:HTML
+						content="&lt;div id='chart'&gt;
+    &lt;svg style='height:300px; width:100%;'&gt;&lt;/svg&gt;
+&lt;/div&gt;"></core:HTML>-->
+				</content>
+			</Panel>
+
+<!-- 			<Panel expandable="true" expanded="{currentRoom>/additionalUI}" headerText=""
+				width="auto" class="sapUiResponsiveMargin" expand="expandAdditionalUI" visible="{= ${currentRoom>/additionalUIURL} !== ''}">
+				<content>
+					<core:HTML
+									content="&lt;iframe src=&quot;{currentRoom>/additionalUIURL}&quot; scrolling=&quot;no&quot; style=&quot;overflow: hidden;&quot; width=&quot;100%&quot; height=&quot;100%&quot; /&gt;"/>
+
+					<core:HTML
+						content="&lt;div id='chart'&gt;
+    &lt;svg style='height:300px; width:100%;'&gt;&lt;/svg&gt;
+&lt;/div&gt;"></core:HTML>
+				</content>
+			</Panel> -->
+
+		</content>
+		<beginButton>
+			<Button text="Schliessen" press="dialogClose" />
+		</beginButton>
+	</Dialog>
+</core:FragmentDefinition>

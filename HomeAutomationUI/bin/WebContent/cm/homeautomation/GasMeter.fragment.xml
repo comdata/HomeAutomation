@@ -1,0 +1,21 @@
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core" xmlns:commons="sap.ui.commons"
+	xmlns:agraebe.custom="agraebe.custom.control">
+	<Dialog title="{i18n>GasMeterTitle}" afterClose="afterGasMeterDialogClose"
+		stretch="true" verticalScrolling="true" horizontalScrolling="false" contentHeight="100%">
+		<content>
+
+
+			<agraebe.custom:ChartJSControl width="600"
+				height="400" responsive="true" chartType="Bar" data="{gasdata>/barData}" />
+
+
+		</content>
+		<beginButton>
+			<Button text="{i18n>refresh}" press="gasMeterLoad" />
+		</beginButton>
+		<endButton>
+			<Button text="{i18n>close}" press="gasMeterDialogClose" />
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

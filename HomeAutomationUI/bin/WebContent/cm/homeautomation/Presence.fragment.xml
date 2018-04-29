@@ -1,0 +1,63 @@
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<Dialog title="{i18n>Presence}" afterClose="afterPresenceDialogClose"
+		stretch="true" horizontalScrolling="false" verticalScrolling="true"
+		contentHeight="100%">
+		<content>
+			<Panel expandable="false" expanded="true"
+				width="auto" class="sapUiResponsiveMargin" id="presence">
+				<content>
+
+					<Table
+						items="{
+			path: 'presence>/',
+			sorter: {
+				path: 'date'
+			}
+		}"
+						title="Presence" selectionMode="MultiToggle">
+						<columns>
+							<Column>
+								<Text text="Person" />
+							</Column>
+							<Column>
+								<Text text="Date" />
+							</Column>
+							<Column>
+								<Text text="State" />
+							</Column>
+						</columns>
+
+						<items>
+							<ColumnListItem>
+								<cells>
+									<Text text="{presence>person/name}" />
+									<Text
+										text="{
+											path: 'presence>date',
+											formatter: 'formatter.dateTimeFormatter'
+										}" />
+									<Text text="{presence>state}" />
+								</cells>
+							</ColumnListItem>
+						</items>
+					</Table>
+
+
+
+
+				</content>
+			</Panel>
+
+
+		</content>
+		<beginButton>
+			<!--<Button text="Aktualisieren" press="networkDevicesLoad" />-->
+
+		</beginButton>
+		<endButton>
+			<Button text="Schliessen" press="presenceDialogClose" />
+		</endButton>
+
+	</Dialog>
+</core:FragmentDefinition>

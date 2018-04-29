@@ -1,0 +1,60 @@
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<Dialog title="Fenster und Türen" afterClose="afterDoorWindowDialogClose"
+		stretch="true" horizontalScrolling="false" verticalScrolling="true"
+		contentHeight="100%">
+		<content>
+			<Panel expandable="false" expanded="true" width="auto"
+				class="sapUiResponsiveMargin" id="remoteControl">
+				<content>
+
+					<Table
+						items="{
+			path: 'doorWindow>/',
+			sorter: {
+				path: 'device/name'
+			}
+		}"
+						title="Devices" selectionMode="MultiToggle">
+						<columns>
+							<Column>
+								<Text text="Name" />
+							</Column>
+							<Column>
+								<Text text="Zustand" />
+							</Column>
+							<Column>
+								<Text text="{i18n>since}" />
+							</Column>
+						</columns>
+
+						<items>
+							<ColumnListItem>
+								<cells>
+									<Text text="{doorWindow>window/name}" />
+									<Text text="{=${doorWindow>state} === 0 ? 'geschlossen': 'offen' }" />
+									<Text
+										text="{
+											path: 'doorWindow>date',
+											formatter: 'formatter.dateTimeFormatter'
+}" />
+								</cells>
+							</ColumnListItem>
+						</items>
+					</Table>
+				</content>
+			</Panel>
+
+
+		</content>
+		<beginButton>
+
+
+		</beginButton>
+		<endButton>
+		<Button text="Aktualisieren" press="doorWindowDialogReload" />
+			<Button text="Schliessen" press="doorWindowDialogClose" />
+		</endButton>
+
+	</Dialog>
+</core:FragmentDefinition>

@@ -1,0 +1,55 @@
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<Dialog title="Züge" afterClose="afterTrainDialogClose"
+		contentHeight="400px" resizable="true" stretch="false"
+		horizontalScrolling="false" verticalScrolling="false" draggable="true">
+		<content>
+			<!--<Panel expandable="true" expanded="true" headerText="Fernsteuerung" 
+				width="auto" class="sapUiResponsiveMargin" id="remoteControl"> <content> -->
+			<List headerText="Fernsteuerung" width="100%">
+				<items>
+					<InputListItem label="Zug">
+
+						<SegmentedButton selectedKey="{train>/train}"
+							select="handleTrainSelected">
+							<items>
+								<SegmentedButtonItem text="1" key="0" />
+								<SegmentedButtonItem text="2" key="1" />
+								<SegmentedButtonItem text="3" key="2" />
+								<SegmentedButtonItem text="4" key="3" />
+							</items>
+						</SegmentedButton>
+					</InputListItem>
+
+					<InputListItem label="Licht">
+						<Slider min="0" max="7" step="1" value="{train>/light}"
+							width="200px" change="handleTrainLightChange" />
+						<Label text="{train>/light}"></Label>
+					</InputListItem>
+					<InputListItem label="Geschwindigkeit">
+						<Slider min="-7" max="7" step="1" value="{train>/speed}"
+							width="200px" change="handleTrainSpeedChange" />
+						<Label text="{train>/speed}"></Label>
+					</InputListItem>
+					<InputListItem label="aktueller Zug">
+						<Button text="Stopp" press="trainStop" />
+						<Button text="Licht aus" press="trainLightOff" />
+					</InputListItem>
+					<InputListItem label="Alle Züge">
+						<Button text="Stopp" press="trainEmergencyStop" />
+					</InputListItem>
+				</items>
+			</List>
+
+
+
+
+			<!-- </content> </Panel> -->
+
+
+		</content>
+		<beginButton>
+			<Button text="Schliessen" press="trainDialogClose" />
+		</beginButton>
+	</Dialog>
+</core:FragmentDefinition>

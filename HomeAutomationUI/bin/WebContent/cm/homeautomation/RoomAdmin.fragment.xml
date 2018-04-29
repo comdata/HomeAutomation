@@ -1,0 +1,27 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
+    <Dialog title="Room" afterClose="afterRoomAdminDialogClose" stretch="true">
+        <content>
+
+            <f:SimpleForm id="SimpleFormToolbar"
+                          editable="true"
+                          layout="ResponsiveGridLayout" >
+
+            <f:content>
+                <Label text="Room Name" />
+                <Input value="{roomDetail>/roomName}" />
+            </f:content>
+            </f:SimpleForm>
+
+        </content>
+        <endButton>
+            <Button text="Ok" press="roomAdminDialogOk"/>
+
+        </endButton>
+        <beginButton>
+
+            <Button text="Cancel" press="roomAdminDialogCancel"/>
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>
