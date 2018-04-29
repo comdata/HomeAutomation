@@ -11,7 +11,7 @@
     <repository>
       <id>internal</id>
       <name>Archiva Managed Internal Repository</name>
-      <url>http://192.168.1.36:8080/repository/internal/</url>
+      <url>http://jenkins:8081/repository/internal/</url>
       <releases>
         <enabled>true</enabled>
       </releases>
