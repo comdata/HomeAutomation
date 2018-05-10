@@ -98,7 +98,7 @@ public class EventBusEndpoint {
 
 	@OnMessage
 	public void onMessage(final String message, final Session userSession) {
-
+		sendObjectToAllSession("pong");
 	}
 
 	/**
