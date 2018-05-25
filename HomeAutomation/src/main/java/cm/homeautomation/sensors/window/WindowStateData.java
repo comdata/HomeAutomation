@@ -34,7 +34,7 @@ public class WindowStateData implements HumanMessageGenerationInterface {
 
 	@Override
 	public String getMessageString() {
-		return "Fenster: " + window.getName() + " Status: " + ((getState() == 0) ? "geschlossen" : "offen");
+		return "Raum: "+((room!=null)?room.getRoomName():"")+" Fenster: " + window.getName() + " Status: " + ((getState() == 0) ? "geschlossen" : "offen");
 	}
 
 	public Room getRoom() {
