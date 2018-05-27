@@ -2,8 +2,11 @@ package cm.homeautomation.services.base;
 
 import java.io.File;
 
+import javax.security.auth.login.Configuration;
+
 import org.apache.logging.log4j.LogManager;
 
+import cm.homeautomation.configuration.ConfigurationService;
 import it.sauronsoftware.cron4j.Scheduler;
 
 /**
@@ -40,7 +43,9 @@ public class SchedulerThread {
 
 		}
 
-		scheduleFile = new File("/var/lib/tomcat8/webapps/HomeAutomation/schedule.cron");
+		String configFile = ConfigurationService.getConfigurationProperty("scheduler", "configFile");
+		
+		scheduleFile = new File(configFile);
 		scheduler.scheduleFile(scheduleFile);
 
 		if (!scheduler.isStarted()) {
