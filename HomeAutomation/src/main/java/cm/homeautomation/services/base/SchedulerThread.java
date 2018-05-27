@@ -2,8 +2,6 @@ package cm.homeautomation.services.base;
 
 import java.io.File;
 
-import javax.security.auth.login.Configuration;
-
 import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.configuration.ConfigurationService;
