@@ -16,8 +16,8 @@ import cm.homeautomation.eventbus.EventObject;
 public class NetworkScanner {
 
 	private static NetworkScanner networkScanner;
-	private static Map<String, Boolean> runningScans=new HashMap<String, Boolean>();
-	private HashMap<String, NetworkDevice> availableHosts;
+	private static Map<String, Boolean> runningScans = new HashMap<>();
+	private Map<String, NetworkDevice> availableHosts;
 
 	/**
 	 * check for the availability of a host
@@ -25,7 +25,7 @@ public class NetworkScanner {
 	 * @param subnet
 	 * @return
 	 */
-	public HashMap<String, NetworkDevice> checkHosts(String subnet) {
+	public Map<String, NetworkDevice> checkHosts(String subnet) {
 		setAvailableHosts(new HashMap<String, NetworkDevice>());
 
 		int timeout = 200;
@@ -76,13 +76,13 @@ public class NetworkScanner {
 	 * @return the MAC from the ARP cache
 	 */
 	private String getMacFromArpCache(String ip) {
-		if (ip == null)
+		if (ip == null) {
 			return null;
-		BufferedReader br = null;
-		FileReader fr = null;
-		try {
-			fr = new FileReader("/proc/net/arp");
-			br = new BufferedReader(fr);
+		}
+
+		try (	FileReader fr = new FileReader("/proc/net/arp");
+				BufferedReader br = new BufferedReader(fr)) {
+
 			String line;
 			while ((line = br.readLine()) != null) {
 				String[] splitted = line.split(" +");
@@ -103,17 +103,6 @@ public class NetworkScanner {
 			}
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass()).info(e);
-		} finally {
-			try {
-				if (br != null) {
-					br.close();
-				}
-				if (fr != null) {
-					fr.close();
-				}
-			} catch (IOException e) {
-				LogManager.getLogger(this.getClass()).info(e);
-			}
 		}
 		return null;
 	}
@@ -138,19 +127,18 @@ public class NetworkScanner {
 	 */
 	public static void scanNetwork(String[] args) {
 		String subnet = args[0];
-		
+
 		Boolean scanRunningObject = runningScans.get(subnet);
-		
-		if (scanRunningObject==null) {
+
+		if (scanRunningObject == null) {
 			runningScans.put(subnet, new Boolean(false));
 			scanRunningObject = runningScans.get(subnet);
 		}
-		
+
 		if (!scanRunningObject.booleanValue()) {
 			runningScans.put(subnet, new Boolean(true));
 
-			
-			HashMap<String, NetworkDevice> checkHosts = NetworkScanner.getInstance().checkHosts(subnet);
+			Map<String, NetworkDevice> checkHosts = NetworkScanner.getInstance().checkHosts(subnet);
 
 			NetworkScanResult data = new NetworkScanResult();
 			data.setHosts(checkHosts);
@@ -160,11 +148,11 @@ public class NetworkScanner {
 
 	}
 
-	public HashMap<String, NetworkDevice> getAvailableHosts() {
+	public Map<String, NetworkDevice> getAvailableHosts() {
 		return availableHosts;
 	}
 
-	public void setAvailableHosts(HashMap<String, NetworkDevice> availableHosts) {
+	public void setAvailableHosts(Map<String, NetworkDevice> availableHosts) {
 		this.availableHosts = availableHosts;
 	}
 

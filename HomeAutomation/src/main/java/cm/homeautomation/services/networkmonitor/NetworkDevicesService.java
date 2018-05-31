@@ -43,9 +43,7 @@ public class NetworkDevicesService extends BaseService {
 		NetworkDevicesService.instance = instance;
 	}
 
-	private EntityManager em;
-
-	private final int PORT = 9;
+	private static final int PORT = 9;
 
 	private final String broadcastIpAddress = "192.168.1.255";
 
@@ -95,7 +93,7 @@ public class NetworkDevicesService extends BaseService {
 
 		if (data instanceof DashButtonEvent) {
 
-			em = EntityManagerService.getNewManager();
+			EntityManager em = EntityManagerService.getNewManager();
 
 			final DashButtonEvent dbEvent = (DashButtonEvent) data;
 
@@ -142,7 +140,7 @@ public class NetworkDevicesService extends BaseService {
 	@GET
 	@Path("wake/{mac}")
 	public GenericStatus wakeUp(@PathParam("mac") final String macStr) {
-		try {
+		try (DatagramSocket socket = new DatagramSocket();) {
 			final byte[] macBytes = getMacBytes(macStr);
 			final byte[] bytes = new byte[6 + (16 * macBytes.length)];
 			for (int i = 0; i < 6; i++) {
@@ -154,9 +152,7 @@ public class NetworkDevicesService extends BaseService {
 
 			final InetAddress address = InetAddress.getByName(broadcastIpAddress);
 			final DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address, PORT);
-			final DatagramSocket socket = new DatagramSocket();
 			socket.send(packet);
-			socket.close();
 
 			LogManager.getLogger(this.getClass()).info("Wake-on-LAN packet sent.");
 			return new GenericStatus(true);

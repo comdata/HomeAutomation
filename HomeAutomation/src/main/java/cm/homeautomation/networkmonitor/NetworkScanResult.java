@@ -1,7 +1,6 @@
 package cm.homeautomation.networkmonitor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -10,14 +9,14 @@ import cm.homeautomation.entities.NetworkDevice;
 @XmlRootElement
 public class NetworkScanResult {
 
-	private HashMap<String, NetworkDevice> hosts;
+	private Map<String, NetworkDevice> hosts;
 
-	public void setHosts(HashMap<String, NetworkDevice> checkHosts) {
+	public void setHosts(Map<String, NetworkDevice> checkHosts) {
 		this.hosts = checkHosts;
 
 	}
 
-	public HashMap<String, NetworkDevice> getHosts() {
+	public Map<String, NetworkDevice> getHosts() {
 		return hosts;
 	}
 
