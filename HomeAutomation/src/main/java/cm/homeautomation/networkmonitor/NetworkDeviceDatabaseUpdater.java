@@ -5,17 +5,21 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.apache.log4j.LogManager;
+
 import com.google.common.eventbus.Subscribe;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.NetworkDevice;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
+import cm.homeautomation.services.base.AutoCreateInstance;
 
 public class NetworkDeviceDatabaseUpdater {
 
 	public NetworkDeviceDatabaseUpdater() {
 		EventBusService.getEventBus().register(this);
+		LogManager.getLogger(this.getClass()).debug("registered NetworkDeviceDatabaseUpdater");
 	}
 
 	@Subscribe
@@ -31,6 +35,8 @@ public class NetworkDeviceDatabaseUpdater {
 
 			final String mac = networkDevice.getMac();
 
+			LogManager.getLogger(this.getClass()).debug("got device for mac: "+mac);
+			
 			if (mac != null) {
 				resultList = em.createQuery("select n from NetworkDevice n where n.mac=:mac").setParameter("mac", mac)
 						.getResultList();
