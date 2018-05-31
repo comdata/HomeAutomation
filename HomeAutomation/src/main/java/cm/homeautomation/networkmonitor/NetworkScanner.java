@@ -1,4 +1,4 @@
-package cm.homeautomation.networkMonitor;
+package cm.homeautomation.networkmonitor;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

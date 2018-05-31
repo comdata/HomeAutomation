@@ -1,4 +1,4 @@
-package cm.homeautomation.networkMonitor;
+package cm.homeautomation.networkmonitor;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

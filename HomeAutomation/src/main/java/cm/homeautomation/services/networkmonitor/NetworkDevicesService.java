@@ -20,7 +20,7 @@ import cm.homeautomation.entities.DashButton;
 import cm.homeautomation.entities.NetworkDevice;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
-import cm.homeautomation.networkMonitor.NetworkScanner;
+import cm.homeautomation.networkmonitor.NetworkScanner;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 

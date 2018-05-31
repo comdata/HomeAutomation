@@ -1,4 +1,4 @@
-package cm.homeautomation.networkMonitor;
+package cm.homeautomation.networkmonitor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
