@@ -17,10 +17,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Camera;
 import cm.homeautomation.entities.CameraImageHistory;
@@ -36,6 +36,7 @@ public class CameraService extends BaseService {
 	public List<Camera> getAll() {
 		EntityManager em = EntityManagerService.getManager();
 
+		@SuppressWarnings("unchecked")
 		List<Camera> resultList = (List<Camera>) em.createQuery("select c from Camera c").getResultList();
 		return resultList;
 	}
@@ -55,23 +56,22 @@ public class CameraService extends BaseService {
 	public Response getSnapshot(@PathParam("id") Long id) {
 		EntityManager em = EntityManagerService.getNewManager();
 
+		@SuppressWarnings("unchecked")
 		List<Camera> resultList = (List<Camera>) em.createQuery("select c from Camera c where c.id=:id")
 				.setParameter("id", id).getResultList();
 
 		em.close();
-		
+
 		for (Camera camera : resultList) {
 			final byte[] imageData = camera.getImageSnapshot();
 			StreamingOutput stream = new StreamingOutput() {
 
 				@Override
-				public void write(OutputStream output) throws IOException, WebApplicationException {
+				public void write(OutputStream output) throws IOException {
 					try {
 						output.write(imageData);
 					} catch (Exception e) {
-						e.printStackTrace();
 					}
-
 				}
 			};
 
@@ -82,67 +82,78 @@ public class CameraService extends BaseService {
 
 	public static void prepareCameraImage(String[] args) {
 		EntityManager em = EntityManagerService.getNewManager();
+		@SuppressWarnings("unchecked")
 		List<Camera> resultList = em.createQuery("select c from Camera c where c.id=:id")
 				.setParameter("id", Long.parseLong(args[0])).getResultList();
 		if (resultList != null) {
 
 			for (Camera camera : resultList) {
-				try {
-					em.getTransaction().begin();
-					ByteArrayOutputStream bos = new ByteArrayOutputStream();
-					final BufferedImage image = resize(new URL(camera.getIcon()),
-							new Dimension(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
-					ImageIO.write(image, "jpg", bos);
-					byte[] cameraSnapshot = bos.toByteArray();
-					camera.setImageSnapshot(cameraSnapshot);
-					em.merge(camera);
-					
-					// persist history of camera images
-					CameraImageHistory cameraImageHistory = new CameraImageHistory();
-					cameraImageHistory.setCamera(camera);
-					cameraImageHistory.setDateTaken(new Date());
-					cameraImageHistory.setImageSnapshot(cameraSnapshot);
-					//em.persist(cameraImageHistory);
-					
-					
-					em.getTransaction().commit();
-
-					CameraImageUpdateEvent cameraEvent = new CameraImageUpdateEvent();
-					cameraEvent.setCamera(camera);
-					
-					EventObject event = new EventObject(cameraEvent);
-
-					EventBusService.getEventBus().post(event);
-				} catch (IOException e) {
-					em.getTransaction().rollback();
-					loadNoImage(args, em, camera);
-				} catch (Exception e) {
-					em.getTransaction().rollback();
-					loadNoImage(args, em, camera);
-				} finally {
-					em.close();
-				}
-				
+				singleCameraUpdate(args, em, camera);
 			}
-
 		}
-		
 		cleanOldImages();
 	}
-	
+
+	private static void singleCameraUpdate(String[] args, EntityManager em, Camera camera) {
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream();) {
+			em.getTransaction().begin();
+
+			final BufferedImage image = resize(new URL(camera.getIcon()),
+					new Dimension(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
+			ImageIO.write(image, "jpg", bos);
+			byte[] cameraSnapshot = bos.toByteArray();
+			camera.setImageSnapshot(cameraSnapshot);
+			em.merge(camera);
+
+			String historyEnabledString = ConfigurationService.getConfigurationProperty("camera", "historyEnabled");
+			
+			if (historyEnabledString==null || "".equals(historyEnabledString)) {
+				historyEnabledString="false";
+			}
+			
+			boolean historyEnabled = Boolean
+					.parseBoolean(historyEnabledString);
+
+			if (historyEnabled) {
+				// persist history of camera images
+				CameraImageHistory cameraImageHistory = new CameraImageHistory();
+				cameraImageHistory.setCamera(camera);
+				cameraImageHistory.setDateTaken(new Date());
+				cameraImageHistory.setImageSnapshot(cameraSnapshot);
+				em.persist(cameraImageHistory);
+			}
+
+			em.getTransaction().commit();
+
+			CameraImageUpdateEvent cameraEvent = new CameraImageUpdateEvent();
+			cameraEvent.setCamera(camera);
+			EventObject event = new EventObject(cameraEvent);
+
+			EventBusService.getEventBus().post(event);
+		} catch (IOException e) {
+			em.getTransaction().rollback();
+			loadNoImage(args, em, camera);
+		} catch (Exception e) {
+			em.getTransaction().rollback();
+			loadNoImage(args, em, camera);
+		} finally {
+			em.close();
+		}
+	}
+
 	private static void cleanOldImages() {
 		EntityManager em = EntityManagerService.getNewManager();
-		
+
 		em.getTransaction().begin();
-		
-		em.createQuery("delete from CameraImageHistory c where c.dateTaken<=:deleteDate").setParameter("deleteDate", new Date((new Date()).getTime()-(3*86400*1000))).executeUpdate();
-		
-		
+
+		em.createQuery("delete from CameraImageHistory c where c.dateTaken<=:deleteDate")
+				.setParameter("deleteDate", new Date((new Date()).getTime() - (3 * 86400 * 1000))).executeUpdate();
+
 		em.getTransaction().commit();
 		em.close();
-		
+
 	}
- 
+
 	private static void loadNoImage(String[] args, EntityManager em, Camera camera) {
 		try {
 			em.getTransaction().begin();
@@ -156,9 +167,7 @@ public class CameraService extends BaseService {
 			em.merge(camera);
 			em.getTransaction().commit();
 		} catch (IOException e) {
-			e.printStackTrace();
-		}catch (RuntimeException e) {
-			e.printStackTrace();
+		} catch (RuntimeException e) {
 		}
 	}
 
