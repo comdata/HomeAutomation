@@ -37,7 +37,7 @@ public class CameraService extends BaseService {
 		EntityManager em = EntityManagerService.getManager();
 
 		@SuppressWarnings("unchecked")
-		List<Camera> resultList = (List<Camera>) em.createQuery("select c from Camera c").getResultList();
+		List<Camera> resultList = (List<Camera>) em.createQuery("select c from Camera c where c.enabled=true").getResultList();
 		return resultList;
 	}
 
