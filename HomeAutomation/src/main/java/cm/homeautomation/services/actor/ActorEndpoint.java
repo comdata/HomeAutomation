@@ -16,7 +16,7 @@ import org.apache.logging.log4j.LogManager;
 		MessageTranscoder.class }, decoders = { MessageTranscoder.class })
 public class ActorEndpoint {
 
-	private ConcurrentHashMap<String, Session> userSessions = new ConcurrentHashMap<String, Session>();
+	private ConcurrentHashMap<String, Session> userSessions = new ConcurrentHashMap<>();
 
 	/**
 	 * Callback hook for Connection open events. This method will be invoked
@@ -70,6 +70,6 @@ public class ActorEndpoint {
 
 	@OnMessage
 	public void onMessage(String message, Session userSession) {
-
+		// we don't react on messages
 	}
 }
