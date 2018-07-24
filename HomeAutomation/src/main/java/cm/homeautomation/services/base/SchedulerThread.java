@@ -10,19 +10,18 @@ import it.sauronsoftware.cron4j.Scheduler;
 /**
  * provide refresh methods for the scheduler
  * 
- * @author mertins
+ * @author christoph
  *
  */
 @AutoCreateInstance
 public class SchedulerThread {
 	private static SchedulerThread instance = null;
 	private Scheduler scheduler;
-	private boolean run = true;
 	private File scheduleFile;
-	
+
 	public SchedulerThread() {
-		instance = this;
-		instance.reloadScheduler();
+		SchedulerThread.instance = this;
+		this.reloadScheduler();
 	}
 
 	public static SchedulerThread getInstance() {
@@ -35,24 +34,26 @@ public class SchedulerThread {
 	}
 
 	public void reloadScheduler() {
-		Scheduler scheduler = getScheduler();
-		if (scheduler != null && scheduleFile != null) {
-			scheduler.descheduleFile(scheduleFile);
+		Scheduler currentScheduler = getScheduler();
+		if (currentScheduler != null) {
 
+			if (scheduleFile != null) {
+				currentScheduler.descheduleFile(scheduleFile);
+			}
+
+			String configFile = ConfigurationService.getConfigurationProperty("scheduler", "configFile");
+
+			scheduleFile = new File(configFile);
+			currentScheduler.scheduleFile(scheduleFile);
+
+			if (!currentScheduler.isStarted()) {
+				currentScheduler.start();
+			}
+
+			LogManager.getLogger(this.getClass()).info("Reloaded scheduler");
 		}
-
-		String configFile = ConfigurationService.getConfigurationProperty("scheduler", "configFile");
-		
-		scheduleFile = new File(configFile);
-		scheduler.scheduleFile(scheduleFile);
-
-		if (!scheduler.isStarted()) {
-			scheduler.start();
-		}
-
-		LogManager.getLogger(this.getClass()).info("Reloaded scheduler");
 	}
-	
+
 	public void stopScheduler() {
 		getScheduler().stop();
 	}

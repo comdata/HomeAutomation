@@ -17,14 +17,9 @@ public class JerseyApplication extends Application {
 	
 	public JerseyApplication() {
 		super();
-		
-		//setupTestData();
-		
-		
 	}
 	
 	private void setupTestData() {
-		// TODO Auto-generated method stub
 		EntityManager em = EntityManagerService.getManager();
 
 		em.getTransaction().begin();
@@ -70,7 +65,6 @@ public class JerseyApplication extends Application {
 		// register resources and features
 		classes.add(MultiPartFeature.class);
 		classes.add(JacksonFeature.class);
-		//classes.add(LoggingFilter.class);
 		return classes;
 	}
 }

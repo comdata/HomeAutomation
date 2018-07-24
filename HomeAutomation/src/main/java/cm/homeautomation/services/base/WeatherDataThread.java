@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.apache.logging.log4j.LogManager;
+
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
@@ -31,9 +33,8 @@ public class WeatherDataThread {
 
 	private Sensor getSensorType(String sensorType) {
 		EntityManager em = EntityManagerService.getNewManager();
-		Object sensorResultObj = em
-				.createQuery(
-						"select s from Sensor s where s.sensorType=:sensorType and s.room=(select r from Room r where r.roomName='Draussen')")
+		Object sensorResultObj = em.createQuery(
+				"select s from Sensor s where s.sensorType=:sensorType and s.room=(select r from Room r where r.roomName='Draussen')")
 				.setParameter("sensorType", sensorType).getSingleResult();
 
 		if (sensorResultObj instanceof Sensor) {
@@ -55,8 +56,6 @@ public class WeatherDataThread {
 		WeatherDataThread.getInstance().loadAndStoreWeather();
 	}
 
-
-
 	public void loadAndStoreWeather() {
 		init();
 		EntityManager em = EntityManagerService.getNewManager();
@@ -76,46 +75,48 @@ public class WeatherDataThread {
 				weather = new Weather();
 			}
 
-			weather.setFetchDate(new Date());
-			weather.setTempC(Float.toString(weatherData.getTempC()));
-			weather.setHumidity(weatherData.getHumidity());
-			weather.setPressure(weatherData.getPressure());
-			em.persist(weather);
-			em.getTransaction().commit();
+			if (weather != null) {
+				weather.setFetchDate(new Date());
+				weather.setTempC(Float.toString(weatherData.getTempC()));
+				weather.setHumidity(weatherData.getHumidity());
+				weather.setPressure(weatherData.getPressure());
+				em.persist(weather);
+				em.getTransaction().commit();
 
-			Sensor weatherHumiditySensor = getSensorType("HUMIDITY");
-			Sensor weatherTemperatureSensor = getSensorType("TEMPERATURE");
-			Sensor weatherPressureSensor = getSensorType("PRESSURE");
+				Sensor weatherHumiditySensor = getSensorType("HUMIDITY");
+				Sensor weatherTemperatureSensor = getSensorType("TEMPERATURE");
+				Sensor weatherPressureSensor = getSensorType("PRESSURE");
 
-			if (weatherTemperatureSensor != null) {
-				SensorData weatherSensorTemperatureData = new SensorData();
-				weatherSensorTemperatureData.setValue(Float.toString(weatherData.getTempC()));
-				SensorDataSaveRequest weatherTemperatureSaveRequest = new SensorDataSaveRequest();
-				weatherTemperatureSaveRequest.setSensorData(weatherSensorTemperatureData);
-				weatherTemperatureSaveRequest.setSensorId(weatherTemperatureSensor.getId());
-				sensorService.saveSensorData(weatherTemperatureSaveRequest);
-			}
+				if (weatherTemperatureSensor != null) {
+					SensorData weatherSensorTemperatureData = new SensorData();
+					weatherSensorTemperatureData.setValue(Float.toString(weatherData.getTempC()));
+					SensorDataSaveRequest weatherTemperatureSaveRequest = new SensorDataSaveRequest();
+					weatherTemperatureSaveRequest.setSensorData(weatherSensorTemperatureData);
+					weatherTemperatureSaveRequest.setSensorId(weatherTemperatureSensor.getId());
+					sensorService.saveSensorData(weatherTemperatureSaveRequest);
+				}
 
-			if (weatherHumiditySensor != null) {
-				SensorData weatherSensorHumidityData = new SensorData();
-				weatherSensorHumidityData.setValue(weatherData.getHumidity());
-				SensorDataSaveRequest weatherHumiditySaveRequest = new SensorDataSaveRequest();
-				weatherHumiditySaveRequest.setSensorData(weatherSensorHumidityData);
-				weatherHumiditySaveRequest.setSensorId(weatherHumiditySensor.getId());
-				sensorService.saveSensorData(weatherHumiditySaveRequest);
-			}
-			
-			if (weatherPressureSensor != null) {
-				SensorData weatherPressureData = new SensorData();
-				weatherPressureData.setValue(weatherData.getPressure());
-				SensorDataSaveRequest weatherHumiditySaveRequest = new SensorDataSaveRequest();
-				weatherHumiditySaveRequest.setSensorData(weatherPressureData);
-				weatherHumiditySaveRequest.setSensorId(weatherPressureSensor.getId());
-				sensorService.saveSensorData(weatherHumiditySaveRequest);
+				if (weatherHumiditySensor != null) {
+					SensorData weatherSensorHumidityData = new SensorData();
+					weatherSensorHumidityData.setValue(weatherData.getHumidity());
+					SensorDataSaveRequest weatherHumiditySaveRequest = new SensorDataSaveRequest();
+					weatherHumiditySaveRequest.setSensorData(weatherSensorHumidityData);
+					weatherHumiditySaveRequest.setSensorId(weatherHumiditySensor.getId());
+					sensorService.saveSensorData(weatherHumiditySaveRequest);
+				}
+
+				if (weatherPressureSensor != null) {
+					SensorData weatherPressureData = new SensorData();
+					weatherPressureData.setValue(weatherData.getPressure());
+					SensorDataSaveRequest weatherHumiditySaveRequest = new SensorDataSaveRequest();
+					weatherHumiditySaveRequest.setSensorData(weatherPressureData);
+					weatherHumiditySaveRequest.setSensorId(weatherPressureSensor.getId());
+					sensorService.saveSensorData(weatherHumiditySaveRequest);
+				}
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error(e);
 		}
 		em.close();
 	}

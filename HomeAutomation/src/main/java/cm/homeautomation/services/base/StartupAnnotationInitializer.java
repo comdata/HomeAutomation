@@ -13,15 +13,25 @@ import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
+/**
+ * initialize services annotated with {@link AutoCreateInstance} by calling the constructor
+ * each service is created in an own thread therefore no need to spawn additional threads in
+ * the service itself.
+ * 
+ * @author christoph
+ *
+ */
 public class StartupAnnotationInitializer extends Thread {
 
-	private Map<Class, Object> instances = new HashMap<Class, Object>();
+	private Map<Class, Object> instances = new HashMap<>();
 
 	public StartupAnnotationInitializer() {
+		// nothing special to be done
 	}
 
+	@Override
 	public void run() {
-		System.out.println("Scanning classes");
+		LogManager.getLogger(this.getClass()).info("Scanning classes");
 		Reflections reflections = new Reflections(
 				new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage("cm.homeautomation")).setScanners(
 						new SubTypesScanner(), new TypeAnnotationsScanner(), new MethodAnnotationsScanner()));
@@ -33,14 +43,14 @@ public class StartupAnnotationInitializer extends Thread {
 		for (Method method : resources) {
 			Class<?> declaringClass = method.getDeclaringClass();
 			String message = "Adding class: " + declaringClass.getName();
-			System.out.println(message);
+			LogManager.getLogger(this.getClass()).info(message);
 			typesAnnotatedWith.add(declaringClass);
 		}
 
 		for (Class<?> declaringClass : typesAnnotatedWith) {
 
 			String message = "Creating class: " + declaringClass.getName();
-			System.out.println(message);
+
 			LogManager.getLogger(this.getClass()).info(message);
 
 			Runnable singleInstanceCreator = new Runnable() {
@@ -50,7 +60,6 @@ public class StartupAnnotationInitializer extends Thread {
 
 						instances.put(declaringClass, classInstance);
 					} catch (InstantiationException | IllegalAccessException e) {
-						e.printStackTrace();
 						LogManager.getLogger(this.getClass()).info("Failed creating class");
 					}
 				}
@@ -69,9 +78,6 @@ public class StartupAnnotationInitializer extends Thread {
 			Set<Class> keySet = instances.keySet();
 
 			for (Class clazz : keySet) {
-
-				Object singleInstance = instances.get(clazz);
-
 				instances.remove(clazz);
 			}
 		}

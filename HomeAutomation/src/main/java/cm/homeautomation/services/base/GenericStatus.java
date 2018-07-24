@@ -2,6 +2,12 @@ package cm.homeautomation.services.base;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Generic REST status response
+ * 
+ * @author christoph
+ *
+ */
 @XmlRootElement
 public class GenericStatus {
 	

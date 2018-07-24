@@ -19,20 +19,19 @@ import org.reflections.util.ConfigurationBuilder;
  *
  */
 @AutoCreateInstance
-public class EventBusAnnotationInitializer extends Thread {
+public class EventBusAnnotationInitializer {
 
 	private static Map<Class, Object> instances = new HashMap<>();
 
 	public EventBusAnnotationInitializer() {
-		this.run();
+		initializeEventBus();
 	}
 
 	public Map<Class, Object> getInstances() {
 		return instances;
 	}
 
-	@Override
-	public void run() {
+	public void initializeEventBus() {
 		final Reflections reflections = new Reflections(new ConfigurationBuilder()
 				.setUrls(ClasspathHelper.forPackage("cm.homeautomation")).setScanners(new MethodAnnotationsScanner()));
 
