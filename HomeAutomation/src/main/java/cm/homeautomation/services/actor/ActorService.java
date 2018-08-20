@@ -111,7 +111,7 @@ public class ActorService extends BaseService implements MqttCallback {
 
 		for (final Switch singleSwitch : switchList) {
 
-			singleSwitch.setSwitchState(("ON".equals(singleSwitch.getLatestStatus()) ? true : false));
+			singleSwitch.setSwitchState("ON".equals(singleSwitch.getLatestStatus()));
 
 			switchStatuses.getSwitchStatuses().add(singleSwitch);
 		}
