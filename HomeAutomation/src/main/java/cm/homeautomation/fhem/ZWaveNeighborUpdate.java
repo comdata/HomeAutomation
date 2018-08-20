@@ -40,7 +40,7 @@ public class ZWaveNeighborUpdate {
 							Thread.sleep(10000);
 						}
 					}
-					Thread.sleep(60000);
+					Thread.sleep(120000);
 				}
 				System.out.println("done");
 			} catch (ParseException | IOException e) {
