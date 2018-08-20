@@ -37,7 +37,7 @@ public class ZWaveNeighborUpdate {
 							HTTPHelper.performHTTPRequest(perDeviceUrl.replace("%DEVICE%", device.trim()),
 									new ZWaveNeighborUpdateCallback(device));
 
-							Thread.sleep(10000);
+							Thread.sleep(120000);
 						}
 					}
 					Thread.sleep(120000);
