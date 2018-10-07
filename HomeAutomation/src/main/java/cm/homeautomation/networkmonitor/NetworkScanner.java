@@ -27,12 +27,15 @@ public class NetworkScanner {
 	 */
 	public Map<String, NetworkDevice> checkHosts(String subnet) {
 		setAvailableHosts(new HashMap<String, NetworkDevice>());
+		
+		NetworkDeviceDatabaseUpdater networkDeviceDatabaseUpdater = new NetworkDeviceDatabaseUpdater();
 
 		int timeout = 200;
 		for (int i = 1; i < 255; i++) {
 			String host = subnet + "." + i;
 			try {
 				InetAddress currentHost = InetAddress.getByName(host);
+				System.err.println("current host: "+currentHost);
 				if (currentHost.isReachable(timeout)) {
 					LogManager.getLogger(this.getClass()).info(host + " is reachable");
 
@@ -40,7 +43,7 @@ public class NetworkScanner {
 
 					String key = host + "-" + macFromArpCache;
 					if (!getAvailableHosts().keySet().contains(key)) {
-
+						System.out.println("new host: "+host);
 						NetworkDevice device = new NetworkDevice();
 						device.setIp(host);
 						device.setHostname(currentHost.getHostName());
@@ -51,8 +54,10 @@ public class NetworkScanner {
 
 						NetworkScannerHostFoundMessage newHostMessage = new NetworkScannerHostFoundMessage();
 						newHostMessage.setHost(device);
+						EventObject newHostEvent = new EventObject(newHostMessage);
+						networkDeviceDatabaseUpdater.handleNetworkDeviceFound(newHostEvent);
 
-						EventBusService.getEventBus().post(new EventObject(newHostMessage));
+						EventBusService.getEventBus().post(newHostEvent);
 					}
 				}
 			} catch (IOException e) {
