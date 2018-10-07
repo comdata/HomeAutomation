@@ -156,7 +156,7 @@ public class OverviewService extends BaseService {
 
 		em.getTransaction().begin();
 		@SuppressWarnings("unchecked")
-		final List<Room> results = em.createQuery("select r FROM Room r where r.visible=true").getResultList();
+		final List<Room> results = em.createQuery("select r FROM Room r where r.visible=true order by r.sortOrder").getResultList();
 
 		for (final Room room : results) {
 
