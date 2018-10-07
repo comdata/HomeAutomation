@@ -35,7 +35,7 @@ public class NetworkScanner {
 			String host = subnet + "." + i;
 			try {
 				InetAddress currentHost = InetAddress.getByName(host);
-				System.err.println("current host: "+currentHost);
+				//System.err.println("current host: "+currentHost);
 				if (currentHost.isReachable(timeout)) {
 					LogManager.getLogger(this.getClass()).info(host + " is reachable");
 
@@ -43,7 +43,7 @@ public class NetworkScanner {
 
 					String key = host + "-" + macFromArpCache;
 					if (!getAvailableHosts().keySet().contains(key)) {
-						System.out.println("new host: "+host);
+						//System.out.println("new host: "+host);
 						NetworkDevice device = new NetworkDevice();
 						device.setIp(host);
 						device.setHostname(currentHost.getHostName());
