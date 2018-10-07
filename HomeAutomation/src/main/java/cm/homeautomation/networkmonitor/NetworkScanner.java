@@ -131,19 +131,19 @@ public class NetworkScanner {
 		Boolean scanRunningObject = runningScans.get(subnet);
 
 		if (scanRunningObject == null) {
-			runningScans.put(subnet, new Boolean(false));
+			runningScans.put(subnet, Boolean.valueOf(false));
 			scanRunningObject = runningScans.get(subnet);
 		}
 
 		if (!scanRunningObject.booleanValue()) {
-			runningScans.put(subnet, new Boolean(true));
+			runningScans.put(subnet, Boolean.valueOf(true));
 
 			Map<String, NetworkDevice> checkHosts = NetworkScanner.getInstance().checkHosts(subnet);
 
 			NetworkScanResult data = new NetworkScanResult();
 			data.setHosts(checkHosts);
 			EventBusService.getEventBus().post(new EventObject(data));
-			runningScans.put(subnet, new Boolean(false));
+			runningScans.put(subnet, Boolean.valueOf(false));
 		}
 
 	}
