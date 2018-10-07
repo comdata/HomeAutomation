@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 
 import javax.persistence.EntityManager;
 
+import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
@@ -80,14 +81,16 @@ public class TelegramBotService {
 
 			if (this.enabled) {
 				ApiContextInitializer.init();
+				telegramBotApi = new TelegramBotsApi();
 				registerBot();
 			}
 		} catch (final Exception e) {
+			LogManager.getLogger(this.getClass()).error(e);
 		}
 	}
 
 	private void registerBot() {
-		telegramBotApi = new TelegramBotsApi();
+		
 		try {
 			bot = new CommandsHandler(user, token);
 			telegramBotApi.registerBot(bot);
@@ -95,7 +98,7 @@ public class TelegramBotService {
 			sendMessage("Bot is alive");
 
 		} catch (final TelegramApiException e) {
-
+			LogManager.getLogger(this.getClass()).error(e);
 		}
 	}
 
@@ -127,6 +130,7 @@ public class TelegramBotService {
 					try {
 						bot.sendMessage(sendMessage);
 					} catch (final TelegramApiException e) {
+						LogManager.getLogger(this.getClass()).error(e);
 					}
 				});
 			}
