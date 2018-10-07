@@ -48,8 +48,9 @@ public class NetworkDeviceDatabaseUpdater {
 			}
 
 			if ((resultList != null) && !resultList.isEmpty()) {
-
+				
 				final NetworkDevice existingNetworkDevice = resultList.get(0);
+				LogManager.getLogger(this.getClass()).debug("updating existing entry: "+existingNetworkDevice.getId());
 				existingNetworkDevice.setIp(networkDevice.getIp());
 				existingNetworkDevice.setHostname(networkDevice.getHostname());
 				existingNetworkDevice.setMac(networkDevice.getMac());
@@ -57,13 +58,15 @@ public class NetworkDeviceDatabaseUpdater {
 				em.getTransaction().begin();
 				em.merge(existingNetworkDevice);
 				em.getTransaction().commit();
+				LogManager.getLogger(this.getClass()).debug("done updating existing entry: "+existingNetworkDevice.getId());
 			} else {
 				// this is a new device, so save it
-
+				LogManager.getLogger(this.getClass()).debug("creating new entry: "+networkDevice.getIp());
 				em.getTransaction().begin();
 				networkDevice.setLastSeen(new Date());
 				em.persist(networkDevice);
 				em.getTransaction().commit();
+				LogManager.getLogger(this.getClass()).debug("done creating new entry: "+networkDevice.getIp());
 			}
 
 			em.close();
