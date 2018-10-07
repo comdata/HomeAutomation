@@ -43,11 +43,9 @@ public class ZWaveNeighborUpdate {
 					Thread.sleep(120000);
 				}
 				System.out.println("done");
-			} catch (ParseException | IOException e) {
+			} catch (final ParseException | InterruptedException | IOException e) {
 				LogManager.getLogger(this.getClass()).error(e);
-			} catch (final InterruptedException e) {
-				LogManager.getLogger(this.getClass()).error(e);
-			}
+			} 
 		}
 
 	}
