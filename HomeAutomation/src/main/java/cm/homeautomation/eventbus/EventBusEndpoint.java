@@ -49,9 +49,15 @@ public class EventBusEndpoint {
 	public void handleEvent(final EventObject eventObject) {
 		userSessions.keys();
 		try {
-			eventTranscoder.encode(eventObject);
-
-			sendObjectToAllSession(eventObject);
+			if (eventObject != null) {
+				if (eventTranscoder!=null) {
+					eventTranscoder.encode(eventObject);
+				}
+				
+				sendObjectToAllSession(eventObject);
+			} else {
+				LogManager.getLogger(this.getClass()).error("Encoding got an empty message");
+			}
 		} catch (final EncodeException e) {
 			LogManager.getLogger(this.getClass()).error("Encoding failed", e);
 		}
@@ -73,8 +79,7 @@ public class EventBusEndpoint {
 	 * Callback hook for Connection close events. This method will be invoked when a
 	 * client closes a WebSocket connection.
 	 *
-	 * @param userSession
-	 *            the userSession which is opened.
+	 * @param userSession the userSession which is opened.
 	 */
 	@OnClose
 	public void onClose(final Session userSession) {
@@ -105,8 +110,7 @@ public class EventBusEndpoint {
 	 * Callback hook for Connection open events. This method will be invoked when a
 	 * client requests for a WebSocket connection.
 	 *
-	 * @param userSession
-	 *            the userSession which is opened.
+	 * @param userSession the userSession which is opened.
 	 */
 	@OnOpen
 	public void onOpen(@PathParam("clientId") final String clientId, final Session userSession) {
