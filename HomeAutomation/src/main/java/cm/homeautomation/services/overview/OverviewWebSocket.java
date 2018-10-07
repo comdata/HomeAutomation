@@ -16,9 +16,10 @@ import org.greenrobot.eventbus.Subscribe;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
+import cm.homeautomation.eventbus.StringTranscoder;
 
 @ServerEndpoint(value = "/overview/{clientId}", configurator = OverviewEndPointConfiguration.class, encoders = {
-		OverviewMessageTranscoder.class }, decoders = { OverviewMessageTranscoder.class })
+		OverviewMessageTranscoder.class, StringTranscoder.class }, decoders = { OverviewMessageTranscoder.class, StringTranscoder.class })
 public class OverviewWebSocket {
 	private final ConcurrentHashMap<String, Session> userSessions = new ConcurrentHashMap<>();
 

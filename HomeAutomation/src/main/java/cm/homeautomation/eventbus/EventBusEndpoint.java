@@ -22,7 +22,7 @@ import cm.homeautomation.logging.WebSocketEvent;
 
 @ServerEndpoint(value = "/eventbus/{clientId}", configurator = EventBusEndpointConfigurator.class, encoders = {
 		EventTranscoder.class,
-		WebSocketEventTranscoder.class }, decoders = { EventTranscoder.class, WebSocketEventTranscoder.class })
+		WebSocketEventTranscoder.class, StringTranscoder.class }, decoders = { EventTranscoder.class, WebSocketEventTranscoder.class, StringTranscoder.class })
 public class EventBusEndpoint {
 
 	private final ConcurrentHashMap<String, Session> userSessions = new ConcurrentHashMap<>();
