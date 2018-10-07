@@ -68,25 +68,11 @@ public class TelegramBotService {
 
 	@Subscribe
 	public void handleEvent(final EventObject eventObject) {
-		// try {
 		if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
 			final HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventObject
 					.getData();
 			TelegramBotService.getInstance().sendMessage(humanMessage.getMessageString());
 		}
-
-		// if (eventObject.getData() instanceof PresenceState) {
-		//
-		// EventTranscoder transcoder = new EventTranscoder();
-		//
-		// String message = transcoder.encode(eventObject);
-		//
-		// TelegramBotService.getInstance().sendMessage(message);
-		// }
-		// } catch (EncodeException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 	}
 
 	public void init() {
@@ -94,18 +80,22 @@ public class TelegramBotService {
 
 			if (this.enabled) {
 				ApiContextInitializer.init();
-				telegramBotApi = new TelegramBotsApi();
-				try {
-					bot = new CommandsHandler(user, token);
-					telegramBotApi.registerBot(bot);
-
-					sendMessage("Bot is alive");
-
-				} catch (final TelegramApiException e) {
-
-				}
+				registerBot();
 			}
 		} catch (final Exception e) {
+		}
+	}
+
+	private void registerBot() {
+		telegramBotApi = new TelegramBotsApi();
+		try {
+			bot = new CommandsHandler(user, token);
+			telegramBotApi.registerBot(bot);
+
+			sendMessage("Bot is alive");
+
+		} catch (final TelegramApiException e) {
+
 		}
 	}
 
