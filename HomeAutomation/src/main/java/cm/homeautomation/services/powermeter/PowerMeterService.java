@@ -19,6 +19,7 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.PowerIntervalData;
 import cm.homeautomation.sensors.powermeter.PowerMeterSensor;
 import cm.homeautomation.services.base.BaseService;
+import cm.homeautomation.services.base.GenericStatus;
 
 @Path("power")
 public class PowerMeterService extends BaseService {
@@ -50,7 +51,9 @@ public class PowerMeterService extends BaseService {
 
 	@GET
 	@Path("compress/{numberOfHours}")
-	public void compress(@PathParam("numberOfHours") String hours) {
+	public GenericStatus compress(@PathParam("numberOfHours") String hours) {
 		PowerMeterSensor.compress(new String[] {hours});
+		
+		return new GenericStatus(true);
 	}
 }
