@@ -31,6 +31,10 @@ pipeline {
 	
 	    stage('Deploy') {
 	       parallel {
+	       		stage('CodeCoverage') {
+	       		    sh 'bash <(curl -s https://codecov.io/bash)'
+	       		}
+
 	      		 //stage('JUnit') {
 			//		steps {
 						//junit '**/target/surefire-reports/**/*.xml'  
