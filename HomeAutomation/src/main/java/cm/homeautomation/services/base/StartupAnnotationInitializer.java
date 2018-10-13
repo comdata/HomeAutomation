@@ -34,7 +34,8 @@ public class StartupAnnotationInitializer extends Thread {
 		LogManager.getLogger(this.getClass()).info("Scanning classes");
 		Reflections reflections = new Reflections(
 				new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage("cm.homeautomation")).setScanners(
-						new SubTypesScanner(), new TypeAnnotationsScanner(), new MethodAnnotationsScanner()));
+						//new SubTypesScanner(), new TypeAnnotationsScanner(), 
+						new MethodAnnotationsScanner()));
 
 		// MethodAnnotationsScanner
 		Set<Method> resources = reflections.getMethodsAnnotatedWith(AutoCreateInstance.class);
