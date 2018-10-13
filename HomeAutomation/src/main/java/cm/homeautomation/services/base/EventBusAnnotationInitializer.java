@@ -76,7 +76,7 @@ public class EventBusAnnotationInitializer {
 
 		Reflections reflections = new Reflections(new ConfigurationBuilder()
 				.setUrls(ClasspathHelper.forPackage("cm.homeautomation")).filterInputsBy(filter)
-				.setScanners(new TypeElementsScanner(), new TypeAnnotationsScanner(), new MethodAnnotationsScanner()));
+				.setScanners(new TypeElementsScanner(), new TypeAnnotationsScanner(), new MethodAnnotationsScanner()).useParallelExecutor());
 
 		// MethodAnnotationsScanner
 		final Set<Method> resources = reflections.getMethodsAnnotatedWith(Subscribe.class);

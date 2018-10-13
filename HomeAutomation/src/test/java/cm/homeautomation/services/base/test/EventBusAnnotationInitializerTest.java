@@ -3,6 +3,7 @@ package cm.homeautomation.services.base.test;
 import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
@@ -22,6 +23,14 @@ public class EventBusAnnotationInitializerTest {
 		}
 		
 		assertFalse(eventBusClasses.isEmpty());
+	}
+	
+	@Test
+	public void testEventBusInitialization() {
+		EventBusAnnotationInitializer eventBusAnnotationInitializer = new EventBusAnnotationInitializer();
+	
+		Map<Class, Object> instances = eventBusAnnotationInitializer.getInstances();
+		assertFalse(instances.isEmpty());
 	}
 
 }
