@@ -50,14 +50,10 @@ pipeline {
 				stage('Deploy Backend') {
 	        		steps {
 	        			sh 'rsync -auv --delete --exclude "*.java" HomeAutomation/target/HomeAutomation-0.0.1-SNAPSHOT/WEB-INF/* root@192.168.1.76:/var/lib/tomcat8/webapps/HomeAutomation/WEB-INF/'
+	   					sh 'ssh root@192.168.1.76 /etc/init.d/tomcat8 restart'
 	   				}
 	   			}
 	   		}	
-	    }
-	    stage('Restart') {
-	        steps {
-	       		sh 'ssh root@192.168.1.76 /etc/init.d/tomcat8 restart'
-	   		}
 	    }
     }
 }
