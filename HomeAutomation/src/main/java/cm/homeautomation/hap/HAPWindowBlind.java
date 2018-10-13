@@ -70,7 +70,7 @@ public class HAPWindowBlind implements VerticalTiltingWindowCovering {
 	}
 
 	private Integer getPosition() {
-		return new Integer(new Float(windowBlind.getCurrentValue()).intValue());
+		return Integer.valueOf(Float.valueOf(windowBlind.getCurrentValue()).intValue());
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class HAPWindowBlind implements VerticalTiltingWindowCovering {
 
 	@Override
 	public CompletableFuture<Void> setTargetPosition(int position) throws Exception {
-		new WindowBlindService().setDim(new Long(id), Integer.toString(position));
+		new WindowBlindService().setDim(Long.valueOf(id), Integer.toString(position));
 		return CompletableFuture.completedFuture(null);
 	}
 

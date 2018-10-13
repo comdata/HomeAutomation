@@ -72,14 +72,12 @@ public class HAPTemperatureSensor implements TemperatureSensor {
 
 	@Override
 	public double getMinimumTemperature() {
-		// TODO Auto-generated method stub
-		return new Double(0).doubleValue();
+		return Double.valueOf(0);
 	}
 
 	@Override
 	public double getMaximumTemperature() {
-		// TODO Auto-generated method stub
-		return new Double(50).doubleValue();
+		return Double.valueOf(50);
 	}
 
 	/**

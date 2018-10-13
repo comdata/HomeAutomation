@@ -27,53 +27,54 @@ public class JeroMQServerWorker implements Runnable {
 	}
 
 	public void run() {
-		Socket worker = ctx.createSocket(ZMQ.DEALER);
-		worker.connect("inproc://backend");
+		try (Socket worker = ctx.createSocket(ZMQ.DEALER)) {
+			worker.connect("inproc://backend");
 
-		Sensors sensorsService = new Sensors();
+			Sensors sensorsService = new Sensors();
 
-		while (!Thread.currentThread().isInterrupted()) {
-			// The DEALER socket gives us the address envelope and message
-			ZMsg msg = ZMsg.recvMsg(worker);
-			ZFrame address = msg.pop();
-			ZFrame header = msg.pop();
-			ZFrame content = msg.pop();
-			assert (content != null);
-			msg.destroy();
+			while (!Thread.currentThread().isInterrupted()) {
+				// The DEALER socket gives us the address envelope and message
+				ZMsg msg = ZMsg.recvMsg(worker);
+				ZFrame address = msg.pop();
+				ZFrame header = msg.pop();
+				ZFrame content = msg.pop();
+				assert (content != null);
+				msg.destroy();
 
-			String messageContent = content.toString();
-			LogManager.getLogger(this.getClass()).info("Got message: "+messageContent);
+				String messageContent = content.toString();
+				LogManager.getLogger(this.getClass()).info("Got message: " + messageContent);
 
-			ObjectMapper mapper = new ObjectMapper();
+				ObjectMapper mapper = new ObjectMapper();
 
-			try {
+				try {
 
-				messageContent=messageContent.replace("@class", "@c");
-				
-				messageContent=messageContent.replace("cm.homeautomation.sensors", "");
-				
-				messageContent=messageContent.replace("cm.homeautomation.transmission.TransmissionStatusData", ".TransmissionStatusData");
-				
-				LogManager.getLogger(this.getClass()).info("message for deserialization: "+messageContent);
-				
-				JSONSensorDataBase sensorData = mapper.readValue(messageContent, JSONSensorDataBase.class);
+					messageContent = messageContent.replace("@class", "@c");
 
-				if (sensorData instanceof SensorDataSaveRequest) {
-					sensorsService.saveSensorData((SensorDataSaveRequest) sensorData);
-				} else if (sensorData instanceof SensorDataRoomSaveRequest) {
-					sensorsService.save((SensorDataRoomSaveRequest)sensorData);					
+					messageContent = messageContent.replace("cm.homeautomation.sensors", "");
+
+					messageContent = messageContent.replace("cm.homeautomation.transmission.TransmissionStatusData",
+							".TransmissionStatusData");
+
+					LogManager.getLogger(this.getClass()).info("message for deserialization: " + messageContent);
+
+					JSONSensorDataBase sensorData = mapper.readValue(messageContent, JSONSensorDataBase.class);
+
+					if (sensorData instanceof SensorDataSaveRequest) {
+						sensorsService.saveSensorData((SensorDataSaveRequest) sensorData);
+					} else if (sensorData instanceof SensorDataRoomSaveRequest) {
+						sensorsService.save((SensorDataRoomSaveRequest) sensorData);
+					}
+
+					address.send(worker, ZFrame.REUSE + ZFrame.MORE);
+					content.send(worker, ZFrame.REUSE);
+				} catch (IOException e1) {
+					LogManager.getLogger(this.getClass()).error(e1);
 				}
 
-				address.send(worker, ZFrame.REUSE + ZFrame.MORE);
-				content.send(worker, ZFrame.REUSE);
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				address.destroy();
+				content.destroy();
 			}
-
-			address.destroy();
-			content.destroy();
+			ctx.destroy();
 		}
-		ctx.destroy();
 	}
 }
