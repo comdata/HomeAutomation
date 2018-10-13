@@ -1,10 +1,13 @@
 package cm.homeautomation.services.overview;
 
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
+import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.PathParam;
@@ -19,7 +22,8 @@ import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.eventbus.StringTranscoder;
 
 @ServerEndpoint(value = "/overview/{clientId}", configurator = OverviewEndPointConfiguration.class, encoders = {
-		OverviewMessageTranscoder.class, StringTranscoder.class }, decoders = { OverviewMessageTranscoder.class, StringTranscoder.class })
+		OverviewMessageTranscoder.class,
+		StringTranscoder.class }, decoders = { OverviewMessageTranscoder.class, StringTranscoder.class })
 public class OverviewWebSocket {
 	private final ConcurrentHashMap<String, Session> userSessions = new ConcurrentHashMap<>();
 
@@ -75,12 +79,21 @@ public class OverviewWebSocket {
 	 * Callback hook for Connection close events. This method will be invoked when a
 	 * client closes a WebSocket connection.
 	 *
-	 * @param userSession
-	 *            the userSession which is opened.
+	 * @param userSession the userSession which is opened.
 	 */
 	@OnClose
 	public void onClose(final Session userSession) {
-		userSessions.remove(userSession);
+		final Enumeration<String> keySet = userSessions.keys();
+
+		while (keySet.hasMoreElements()) {
+			final String key = keySet.nextElement();
+
+			final Session session = userSessions.get(key);
+
+			if (session.equals(userSession)) {
+				userSessions.remove(key);
+			}
+		}
 	}
 
 	@OnError
@@ -88,12 +101,16 @@ public class OverviewWebSocket {
 		onClose(session);
 	}
 
+	@OnMessage
+	public void onMessage(final String message, final Session userSession) {
+		sendObjectToAllSession("{\"message\":\"pong\"}");
+	}
+
 	/**
 	 * Callback hook for Connection open events. This method will be invoked when a
 	 * client requests for a WebSocket connection.
 	 *
-	 * @param userSession
-	 *            the userSession which is opened.
+	 * @param userSession the userSession which is opened.
 	 */
 	@OnOpen
 	public void onOpen(@PathParam("clientId") final String clientId, final Session userSession) {
@@ -119,11 +136,42 @@ public class OverviewWebSocket {
 
 						session.getAsyncRemote().sendObject(tile);
 					} else {
-						userSessions.remove(session);
+						userSessions.remove(key);
 					}
 				} catch (final Exception e) {
-
+					LogManager.getLogger(this.getClass())
+					.error("remove of key failed: " + key, e); //
 				}
+			}
+		}
+	}
+
+	private void sendObjectToAllSession(final Object object) {
+		final Enumeration<String> sessionKeys = userSessions.keys();
+
+		synchronized (this) {
+
+			while (sessionKeys.hasMoreElements()) {
+				final String key = sessionKeys.nextElement();
+
+				final Session session = userSessions.get(key);
+
+				synchronized (session) {
+					if (session.isOpen()) {
+						try {
+							session.getBasicRemote().sendObject(object);
+							session.getBasicRemote().flushBatch();
+
+						} catch (IllegalStateException | IOException | EncodeException e) {
+							LogManager.getLogger(this.getClass())
+									.error("Sending failed" + session.getId() + " key: " + key, e); //
+							userSessions.remove(key);
+						}
+					} else {
+						userSessions.remove(key);
+					}
+				}
+
 			}
 		}
 	}
