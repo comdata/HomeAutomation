@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
+import org.reflections.ReflectionUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
@@ -60,13 +61,13 @@ public class StartupAnnotationInitializer extends Thread {
 
 	public Set<Class<?>> getClassesWithAutoCreateInstance() {
 		LogManager.getLogger(this.getClass()).info("Scanning classes");
-		
+	
 		Predicate<String> filter = new FilterBuilder().include(".*class").exclude(".*java").exclude(".*properties").exclude(".*xml");
 		
 		Reflections reflections = new Reflections(
 				new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage("cm.homeautomation")).setScanners(
-						new SubTypesScanner(), new TypeAnnotationsScanner().filterResultsBy(filter), 
-						new MethodAnnotationsScanner().filterResultsBy(filter)));
+						new SubTypesScanner(false), new TypeAnnotationsScanner().filterResultsBy(filter), 
+						new MethodAnnotationsScanner().filterResultsBy(filter)).useParallelExecutor());
 
 		// MethodAnnotationsScanner
 		Set<Method> resources = reflections.getMethodsAnnotatedWith(AutoCreateInstance.class);
