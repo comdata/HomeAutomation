@@ -31,6 +31,17 @@ pipeline {
 	
 	    stage('Deploy') {
 	       parallel {
+	       	    //stage('CodeCoverage') {
+	       	    //	steps {
+	       		// 	   sh 'cd HomeAutomation && bash <(curl -s https://codecov.io/bash)'
+	       	//		}
+	       	//	}
+	       		stage('Sonarqube') {
+	       			steps {
+	       		    	sh 'cd HomeAutomation && mvn -DskipTests=true org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dsonar.organization=homeautomation'
+	       			}
+	       		}
+
 	      		 //stage('JUnit') {
 			//		steps {
 						//junit '**/target/surefire-reports/**/*.xml'  

@@ -9,8 +9,13 @@ import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
+import org.reflections.scanners.TypeElementsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
+
+import com.google.common.base.Predicate;
 
 /**
  * initialize event bus annotated objects
@@ -24,19 +29,21 @@ public class EventBusAnnotationInitializer {
 	private static Map<Class, Object> instances = new HashMap<>();
 
 	public EventBusAnnotationInitializer() {
-		initializeEventBus();
+		this(false);
 	}
 
+	public EventBusAnnotationInitializer(boolean noInit) {
+		if (!noInit) {
+			initializeEventBus();
+		}
+	}
+	
 	public Map<Class, Object> getInstances() {
 		return instances;
 	}
 
 	public void initializeEventBus() {
-		final Reflections reflections = new Reflections(new ConfigurationBuilder()
-				.setUrls(ClasspathHelper.forPackage("cm.homeautomation")).setScanners(new MethodAnnotationsScanner()));
-
-		// MethodAnnotationsScanner
-		final Set<Method> resources = reflections.getMethodsAnnotatedWith(Subscribe.class);
+		final Set<Method> resources = getEventBusClasses();
 
 		for (final Method method : resources) {
 			final Class<?> declaringClass = method.getDeclaringClass();
@@ -61,5 +68,18 @@ public class EventBusAnnotationInitializer {
 				new Thread(singleInstanceCreator).start();
 			}
 		}
+	}
+
+	public Set<Method> getEventBusClasses() {
+		Predicate<String> filter = new FilterBuilder().includePackage("cm.homeautomation").include(".*class")
+				.exclude(".*java").exclude(".*properties").exclude(".*xml");
+
+		Reflections reflections = new Reflections(new ConfigurationBuilder()
+				.setUrls(ClasspathHelper.forPackage("cm.homeautomation")).filterInputsBy(filter)
+				.setScanners(new TypeElementsScanner(), new TypeAnnotationsScanner(), new MethodAnnotationsScanner()).useParallelExecutor());
+
+		// MethodAnnotationsScanner
+		final Set<Method> resources = reflections.getMethodsAnnotatedWith(Subscribe.class);
+		return resources;
 	}
 }
