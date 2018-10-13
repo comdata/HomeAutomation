@@ -69,11 +69,7 @@ public class StartupAnnotationInitializer extends Thread {
 		Reflections reflections = new Reflections(
 				new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage("cm.homeautomation")).filterInputsBy(filter).setScanners(
 						new TypeElementsScanner(), new TypeAnnotationsScanner(), 
-						new MethodAnnotationsScanner()));
-
-		if (reflections==null) {
-			return null;
-		}
+						new MethodAnnotationsScanner()).useParallelExecutor());
 		
 		// MethodAnnotationsScanner
 		Set<Method> resources = reflections.getMethodsAnnotatedWith(AutoCreateInstance.class);
