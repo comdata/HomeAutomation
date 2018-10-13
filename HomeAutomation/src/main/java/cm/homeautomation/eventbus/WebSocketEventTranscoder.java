@@ -26,12 +26,11 @@ public class WebSocketEventTranscoder implements Encoder.Text<WebSocketEvent>, D
 	@Override
 	public void init(EndpointConfig config) {
 		mapper = new ObjectMapper();
-		//mapper.setSerializationInclusion(Include.NON_NULL);
 	}
 
 	@Override
 	public void destroy() {
-
+		// do nothing to destry
 	}
 
 	@Override
