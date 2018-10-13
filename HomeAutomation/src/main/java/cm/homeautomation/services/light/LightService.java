@@ -20,6 +20,8 @@ import cm.homeautomation.tradfri.TradfriStartupService;
 @Path("light")
 public class LightService extends BaseService {
 
+	private static final String LIGHT_ID = "lightId";
+	private static final String TRADFRI = "TRADFRI";
 	private static LightService instance;
 
 	public static LightService getInstance() {
@@ -54,8 +56,10 @@ public class LightService extends BaseService {
 		case "RGBLIGHT":
 			light = new RGBLight();
 			break;
-
+		default:
+			return null;
 		}
+
 		light.setName(name);
 
 		final EntityManager em = EntityManagerService.getNewManager();
@@ -76,7 +80,7 @@ public class LightService extends BaseService {
 
 	@GET
 	@Path("dim/{lightId}/{dimValue}")
-	public GenericStatus dimLight(@PathParam("lightId") final long lightId, @PathParam("dimValue") int dimValue) {
+	public GenericStatus dimLight(@PathParam(LIGHT_ID) final long lightId, @PathParam("dimValue") int dimValue) {
 		return internalDimLight(lightId, dimValue, false);
 	}
 
@@ -89,9 +93,7 @@ public class LightService extends BaseService {
 				.setParameter("type", type).setParameter("externalId", externalId).getResultList();
 
 		if ((lights != null) && !lights.isEmpty()) {
-			for (final Light light : lights) {
-				return light;
-			}
+			return lights.get(0);
 		}
 
 		return null;
@@ -124,16 +126,17 @@ public class LightService extends BaseService {
 			final EntityManager em = EntityManagerService.getNewManager();
 			em.getTransaction().begin();
 			final Light light = (Light) em.createQuery("select l from Light l where l.id=:lightId")
-					.setParameter("lightId", lightId).getSingleResult();
+					.setParameter(LIGHT_ID, lightId).getSingleResult();
 
 			// if part of a group then call for the others as well
 			if (!calledForGroup) {
 				final String lightGroup = light.getLightGroup();
 
 				if ((lightGroup != null) && !lightGroup.isEmpty()) {
-					final List<Light> resultList = em
+					@SuppressWarnings("unchecked")
+					final List<Light> resultList = (List<Light>)em
 							.createQuery("select l from Light l where l.id!=:lightId and l.lightGroup=:lightGroup")
-							.setParameter("lightId", lightId).setParameter("lightGroup", lightGroup).getResultList();
+							.setParameter(LIGHT_ID, lightId).setParameter("lightGroup", lightGroup).getResultList();
 
 					if ((resultList != null) && !resultList.isEmpty()) {
 						for (final Light lightGroupMember : resultList) {
@@ -157,12 +160,12 @@ public class LightService extends BaseService {
 				em.persist(dimmableLight);
 				dimUrl = dimmableLight.getDimUrl();
 			} else {
-				light.setPowerState(("off".equals(powerState)) ? false : true);
+				light.setPowerState("off".equals(powerState));
 			}
 
 			em.getTransaction().commit();
 
-			if ("TRADFRI".equals(light.getLightType())) {
+			if (TRADFRI.equals(light.getLightType())) {
 				TradfriStartupService.getInstance().dimBulb(light.getExternalId(), dimValue);
 			} else {
 
@@ -178,11 +181,11 @@ public class LightService extends BaseService {
 
 	@GET
 	@Path("color/{lightId}/{hex}")
-	public GenericStatus setColor(@PathParam("lightId") final long lightId, @PathParam("hex") final String hex) {
+	public GenericStatus setColor(@PathParam(LIGHT_ID) final long lightId, @PathParam("hex") final String hex) {
 		final EntityManager em = EntityManagerService.getNewManager();
 		em.getTransaction().begin();
 		final Light light = (Light) em.createQuery("select l from Light l where l.id=:lightId")
-				.setParameter("lightId", lightId).getSingleResult();
+				.setParameter(LIGHT_ID, lightId).getSingleResult();
 
 		if (light instanceof RGBLight) {
 			final RGBLight colorLight = (RGBLight) light;
@@ -195,7 +198,7 @@ public class LightService extends BaseService {
 
 			String colorUrl = colorLight.getColorUrl();
 
-			if ("TRADFRI".equals(colorLight.getLightType())) {
+			if (TRADFRI.equals(colorLight.getLightType())) {
 				TradfriStartupService.getInstance().setColor(light.getExternalId(), shortHex,
 						colorLight.getBrightnessLevel());
 			} else {
