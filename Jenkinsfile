@@ -31,8 +31,15 @@ pipeline {
 	
 	    stage('Deploy') {
 	       parallel {
-	       		stage('CodeCoverage') {
-	       		    sh 'bash <(curl -s https://codecov.io/bash)'
+	       	    stage('CodeCoverage') {
+	       	    	steps {
+	       		 	   sh 'cd HomeAutomation && bash <(curl -s https://codecov.io/bash)'
+	       			}
+	       		}
+	       		stage('Sonarqube') {
+	       			steps {
+	       		    	sh 'cd HomeAutomation && mvn -DskipTests=true sonar:sonar org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar'
+	       			}
 	       		}
 
 	      		 //stage('JUnit') {
