@@ -90,7 +90,6 @@ public class Sensors extends BaseService {
 		final SensorDatas sensorDatas = new SensorDatas();
 
 		final EntityManager em = EntityManagerService.getNewManager();
-		// em.getTransaction().begin();
 		@SuppressWarnings("unchecked")
 		final List<Object> sensors = em.createQuery(
 				"select s FROM Sensor s where s.showData=true and s.room=(select r from Room r where r.id=:room)")
@@ -107,7 +106,6 @@ public class Sensors extends BaseService {
 
 		try {
 			latch.await();
-			// em.getTransaction().commit();
 		} catch (final InterruptedException e) {
 			LogManager.getLogger(this.getClass()).error(e);
 		}
@@ -225,7 +223,7 @@ public class Sensors extends BaseService {
 		try {
 			em.close();
 		} catch (final IllegalStateException e) {
-
+			LogManager.getLogger(this.getClass()).error(e);
 		}
 	}
 
@@ -239,7 +237,7 @@ public class Sensors extends BaseService {
 
 		final double valueAsDouble = Double.parseDouble(requestSensorData.getValue().replace(",", "."));
 
-		// System.err.println("value: " + valueAsDouble);
+
 
 		boolean mergeExisting = false;
 		if ((existingSensorData != null)) {
@@ -249,21 +247,13 @@ public class Sensors extends BaseService {
 			} else {
 				final double deadbandPercent = existingSensorData.getSensor().getDeadbandPercent();
 
-				// System.err.println("deadband value: " + deadbandPercent);
-				// only merge changes bigger than 1 percent
 				final double existingValueAsDouble = Double
 						.parseDouble(existingSensorData.getValue().replace(",", "."));
-				// System.err.println("existing value: " + existingValueAsDouble);
-
+				
 				final double difference = existingValueAsDouble * (deadbandPercent / 1000);
-
-				// System.err.println("difference value: " + difference);
 
 				final double lowerLimit = existingValueAsDouble - difference;
 				final double higherLimit = existingValueAsDouble + difference;
-
-				// System.err.println(lowerLimit + " < " + existingValueAsDouble + " < " +
-				// higherLimit);
 
 				if ((lowerLimit <= valueAsDouble) && (valueAsDouble <= higherLimit)) {
 					mergeExisting = true;
@@ -437,16 +427,16 @@ public class Sensors extends BaseService {
 			final DecimalFormat df = new DecimalFormat("#.##");
 			df.setRoundingMode(RoundingMode.CEILING);
 
-			requestSensorData.setValue(df.format(valueAsDouble).toString());
+			requestSensorData.setValue(df.format(valueAsDouble));
 
 			final boolean mergeExisting = mergeExistingData(existingSensorData, requestSensorData);
 
-			if (mergeExisting) {
+			if (mergeExisting && existingSensorData!=null) {
 				existingSensorData.setValidThru(new Date());
 				em.merge(existingSensorData);
 				LogManager.getLogger(this.getClass()).info("Committing data: " + existingSensorData.getValue());
 			} else {
-				if ((existingSensorData != null) && (requestSensorData != null)
+				if ((existingSensorData != null)
 						&& (requestSensorData.getDateTime() != null)) {
 					existingSensorData.setValidThru(new Date(requestSensorData.getDateTime().getTime() - 1000));
 					em.merge(existingSensorData);
