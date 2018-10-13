@@ -1,6 +1,7 @@
 package cm.homeautomation.sensors.powermeter;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
@@ -32,6 +33,11 @@ import es.moki.ratelimitj.inmemory.request.InMemorySlidingWindowRequestRateLimit
  */
 public class PowerMeterSensor {
 
+	/**
+	 * perform compression by aggregating the data for one hour blocks
+	 * 
+	 * @param args
+	 */
 	public static void compress(final String[] args) {
 		if ((args != null) && (args.length > 0)) {
 
@@ -56,8 +62,6 @@ public class PowerMeterSensor {
 				compressPowerPing.setCompressed(true);
 				final int powerCounter = ((BigDecimal) resultElement[0]).intValue();
 				compressPowerPing.setPowerCounter(powerCounter);
-
-				System.out.println();
 
 				final Timestamp minTimestamp = (Timestamp) resultElement[2];
 				final Timestamp maxTimestamp = (Timestamp) resultElement[3];
@@ -140,8 +144,7 @@ public class PowerMeterSensor {
 								try {
 									sendNewData();
 								} catch (final Exception e) {
-									e.printStackTrace();
-									LogManager.getLogger(this.getClass()).info("Failed sending new data");
+									LogManager.getLogger(this.getClass()).error("Failed sending new data", e);
 								}
 							}
 						};
@@ -159,8 +162,8 @@ public class PowerMeterSensor {
 	private BigDecimal runQueryForBigDecimal(final EntityManager em, final String query) {
 		final Object queryResultObject = em.createNativeQuery(query).getSingleResult();
 
-		BigDecimal result = (queryResultObject != null) ? ((BigDecimal) queryResultObject) : new BigDecimal(0);
-		result = result.setScale(2, BigDecimal.ROUND_HALF_UP);
+		BigDecimal result = (queryResultObject != null) ? ((BigDecimal) queryResultObject) : BigDecimal.ZERO;
+		result = result.setScale(2, RoundingMode.HALF_UP);
 		return result;
 	}
 
