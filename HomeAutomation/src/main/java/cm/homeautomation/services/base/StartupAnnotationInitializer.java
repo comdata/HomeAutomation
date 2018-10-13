@@ -12,6 +12,9 @@ import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
+
+import com.google.common.base.Predicate;
 
 /**
  * initialize services annotated with {@link AutoCreateInstance} by calling the constructor
@@ -31,22 +34,7 @@ public class StartupAnnotationInitializer extends Thread {
 
 	@Override
 	public void run() {
-		LogManager.getLogger(this.getClass()).info("Scanning classes");
-		Reflections reflections = new Reflections(
-				new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage("cm.homeautomation")).setScanners(
-						//new SubTypesScanner(), new TypeAnnotationsScanner(), 
-						new MethodAnnotationsScanner()));
-
-		// MethodAnnotationsScanner
-		Set<Method> resources = reflections.getMethodsAnnotatedWith(AutoCreateInstance.class);
-		Set<Class<?>> typesAnnotatedWith = reflections.getTypesAnnotatedWith(AutoCreateInstance.class);
-
-		for (Method method : resources) {
-			Class<?> declaringClass = method.getDeclaringClass();
-			String message = "Adding class: " + declaringClass.getName();
-			LogManager.getLogger(this.getClass()).info(message);
-			typesAnnotatedWith.add(declaringClass);
-		}
+		Set<Class<?>> typesAnnotatedWith = getClassesWithAutoCreateInstance();
 
 		for (Class<?> declaringClass : typesAnnotatedWith) {
 
@@ -68,6 +56,29 @@ public class StartupAnnotationInitializer extends Thread {
 			new Thread(singleInstanceCreator).start();
 
 		}
+	}
+
+	public Set<Class<?>> getClassesWithAutoCreateInstance() {
+		LogManager.getLogger(this.getClass()).info("Scanning classes");
+		
+		Predicate<String> filter = new FilterBuilder().include(".*class").exclude(".*java").exclude(".*properties").exclude(".*xml");
+		
+		Reflections reflections = new Reflections(
+				new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage("cm.homeautomation")).setScanners(
+						new SubTypesScanner().filterResultsBy(filter), new TypeAnnotationsScanner().filterResultsBy(filter), 
+						new MethodAnnotationsScanner().filterResultsBy(filter)));
+
+		// MethodAnnotationsScanner
+		Set<Method> resources = reflections.getMethodsAnnotatedWith(AutoCreateInstance.class);
+		Set<Class<?>> typesAnnotatedWith = reflections.getTypesAnnotatedWith(AutoCreateInstance.class);
+
+		for (Method method : resources) {
+			Class<?> declaringClass = method.getDeclaringClass();
+			String message = "Adding class: " + declaringClass.getName();
+			LogManager.getLogger(this.getClass()).info(message);
+			typesAnnotatedWith.add(declaringClass);
+		}
+		return typesAnnotatedWith;
 	}
 
 	public Map<Class, Object> getInstances() {
