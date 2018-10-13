@@ -25,7 +25,7 @@ import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 
 /**
- * Phone Call recording and event handling 
+ * Phone Call recording and event handling
  * 
  * @author christoph
  *
@@ -34,9 +34,8 @@ import cm.homeautomation.services.base.GenericStatus;
 public class Phone extends BaseService {
 
 	/**
-	 * accepts call events from external systems and creates a
-	 * {@link EventObject} message of type {@link PhoneCallEvent} to all
-	 * interested systems
+	 * accepts call events from external systems and creates a {@link EventObject}
+	 * message of type {@link PhoneCallEvent} to all interested systems
 	 * 
 	 * @param event
 	 * @param mode
@@ -65,7 +64,7 @@ public class Phone extends BaseService {
 
 		return new GenericStatus(true);
 	}
-	
+
 	/**
 	 * provide a list of calls recorded in the system
 	 * 
@@ -74,14 +73,13 @@ public class Phone extends BaseService {
 	@GET
 	@Path("getCallList")
 	public List<PhoneCallEvent> getCallList() {
-		
+
 		EntityManager em = EntityManagerService.getNewManager();
-		
+
 		return em.createQuery("select p from PhoneCallEvent p order by p.timestamp desc").getResultList();
-		
+
 	}
-	
-	
+
 	/*
 	 * preparation for watching for call events internally
 	 */
@@ -101,8 +99,7 @@ public class Phone extends BaseService {
 	private void getCall(String host, int portNum) {
 
 		LogManager.getLogger(this.getClass()).info("Host " + host + "; port " + portNum);
-		try {
-			Socket s = new Socket(host, portNum);
+		try (Socket s = new Socket(host, portNum)) {
 			new Pipe(s.getInputStream(), System.out).start();
 			new Pipe(System.in, s.getOutputStream()).start();
 		} catch (IOException e) {
@@ -122,6 +119,12 @@ public class Phone extends BaseService {
 		Pipe(InputStream is, OutputStream os) {
 			this.is = new BufferedReader(new InputStreamReader(is));
 			this.os = new PrintStream(os);
+		}
+		
+		@Override
+		public void run() {
+			// FIXME add implementation
+			super.run();
 		}
 
 	}
