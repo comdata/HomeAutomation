@@ -11,14 +11,14 @@ import cm.homeautomation.services.base.StartupAnnotationInitializer;
 public class StartupAnnotationInitializerTest {
 
 	@Test
-	public void test() {
+	public void testStartupInitializer() {
 		StartupAnnotationInitializer startupAnnotationInitializer = new StartupAnnotationInitializer();
 		Set<Class<?>> classesWithAutoCreateInstance = startupAnnotationInitializer.getClassesWithAutoCreateInstance();
 		
 		for (Class<?> clazz : classesWithAutoCreateInstance) {
-			System.out.println(clazz.getClass().getName());
+			System.out.println(clazz.getName());
 		}
-		//assertTrue(classesWithAutoCreateInstance.isEmpty());
+		assertTrue(!classesWithAutoCreateInstance.isEmpty());
 		
 	}
 
