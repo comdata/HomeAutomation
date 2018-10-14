@@ -5,13 +5,8 @@ pipeline {
             args '-v /root/.ssh:/root/.ssh' 
         }
     }
-    options([
-  		pipelineTriggers([
-    		upstream(
-    			upstreamProjects: '../HomeAutomationBase', 
-    			threshold: 'SUCCESS')
-  		])
-	])
+    triggers { upstream(upstreamProjects: '../HomeAutomationBase', threshold: hudson.model.Result.SUCCESS) 
+    
     stages {
 		stage('Prepare') {
 		    steps {
