@@ -5,7 +5,7 @@ pipeline {
             args '-v /root/.ssh:/root/.ssh' 
         }
     }
-    properties([
+    options([
   		pipelineTriggers([
     		upstream(
     			upstreamProjects: '../HomeAutomationBase', 
