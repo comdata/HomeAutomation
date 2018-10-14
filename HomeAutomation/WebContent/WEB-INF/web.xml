@@ -3,7 +3,7 @@
 	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
 	version="3.1" metadata-complete="true">
-	<absolute-ordering /> 
+	<absolute-ordering />
 	<display-name>HomeAutomation</display-name>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
@@ -196,5 +196,16 @@
 	<servlet-mapping>
 		<servlet-name>planesproxy</servlet-name>
 		<url-pattern>/planesproxy/*</url-pattern>
+	</servlet-mapping>
+
+	<!-- odata -->
+	<servlet>
+		<servlet-name>JPAOData</servlet-name>
+		<servlet-class>cm.homeautomation.odata.JPAODataServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>JPAOData</servlet-name>
+		<url-pattern>/JPAOData.svc/*</url-pattern>
 	</servlet-mapping>
 </web-app>

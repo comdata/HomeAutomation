@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>HomeAutomation</artifactId>
@@ -13,7 +14,7 @@
 		<httpcompontents.version>4.4.9</httpcompontents.version>
 		<telegrambots.version>2.4.2</telegrambots.version>
 		<ratelimitj-inmemory.version>0.4.2</ratelimitj-inmemory.version>
-		<odata.version>4.4.2</odata.version>
+		<odata.version>4.5.0</odata.version>
 
 	</properties>
 
@@ -26,6 +27,17 @@
 
 
 	<dependencies>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+			<version>4.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sap.olingo</groupId>
+			<artifactId>odata-jpa-processor</artifactId>
+			<version>0.2.10-SNAPSHOT</version>
+		</dependency>
+
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
@@ -43,18 +55,33 @@
 			<artifactId>obera_zwave</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
-		<!-- <dependency> <groupId>org.apache.olingo</groupId> <artifactId>odata-server-api</artifactId> 
-			<version>${odata.version}</version> </dependency> <dependency> <groupId>org.apache.olingo</groupId> 
-			<artifactId>odata-server-core</artifactId> <version>${odata.version}</version> 
-			<scope>runtime</scope> </dependency> <dependency> <groupId>org.apache.olingo</groupId> 
-			<artifactId>odata-commons-api</artifactId> <version>${odata.version}</version> 
-			</dependency> <dependency> <groupId>org.apache.olingo</groupId> <artifactId>odata-commons-core</artifactId> 
-			<version>${odata.version}</version> </dependency> -->
+		<dependency>
+			<groupId>org.apache.olingo</groupId>
+			<artifactId>odata-server-api</artifactId>
+			<version>${odata.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.olingo</groupId>
+			<artifactId>odata-server-core</artifactId>
+			<version>${odata.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.olingo</groupId>
+			<artifactId>odata-commons-api</artifactId>
+			<version>${odata.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.olingo</groupId>
+			<artifactId>odata-commons-core</artifactId>
+			<version>${odata.version}</version>
+		</dependency>
 		<!-- Tradfri dependencies -->
 		<dependency>
-		    <groupId>org.json</groupId>
-		    <artifactId>json</artifactId>
-		    <version>20180813</version>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20180813</version>
 		</dependency>
 
 		<dependency>
@@ -85,11 +112,8 @@
 			<artifactId>ical4j</artifactId>
 			<version>2.2.0</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.springframework.social</groupId>
-			<artifactId>spring-social-tripit</artifactId>
-			<version>1.0.0.M3</version>
-		</dependency> -->
+		<!-- <dependency> <groupId>org.springframework.social</groupId> <artifactId>spring-social-tripit</artifactId> 
+			<version>1.0.0.M3</version> </dependency> -->
 		<dependency>
 			<groupId>com.purej</groupId>
 			<artifactId>purej-vminspect</artifactId>
@@ -239,7 +263,7 @@
 			<artifactId>cron4j</artifactId>
 			<version>2.2.5</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
