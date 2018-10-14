@@ -24,5 +24,14 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/HomeAutomationBase new"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/olingo/odata-server-api/4.4.0/odata-server-api-4.4.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/olingo/odata-commons-api/4.4.0/odata-commons-api-4.4.0.jar"/>
+	<classpathentry kind="lib" path="/Users/christoph/.m2/repository/org/eclipse/persistence/javax.persistence/2.1.0/javax.persistence-2.1.0.jar" sourcepath="/Users/christoph/.m2/repository/org/eclipse/persistence/javax.persistence/2.1.0/javax.persistence-2.1.0-sources.jar">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="maven.groupId" value="org.eclipse.persistence"/>
+			<attribute name="maven.artifactId" value="javax.persistence"/>
+			<attribute name="maven.version" value="2.1.0"/>
+			<attribute name="maven.scope" value="compile"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

@@ -36,6 +36,23 @@
 			<groupId>com.sap.olingo</groupId>
 			<artifactId>odata-jpa-processor</artifactId>
 			<version>0.2.10-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.persistence</groupId>
+					<artifactId>javax.persistence</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.sap.olingo</groupId>
+			<artifactId>odata-jpa-metadata</artifactId>
+			<version>0.2.10-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.persistence</groupId>
+					<artifactId>javax.persistence</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
@@ -282,6 +299,12 @@
 			<groupId>cm.homeautomation</groupId>
 			<artifactId>HomeAutomationBase</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.persistence</groupId>
+					<artifactId>javax.persistence</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
