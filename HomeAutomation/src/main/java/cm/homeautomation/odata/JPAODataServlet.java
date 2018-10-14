@@ -7,12 +7,16 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -32,6 +36,8 @@ import org.apache.olingo.server.api.ODataHttpHandler;
 import org.apache.olingo.server.api.ODataRequest;
 import org.apache.olingo.server.api.ODataResponse;
 import org.apache.olingo.server.api.ServiceMetadata;
+import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
+import org.flywaydb.core.internal.jdbc.DriverDataSource;
 
 import com.sap.olingo.jpa.metadata.api.JPAEdmProvider;
 import com.sap.olingo.jpa.processor.core.api.JPAODataGetHandler;
@@ -46,7 +52,9 @@ public class JPAODataServlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		try {
-			JPAODataGetHandler handler=new JPAODataGetHandler(PUNIT_NAME);
+			DriverDataSource dataSourceImpl =new DriverDataSource(ClassLoader.getSystemClassLoader(), "org.mariadb.jdbc.Driver", "jdbc:mariadb://localhost:3306/HA?characterEncoding=utf8", "root", "");
+			
+			JPAODataGetHandler handler=new JPAODataGetHandler(PUNIT_NAME, dataSourceImpl);
 
 			handler.process(req, resp);
 		} catch (RuntimeException e) {
@@ -56,13 +64,13 @@ public class JPAODataServlet extends HttpServlet {
 		}
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws NamingException {
 		try {
 			String[] packages={"cm.homeautomation.entities"};
-			EntityManagerFactory emf =EntityManagerService.getManager().getEntityManagerFactory();
 			
-			JPAODataGetHandler handler=new JPAODataGetHandler(PUNIT_NAME);
+			DriverDataSource dataSourceImpl =new DriverDataSource(ClassLoader.getSystemClassLoader(), "org.mariadb.jdbc.Driver", "jdbc:mariadb://localhost:3306/HA?characterEncoding=utf8", "root", "");
 			
+			JPAODataGetHandler handler=new JPAODataGetHandler(PUNIT_NAME, dataSourceImpl);
 			
 			HttpServletRequest request = new HttpServletRequest ()
 			{
