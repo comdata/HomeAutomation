@@ -37,6 +37,11 @@
 			<artifactId>odata-jpa-processor</artifactId>
 			<version>0.2.10-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<version>2.2.3</version>
+		</dependency>
 
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
@@ -77,8 +82,8 @@
 			<artifactId>odata-commons-core</artifactId>
 			<version>${odata.version}</version>
 		</dependency>
-		
-		
+
+
 
 		<!-- Tradfri dependencies -->
 		<dependency>
