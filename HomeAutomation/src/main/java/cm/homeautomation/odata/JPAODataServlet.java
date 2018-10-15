@@ -61,7 +61,7 @@ public class JPAODataServlet extends HttpServlet {
 			ds.setUser("root");
 			
 			getHandler = new JPAODataGetHandler(PUNIT_NAME, ds);
-			crudHandler = new JPAODataCRUDHandler(PUNIT_NAME);
+			crudHandler = new JPAODataCRUDHandler(PUNIT_NAME, ds);
 			
 		} catch (ODataException | SQLException e) {
 			throw new ServletException(e);
