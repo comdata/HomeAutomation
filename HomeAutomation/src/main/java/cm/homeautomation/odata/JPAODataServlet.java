@@ -68,13 +68,13 @@ public class JPAODataServlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		try {
-
+			resp.setHeader("Access-Control-Allow-Origin", "*");
 			if (req.getRequestURI().endsWith("$metadata")) {
 				metaDataHandler.process(req, resp);
 			} else {
 				getHandler.process(req, resp);
 			}
-			resp.setHeader("Access-Control-Allow-Origin", "*");
+
 		}
 
 		catch (RuntimeException | ODataException e) {
