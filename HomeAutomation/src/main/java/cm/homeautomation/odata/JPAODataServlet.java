@@ -31,6 +31,7 @@ import org.mariadb.jdbc.MariaDbDataSource;
 import com.sap.olingo.jpa.metadata.api.JPAEdmProvider;
 import com.sap.olingo.jpa.metadata.api.JPAEntityManagerFactory;
 import com.sap.olingo.jpa.processor.core.api.JPAODataBatchProcessor;
+import com.sap.olingo.jpa.processor.core.api.JPAODataCRUDHandler;
 import com.sap.olingo.jpa.processor.core.api.JPAODataGetHandler;
 import com.sap.olingo.jpa.processor.core.api.JPAODataRequestProcessor;
 import com.sap.olingo.jpa.processor.core.api.JPAODataSessionContextAccess;
@@ -42,6 +43,7 @@ public class JPAODataServlet extends HttpServlet {
 	private static String[] packages = null; // { "cm.homeautomation.entities" };
 	private ODataHttpHandler metaDataHandler;
 	private JPAODataGetHandler getHandler;
+	private JPAODataCRUDHandler crudHandler;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -59,6 +61,7 @@ public class JPAODataServlet extends HttpServlet {
 			ds.setUser("root");
 			
 			getHandler = new JPAODataGetHandler(PUNIT_NAME, ds);
+			crudHandler = new JPAODataCRUDHandler(PUNIT_NAME);
 			
 		} catch (ODataException | SQLException e) {
 			throw new ServletException(e);
@@ -72,7 +75,11 @@ public class JPAODataServlet extends HttpServlet {
 			if (req.getRequestURI().endsWith("$metadata")) {
 				metaDataHandler.process(req, resp);
 			} else {
-				getHandler.process(req, resp);
+				if ("GET".equals(req.getMethod())) {
+					getHandler.process(req, resp);
+				} else {
+					crudHandler.process(req, resp);
+				}
 			}
 
 		}
