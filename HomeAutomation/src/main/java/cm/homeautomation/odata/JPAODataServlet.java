@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.naming.NamingException;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -24,18 +26,22 @@ import org.apache.olingo.server.api.ODataHttpHandler;
 import org.apache.olingo.server.api.ODataRequest;
 import org.apache.olingo.server.api.ODataResponse;
 import org.apache.olingo.server.api.ServiceMetadata;
+import org.mariadb.jdbc.MariaDbDataSource;
 
 import com.sap.olingo.jpa.metadata.api.JPAEdmProvider;
 import com.sap.olingo.jpa.metadata.api.JPAEntityManagerFactory;
-
-import cm.homeautomation.services.base.StartupAnnotationInitializer;
+import com.sap.olingo.jpa.processor.core.api.JPAODataBatchProcessor;
+import com.sap.olingo.jpa.processor.core.api.JPAODataGetHandler;
+import com.sap.olingo.jpa.processor.core.api.JPAODataRequestProcessor;
+import com.sap.olingo.jpa.processor.core.api.JPAODataSessionContextAccess;
 
 public class JPAODataServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 	private static final String PUNIT_NAME = "HA";
 	private static String[] packages = null; // { "cm.homeautomation.entities" };
-	private ODataHttpHandler handler;
+	private ODataHttpHandler metaDataHandler;
+	private JPAODataGetHandler getHandler;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -47,8 +53,14 @@ public class JPAODataServlet extends HttpServlet {
 			JPAEdmProvider metadataProvider = new JPAEdmProvider(PUNIT_NAME, emf, null, packages);
 			OData odata = OData.newInstance();
 			ServiceMetadata edm = odata.createServiceMetadata(metadataProvider, new ArrayList<EdmxReference>());
-			handler = odata.createHandler(edm);
-		} catch (ODataException e) {
+			metaDataHandler = odata.createHandler(edm);
+			
+			MariaDbDataSource ds = new MariaDbDataSource("jdbc:mariadb://localhost:3306/HA?characterEncoding=utf8");
+			ds.setUser("root");
+			
+			getHandler = new JPAODataGetHandler(PUNIT_NAME, ds);
+			
+		} catch (ODataException | SQLException e) {
 			throw new ServletException(e);
 		}
 	}
@@ -57,10 +69,14 @@ public class JPAODataServlet extends HttpServlet {
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		try {
 
-			handler.process(req, resp);
+			if (req.getRequestURI().endsWith("$metadata")) {
+				metaDataHandler.process(req, resp);
+			} else {
+				getHandler.process(req, resp);
+			}
 		}
 
-		catch (RuntimeException e) {
+		catch (RuntimeException | ODataException e) {
 			throw new ServletException(e);
 		}
 	}
@@ -75,12 +91,23 @@ public class JPAODataServlet extends HttpServlet {
 			OData odata = OData.newInstance();
 			ServiceMetadata edm = odata.createServiceMetadata(metadataProvider, new ArrayList<EdmxReference>());
 
+			
+			
 			ODataHttpHandler handler = odata.createHandler(edm);
+			
+			JPAODataGetHandler handler2 = new JPAODataGetHandler(PUNIT_NAME);
+			
 			ODataRequest request = new ODataRequest();
 			request.setMethod(HttpMethod.GET);
-			request.setRawBaseUri("http://localhost/HomeAutomation/JPAOData.svc/$metadata");
-			request.setRawODataPath("$metadata");
+			request.setRawBaseUri("http://localhost/HomeAutomation/JPAOData.svc/Rooms");
+			request.setRawODataPath("Rooms");
 			request.setProtocol("HTTP/1.1");
+			
+			JPAODataSessionContextAccess context = (JPAODataSessionContextAccess)handler2.getJPAODataContext();
+			
+		    EntityManager em=emf.createEntityManager();
+			handler.register(new JPAODataRequestProcessor(context, em));
+		    handler.register(new JPAODataBatchProcessor(context, em));
 
 			ODataResponse process = handler.process(request);
 			InputStream content = process.getContent();
