@@ -74,6 +74,7 @@ public class JPAODataServlet extends HttpServlet {
 			} else {
 				getHandler.process(req, resp);
 			}
+			resp.setHeader("Access-Control-Allow-Origin", "*");
 		}
 
 		catch (RuntimeException | ODataException e) {
