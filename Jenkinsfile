@@ -5,7 +5,7 @@ pipeline {
             args '-v /root/.ssh:/root/.ssh' 
         }
     }
-    triggers { upstream(upstreamProjects: 'comdata/HomeAutomationBase', threshold: hudson.model.Result.SUCCESS)}
+    triggers { upstream(upstreamProjects: 'comdata/HomeAutomationBase,comdata/olingo-jpa-processor-v4', threshold: hudson.model.Result.SUCCESS)}
     
     stages {
 		stage('Prepare') {
@@ -29,7 +29,7 @@ pipeline {
 			steps {
 				
 				withMaven() {
-					properties([pipelineTriggers([snapshotDependencies()])])
+					//properties([pipelineTriggers([snapshotDependencies()])])
 					sh 'cd HomeAutomation && mvn -T 1C -B clean deploy'
             	}
             }
