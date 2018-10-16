@@ -21,12 +21,16 @@ pipeline {
 		}
 		stage('Build-Parent') { 
 			steps {
+			
 					sh 'mvn -T 1C -N install'
 			}
 		}
 		stage('Build Backend') {
 			steps {
-				sh 'cd HomeAutomation && mvn -T 1C -B clean install'
+				properties([pipelineTriggers([snapshotDependencies()])])
+				withMaven() {
+					sh 'cd HomeAutomation && mvn -T 1C -B clean deploy'
+            	}
             }
 		}
 	
