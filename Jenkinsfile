@@ -27,8 +27,9 @@ pipeline {
 		}
 		stage('Build Backend') {
 			steps {
-				properties([pipelineTriggers([snapshotDependencies()])])
+				
 				withMaven() {
+					properties([pipelineTriggers([snapshotDependencies()])])
 					sh 'cd HomeAutomation && mvn -T 1C -B clean deploy'
             	}
             }
