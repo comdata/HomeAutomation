@@ -9,7 +9,6 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import cm.homeautomation.jeromq.server.JSONSensorDataReceiver;
@@ -18,6 +17,7 @@ import cm.homeautomation.services.base.AutoCreateInstance;
 @AutoCreateInstance
 public class MQTTReceiverClient implements MqttCallback {
 
+	private static final String MQTT_EXCEPTION = "MQTT Exception.";
 	private MqttClient client;
 	private boolean run = true;
 	private MemoryPersistence memoryPersistence = new MemoryPersistence();
@@ -32,41 +32,44 @@ public class MQTTReceiverClient implements MqttCallback {
 			connect();
 
 			while (run) {
-				try {
-					if (client != null) {
-						if (!client.isConnected()) {
-							LogManager.getLogger(this.getClass()).info("Not connected");
-							try {
-								client.disconnectForcibly(100);
-							} catch (MqttException e) {
-
-							}
-							client.reconnect();
-						}
-
-					} else {
-						LogManager.getLogger(this.getClass()).info("client is null");
-						connect();
-					}
-					Thread.sleep(10000);
-
-				} catch (MqttException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				keepClientConnected();
 
 			}
 
 		} catch (MqttException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error(MQTT_EXCEPTION, e);
 		}
 	}
 
-	private void connect() throws MqttException, MqttSecurityException {
+	private void keepClientConnected() {
+		try {
+			if (client != null) {
+				if (!client.isConnected()) {
+					LogManager.getLogger(this.getClass()).info("Not connected");
+					tryToDisconnect();
+					client.reconnect();
+				}
+
+			} else {
+				LogManager.getLogger(this.getClass()).info("client is null");
+				connect();
+			}
+			Thread.sleep(10000);
+
+		} catch (MqttException | InterruptedException e) {
+			LogManager.getLogger(this.getClass()).error("Exception while running client.", e);
+		}
+	}
+
+	private void tryToDisconnect() {
+		try {
+			client.disconnectForcibly(100);
+		} catch (MqttException e) {
+			LogManager.getLogger(this.getClass()).error(MQTT_EXCEPTION, e);
+		}
+	}
+
+	private void connect() throws MqttException {
 
 		UUID uuid = UUID.randomUUID();
 		String randomUUIDString = uuid.toString();
@@ -76,12 +79,9 @@ public class MQTTReceiverClient implements MqttCallback {
 
 		MqttConnectOptions connOpt = new MqttConnectOptions();
 		connOpt.setAutomaticReconnect(true);
-		// connOpt.setCleanSession(true);
 		connOpt.setKeepAliveInterval(60);
 		connOpt.setConnectionTimeout(60);
 		connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
-		// connOpt.setUserName(M2MIO_USERNAME);
-		// connOpt.setPassword(M2MIO_PASSWORD_MD5.toCharArray());
 
 		client.connect(connOpt);
 
@@ -98,8 +98,7 @@ public class MQTTReceiverClient implements MqttCallback {
 			run = false;
 			client.disconnect();
 		} catch (MqttException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error(MQTT_EXCEPTION, e);
 		}
 	}
 
@@ -116,8 +115,7 @@ public class MQTTReceiverClient implements MqttCallback {
 		try {
 			connect();
 		} catch (MqttException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error(MQTT_EXCEPTION, e);
 		}
 	}
 
@@ -127,18 +125,9 @@ public class MQTTReceiverClient implements MqttCallback {
 		String messageContent = new String(payload);
 		LogManager.getLogger(this.getClass()).info("Got MQTT message: " + messageContent);
 		try {
-			Runnable receiver = new Runnable() {
-
-				@Override
-				public void run() {
-					JSONSensorDataReceiver.receiveSensorData(messageContent);
-
-				}
-			};
+			Runnable receiver = () -> JSONSensorDataReceiver.receiveSensorData(messageContent);
 			new Thread(receiver).start();
-
 		} catch (Exception e) {
-			e.printStackTrace();
 			LogManager.getLogger(this.getClass()).error("Got an exception while saving data.", e);
 		}
 		client.messageArrivedComplete(message.getId(), message.getQos());
@@ -147,6 +136,6 @@ public class MQTTReceiverClient implements MqttCallback {
 
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken token) {
-
+		// nothing to do
 	}
 }
