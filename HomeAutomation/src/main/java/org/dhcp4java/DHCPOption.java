@@ -46,6 +46,7 @@ import java.util.logging.Logger;
  * Immutable object.
  */
 public class DHCPOption implements Serializable {
+	private static final String VALUE_IS_NULL = "value is null";
 	private static final long   serialVersionUID = 2L;
     private static final Logger logger = Logger.getLogger(DHCPOption.class.getName().toLowerCase());
 
@@ -247,7 +248,7 @@ public class DHCPOption implements Serializable {
             throw new IllegalArgumentException("DHCP option type (" + this.code + ") is not byte");
         }
         if (this.value == null) {
-        	throw new IllegalStateException("value is null");
+        	throw new IllegalStateException(VALUE_IS_NULL);
         }
         if (this.value.length != 1) {
         	throw new DHCPBadPacketException("option " + this.code + " is wrong size:" + this.value.length + " should be 1");
@@ -278,7 +279,7 @@ public class DHCPOption implements Serializable {
             throw new IllegalArgumentException("DHCP option type (" + this.code + ") is not short");
         }
         if (this.value == null) {
-        	throw new IllegalStateException("value is null");
+        	throw new IllegalStateException(VALUE_IS_NULL);
         }
         if (this.value.length != 2) {
         	throw new DHCPBadPacketException("option " + this.code + " is wrong size:" + this.value.length + " should be 2");
@@ -313,7 +314,7 @@ public class DHCPOption implements Serializable {
             throw new IllegalArgumentException("DHCP option type (" + this.code + ") is not int");
         }
         if (this.value == null) {
-        	throw new IllegalStateException("value is null");
+        	throw new IllegalStateException(VALUE_IS_NULL);
         }
         if (this.value.length != 4) {
         	throw new DHCPBadPacketException("option " + this.code + " is wrong size:" + this.value.length + " should be 4");
@@ -377,7 +378,7 @@ public class DHCPOption implements Serializable {
             throw new IllegalArgumentException("DHCP option type ("+ this.code +") is not InetAddr");
         }
         if (this.value == null) {
-            throw new IllegalStateException("value is null");
+            throw new IllegalStateException(VALUE_IS_NULL);
         }
         if (this.value.length != 4) {
             throw new DHCPBadPacketException("option " + this.code + " is wrong size:" + this.value.length + " should be 4");
@@ -423,7 +424,7 @@ public class DHCPOption implements Serializable {
             throw new IllegalArgumentException("DHCP option type ("+ this.code +") is not String");
         }
         if (this.value == null) {
-            throw new IllegalStateException("value is null");
+            throw new IllegalStateException(VALUE_IS_NULL);
         }
         return DHCPPacket.bytesToString(this.value);
     }
@@ -449,7 +450,7 @@ public class DHCPOption implements Serializable {
             throw new IllegalArgumentException("DHCP option type ("+ this.code +") is not short[]");
         }
         if (this.value == null) {
-            throw new IllegalStateException("value is null");
+            throw new IllegalStateException(VALUE_IS_NULL);
         }
         if ((this.value.length % 2) != 0)		// multiple of 2
         {
@@ -509,7 +510,7 @@ public class DHCPOption implements Serializable {
             throw new IllegalArgumentException("DHCP option type ("+ this.code +") is not InetAddr[]");
         }
         if (this.value == null) {
-            throw new IllegalStateException("value is null");
+            throw new IllegalStateException(VALUE_IS_NULL);
         }
         if ((this.value.length % 4) != 0)		// multiple of 4
         {
@@ -553,7 +554,7 @@ public class DHCPOption implements Serializable {
             throw new IllegalArgumentException("DHCP option type ("+ this.code +") is not bytes");
         }
         if (this.value == null) {
-            throw new IllegalStateException("value is null");
+            throw new IllegalStateException(VALUE_IS_NULL);
         }
         return this.getValue();
     }
