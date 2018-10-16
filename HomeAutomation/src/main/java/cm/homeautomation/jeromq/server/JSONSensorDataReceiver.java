@@ -30,7 +30,7 @@ import cm.homeautomation.services.sensors.Sensors;
 public class JSONSensorDataReceiver {
 
 	public static void main(String[] args) {
-		String messageContent="{\"@c\": \".RainData\",\"rc\":48,\"state\":0, \"mac\": \":::::12\"}?��?�� @";
+		String messageContent="{\"@c\": \".RainData\",\"rc\":48,\"state\":0, \"mac\": \":::::12\"}";
 		receiveSensorData(messageContent);
 	}
 	
