@@ -54,6 +54,14 @@ pipeline {
 	   					sh 'ssh root@192.168.1.76 /etc/init.d/tomcat8 restart'
 	   				}
 	   			}
+				stage('Archive') {
+	   			    steps {
+	   			        archiveArtifacts artifacts: '**/target/**/*.jar', fingerprint: true
+	   			    	archiveArtifacts artifacts: '**/pom.xml', fingerprint: true
+	   			    }
+
+	   			    
+	   			}
 	   		}	
 	    }
     }
