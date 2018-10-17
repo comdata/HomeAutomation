@@ -17,6 +17,15 @@
                         
         
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
+        <dependent-module archiveName="odata-jpa-processor-0.2.10-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/odata-jpa-processor/odata-jpa-processor">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="odata-jpa-annotation-0.2.10-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/odata-jpa-annotation/odata-jpa-annotation">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="odata-jpa-metadata-0.2.10-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/odata-jpa-metadata/odata-jpa-metadata">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <dependent-module archiveName="HomeAutomationZWave-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/HomeAutomationZWave/HomeAutomationZWave">
             <dependency-type>uses</dependency-type>
         </dependent-module>
