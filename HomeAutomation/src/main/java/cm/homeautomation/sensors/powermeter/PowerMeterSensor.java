@@ -89,7 +89,7 @@ public class PowerMeterSensor {
 	private RequestRateLimiter requestRateLimiter;
 
 	public PowerMeterSensor() {
-		final Set<RequestLimitRule> rules = Collections.singleton(RequestLimitRule.of(Duration.ofSeconds(60), 1)); // 1 per
+		final Set<RequestLimitRule> rules = Collections.singleton(RequestLimitRule.of(Duration.ofSeconds(60), 2)); // 1 per
 		// 2 minutes
 		requestRateLimiter = new InMemorySlidingWindowRequestRateLimiter(rules);
 		EventBusService.getEventBus().register(this);
