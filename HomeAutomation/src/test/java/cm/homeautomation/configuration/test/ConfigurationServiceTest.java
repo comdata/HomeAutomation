@@ -51,7 +51,7 @@ public class ConfigurationServiceTest {
 
 		List<ConfigurationSetting> allSettings = ConfigurationService.getAllSettings();
 
-		assertNull("list is NULL", allSettings);
+		assertTrue("list is empty", allSettings.isEmpty());
 
 	}
 
