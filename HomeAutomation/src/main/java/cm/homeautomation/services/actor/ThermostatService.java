@@ -25,10 +25,10 @@ import cm.homeautomation.services.base.GenericStatus;
 @Path("thermostat")
 public class ThermostatService extends BaseService {
 
-	private static ThermostatService instance;
+	private static ThermostatService instance=null;
 
 	public static void cronSetStatus(final String[] args) {
-		final Long id = new Long(args[0]);
+		final Long id = Long.valueOf(args[0]);
 		final String value = args[1];
 		getInstance().setValue(id, value);
 	}
@@ -36,7 +36,7 @@ public class ThermostatService extends BaseService {
 	public static ThermostatService getInstance() {
 
 		if (instance == null) {
-			new ThermostatService();
+			instance = new ThermostatService();
 		}
 
 		return instance;
@@ -88,7 +88,6 @@ public class ThermostatService extends BaseService {
 
 		em.getTransaction().commit();
 
-		// TODO bind FHEM
 		LogManager.getLogger(this.getClass()).info("Set " + id + " to value: " + value);
 		em.close();
 		return new GenericStatus(true);
