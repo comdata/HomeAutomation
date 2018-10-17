@@ -89,6 +89,7 @@ public class MQTTReceiverClient implements MqttCallback {
 		client.subscribe("/sensorState");
 		client.subscribe("/distanceSensor");
 		client.subscribe("/switch");
+		client.subscribe("/fhem/#");
 		LogManager.getLogger(this.getClass()).info("Started MQTT client");
 	}
 
@@ -125,8 +126,17 @@ public class MQTTReceiverClient implements MqttCallback {
 		String messageContent = new String(payload);
 		LogManager.getLogger(this.getClass()).info("Got MQTT message: " + messageContent);
 		try {
-			Runnable receiver = () -> JSONSensorDataReceiver.receiveSensorData(messageContent);
-			new Thread(receiver).start();
+			Runnable receiver=null;
+			if (topic.startsWith("/fhem")) {
+				receiver = () -> FHEMDataReceiver.receiveFHEMData(topic, messageContent);
+			} else {
+				receiver = () -> JSONSensorDataReceiver.receiveSensorData(messageContent);
+			}
+
+			if (receiver != null) {
+				new Thread(receiver).start();
+			}
+			
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass()).error("Got an exception while saving data.", e);
 		}
