@@ -3,6 +3,7 @@ package cm.homeautomation.sensors.powermeter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -88,7 +89,7 @@ public class PowerMeterSensor {
 	private RequestRateLimiter requestRateLimiter;
 
 	public PowerMeterSensor() {
-		final Set<RequestLimitRule> rules = Collections.singleton(RequestLimitRule.of(5, TimeUnit.MINUTES, 1)); // 1 per
+		final Set<RequestLimitRule> rules = Collections.singleton(RequestLimitRule.of(Duration.ofSeconds(60), 1)); // 1 per
 		// 2 minutes
 		requestRateLimiter = new InMemorySlidingWindowRequestRateLimiter(rules);
 		EventBusService.getEventBus().register(this);

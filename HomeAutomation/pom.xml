@@ -13,7 +13,7 @@
 		<version.servlet.api>3.1.0</version.servlet.api>
 		<httpcompontents.version>4.4.9</httpcompontents.version>
 		<telegrambots.version>2.4.2</telegrambots.version>
-		<ratelimitj-inmemory.version>0.4.2</ratelimitj-inmemory.version>
+		<ratelimitj-inmemory.version>0.5.0</ratelimitj-inmemory.version>
 		<odata.version>4.5.0</odata.version>
 
 	</properties>
@@ -33,11 +33,6 @@
 
 
 	<dependencies>
-		<dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-core</artifactId>
-			<version>5.2.0</version>
-		</dependency>
 		<dependency>
 			<groupId>com.sap.olingo</groupId>
 			<artifactId>odata-jpa-processor</artifactId>
@@ -60,16 +55,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>org.mariadb.jdbc</groupId>
-			<artifactId>mariadb-java-client</artifactId>
-			<version>2.2.3</version>
-		</dependency>
 
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
-			<version>2.1</version>
+			<version>2.1.1</version>
 		</dependency>
 
 
@@ -143,8 +133,6 @@
 			<artifactId>ical4j</artifactId>
 			<version>2.2.0</version>
 		</dependency>
-		<!-- <dependency> <groupId>org.springframework.social</groupId> <artifactId>spring-social-tripit</artifactId> 
-			<version>1.0.0.M3</version> </dependency> -->
 		<dependency>
 			<groupId>com.purej</groupId>
 			<artifactId>purej-vminspect</artifactId>
@@ -157,12 +145,10 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- <dependency> <groupId>com.armzilla.ha</groupId> <artifactId>amazon-echo-bridge</artifactId> 
-			<version>0.4.0</version> </dependency> -->
 		<dependency>
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-calendar</artifactId>
-			<version>v3-rev350-1.25.0</version>
+			<version>v3-rev354-1.25.0</version>
 			<exclusions>
 				<exclusion>
 					<groupId>com.fasterxml.jackson.core</groupId>
@@ -230,18 +216,18 @@
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>javax.mail-api</artifactId>
-			<version>1.6.1</version>
+			<version>1.6.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.mail</groupId>
 			<artifactId>javax.mail</artifactId>
-			<version>1.6.1</version>
+			<version>1.6.2</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.7</version>
+			<version>3.8.1</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.websocket</groupId>
@@ -256,18 +242,15 @@
 			<version>1.1.1</version>
 		</dependency>
 
-		<!-- <dependency> <groupId>org.apache.httpcomponents</groupId> <artifactId>httpclient</artifactId> 
-			<version>4.1.2</version> </dependency> <dependency> <groupId>org.apache.httpcomponents</groupId> 
-			<artifactId>httpcore</artifactId> <version>4.2.3</version> </dependency> -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
-			<version>4.4.9</version>
+			<version>4.4.10</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcomponents-core</artifactId>
-			<version>4.4.9</version>
+			<version>4.4.10</version>
 			<type>pom</type>
 		</dependency>
 
@@ -276,9 +259,6 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.6</version>
 		</dependency>
-		<!-- <dependency> <groupId>org.apache.httpcomponents</groupId> <artifactId>httpcore</artifactId> 
-			<version>4.4.5</version> </dependency> <dependency> <groupId>org.apache.httpcomponents</groupId> 
-			<artifactId>httpmime</artifactId> <version>4.5.2</version> </dependency> -->
 		<dependency>
 			<groupId>org.mitre.dsmiley.httpproxy</groupId>
 			<artifactId>smiley-http-proxy-servlet</artifactId>
@@ -305,12 +285,6 @@
 			<groupId>cm.homeautomation</groupId>
 			<artifactId>HomeAutomationBase</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.eclipse.persistence</groupId>
-					<artifactId>javax.persistence</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -328,35 +302,11 @@
 			<artifactId>jersey-container-servlet-core</artifactId>
 			<version>${version.jersey}</version>
 		</dependency>
-		<dependency>
-			<groupId>es.moki.ratelimitj</groupId>
-			<artifactId>ratelimitj-core</artifactId>
-			<version>${ratelimitj-inmemory.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>es.moki.ratelimitj</groupId>
-			<artifactId>ratelimitj-inmemory</artifactId>
-			<version>${ratelimitj-inmemory.version}</version>
-		</dependency>
 
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
 			<version>${version.jersey}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.fasterxml.jackson.core</groupId>
-					<artifactId>jackson-annotations</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.fasterxml.jackson.core</groupId>
-					<artifactId>jackson-databind</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.fasterxml.jackson.core</groupId>
-					<artifactId>jackson-core</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
@@ -368,13 +318,23 @@
 			<artifactId>jersey-media-multipart</artifactId>
 			<version>${version.jersey}</version>
 		</dependency>
-		<!-- <dependency> <groupId>com.fasterxml.jackson.core</groupId> <artifactId>jackson-databind</artifactId> 
-			<version>2.8.6</version> </dependency> -->
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-sse</artifactId>
 			<version>${version.jersey}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>es.moki.ratelimitj</groupId>
+			<artifactId>ratelimitj-core</artifactId>
+			<version>${ratelimitj-inmemory.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>es.moki.ratelimitj</groupId>
+			<artifactId>ratelimitj-inmemory</artifactId>
+			<version>${ratelimitj-inmemory.version}</version>
+		</dependency>
+
 
 		<dependency>
 			<groupId>io.netty</groupId>
@@ -383,9 +343,6 @@
 		</dependency>
 
 
-		<!-- <dependency> <groupId>cm.homeautomation</groupId> <artifactId>pushpad.xyz</artifactId> 
-			<version>0.3.0</version> <scope>system</scope> <systemPath>${basedir}/WebContent/WEB-INF/lib/pushpad-v0.3.0.jar</systemPath> 
-			</dependency> -->
 
 		<dependency>
 			<groupId>com.beowulfe.hap</groupId>
@@ -403,50 +360,10 @@
 			<artifactId>telegrambots</artifactId>
 			<version>${telegrambots.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-client</artifactId>
-			<version>${version.jersey}</version>
-		</dependency>
 
-		<dependency>
-			<groupId>org.glassfish.jersey.containers</groupId>
-			<artifactId>jersey-container-servlet-core</artifactId>
-			<version>${version.jersey}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-json-jackson</artifactId>
-			<version>${version.jersey}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-json-processing</artifactId>
-			<version>${version.jersey}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-multipart</artifactId>
-			<version>${version.jersey}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-sse</artifactId>
-			<version>${version.jersey}</version>
-		</dependency>
 	</dependencies>
 
 	<build>
-		<extensions>
-			<!-- Enabling the use of SSH -->
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh-external</artifactId>
-				<version>1.0-beta-6</version>
-			</extension>
-		</extensions>
-
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<testSourceDirectory>src/test/java</testSourceDirectory>
 		<resources>
@@ -456,13 +373,8 @@
 		</resources>
 		<plugins>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>sonar-maven-plugin</artifactId>
-				<version>3.2</version>
-			</plugin>
-			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.7.0</version>
+				<version>3.8.0</version>
 				<configuration>
 					<fork>true</fork>
 					<source>1.8</source>
@@ -472,14 +384,14 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.18.1</version>
+				<version>2.22.0</version>
 				<configuration>
 					<argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>3.2.0</version>
+				<version>3.2.2</version>
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
 					<packagingIncludes>WEB-INF/lib/*.jar</packagingIncludes>
@@ -487,27 +399,9 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.1.0</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<argLine>${argLine} -Xmx1024m -XX:MaxPermSize=256m</argLine>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.9</version>
+				<version>0.8.2</version>
 				<executions>
 					<execution>
 						<goals>
