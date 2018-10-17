@@ -8,10 +8,10 @@ import javax.websocket.EncodeException;
 import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
 
+import org.apache.log4j.LogManager;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import cm.homeautomation.eventbus.EventObject;
 
 public class MessageTranscoder implements Encoder.Text<SwitchEvent>, Decoder.Text<SwitchEvent> {
 
@@ -32,7 +32,7 @@ public class MessageTranscoder implements Encoder.Text<SwitchEvent>, Decoder.Tex
 		try {
 			return mapper.readValue(s, SwitchEvent.class);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error("IO Exception when converting to SwitchEvent class", e);
 		}
 		return null;
 	}
@@ -48,8 +48,7 @@ public class MessageTranscoder implements Encoder.Text<SwitchEvent>, Decoder.Tex
 		try {
 			return mapper.writeValueAsString(object);
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error("Exception when converting from SwitchEvent class", e);
 		}
 		return null;
 	}
