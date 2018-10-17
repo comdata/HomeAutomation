@@ -1,5 +1,6 @@
 package cm.homeautomation.configuration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -15,6 +16,10 @@ import cm.homeautomation.entities.ConfigurationSetting;
  */
 public class ConfigurationService {
 
+	private ConfigurationService() {
+		// not to be created
+	}
+	
 	/**
 	 * get configuration setting value
 	 * 
@@ -26,6 +31,7 @@ public class ConfigurationService {
 
 		EntityManager em = EntityManagerService.getNewManager();
 
+		@SuppressWarnings("unchecked")
 		List<ConfigurationSetting> resultList = ((List<ConfigurationSetting>) em
 				.createQuery(
 						"select c from ConfigurationSetting c where c.settingsGroup=:settingsGroup and c.property=:property")
@@ -51,6 +57,7 @@ public class ConfigurationService {
 	public static void createOrUpdate(String settingsGroup, String property, String value) {
 		EntityManager em = EntityManagerService.getNewManager();
 
+		@SuppressWarnings("unchecked")
 		List<ConfigurationSetting> resultList = ((List<ConfigurationSetting>) em
 				.createQuery(
 						"select c from ConfigurationSetting c where c.settingsGroup=:settingsGroup and c.property=:property")
@@ -92,10 +99,11 @@ public class ConfigurationService {
 	public static List<ConfigurationSetting> getAllSettings() {
 		EntityManager em = EntityManagerService.getNewManager();
 
+		@SuppressWarnings("unchecked")
 		List<ConfigurationSetting> resultList = em.createQuery("select c from ConfigurationSetting c").getResultList();
 
 		if (resultList != null && resultList.isEmpty()) {
-			return null;
+			return new ArrayList<>();
 		}
 
 		return resultList;
