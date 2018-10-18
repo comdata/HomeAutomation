@@ -1,9 +1,9 @@
 package cm.homeautomation.services.phone.test;
 
-import static org.junit.jupiter.Assert.*;
+import static org.junit.Assert.*;
 
-import org.junit.jupiter.Before;
-import org.junit.jupiter.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.List;
 
