@@ -30,9 +30,9 @@ public class FHEMDataReceiver {
 		if (topic != null) {
 			String[] topicParts = topic.split("/");
 
-			if (topicParts != null && topicParts.length >= 3) {
+			if (topicParts != null && topicParts.length >= 4) {
 
-				String device = topicParts[1];
+				String device = topicParts[2];
 
 				@SuppressWarnings("unchecked")
 				List<FHEMDevice> resultList = em.createQuery("select f from FHEMDevice f where f.name=:name")
