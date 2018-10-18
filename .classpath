@@ -7,5 +7,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/HomeAutomationBase new"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/HomeAutomationZWave"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

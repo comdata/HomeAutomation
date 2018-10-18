@@ -1,11 +1,11 @@
 package cm.homeautomation.services.phone.test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.Assert.*;
+
+import org.junit.jupiter.Before;
+import org.junit.jupiter.Test;
 
 import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import cm.homeautomation.entities.PhoneCallEvent;
 import cm.homeautomation.services.phone.Phone;

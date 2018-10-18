@@ -19,12 +19,6 @@ pipeline {
 			sh 'mysql -u root HA < WebContent/WEB-INF/log4j.sql'
 		    } 
 		}
-		stage('Build-Parent') { 
-			steps {
-			
-					sh 'mvn -T 1C -N install'
-			}
-		}
 		stage('Build Backend') {
 			steps {
 				
