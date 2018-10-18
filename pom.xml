@@ -1,14 +1,37 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<groupId>cm.homeautomation</groupId>
-	<artifactId>homeautomation-parent</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	<repositories>
+	<artifactId>HomeAutomation</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<sapui5.version>1.38.4</sapui5.version>
+		<version.jersey>2.27</version.jersey>
+		<version.servlet.api>3.1.0</version.servlet.api>
+		<httpcompontents.version>4.4.9</httpcompontents.version>
+		<telegrambots.version>2.4.2</telegrambots.version>
+		<ratelimitj-inmemory.version>0.5.0</ratelimitj-inmemory.version>
+		<odata.version>4.5.0</odata.version>
+
+	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>archiva.internal</id>
+			<name>Internal Release Repository</name>
+			<url>http://jenkins:8081/repository/internal/</url>
+		</repository>
+		<snapshotRepository>
+			<id>archiva.snapshots</id>
+			<name>Internal Snapshot Repository</name>
+			<url>http://jenkins:8081/repository/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+<repositories>
 		<repository>
 			<id>internal</id>
 			<name>Archiva Managed Internal Repository</name>
@@ -56,18 +79,398 @@
 			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
-	<properties>
-		<sonar.test.inclusions>**/*test*/**</sonar.test.inclusions>
-		<sonar.exclusions>**/*test*/**</sonar.exclusions>
-	</properties>
 
-	<modules>
-		<module>HomeAutomationClient</module>
-		<module>HomeAutomation</module>
+	<dependencies>
+		<dependency>
+			<groupId>com.sap.olingo</groupId>
+			<artifactId>odata-jpa-processor</artifactId>
+			<version>0.2.10-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.persistence</groupId>
+					<artifactId>javax.persistence</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.sap.olingo</groupId>
+			<artifactId>odata-jpa-metadata</artifactId>
+			<version>0.2.10-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.persistence</groupId>
+					<artifactId>javax.persistence</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
+			<version>2.1.1</version>
+		</dependency>
 
 
-	</modules>
+		<dependency>
+			<groupId>cm.homeautomation</groupId>
+			<artifactId>HomeAutomationZWave</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.oberasoftware</groupId>
+			<artifactId>obera_zwave</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.olingo</groupId>
+			<artifactId>odata-server-api</artifactId>
+			<version>${odata.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.olingo</groupId>
+			<artifactId>odata-server-core</artifactId>
+			<version>${odata.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.olingo</groupId>
+			<artifactId>odata-commons-api</artifactId>
+			<version>${odata.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.olingo</groupId>
+			<artifactId>odata-commons-core</artifactId>
+			<version>${odata.version}</version>
+		</dependency>
 
 
 
+		<!-- Tradfri dependencies -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20180813</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.californium</groupId>
+			<artifactId>californium-core</artifactId>
+			<version>2.0.0-M12</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.californium</groupId>
+			<artifactId>scandium</artifactId>
+			<version>2.0.0-M12</version>
+		</dependency>
+
+		<!-- -->
+		<dependency>
+			<groupId>org.eclipse.smarthome.core</groupId>
+			<artifactId>org.eclipse.smarthome.core</artifactId>
+			<version>0.10.0.b1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.10</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mnode.ical4j</groupId>
+			<artifactId>ical4j</artifactId>
+			<version>2.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.purej</groupId>
+			<artifactId>purej-vminspect</artifactId>
+			<version>1.4.0</version>
+
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-calendar</artifactId>
+			<version>v3-rev354-1.25.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>nl.stil4m</groupId>
+			<artifactId>transmission-rpc-java</artifactId>
+			<version>0.7.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-annotations</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-databind</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.9.11</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jpaulmorrison</groupId>
+			<artifactId>javafbp</artifactId>
+			<version>4.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.paho</groupId>
+			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.greenrobot</groupId>
+			<artifactId>eventbus</artifactId>
+			<version>3.1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.11</version>
+		</dependency>
+		<dependency>
+			<groupId>com.pi4j</groupId>
+			<artifactId>pi4j-core</artifactId>
+			<version>1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
+			<version>1.6.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<version>1.6.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.8.1</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.websocket</groupId>
+			<artifactId>javax.websocket-api</artifactId>
+			<version>1.1</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.4.10</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcomponents-core</artifactId>
+			<version>4.4.10</version>
+			<type>pom</type>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mitre.dsmiley.httpproxy</groupId>
+			<artifactId>smiley-http-proxy-servlet</artifactId>
+			<version>1.10</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.6</version>
+		</dependency>
+		<dependency>
+			<groupId>it.sauronsoftware.cron4j</groupId>
+			<artifactId>cron4j</artifactId>
+			<version>2.2.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${version.servlet.api}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>cm.homeautomation</groupId>
+			<artifactId>HomeAutomationBase</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>${version.jersey}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.inject</groupId>
+			<artifactId>jersey-hk2</artifactId>
+			<version>${version.jersey}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-servlet-core</artifactId>
+			<version>${version.jersey}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<version>${version.jersey}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-processing</artifactId>
+			<version>${version.jersey}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-multipart</artifactId>
+			<version>${version.jersey}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-sse</artifactId>
+			<version>${version.jersey}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>es.moki.ratelimitj</groupId>
+			<artifactId>ratelimitj-core</artifactId>
+			<version>${ratelimitj-inmemory.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>es.moki.ratelimitj</groupId>
+			<artifactId>ratelimitj-inmemory</artifactId>
+			<version>${ratelimitj-inmemory.version}</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.0.32.Final</version>
+		</dependency>
+
+
+
+		<dependency>
+			<groupId>com.beowulfe.hap</groupId>
+			<artifactId>hap</artifactId>
+			<version>1.1.4</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.telegram</groupId>
+			<artifactId>telegrambots</artifactId>
+			<version>${telegrambots.version}</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<sourceDirectory>src/main/java</sourceDirectory>
+		<testSourceDirectory>src/test/java</testSourceDirectory>
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+				<configuration>
+					<fork>true</fork>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.0</version>
+				<configuration>
+					<argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>3.2.2</version>
+				<configuration>
+					<warSourceDirectory>WebContent</warSourceDirectory>
+					<packagingIncludes>WEB-INF/lib/*.jar</packagingIncludes>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.2</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<inceptionYear>2015</inceptionYear>
+<!-- 	<parent>
+		<groupId>cm.homeautomation</groupId>
+		<artifactId>homeautomation-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent> -->
 </project>
