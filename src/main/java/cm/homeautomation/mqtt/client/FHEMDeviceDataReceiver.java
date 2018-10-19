@@ -12,6 +12,10 @@ import cm.homeautomation.services.sensors.Sensors;
 
 public class FHEMDeviceDataReceiver {
 
+	private FHEMDeviceDataReceiver() {
+		// do not create an instance
+	}
+	
 	public static void receive(String topic, String messageContent, FHEMDevice fhemDevice) {
 
 		EntityManager em = EntityManagerService.getManager();
@@ -27,9 +31,9 @@ public class FHEMDeviceDataReceiver {
 		switch (topicLastPart) {
 		case "power":
 			Sensor powerSensor = findSensorForTopic(device, topicLastPart);
-			
-			Sensors.getInstance().saveSensorData(powerSensor.getId(), messageContent.split(" ")[0]);
-			
+			if ( powerSensor!=null) {
+				Sensors.getInstance().saveSensorData(powerSensor.getId(), messageContent.split(" ")[0]);
+			}
 			break;
 
 		default:
