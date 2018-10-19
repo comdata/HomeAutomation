@@ -55,6 +55,7 @@ public class FHEMDataReceiver {
 								LogManager.getLogger(FHEMDataReceiver.class).error("Add implementation for device: " + device);
 								break;
 							case DEVICE:
+								FHEMDeviceDataReceiver.receive(topic, messageContent, fhemDevice);
 								LogManager.getLogger(FHEMDataReceiver.class).error("Add implementation for device: " + device);
 								break;
 								
