@@ -11,7 +11,7 @@ pipeline {
 		stage('Prepare') {
 		    steps {
 			sh 'apk update'
-			sh 'apk add rsync openssh mariadb mariadb-client openrc git'
+			sh 'apk add rsync graphviz openssh mariadb mariadb-client openrc git'
 			sh 'mysql_install_db --user=mysql --rpm'
 			sh '/usr/bin/mysqld_safe &'
 			sh 'sleep 5' // for mysql to startup
