@@ -22,7 +22,7 @@ public class FHEMDeviceDataReceiver {
 		
 		String[] topicParts = topic.split("/");
 
-		String topicLastPart = topicParts[topicParts.length].toLowerCase();
+		String topicLastPart = topicParts[topicParts.length-1].toLowerCase();
 
 		switch (topicLastPart) {
 		case "power":
