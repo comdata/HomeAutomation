@@ -46,6 +46,7 @@ public class FHEMDataReceiver {
 
 							switch (deviceType) {
 							case WINDOW:
+								FHEMWindowDataReceiver.receive(topic, messageContent, fhemDevice);
 								LogManager.getLogger(FHEMDataReceiver.class).error("Add implementation for device: " + device);
 								break;
 							case SWITCH:
@@ -71,11 +72,25 @@ public class FHEMDataReceiver {
 					}
 				} else {
 					LogManager.getLogger(FHEMDataReceiver.class).error("FHEM Device not found for device: " + device);
+					createNewFHEMDevices(device);					
 				}
 
 			}
 
 		}
+	}
+
+	private static void createNewFHEMDevices(String device) {
+		EntityManager em = EntityManagerService.getNewManager();
+		
+		em.getTransaction().begin();
+		
+		FHEMDevice fhemDevice=new FHEMDevice();
+		
+		fhemDevice.setName(device);
+		em.persist(fhemDevice);
+		
+		em.getTransaction().commit();
 	}
 
 }

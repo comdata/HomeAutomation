@@ -27,7 +27,7 @@ import cm.homeautomation.services.sensors.Sensors;
 
 @Path("window")
 public class WindowStateService extends BaseService {
-
+	
 	@GET
 	@Path("readAll")
 	public List<WindowStateData> get() {

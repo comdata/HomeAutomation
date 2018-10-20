@@ -22,8 +22,6 @@ public class FHEMDeviceDataReceiver {
 
 		Device device = em.find(Device.class, fhemDevice.getReferencedId());
 		
-		
-		
 		String[] topicParts = topic.split("/");
 
 		String topicLastPart = topicParts[topicParts.length-1].toLowerCase();
