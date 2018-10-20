@@ -36,6 +36,10 @@ public class WindowStateService extends BaseService {
 	}
 	
 	public static WindowStateService getInstance() {
+		if (instance==null) {
+			new WindowStateService();
+		}
+		
 		return instance;
 
 	}
