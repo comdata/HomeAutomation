@@ -47,7 +47,6 @@ public class FHEMDataReceiver {
 							switch (deviceType) {
 							case WINDOW:
 								FHEMWindowDataReceiver.receive(topic, messageContent, fhemDevice);
-								LogManager.getLogger(FHEMDataReceiver.class).error("Add implementation for device: " + device);
 								break;
 							case SWITCH:
 								LogManager.getLogger(FHEMDataReceiver.class).error("Add implementation for device: " + device);
@@ -57,7 +56,6 @@ public class FHEMDataReceiver {
 								break;
 							case DEVICE:
 								FHEMDeviceDataReceiver.receive(topic, messageContent, fhemDevice);
-								LogManager.getLogger(FHEMDataReceiver.class).error("Add implementation for device: " + device);
 								break;
 								
 							default:
