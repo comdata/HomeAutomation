@@ -39,7 +39,8 @@ pipeline {
 	       		stage('Sonarqube') {
 	       			steps {
 	       				withMaven() {
-	       		    		sh 'mvn -DskipTests=true org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dsonar.organization=homeautomation'
+	       					// org.jacoco:jacoco-maven-plugin:prepare-agent
+	       		    		sh 'mvn -DskipTests=true sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dsonar.organization=homeautomation'
 	       				}
 	       			}
 	       		}
