@@ -1,5 +1,7 @@
 package cm.homeautomation.mqtt.client;
 
+import java.util.Map;
+
 import javax.persistence.EntityManager;
 
 import org.apache.logging.log4j.LogManager;
@@ -42,7 +44,9 @@ public class FHEMDeviceDataReceiver {
 
 	private static Sensor findSensorForTopic(Device device, String topicLastPart) {
 		
-		for (Sensor sensor : device.getSensors()) {
+		Map<String, Sensor> sensors = device.getSensors();
+		for (String sensorKey : sensors.keySet()) {
+			Sensor sensor=sensors.get(sensorKey);
 			if (sensor.getSensorName().equals(topicLastPart)) {
 				return sensor;
 			}
