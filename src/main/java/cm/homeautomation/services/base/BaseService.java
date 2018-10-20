@@ -14,14 +14,5 @@ import javax.ws.rs.core.MediaType;
 @Produces(MediaType.APPLICATION_JSON)
 public abstract class BaseService {
 
-	private static BaseService instance;
 
-	public BaseService() {
-		instance=this;
-	}
-	
-	public static <T extends BaseService> T getInstance() {
-		return (T) instance;
-
-	}
 }

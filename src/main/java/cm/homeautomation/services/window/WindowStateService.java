@@ -27,6 +27,18 @@ import cm.homeautomation.services.sensors.Sensors;
 
 @Path("window")
 public class WindowStateService extends BaseService {
+
+	
+	private static WindowStateService instance;
+
+	public WindowStateService() {
+		instance=this;
+	}
+	
+	public static WindowStateService getInstance() {
+		return instance;
+
+	}
 	
 	@GET
 	@Path("readAll")
@@ -103,19 +115,20 @@ public class WindowStateService extends BaseService {
 				windowState.setWindow(window);
 				windowState.setState(("open".equals(state) ? 1 : 0));
 				windowState.setTimestamp(new Date());
-
-				final SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
-				sensorDataSaveRequest.setSensorId(stateSensor.getId());
-				final SensorData sensorData = new SensorData();
-				sensorData.setValue("" + ("open".equals(state) ? 1 : 0));
-				sensorData.setSensor(stateSensor);
-				sensorData.setDateTime(new Date());
-
-				sensorDataSaveRequest.setSensorData(sensorData);
-
-				Sensors.getInstance().saveSensorData(sensorDataSaveRequest);
-
 				em.persist(windowState);
+				
+				if (stateSensor != null) {
+					final SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
+					sensorDataSaveRequest.setSensorId(stateSensor.getId());
+					final SensorData sensorData = new SensorData();
+					sensorData.setValue("" + ("open".equals(state) ? 1 : 0));
+					sensorData.setSensor(stateSensor);
+					sensorData.setDateTime(new Date());
+
+					sensorDataSaveRequest.setSensorData(sensorData);
+
+					Sensors.getInstance().saveSensorData(sensorDataSaveRequest);
+				}
 
 				final WindowStateData windowStateData = new WindowStateData();
 
