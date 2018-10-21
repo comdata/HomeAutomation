@@ -1,10 +1,6 @@
 package cm.homeautomation.fhem;
 
-import javax.persistence.EntityManager;
-
-import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.FHEMDevice;
-import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.windowblind.WindowBlindService;
 
 public class FHEMWindowBlindDataReceiver {
@@ -14,10 +10,6 @@ public class FHEMWindowBlindDataReceiver {
 	}
 
 	public static void receive(String topic, String messageContent, FHEMDevice fhemDevice) {
-
-		EntityManager em = EntityManagerService.getManager();
-
-		WindowBlind windowBlient = em.find(WindowBlind.class, fhemDevice.getReferencedId());
 
 		String[] topicParts = topic.split("/");
 
