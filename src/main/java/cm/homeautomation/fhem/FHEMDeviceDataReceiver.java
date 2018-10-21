@@ -37,15 +37,20 @@ public class FHEMDeviceDataReceiver {
 			break;
 
 		default:
-			Map<String, Sensor> sensors = device.getSensors();
-
-			Sensor sensor = sensors.get(topicLastPart);
+			Sensor sensor = getSensorForTopic(device, topicLastPart);
 
 			if (sensor != null) {
 				Sensors.getInstance().saveSensorData(sensor.getId(), messageContent.split(" ")[0]);
 			}
 		}
 
+	}
+
+	public static Sensor getSensorForTopic(Device device, String topicLastPart) {
+		Map<String, Sensor> sensors = device.getSensors();
+
+		Sensor sensor = sensors.get(topicLastPart);
+		return sensor;
 	}
 
 	private static Sensor findSensorForTopic(Device device, String topicLastPart) {
