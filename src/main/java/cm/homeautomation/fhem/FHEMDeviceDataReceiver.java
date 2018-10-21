@@ -28,20 +28,10 @@ public class FHEMDeviceDataReceiver {
 
 		String topicLastPart = topicParts[topicParts.length - 1].toLowerCase();
 
-		switch (topicLastPart) {
-		case "power":
-			Sensor powerSensor = findSensorForTopic(device, topicLastPart);
-			if (powerSensor != null) {
-				Sensors.getInstance().saveSensorData(powerSensor.getId(), messageContent.split(" ")[0]);
-			}
-			break;
+		Sensor sensor = getSensorForTopic(device, topicLastPart);
 
-		default:
-			Sensor sensor = getSensorForTopic(device, topicLastPart);
-
-			if (sensor != null) {
-				Sensors.getInstance().saveSensorData(sensor.getId(), messageContent.split(" ")[0]);
-			}
+		if (sensor != null) {
+			Sensors.getInstance().saveSensorData(sensor.getId(), messageContent.split(" ")[0]);
 		}
 
 	}
@@ -51,20 +41,6 @@ public class FHEMDeviceDataReceiver {
 
 		Sensor sensor = sensors.get(topicLastPart);
 		return sensor;
-	}
-
-	private static Sensor findSensorForTopic(Device device, String topicLastPart) {
-
-		Map<String, Sensor> sensors = device.getSensors();
-		for (String sensorKey : sensors.keySet()) {
-			Sensor sensor = sensors.get(sensorKey);
-			if (sensor.getSensorName().equals(topicLastPart)) {
-				return sensor;
-			}
-
-		}
-
-		return null;
 	}
 
 }
