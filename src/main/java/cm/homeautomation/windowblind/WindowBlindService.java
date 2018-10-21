@@ -184,7 +184,7 @@ public class WindowBlindService extends BaseService {
 
 	@GET
 	@Path("setPosition/{windowBlind}/{value}")
-	public void setPosition(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value) {
+	public GenericStatus setPosition(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value) {
 		final EntityManager em = EntityManagerService.getNewManager();
 
 		em.getTransaction().begin();
@@ -196,6 +196,8 @@ public class WindowBlindService extends BaseService {
 		em.merge(singleWindowBlind);
 		em.getTransaction().commit();
 		em.close();
+		
+		return new GenericStatus(true);
 	}
 
 }
