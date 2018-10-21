@@ -1,4 +1,4 @@
-package cm.homeautomation.mqtt.client;
+package cm.homeautomation.fhem;
 
 import java.util.List;
 
@@ -42,31 +42,7 @@ public class FHEMDataReceiver {
 					for (FHEMDevice fhemDevice : resultList) {
 						FHEMDeviceType deviceType = fhemDevice.getDeviceType();
 
-						if (deviceType != null) {
-
-							switch (deviceType) {
-							case WINDOW:
-								FHEMWindowDataReceiver.receive(topic, messageContent, fhemDevice);
-								break;
-							case SWITCH:
-								LogManager.getLogger(FHEMDataReceiver.class).error("Add implementation for device: " + device);
-								break;
-							case WINDOWBLIND:
-								LogManager.getLogger(FHEMDataReceiver.class).error("Add implementation for device: " + device);
-								break;
-							case DEVICE:
-								FHEMDeviceDataReceiver.receive(topic, messageContent, fhemDevice);
-								break;
-								
-							default:
-								LogManager.getLogger(FHEMDataReceiver.class).error(
-										"Device type: " + deviceType + " for device: " + device + " not mapped.");
-								break;
-							}
-
-						} else {
-							LogManager.getLogger(FHEMDataReceiver.class).error("Device type for device: " + device);
-						}
+						handleDeviceSpecific(topic, messageContent, device, fhemDevice, deviceType);
 					}
 				} else {
 					LogManager.getLogger(FHEMDataReceiver.class).error("FHEM Device not found for device: " + device);
@@ -75,6 +51,35 @@ public class FHEMDataReceiver {
 
 			}
 
+		}
+	}
+
+	private static void handleDeviceSpecific(String topic, String messageContent, String device, FHEMDevice fhemDevice,
+			FHEMDeviceType deviceType) {
+		if (deviceType != null) {
+
+			switch (deviceType) {
+			case WINDOW:
+				FHEMWindowDataReceiver.receive(topic, messageContent, fhemDevice);
+				break;
+			case SWITCH:
+				LogManager.getLogger(FHEMDataReceiver.class).error("Add implementation for device: " + device);
+				break;
+			case WINDOWBLIND:
+				FHEMWindowBlindDataReceiver.receive(topic, messageContent, fhemDevice);
+				break;
+			case DEVICE:
+				FHEMDeviceDataReceiver.receive(topic, messageContent, fhemDevice);
+				break;
+				
+			default:
+				LogManager.getLogger(FHEMDataReceiver.class).error(
+						"Device type: " + deviceType + " for device: " + device + " not mapped.");
+				break;
+			}
+
+		} else {
+			LogManager.getLogger(FHEMDataReceiver.class).error("Device type for device: " + device);
 		}
 	}
 

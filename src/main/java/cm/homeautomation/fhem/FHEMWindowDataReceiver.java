@@ -1,4 +1,4 @@
-package cm.homeautomation.mqtt.client;
+package cm.homeautomation.fhem;
 
 import org.apache.logging.log4j.LogManager;
 

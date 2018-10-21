@@ -1,4 +1,4 @@
-package cm.homeautomation.mqtt.client;
+package cm.homeautomation.fhem;
 
 import java.util.Map;
 

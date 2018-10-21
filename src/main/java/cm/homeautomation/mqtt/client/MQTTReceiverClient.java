@@ -11,6 +11,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
+import cm.homeautomation.fhem.FHEMDataReceiver;
 import cm.homeautomation.jeromq.server.JSONSensorDataReceiver;
 import cm.homeautomation.services.base.AutoCreateInstance;
 
