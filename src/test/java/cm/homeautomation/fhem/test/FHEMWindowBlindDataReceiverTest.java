@@ -42,7 +42,10 @@ public class FHEMWindowBlindDataReceiverTest {
 		WindowBlind windowBlind = new WindowBlind();
 		windowBlind.setName(""+System.currentTimeMillis());
 		windowBlind.setRoom(room);
+		windowBlind.setType("SINGLE");
 		em.persist(windowBlind);
+		
+		windowBlind=em.createQuery("select w from WindowBlind w where w.name=:name", WindowBlind.class).setParameter("name", windowBlind.getName()).getSingleResult();
 		
 		FHEMDevice fhemDevice = new FHEMDevice();
 		fhemDevice.setDeviceType(FHEMDeviceType.WINDOWBLIND);
@@ -69,6 +72,8 @@ public class FHEMWindowBlindDataReceiverTest {
 		windowBlind.setName(""+System.currentTimeMillis());
 		windowBlind.setRoom(room);
 		em.persist(windowBlind);
+		
+		windowBlind=em.createQuery("select w from WindowBlind w where w.name=:name", WindowBlind.class).setParameter("name", windowBlind.getName()).getSingleResult();
 		
 		FHEMDevice fhemDevice = new FHEMDevice();
 		fhemDevice.setDeviceType(FHEMDeviceType.WINDOWBLIND);
