@@ -74,6 +74,7 @@ public class FHEMWindowBlindDataReceiverTest {
 		fhemDevice.setDeviceType(FHEMDeviceType.WINDOWBLIND);
 		fhemDevice.setReferencedId(windowBlind.getId());
 		fhemDevice.setName(windowBlind.getName());
+		em.persist(fhemDevice);
 		
 		em.getTransaction().commit();
 		
