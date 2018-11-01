@@ -20,7 +20,7 @@ public class FHEMDeviceDataReceiverTest {
 	public void setup() {
 		device = new Device();
 		
-		Map<String, Sensor> sensors=new HashMap();
+		Map<String, Sensor> sensors=new HashMap<>();
 		
 		Sensor powerSensor = new Sensor();
 		powerSensor.setSensorName("power");
