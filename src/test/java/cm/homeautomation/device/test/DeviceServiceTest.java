@@ -1,8 +1,8 @@
 package cm.homeautomation.device.test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertNull;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import cm.homeautomation.device.DeviceService;
 
