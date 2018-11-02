@@ -12,6 +12,12 @@ import cm.homeautomation.entities.Device;
 import cm.homeautomation.entities.Room;
 
 public class DeviceService {
+	
+	private static final String MAC = "Mac: ";
+
+	private DeviceService() {
+		// do nothing
+	}
 
 	public static Device getDeviceForMac(String mac) {
 		if (mac == null) {
@@ -21,15 +27,13 @@ public class DeviceService {
 		try {
 			final EntityManager em = EntityManagerService.getNewManager();
 			mac = mac.toLowerCase();
-			LogManager.getLogger(DeviceService.class).info("Mac: " + mac);
+			LogManager.getLogger(DeviceService.class).info(MAC + mac);
 			@SuppressWarnings("unchecked")
 			final List<Device> devices = em.createQuery("select d from Device d where d.mac=:mac")
 					.setParameter("mac", mac).getResultList();
 
 			if ((devices != null) && !devices.isEmpty()) {
-				for (final Device device : devices) {
-					return device;
-				}
+				return devices.get(0);
 			}
 
 			em.getTransaction().begin();
@@ -43,7 +47,7 @@ public class DeviceService {
 			em.close();
 			return null;
 		} catch (final NoResultException e) {
-			LogManager.getLogger(DeviceService.class).error("Mac: " + mac, e);
+			LogManager.getLogger(DeviceService.class).error(MAC + mac, e);
 			return null;
 		}
 	}
@@ -59,7 +63,7 @@ public class DeviceService {
 
 			return device.getRoom();
 		} catch (final NoResultException e) {
-			LogManager.getLogger(DeviceService.class).info("Mac: " + mac, e);
+			LogManager.getLogger(DeviceService.class).info(MAC + mac, e);
 
 			return null;
 		}
