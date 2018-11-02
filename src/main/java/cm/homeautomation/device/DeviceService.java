@@ -12,7 +12,7 @@ import cm.homeautomation.entities.Device;
 import cm.homeautomation.entities.Room;
 
 public class DeviceService {
-	
+
 	private static final String MAC = "Mac: ";
 
 	private DeviceService() {
@@ -35,16 +35,6 @@ public class DeviceService {
 			if ((devices != null) && !devices.isEmpty()) {
 				return devices.get(0);
 			}
-
-			em.getTransaction().begin();
-			final Device device = new Device();
-			device.setName("unnamed");
-			device.setMac(mac);
-			em.persist(device);
-
-			em.getTransaction().commit();
-
-			em.close();
 			return null;
 		} catch (final NoResultException e) {
 			LogManager.getLogger(DeviceService.class).error(MAC + mac, e);
