@@ -1,10 +1,10 @@
 package cm.homeautomation.services.sensors.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import javax.persistence.EntityManager;
 
-import org.apache.catalina.deploy.SessionConfig;
 import org.junit.Before;
 import org.junit.Test;
 

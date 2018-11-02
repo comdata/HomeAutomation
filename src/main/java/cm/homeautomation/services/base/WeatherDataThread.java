@@ -62,15 +62,13 @@ public class WeatherDataThread {
 		try {
 			WeatherData weatherData = WeatherService.getWeather();
 			em.getTransaction().begin();
-			List results = em.createQuery("select w from Weather w").getResultList();
+			
+			List<Weather> results = em.createQuery("select w from Weather w", Weather.class).getResultList();
 
 			Weather weather = null;
 
 			if (!results.isEmpty()) {
-				Object singleResult = results.get(0);
-				if (singleResult instanceof Weather) {
-					weather = (Weather) singleResult;
-				}
+				weather = results.get(0);
 			} else {
 				weather = new Weather();
 			}

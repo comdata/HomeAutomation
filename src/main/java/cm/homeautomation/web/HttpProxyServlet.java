@@ -3,16 +3,20 @@ package cm.homeautomation.web;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
+import java.util.Map.Entry;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -20,6 +24,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.log4j.LogManager;
 
 public final class HttpProxyServlet extends HttpServlet {
 
@@ -41,67 +46,81 @@ public final class HttpProxyServlet extends HttpServlet {
 			throw new ServletException("Proxy URL is invalid", me);
 		}
 		proxy = HttpClientBuilder.create().build();
-//		proxy.
-//		
-//		.getHostConfiguration().setHost(url.getHost());
+
 	}
 
 	@Override
 	protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
 			throws ServletException, IOException {
 
-		Map<String, String[]> requestParameters = request.getParameterMap();
+		@SuppressWarnings("unchecked")
+		Map<String, String[]> requestParameters = ((Map<String, String[]>) request.getParameterMap());
 
 		StringBuilder query = new StringBuilder();
-		for (String name : requestParameters.keySet()) {
-			for (String value : requestParameters.get(name)) {
+		for (Entry<String, String[]> entry : requestParameters.entrySet()) {
 
-				if (query.length() == 0) {
-					query.append("?");
-				} else {
-					query.append("&");
+			String name = entry.getKey();
+
+			for (String value : entry.getValue()) {
+				try {
+					if (query.length() == 0) {
+						query.append("?");
+					} else {
+						query.append("&");
+					}
+
+					name = URLEncoder.encode(name, "UTF-8");
+					value = URLEncoder.encode(value, "UTF-8");
+
+					query.append(String.format("&%s=%s", name, value));
+				} catch (UnsupportedEncodingException e) {
+					LogManager.getLogger(this.getClass()).error("unsupported encoding " + name + " - " + value, e);
 				}
-
-				name = URLEncoder.encode(name, "UTF-8");
-				value = URLEncoder.encode(value, "UTF-8");
-
-				query.append(String.format("&%s=%s", name, value));
 			}
 		}
 
 		String uri = String.format("%s%s", url.toString(), query.toString());
 		HttpGet proxyMethod = new HttpGet(uri);
 
-		HttpResponse httpResponse = proxy.execute(proxyMethod);
+		try {
+			HttpResponse httpResponse = proxy.execute(proxyMethod);
 
-		Header[] responseHeaders = proxyMethod.getAllHeaders();
-		for (Header header : responseHeaders) {
-			response.setHeader(header.getName(), header.getValue());
+			Header[] responseHeaders = proxyMethod.getAllHeaders();
+			for (Header header : responseHeaders) {
+				response.setHeader(header.getName(), header.getValue());
+			}
+
+			write(httpResponse.getEntity().getContent(), response.getOutputStream());
+		} catch (IOException e) {
+			LogManager.getLogger(this.getClass()).error("IO Exception while writing response", e);
+		} catch (UnsupportedOperationException e) {
+			LogManager.getLogger(this.getClass()).error("UnsupportedOperationException while writing response", e);
 		}
-
-		write(httpResponse.getEntity().getContent(), response.getOutputStream());
 	}
 
 	@Override
 	protected void doPost(final HttpServletRequest request, final HttpServletResponse response)
 			throws ServletException, IOException {
 
+		@SuppressWarnings("unchecked")
 		Map<String, String[]> requestParameters = request.getParameterMap();
 
 		String uri = url.toString();
 		HttpPost proxyMethod = new HttpPost(uri);
-		for (String name : requestParameters.keySet()) {
-			for (String value : requestParameters.get(name)) {
+		for (Entry<String, String[]> entry : requestParameters.entrySet()) {
+			for (String value : entry.getValue()) {
 
-				proxyMethod.getParams().setParameter(name, value);
+				proxyMethod.getParams().setParameter(entry.getKey(), value);
 			}
 		}
 
-		HttpResponse httpResponse = proxy.execute(proxyMethod);
 		try {
+			HttpResponse httpResponse = proxy.execute(proxyMethod);
 			write(httpResponse.getEntity().getContent(), response.getOutputStream());
-		} catch (IOException ioex) {
-
+		} catch (IOException e) {
+			LogManager.getLogger(this.getClass()).error("IO Exception while writing response", e);
+		} catch (UnsupportedOperationException e) {
+			LogManager.getLogger(this.getClass()).error("UnsupportedOperationException while writing response", e);
 		}
 		proxyMethod.releaseConnection();
 	}

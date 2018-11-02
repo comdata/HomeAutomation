@@ -370,7 +370,7 @@ public class PackageTracking {
 
 	public static void updateTrackingInformation(String[] args) throws ClientProtocolException, IOException,
 			NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-		SSLContext sslContext = SSLContext.getInstance("SSL");
+		SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
 
 		// set up a TrustManager that trusts everything
 		sslContext.init(null, new TrustManager[] { new X509TrustManager() {
