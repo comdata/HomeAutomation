@@ -9,17 +9,17 @@ import cm.homeautomation.device.DeviceService;
 class DeviceServiceTest {
 
 	@Test
-	void testDeviceNotFound() {
+	public void testDeviceNotFound() {
 		assertNull(DeviceService.getDeviceForMac("FF:FF:FF:FF:FF"));
 	}
 	
 	@Test
-	void testRoomNotFound() {
+	public void testRoomNotFound() {
 		assertNull(DeviceService.getRoomForMac("FF:FF:FF:FF:FF"));
 	}
 
 	@Test
-	void testRoomIdForMacNotFound() {
+	public void testRoomIdForMacNotFound() {
 		assertNull(DeviceService.getRoomIdForMac("FF:FF:FF:FF:FF"));	
 	}
 	
