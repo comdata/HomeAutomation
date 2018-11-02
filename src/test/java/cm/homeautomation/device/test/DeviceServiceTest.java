@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import cm.homeautomation.device.DeviceService;
 
-class DeviceServiceTest {
+public class DeviceServiceTest {
 
 	@Test
 	public void testDeviceNotFound() {
