@@ -1,13 +1,7 @@
 
 # HomeAutomation
 
-[![Build Status](https://travis-ci.org/comdata/HomeAutomation.svg?branch=master)](https://travis-ci.org/comdata/HomeAutomation)
-
-[![Stories in Ready](https://badge.waffle.io/comdata/HomeAutomation.png?label=ready&title=Ready)](https://waffle.io/comdata/HomeAutomation)
-
-[![Documentation Status](https://readthedocs.org/projects/homeautomation/badge/?version=latest)](http://homeautomation.readthedocs.io/en/latest/?badge=latest)
-
-This is my first approach to automate my home.
+This is my approach to automate my home.
 
 Currently this is using the 433Utils for receiving/sending data and 
 the Adafruit DHT library to record temperature.
