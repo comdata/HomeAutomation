@@ -1,3 +1,4 @@
+
 package cm.homeautomation.fhem;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class FHEMDataReceiver {
 	}
 
 	public static void receiveFHEMData(String topic, String messageContent) {
-		System.out.println("FHEM message for topic: " + topic + " message: " + messageContent);
+		LogManager.getLogger(FHEMDataReceiver.class).debug("FHEM message for topic: " + topic + " message: " + messageContent);
 
 		EntityManager em = EntityManagerService.getManager();
 
@@ -58,6 +59,8 @@ public class FHEMDataReceiver {
 			FHEMDeviceType deviceType) {
 		if (deviceType != null) {
 
+			FHEMBatteryStateReceiver.receive(topic, messageContent, fhemDevice);
+			
 			switch (deviceType) {
 			case WINDOW:
 				FHEMWindowDataReceiver.receive(topic, messageContent, fhemDevice);
