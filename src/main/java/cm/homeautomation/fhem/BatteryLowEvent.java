@@ -13,7 +13,6 @@ public class BatteryLowEvent implements HumanMessageGenerationInterface {
 
 	@Override
 	public String getMessageString() {
-		// TODO Auto-generated method stub
 		return "Battery Low for "+batteryStateResult.getFhemDevice().getName()+" value: "+batteryStateResult.getStateValue();
 	}
 
