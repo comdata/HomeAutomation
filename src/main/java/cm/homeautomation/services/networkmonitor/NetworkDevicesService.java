@@ -33,9 +33,13 @@ import cm.homeautomation.services.base.GenericStatus;
 @Path("networkdevices")
 public class NetworkDevicesService extends BaseService {
 
-	private static NetworkDevicesService instance;
+	private static NetworkDevicesService instance = null;
 
 	public static NetworkDevicesService getInstance() {
+		if (instance == null) {
+			instance = new NetworkDevicesService();
+		}
+
 		return instance;
 	}
 
@@ -58,14 +62,14 @@ public class NetworkDevicesService extends BaseService {
 			@PathParam("mac") final String mac) {
 
 		EntityManager em = EntityManagerService.getNewManager();
-		
+
 		em.getTransaction().begin();
-		
-		em.createQuery("select db from DashButton db where db.mac=:mac", DashButton.class)
-					.setParameter("mac", mac).executeUpdate();
-		
+
+		em.createQuery("delete from DashButton db where db.mac=:mac", DashButton.class).setParameter("mac", mac)
+				.executeUpdate();
+
 		em.getTransaction().commit();
-		
+
 		return new GenericStatus(true);
 	}
 
