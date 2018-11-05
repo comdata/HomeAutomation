@@ -26,8 +26,6 @@ import cm.homeautomation.services.actor.ActorService;
  */
 public class DashButtonEventListener {
 
-	private EntityManager em;
-
 	public DashButtonEventListener() {
 		EventBusService.getEventBus().register(this);
 	}
@@ -44,71 +42,79 @@ public class DashButtonEventListener {
 
 		if (data instanceof DashButtonEvent) {
 
-			em = EntityManagerService.getNewManager();
+			EntityManager em = EntityManagerService.getNewManager();
 
 			final DashButtonEvent dbEvent = (DashButtonEvent) data;
 
 			final String mac = dbEvent.getMac();
 
-			@SuppressWarnings("unchecked")
-			final List<DashButton> resultList = em.createQuery("select db from DashButton db where db.mac=:mac")
-					.setParameter("mac", mac).getResultList();
+			DashButton dashButton = findOrCreateDashbutton(em, mac);
 
-			// create a dashbutton if it is not existing
-			DashButton dashButton = null;
-			if ((resultList == null) || resultList.isEmpty()) {
-				em.getTransaction().begin();
-
-				dashButton = new DashButton();
-				dashButton.setMac(mac);
-
-				em.persist(dashButton);
-				em.getTransaction().commit();
-			} else {
-				for (final DashButton db : resultList) {
-					dashButton = db;
-					break;
-				}
-			}
-
-			if (dashButton != null) {
-				em.getTransaction().begin();
-				dashButton.setLastSeen(new Date());
-				em.merge(dashButton);
-				em.getTransaction().commit();
-
-				final Switch referencedSwitch = dashButton.getReferencedSwitch();
-				final ScriptingEntity referencedScript = dashButton.getReferencedScript();
-
-				if (referencedSwitch != null) {
-
-					final String latestStatus = referencedSwitch.getLatestStatus();
-
-					final Date latestStatusFrom = referencedSwitch.getLatestStatusFrom();
-
-					// limit button presses to once every 10 seconds
-					if (latestStatusFrom.getTime() < ((new Date()).getTime() - 10000)) {
-
-						final String newStatus = ("ON".equals(latestStatus) ? "OFF" : "ON");
-
-						ActorService.getInstance().pressSwitch(referencedSwitch.getId().toString(), newStatus);
-					}
-
-				}
-
-				if (referencedScript != null) {
-					final String jsCode = referencedScript.getJsCode();
-					try {
-
-						NashornRunner.getInstance().run(jsCode);
-					} catch (final ScriptException e) {
-						LogManager.getLogger(this.getClass()).error("error running code: " + jsCode, e);
-					}
-
-				}
-			}
+			handleDashbuttonAction(em, dashButton);
 
 		}
+	}
+
+	private void handleDashbuttonAction(EntityManager em, DashButton dashButton) {
+		if (dashButton != null) {
+			em.getTransaction().begin();
+			dashButton.setLastSeen(new Date());
+			em.merge(dashButton);
+			em.getTransaction().commit();
+
+			final Switch referencedSwitch = dashButton.getReferencedSwitch();
+			final ScriptingEntity referencedScript = dashButton.getReferencedScript();
+
+			if (referencedSwitch != null) {
+
+				final String latestStatus = referencedSwitch.getLatestStatus();
+
+				final Date latestStatusFrom = referencedSwitch.getLatestStatusFrom();
+
+				// limit button presses to once every 10 seconds
+				if (latestStatusFrom.getTime() < ((new Date()).getTime() - 10000)) {
+
+					final String newStatus = ("ON".equals(latestStatus) ? "OFF" : "ON");
+
+					ActorService.getInstance().pressSwitch(referencedSwitch.getId().toString(), newStatus);
+				}
+
+			}
+
+			if (referencedScript != null) {
+				final String jsCode = referencedScript.getJsCode();
+				try {
+
+					NashornRunner.getInstance().run(jsCode);
+				} catch (final ScriptException e) {
+					LogManager.getLogger(this.getClass()).error("error running code: " + jsCode, e);
+				}
+
+			}
+		}
+	}
+
+	private DashButton findOrCreateDashbutton(EntityManager em, final String mac) {
+
+		final List<DashButton> resultList = em
+				.createQuery("select db from DashButton db where db.mac=:mac", DashButton.class)
+				.setParameter("mac", mac).getResultList();
+
+		// create a dashbutton if it is not existing
+		DashButton dashButton = null;
+		if ((resultList == null) || resultList.isEmpty()) {
+			em.getTransaction().begin();
+
+			dashButton = new DashButton();
+			dashButton.setMac(mac);
+
+			em.persist(dashButton);
+			em.getTransaction().commit();
+		} else {
+
+			dashButton = resultList.get(0);
+		}
+		return dashButton;
 	}
 
 }
