@@ -20,25 +20,14 @@ public class LightBulb {
 		green = (green > 0.04045) ? Math.pow((green + 0.055) / (1.0 + 0.055), 2.4) : (green / 12.92);
 		blue = (blue > 0.04045) ? Math.pow((blue + 0.055) / (1.0 + 0.055), 2.4) : (blue / 12.92);
 
-		System.out.println("red: " + red);
-		System.out.println("green: " + green);
-		System.out.println("blue: " + blue);
-
 		// RGB values to XYZ using the Wide RGB D65 conversion formula
 		final double X = (red * 0.664511) + (green * 0.154324) + (blue * 0.162028);
 		final double Y = (red * 0.283881) + (green * 0.668433) + (blue * 0.047685);
 		final double Z = (red * 0.000088) + (green * 0.072310) + (blue * 0.986039);
 
-		System.out.println("X " + X + " Y " + Y + " Z " + Z);
-
-		System.out.println((X / (X + Y + Z)) * 1000);
-		System.out.println((Y / (X + Y + Z)) * 1000);
-		System.out.println(Math.round((X / (X + Y + Z)) * 1000));
 		// Calculate the xy values from the XYZ values
 		double x = new Long(Math.round((X / (X + Y + Z)) * 1000)).doubleValue() / 1000;
 		double y = new Long(Math.round((Y / (X + Y + Z)) * 1000)).doubleValue() / 1000;
-
-		System.out.println("x: " + x + " y: " + y);
 
 		if (Double.isNaN(x)) {
 			x = 0;
