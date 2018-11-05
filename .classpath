@@ -25,5 +25,15 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/Users/christoph/.m2/repository/it/sauronsoftware/cron4j/cron4j/2.2.5/cron4j-2.2.5.jar" sourcepath="/Users/christoph/.m2/repository/it/sauronsoftware/cron4j/cron4j/2.2.5/cron4j-2.2.5-sources.jar">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="org.eclipse.jst.component.archivename" value="cron4j-2.2.5.jar"/>
+			<attribute name="maven.groupId" value="it.sauronsoftware.cron4j"/>
+			<attribute name="maven.artifactId" value="cron4j"/>
+			<attribute name="maven.version" value="2.2.5"/>
+			<attribute name="maven.scope" value="compile"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
