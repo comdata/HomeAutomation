@@ -47,7 +47,8 @@ public class SchedulerThread {
 						CronParser.parseLine(taskTable,
 								schedulingEntity.getPattern() + "\t" + schedulingEntity.getTaskAction());
 					} catch (Exception e) {
-						LogManager.getLogger(this.getClass()).error("evaluation failed. pattern: "+schedulingEntity.getPattern()+" action: "+schedulingEntity.getTaskAction(), e);
+						LogManager.getLogger(this.getClass()).error("evaluation failed. pattern: "
+								+ schedulingEntity.getPattern() + " action: " + schedulingEntity.getTaskAction(), e);
 					}
 				}
 
