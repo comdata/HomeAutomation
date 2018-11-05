@@ -45,7 +45,7 @@ public class NetworkDevicesService extends BaseService {
 
 	private static final int PORT = 9;
 
-	private final String broadcastIpAddress = "192.168.1.255";
+	private static final String BROADCAST_IP_ADDRESS = "192.168.1.255";
 
 	public NetworkDevicesService() {
 		EventBusService.getEventBus().register(this);
@@ -55,8 +55,17 @@ public class NetworkDevicesService extends BaseService {
 	@GET
 	@Path("delete/{name}/{ip}/{mac}")
 	public GenericStatus delete(@PathParam("name") final String name, @PathParam("ip") final String ip,
-			@PathParam("mac") final String macStsr) {
-		// TODO perform delete
+			@PathParam("mac") final String mac) {
+
+		EntityManager em = EntityManagerService.getNewManager();
+		
+		em.getTransaction().begin();
+		
+		em.createQuery("select db from DashButton db where db.mac=:mac", DashButton.class)
+					.setParameter("mac", mac).executeUpdate();
+		
+		em.getTransaction().commit();
+		
 		return new GenericStatus(true);
 	}
 
@@ -65,7 +74,7 @@ public class NetworkDevicesService extends BaseService {
 
 	}
 
-	private byte[] getMacBytes(final String macStr) throws IllegalArgumentException {
+	private byte[] getMacBytes(final String macStr) {
 		final byte[] bytes = new byte[6];
 		final String[] hex = macStr.split("(\\:|\\-)");
 		if (hex.length != 6) {
@@ -99,15 +108,13 @@ public class NetworkDevicesService extends BaseService {
 
 			final String mac = dbEvent.getMac();
 
-			final List<DashButton> resultList = em.createQuery("select db from DashButton db where db.mac=:mac")
+			final List<DashButton> resultList = em
+					.createQuery("select db from DashButton db where db.mac=:mac", DashButton.class)
 					.setParameter("mac", mac).getResultList();
 
 			DashButton dashButton = null;
 			if ((resultList != null) && !resultList.isEmpty()) {
-				for (final DashButton db : resultList) {
-					dashButton = db;
-					break;
-				}
+				dashButton = resultList.get(0);
 			}
 
 			if (dashButton != null) {
@@ -150,7 +157,7 @@ public class NetworkDevicesService extends BaseService {
 				System.arraycopy(macBytes, 0, bytes, i, macBytes.length);
 			}
 
-			final InetAddress address = InetAddress.getByName(broadcastIpAddress);
+			final InetAddress address = InetAddress.getByName(BROADCAST_IP_ADDRESS);
 			final DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address, PORT);
 			socket.send(packet);
 
