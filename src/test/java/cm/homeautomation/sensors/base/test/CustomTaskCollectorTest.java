@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import javax.persistence.EntityManager;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import cm.homeautomation.db.EntityManagerService;
@@ -14,12 +14,12 @@ import it.sauronsoftware.cron4j.TaskTable;
 
 class CustomTaskCollectorTest {
 
-	@BeforeClass
-	void setup() {
+	@BeforeAll
+	static void setup() {
 		EntityManager em = EntityManagerService.getNewManager();
 		em.getTransaction().begin();
 		
-		em.createNativeQuery("delete from SCHEDULINGENTITY").executeUpdate();
+		em.createQuery("delete from SchedulingEntity s").executeUpdate();
 		em.getTransaction().commit();
 		
 	}
