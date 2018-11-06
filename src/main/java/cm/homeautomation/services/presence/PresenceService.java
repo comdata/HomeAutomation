@@ -59,7 +59,7 @@ public class PresenceService extends BaseService {
 				presenceState = result.get(0);
 			}
 
-			if ((presenceState != null && !presenceState.equals(state)) || presenceState==null) {
+			if ((presenceState != null && !presenceState.getState().equals(state)) || presenceState==null) {
 				
 				em.getTransaction().begin();
 				
