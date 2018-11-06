@@ -639,7 +639,8 @@ public class DHCPPacket implements Cloneable, Serializable {
 
                     int    len      = Math.min(r, inBStream.available());
                     byte[] unit_opt = new byte[len];
-                    inBStream.read(unit_opt);
+                    r=inBStream.read(unit_opt);
+                    if (r < 0) { break; } 
 
                     this.setOption(new DHCPOption((byte) type, unit_opt));  // store option
                 }
@@ -652,6 +653,7 @@ public class DHCPPacket implements Cloneable, Serializable {
             // put the remaining in padding
             this.padding = new byte[inBStream.available()];
             inBStream.read(this.padding);
+           
             // final verifications (if assertions are activated)
             this.assertInvariants();
 
