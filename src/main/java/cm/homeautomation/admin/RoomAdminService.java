@@ -10,7 +10,6 @@ import javax.ws.rs.PathParam;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Room;
 import cm.homeautomation.services.base.BaseService;
-import cm.homeautomation.services.base.GenericStatus;
 
 @Path("admin/room")
 public class RoomAdminService extends BaseService {
@@ -21,7 +20,7 @@ public class RoomAdminService extends BaseService {
 		RoomList roomList=new RoomList();
 		EntityManager em = EntityManagerService.getNewManager();
 		
-		List<Room> resultList = em.createQuery("select r from Room r").getResultList();
+		List<Room> resultList = em.createQuery("select r from Room r", Room.class).getResultList();
 		
 		roomList.setRooms(resultList);
 		

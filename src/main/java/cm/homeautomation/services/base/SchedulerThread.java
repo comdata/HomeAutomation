@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import it.sauronsoftware.cron4j.Scheduler;
+import it.sauronsoftware.cron4j.TaskCollector;
 
 /**
  * provide refresh methods for the scheduler
@@ -20,7 +21,10 @@ public class SchedulerThread {
 	private File scheduleFile;
 
 	public SchedulerThread() {
-		SchedulerThread.instance = this;
+		SchedulerThread.setInstance(this);
+
+		TaskCollector customTaskCollector = new CustomTaskCollector();
+		this.getScheduler().addTaskCollector(customTaskCollector);
 		this.reloadScheduler();
 	}
 
@@ -67,5 +71,9 @@ public class SchedulerThread {
 
 	public void setScheduler(Scheduler scheduler) {
 		this.scheduler = scheduler;
+	}
+
+	public static void setInstance(SchedulerThread instance) {
+		SchedulerThread.instance = instance;
 	}
 }

@@ -20,6 +20,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.log4j.LogManager;
+
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Camera;
@@ -37,7 +39,8 @@ public class CameraService extends BaseService {
 		EntityManager em = EntityManagerService.getManager();
 
 		@SuppressWarnings("unchecked")
-		List<Camera> resultList = (List<Camera>) em.createQuery("select c from Camera c where c.enabled=true").getResultList();
+		List<Camera> resultList = (List<Camera>) em.createQuery("select c from Camera c where c.enabled=true")
+				.getResultList();
 		return resultList;
 	}
 
@@ -56,13 +59,13 @@ public class CameraService extends BaseService {
 	public Response getSnapshot(@PathParam("id") Long id) {
 		EntityManager em = EntityManagerService.getNewManager();
 
-		@SuppressWarnings("unchecked")
-		List<Camera> resultList = (List<Camera>) em.createQuery("select c from Camera c where c.id=:id")
+		List<Camera> resultList = em.createQuery("select c from Camera c where c.id=:id", Camera.class)
 				.setParameter("id", id).getResultList();
 
 		em.close();
 
-		for (Camera camera : resultList) {
+		if (resultList != null && !resultList.isEmpty()) {
+			Camera camera = resultList.get(0);
 			final byte[] imageData = camera.getImageSnapshot();
 			StreamingOutput stream = new StreamingOutput() {
 
@@ -71,12 +74,14 @@ public class CameraService extends BaseService {
 					try {
 						output.write(imageData);
 					} catch (Exception e) {
+						LogManager.getLogger(this.getClass()).error("Write camera output stream failed.", e);
 					}
 				}
 			};
 
 			return Response.ok(stream).build();
 		}
+
 		return Response.serverError().build();
 	}
 
@@ -106,13 +111,12 @@ public class CameraService extends BaseService {
 			em.merge(camera);
 
 			String historyEnabledString = ConfigurationService.getConfigurationProperty("camera", "historyEnabled");
-			
-			if (historyEnabledString==null || "".equals(historyEnabledString)) {
-				historyEnabledString="false";
+
+			if (historyEnabledString == null || "".equals(historyEnabledString)) {
+				historyEnabledString = "false";
 			}
-			
-			boolean historyEnabled = Boolean
-					.parseBoolean(historyEnabledString);
+
+			boolean historyEnabled = Boolean.parseBoolean(historyEnabledString);
 
 			if (historyEnabled) {
 				// persist history of camera images
@@ -130,9 +134,6 @@ public class CameraService extends BaseService {
 			EventObject event = new EventObject(cameraEvent);
 
 			EventBusService.getEventBus().post(event);
-		} catch (IOException e) {
-			em.getTransaction().rollback();
-			loadNoImage(args, em, camera);
 		} catch (Exception e) {
 			em.getTransaction().rollback();
 			loadNoImage(args, em, camera);
@@ -166,8 +167,8 @@ public class CameraService extends BaseService {
 			camera.setImageSnapshot(cameraSnapshot);
 			em.merge(camera);
 			em.getTransaction().commit();
-		} catch (IOException e) {
-		} catch (RuntimeException e) {
+		} catch (IOException | RuntimeException e) {
+			LogManager.getLogger(CameraService.class).error("loading the 'no image' image failed.", e);
 		}
 	}
 

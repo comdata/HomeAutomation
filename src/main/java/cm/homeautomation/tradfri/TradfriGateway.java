@@ -18,12 +18,17 @@ import org.json.JSONObject;
 
 public class TradfriGateway implements Runnable {
 
+	private static final String BULBS_STRING = " Bulbs.";
+	private static final String DISCOVERED = "Discovered ";
+	private static final String STRING = "/";
+	private static final String GET = "GET: ";
+	private static final String COAPS = "coaps://";
 	/**
 	 * Gateway properties and constructor
 	 */
-	protected String gateway_ip;
-	protected String security_key;
-	protected int polling_rate = 15000;
+	protected String gatewayIp;
+	protected String securityKey;
+	protected int pollingRate = 15000;
 
 	private boolean running = false;
 
@@ -50,8 +55,8 @@ public class TradfriGateway implements Runnable {
 	}
 
 	public TradfriGateway(final String gateway_ip, final String security_key) {
-		this.gateway_ip = gateway_ip;
-		this.security_key = security_key;
+		this.gatewayIp = gateway_ip;
+		this.securityKey = security_key;
 	}
 
 	public void addTradfriGatewayListener(final TradfriGatewayListener l) {
@@ -74,7 +79,7 @@ public class TradfriGateway implements Runnable {
 				l.bulb_discovery_started(devices.length());
 			}
 			for (int i = 0; i < devices.length(); i++) {
-				response = get(TradfriConstants.DEVICES + "/" + devices.getInt(i));
+				response = get(TradfriConstants.DEVICES + STRING + devices.getInt(i));
 				if (response != null) {
 					final JSONObject json = new JSONObject(response.getResponseText());
 					if (json.has(TradfriConstants.TYPE)
@@ -100,9 +105,10 @@ public class TradfriGateway implements Runnable {
 	}
 
 	protected CoapResponse get(final String path) {
+		String msg = GET + COAPS + gatewayIp + STRING + path;
 		Logger.getLogger(TradfriGateway.class.getName()).log(Level.INFO,
-				"GET: " + "coaps://" + gateway_ip + "/" + path);
-		final CoapClient client = new CoapClient("coaps://" + gateway_ip + "/" + path);
+				msg);
+		final CoapClient client = new CoapClient(COAPS + gatewayIp + STRING + path);
 		client.setEndpoint(coap);
 		final CoapResponse response = client.get(1);
 		if (response == null) {
@@ -112,25 +118,25 @@ public class TradfriGateway implements Runnable {
 		return response;
 	}
 
-	public String getGateway_ip() {
-		return gateway_ip;
+	public String getGatewayIp() {
+		return gatewayIp;
 	}
 
 	public Logger getLogger() {
 		return logger;
 	}
 
-	public int getPolling_rate() {
-		return polling_rate;
+	public int getPollingRate() {
+		return pollingRate;
 	}
 
-	public String getSecurity_key() {
-		return security_key;
+	public String getSecurityKey() {
+		return securityKey;
 	}
 
 	protected void initCoap() {
 		final DtlsConnectorConfig.Builder builder = new DtlsConnectorConfig.Builder(); // new InetSocketAddress(0)
-		builder.setPskStore(new StaticPskStore("", security_key.getBytes()));
+		builder.setPskStore(new StaticPskStore("", securityKey.getBytes()));
 		coap = new CoapEndpoint(new DTLSConnector(builder.build()), NetworkConfig.getStandard());
 	}
 
@@ -151,13 +157,14 @@ public class TradfriGateway implements Runnable {
 		initCoap();
 		Logger.getLogger(TradfriGateway.class.getName()).log(Level.INFO, "Discovering Devices...");
 		if (dicoverBulbs()) {
-			Logger.getLogger(TradfriGateway.class.getName()).log(Level.INFO, "Discovered " + bulbs.size() + " Bulbs.");
+			String msg = DISCOVERED + bulbs.size() + BULBS_STRING;
+			Logger.getLogger(TradfriGateway.class.getName()).log(Level.INFO, msg);
 			for (final TradfriGatewayListener l : listners) {
 				l.gateway_started();
 			}
 			try {
 				while (running) {
-					Thread.sleep(getPolling_rate());
+					Thread.sleep(getPollingRate());
 					Logger.getLogger(TradfriGateway.class.getName()).log(Level.INFO, "Polling bulbs status...");
 					for (final TradfriGatewayListener l : listners) {
 						l.polling_started();
@@ -165,7 +172,6 @@ public class TradfriGateway implements Runnable {
 					final long before = System.currentTimeMillis();
 					for (final LightBulb b : bulbs) {
 						b.updateBulb();
-						// System.out.println(b.toString());
 					}
 					final long after = System.currentTimeMillis();
 					for (final TradfriGatewayListener l : listners) {
@@ -183,35 +189,35 @@ public class TradfriGateway implements Runnable {
 	}
 
 	protected void set(final String path, final String payload) {
+		String msg = "SET: " + COAPS + gatewayIp + STRING + path + " = " + payload;
 		Logger.getLogger(TradfriGateway.class.getName()).log(Level.INFO,
-				"SET: " + "coaps://" + gateway_ip + "/" + path + " = " + payload);
-		final CoapClient client = new CoapClient("coaps://" + gateway_ip + "/" + path);
+				msg);
+		final CoapClient client = new CoapClient(COAPS + gatewayIp + STRING + path);
 		client.setEndpoint(coap);
 		final CoapResponse response = client.put(payload, MediaTypeRegistry.TEXT_PLAIN);
-		if ((response != null) && response.isSuccess()) {
-			// System.out.println("Yay");
-		} else {
-			logger.log(Level.SEVERE, "Sending payload to " + "coaps://" + gateway_ip + "/" + path + " failed!");
+		if ((response == null) || !response.isSuccess()) {
+			String sendingMessageFailed = "Sending payload to " + COAPS + gatewayIp + STRING + path + " failed!";
+			logger.log(Level.SEVERE, sendingMessageFailed);
 		}
 		client.shutdown();
 	}
 
-	public void setGateway_ip(final String gateway_ip) {
-		this.gateway_ip = gateway_ip;
+	public void setGatewayIp(final String gateway_ip) {
+		this.gatewayIp = gateway_ip;
 	}
 
-	public void setPolling_rate(int polling_rate) {
+	public void setPollingRate(int pollingRate) {
 		// between 1 and 60 seconds
-		if (polling_rate < 1000) {
-			polling_rate = 1000;
-		} else if (polling_rate > 60000) {
-			polling_rate = 60000;
+		if (pollingRate < 1000) {
+			pollingRate = 1000;
+		} else if (pollingRate > 60000) {
+			pollingRate = 60000;
 		}
-		this.polling_rate = polling_rate;
+		this.pollingRate = pollingRate;
 	}
 
-	public void setSecurity_key(final String security_key) {
-		this.security_key = security_key;
+	public void setSecurityKey(final String security_key) {
+		this.securityKey = security_key;
 	}
 
 	/**
