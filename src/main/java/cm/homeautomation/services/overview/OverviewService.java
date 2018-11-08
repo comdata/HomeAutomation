@@ -75,18 +75,12 @@ public class OverviewService extends BaseService {
 		final Set<Switch> switches = roomTile.getSwitches();
 
 		for (final Switch singleSwitch : switches) {
-			if ("LIGHT".equals(singleSwitch.getSwitchType())) {
-				if ("ON".equals(singleSwitch.getLatestStatus())) {
-					icon = "sap-icon://lightbulb";
-				}
-
+			if ("LIGHT".equals(singleSwitch.getSwitchType()) && "ON".equals(singleSwitch.getLatestStatus())) {
+				icon = "sap-icon://lightbulb";
 			}
 
-			if ("SPEAKER".equals(singleSwitch.getSwitchType())) {
-				if ("ON".equals(singleSwitch.getLatestStatus())) {
-					icon = "sap-icon://marketing-campaign";
-				}
-
+			if ("SPEAKER".equals(singleSwitch.getSwitchType()) && "ON".equals(singleSwitch.getLatestStatus())) {
+				icon = "sap-icon://marketing-campaign";
 			}
 		}
 		return icon;
@@ -101,39 +95,25 @@ public class OverviewService extends BaseService {
 		if (sensors != null) {
 			for (final Sensor sensor : sensors) {
 
-				@SuppressWarnings("rawtypes")
-				final List latestDataList = em
-						.createQuery("select sd from SensorData sd where sd.sensor=:sensor order by sd.dateTime desc")
+				final List<SensorData> latestDataList = em
+						.createQuery("select sd from SensorData sd where sd.sensor=:sensor order by sd.dateTime desc",
+								SensorData.class)
 						.setParameter("sensor", sensor).setMaxResults(1).getResultList();
 				if ((latestDataList != null) && !latestDataList.isEmpty()) {
 
-					final Object latestData = latestDataList.get(0);
-
-					if (latestData != null) {
-						if (latestData instanceof SensorData) {
-							final SensorData data = (SensorData) latestData;
-
-							roomTile.getSensorData().put(sensor, data);
-
-						}
-					}
+					final SensorData latestData = latestDataList.get(0);
+					roomTile.getSensorData().put(sensor, latestData);
 				}
 
 			}
 		}
 
-		@SuppressWarnings("rawtypes")
-		final List switchResult = em.createQuery("select sw from Switch sw where sw.room=:room")
+		final List<Switch> switchResult = em.createQuery("select sw from Switch sw where sw.room=:room", Switch.class)
 				.setParameter("room", room).getResultList();
 
 		if (switchResult != null) {
-			for (final Object singleSwitchAnon : switchResult) {
-
-				if (singleSwitchAnon instanceof Switch) {
-					final Switch singleSwitch = (Switch) singleSwitchAnon;
-					roomTile.getSwitches().add(singleSwitch);
-
-				}
+			for (final Switch singleSwitch : switchResult) {
+				roomTile.getSwitches().add(singleSwitch);
 
 			}
 		}
@@ -155,8 +135,8 @@ public class OverviewService extends BaseService {
 		final EntityManager em = EntityManagerService.getNewManager();
 
 		em.getTransaction().begin();
-		@SuppressWarnings("unchecked")
-		final List<Room> results = em.createQuery("select r FROM Room r where r.visible=true order by r.sortOrder").getResultList();
+		final List<Room> results = em.createQuery("select r FROM Room r where r.visible=true order by r.sortOrder", Room.class)
+				.getResultList();
 
 		for (final Room room : results) {
 
