@@ -6,8 +6,8 @@ import java.util.Map;
 
 public class GenericClassDescription {
 	private String name;
-	private Map<String, String> fields=new HashMap<String, String>();
-	private Map<String, Parameter[]> methods=new HashMap<String,  Parameter[]>();
+	private Map<String, String> fields=new HashMap<>();
+	private Map<String, Parameter[]> methods=new HashMap<>();
 	public String getName() {
 		return name;
 	}
