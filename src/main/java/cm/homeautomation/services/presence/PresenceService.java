@@ -86,7 +86,7 @@ public class PresenceService extends BaseService {
 	@Path("getAll")
 	public List<PresenceState> getPresences() {
 		
-		List<PresenceState> foundPresenceStates=new ArrayList<PresenceState>();
+		List<PresenceState> foundPresenceStates=new ArrayList<>();
 		
 		EntityManager em = EntityManagerService.getNewManager();
 
@@ -97,9 +97,8 @@ public class PresenceService extends BaseService {
 		for (Person person: personList) {
 			
 			if (person != null) {
-				@SuppressWarnings("unchecked")
-				List<PresenceState> result = (List<PresenceState>) em
-						.createQuery("select p from PresenceState p where p.person=:person order by p.date desc")
+				List<PresenceState> result = em
+						.createQuery("select p from PresenceState p where p.person=:person order by p.date desc", PresenceState.class)
 						.setParameter("person", person).getResultList();
 				
 				if (result != null && !result.isEmpty()) {
