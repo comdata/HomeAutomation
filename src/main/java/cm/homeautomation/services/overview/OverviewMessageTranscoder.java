@@ -8,6 +8,8 @@ import javax.websocket.EncodeException;
 import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
 
+import org.apache.logging.log4j.LogManager;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,7 +32,7 @@ public class OverviewMessageTranscoder implements Encoder.Text<OverviewTile>, De
 		try {
 			return mapper.readValue(s, OverviewTile.class);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error("IOException while decoding: "+s, e);
 		}
 		return null;
 	}
@@ -46,8 +48,7 @@ public class OverviewMessageTranscoder implements Encoder.Text<OverviewTile>, De
 		try {
 			return mapper.writeValueAsString(object);
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error("JsonProcessingException while encoding.", e);
 		}
 		return null;
 	}
