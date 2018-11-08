@@ -652,7 +652,8 @@ public class DHCPPacket implements Cloneable, Serializable {
 
             // put the remaining in padding
             this.padding = new byte[inBStream.available()];
-            inBStream.read(this.padding);
+            int r = inBStream.read(this.padding);
+            if (r < 0) { return null; } // EOF
            
             // final verifications (if assertions are activated)
             this.assertInvariants();
