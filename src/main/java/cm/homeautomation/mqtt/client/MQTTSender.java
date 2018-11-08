@@ -2,11 +2,11 @@ package cm.homeautomation.mqtt.client;
 
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 
 /**
  * generic MQTT sender
@@ -17,7 +17,8 @@ import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 public class MQTTSender {
 	private static MqttClient client;
 
-	public MQTTSender() {
+	private MQTTSender() {
+		// nothing to be done
 	}
 
 	public static void sendMQTTMessage(String topic, String jsonMessage) {
@@ -28,16 +29,12 @@ public class MQTTSender {
 			MqttMessage message = new MqttMessage();
 			message.setPayload(jsonMessage.getBytes());
 			client.publish(topic, message);
-			/*
-			 * client.disconnect(); client.close();
-			 */
 		} catch (MqttException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LogManager.getLogger(MqttClient.class).error("Sending MQTT message: "+jsonMessage+" failed.", e);
 		}
 	}
 
-	private static void initClient() throws MqttException, MqttSecurityException {
+	private static void initClient() throws MqttException {
 		if (client == null || !client.isConnected()) {
 
 			UUID uuid = UUID.randomUUID();
@@ -51,8 +48,6 @@ public class MQTTSender {
 			connOpt.setKeepAliveInterval(60);
 			connOpt.setConnectionTimeout(30);
 			connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
-			// connOpt.setUserName(M2MIO_USERNAME);
-			// connOpt.setPassword(M2MIO_PASSWORD_MD5.toCharArray());
 
 			client.connect(connOpt);
 		}
