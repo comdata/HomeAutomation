@@ -25,7 +25,7 @@ public class GenericJPAEntityService extends BaseService {
 	@GET
 	@Path("getclasses")
 	public List<GenericClassDescription> getSupportedClasses() {
-		List<GenericClassDescription> classes=new ArrayList<GenericClassDescription>();
+		List<GenericClassDescription> classes=new ArrayList<>();
 		
 		Reflections reflections = new Reflections(
 				new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage("cm.homeautomation")).setScanners(
@@ -42,11 +42,6 @@ public class GenericJPAEntityService extends BaseService {
 			for (Field field : fields) {
 				clazz.getFields().put(field.getName(), field.getType().getSimpleName());
 			}
-
-			/*Method[] methods = declaringClass.getDeclaredMethods();
-			for (Method method : methods) {
-				clazz.getMethods().put(method.getName(), method.getParameters());
-			}*/
 
 			
 			classes.add(clazz);
