@@ -6,6 +6,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -24,22 +25,11 @@ public class LEDService extends BaseService {
 			HttpGet getMethod = new HttpGet(url);
 			HttpClientBuilder clientBuilder = HttpClientBuilder.create();
 
-			// String[] userPassword = url.split("@")[0].replace("http://",
-			// "").split(":");
-			/*
-			 * CredentialsProvider credsProvider = new
-			 * BasicCredentialsProvider(); credsProvider.setCredentials(new
-			 * AuthScope(getMethod.getURI().getHost(),
-			 * getMethod.getURI().getPort()), new
-			 * UsernamePasswordCredentials(userPassword[0], userPassword[1]));
-			 * clientBuilder.setDefaultCredentialsProvider(credsProvider);
-			 */
 			HttpClient httpClient = clientBuilder.build();
 
 			httpClient.execute(getMethod);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error("IO Exception while calling LED service.", e);
 		}
 	}
 }
