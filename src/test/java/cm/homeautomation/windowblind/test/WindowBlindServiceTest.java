@@ -75,4 +75,15 @@ public class WindowBlindServiceTest {
 		assertFalse(all.getWindowBlinds().isEmpty());
 		assertTrue(all.getWindowBlinds().size()==2);
 	}
+	
+	@Test
+	public void testGetAllForRoom() {
+		WindowBlindsList allForRoom = windowBlindService.getAllForRoom(roomTwo.getId());
+		
+		assertNotNull(allForRoom);
+		assertNotNull(allForRoom.getWindowBlinds());
+		assertFalse(allForRoom.getWindowBlinds().isEmpty());
+		assertTrue(allForRoom.getWindowBlinds().size()==2);
+		assertTrue(allForRoom.getWindowBlinds().get(1).getType().equals(WindowBlind.ALL_AT_ONCE));
+	}
 }
