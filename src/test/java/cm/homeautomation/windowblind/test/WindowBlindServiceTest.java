@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import cm.homeautomation.db.EntityManagerService;
@@ -24,7 +25,7 @@ public class WindowBlindServiceTest {
 	private Room roomTwo;
 	private WindowBlind singleWindowBlindTwo;
 
-	@BeforeAll
+	@BeforeEach
 	public void setup() {
 		windowBlindService = new WindowBlindService();
 
