@@ -33,8 +33,8 @@ public class WindowBlindServiceTest {
 
 		em.getTransaction().begin();
 		// clear all
-		em.createQuery("delete w from WindowBlind w").executeUpdate();
-		em.createQuery("delete r from Room r where r.roomName like 'WindowBlind%'").executeUpdate();
+		em.createQuery("delete from WindowBlind w").executeUpdate();
+		em.createQuery("delete from Room r where r.roomName like 'WindowBlind%'").executeUpdate();
 
 		roomOne = new Room();
 		roomOne.setRoomName("WindowBlind " + System.currentTimeMillis());
