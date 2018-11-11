@@ -19,9 +19,99 @@ import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.AutoCreateInstance;
 
-//import com.github.shynixn.dashbutton.DashButtonListener;
 @AutoCreateInstance
 public class DashButtonService {
+
+	private final class DashButtonRunnable implements Runnable {
+		HashMap<String, Date> timeFilter = new HashMap<>();
+
+		@Override
+		public void run() {
+
+			final int listenPort = 67;
+			final int MAX_BUFFER_SIZE = 1000;
+
+			try (DatagramSocket socket = new DatagramSocket(listenPort);) {
+				LogManager.getLogger(this.getClass()).debug("start listening");
+
+				final byte[] payload = new byte[MAX_BUFFER_SIZE];
+
+				final DatagramPacket p = new DatagramPacket(payload, payload.length);
+
+				// server is always listening
+				final boolean listening = true;
+				while (listening) {
+					listenAndReceive(listenPort, socket, p);
+				}
+			} catch (final SocketException e) {
+				LogManager.getLogger(this.getClass()).error("socket exeception", e);
+			}
+		}
+
+		private void listenAndReceive(final int listenPort, DatagramSocket socket, final DatagramPacket p) {
+			try {
+				LogManager.getLogger(this.getClass()).debug("Listening on port " + listenPort + "...");
+
+				socket.receive(p); // throws i/o exception
+				LogManager.getLogger(this.getClass()).debug("Received data");
+
+				final DHCPPacket packet = DHCPPacket.getPacket(p);
+
+				final String mac = packet.getHardwareAddress().getHardwareAddressHex();
+				LogManager.getLogger(this.getClass()).debug("checking mac: " + mac);
+				if (isDashButton(mac)) {
+					LogManager.getLogger(this.getClass()).debug("found a dashbutton mac: " + mac);
+
+					/*
+					 * suppress events if they are to fast
+					 *
+					 */
+					if (!timeFilter.containsKey(mac)) {
+						timeFilter.put(mac, new Date(1));
+					}
+
+					final Date filterTime = timeFilter.get(mac);
+
+					if (((filterTime.getTime()) + 1000) < (new Date()).getTime()) {
+						timeFilter.put(mac, new Date());
+						EventBusService.getEventBus().post(new EventObject(new DashButtonEvent(mac)));
+						LogManager.getLogger(this.getClass()).debug("send dashbutton event");
+					}
+
+				} else {
+					LogManager.getLogger(this.getClass()).debug("not a dashbutton: " + mac);
+				}
+			} catch (final SocketException e) {
+				LogManager.getLogger(this.getClass()).error("socket exeception", e);
+			} catch (final IOException e) {
+				LogManager.getLogger(this.getClass()).error("IO exeception", e);
+			}
+		}
+
+		private boolean isDashButton(String mac) {
+			if (mac == null) {
+				throw new IllegalArgumentException("MAC is NULL");
+			}
+			final String vendorCode = mac.substring(0, 6);
+
+			final EntityManager em = EntityManagerService.getNewManager();
+
+			try {
+				final DashButtonRange singleResult = (DashButtonRange) em
+						.createQuery("select dbr from DashButtonRange dbr where dbr.range=:vendor")
+						.setParameter("vendor", vendorCode).getSingleResult();
+
+				if (singleResult != null) {
+					return true;
+				}
+			} catch (final NoResultException e) {
+				LogManager.getLogger(this.getClass()).error(e);
+			}
+			LogManager.getLogger(this.getClass()).trace("vendorCode: " + vendorCode);
+
+			return false;
+		}
+	}
 
 	public static void main(String[] args) {
 
@@ -30,120 +120,20 @@ public class DashButtonService {
 	}
 
 	public DashButtonService() {
-		System.out.println("Creating Dashbutton Service");
+
+		LogManager.getLogger(this.getClass()).debug("Creating Dashbutton Service");
 		this.run();
-	}
-
-	/*
-	 * public DashButtonService() { String dashButtonIp = "192.168.1.90"; //Your
-	 * static dashButton ip DashButtonListener listener =
-	 * DashButtonListener.fromIpAddress(dashButtonIp); listener.register(new
-	 * Runnable() {
-	 *
-	 * @Override public void run() { //Gets called when the dashButton with the
-	 * given ip in the local network is pressed
-	 * System.out.println("Button pressed"); } });
-	 *
-	 *
-	 * }
-	 */
-
-	private boolean isDashButton(String mac) {
-		if (mac == null) {
-			throw new IllegalArgumentException("MAC is NULL");
-		}
-		final String vendorCode = mac.substring(0, 6);
-
-		final EntityManager em = EntityManagerService.getNewManager();
-
-		try {
-			final DashButtonRange singleResult = (DashButtonRange) em
-					.createQuery("select dbr from DashButtonRange dbr where dbr.range=:vendor")
-					.setParameter("vendor", vendorCode).getSingleResult();
-
-			if (singleResult != null) {
-				return true;
-			}
-		} catch (final NoResultException e) {
-
-		}
-		LogManager.getLogger(this.getClass()).trace("vendorCode: " + vendorCode);
-
-		return false;
 	}
 
 	@AutoCreateInstance
 	public void run() {
-		System.out.println("Creating runner");
-		final Runnable dashbuttonRunner = new Runnable() {
-			HashMap<String, Date> timeFilter = new HashMap<>();
+		LogManager.getLogger(this.getClass()).debug("Creating runner");
+		final Runnable dashbuttonRunner = new DashButtonRunnable();
 
-			@Override
-			public void run() {
-
-				final int listenPort = 67;
-				final int MAX_BUFFER_SIZE = 1000;
-
-				try (DatagramSocket socket = new DatagramSocket(listenPort);) {
-					System.out.println("Start listening");
-
-					final byte[] payload = new byte[MAX_BUFFER_SIZE];
-
-					final DatagramPacket p = new DatagramPacket(payload, payload.length);
-					// System.out.println("Success! Now listening on port " + listenPort + "...");
-
-					// server is always listening
-					final boolean listening = true;
-					while (listening) {
-						try {
-							System.out.println("Listening on port " + listenPort + "...");
-							socket.receive(p); // throws i/o exception
-							System.out.println("Received data");
-
-							final DHCPPacket packet = DHCPPacket.getPacket(p);
-
-							final String mac = packet.getHardwareAddress().getHardwareAddressHex();
-							System.out.println("checking mac: " + mac);
-							if (isDashButton(mac)) {
-								System.out.println("found a dashbutton mac: " + mac);
-
-								/*
-								 * suppress events if they are to fast
-								 *
-								 */
-								if (!timeFilter.containsKey(mac)) {
-									timeFilter.put(mac, new Date(1));
-								}
-
-								final Date filterTime = timeFilter.get(mac);
-
-								if (((filterTime.getTime()) + 1000) < (new Date()).getTime()) {
-									timeFilter.put(mac, new Date());
-									EventBusService.getEventBus().post(new EventObject(new DashButtonEvent(mac)));
-									System.out.println("send dashbutton event");
-								}
-
-							} else {
-								System.out.println("not a dashbutton: " + mac);
-							}
-						} catch (final SocketException e) {
-							LogManager.getLogger(this.getClass()).error("socket exeception", e);
-						} catch (final IOException e) {
-							LogManager.getLogger(this.getClass()).error("IO exeception", e);
-						}
-					}
-				} catch (final SocketException e) {
-					LogManager.getLogger(this.getClass()).error("socket exeception", e);
-				} catch (final IOException e) {
-					LogManager.getLogger(this.getClass()).error("IO exeception", e);
-				}
-			}
-		};
-
-		System.out.println("Triggering start");
+		LogManager.getLogger(this.getClass()).debug("Triggering start");
 		new Thread(dashbuttonRunner).start();
 
-		System.out.println("Start triggered");
+		LogManager.getLogger(this.getClass()).debug("Start triggered");
 	}
 
 }
