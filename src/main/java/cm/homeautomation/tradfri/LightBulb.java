@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.log4j.LogManager;
 import org.eclipse.californium.core.CoapResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,7 +49,7 @@ public class LightBulb {
 		final Integer blue = Integer.valueOf(color.substring(4, 6), 16);
 		final TradfriColorPoint convertRGBToCIE = convertRGBToCIE(red, green, blue);
 
-		System.out.println(
+		LogManager.getLogger(LightBulb.class).debug(
 				red + " " + green + " " + blue + "x: " + convertRGBToCIE.getX() + " y: " + convertRGBToCIE.getY());
 	}
 
@@ -176,34 +177,10 @@ public class LightBulb {
 
 			final JSONObject light = json.getJSONArray(TradfriConstants.LIGHT).getJSONObject(0);
 
-			if (light.has(TradfriConstants.ONOFF) && light.has(TradfriConstants.DIMMER)) {
-				final boolean new_on = (light.getInt(TradfriConstants.ONOFF) != 0);
-				final int new_intensity = light.getInt(TradfriConstants.DIMMER);
-				if (on != new_on) {
-					updateListeners = true;
-				}
-				if (intensity != new_intensity) {
-					updateListeners = true;
-				}
-				on = new_on;
-				intensity = new_intensity;
-			} else {
-				if (online) {
-					updateListeners = true;
-				}
-				online = false;
-			}
-			if (light.has(TradfriConstants.COLOR)) {
-				setColorLight(true);
-				final String new_color = light.getString(TradfriConstants.COLOR);
-				if ((color == null) || !color.equals(new_color)) {
-					updateListeners = true;
-				}
-				color = new_color;
-			}
+			updateListeners = updateListenersRequired(updateListeners, light);
 		} catch (final JSONException e) {
-			System.err.println("Cannot update bulb info: error parsing the response from the gateway.");
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass())
+					.error("Cannot update bulb info: error parsing the response from the gateway.", e);
 		}
 		if (updateListeners) {
 			for (final TradfriBulbListener l : listners) {
@@ -212,11 +189,40 @@ public class LightBulb {
 		}
 	}
 
+	private boolean updateListenersRequired(boolean updateListeners, final JSONObject light) {
+		if (light.has(TradfriConstants.ONOFF) && light.has(TradfriConstants.DIMMER)) {
+			final boolean new_on = (light.getInt(TradfriConstants.ONOFF) != 0);
+			final int new_intensity = light.getInt(TradfriConstants.DIMMER);
+			if (on != new_on) {
+				updateListeners = true;
+			}
+			if (intensity != new_intensity) {
+				updateListeners = true;
+			}
+			on = new_on;
+			intensity = new_intensity;
+		} else {
+			if (online) {
+				updateListeners = true;
+			}
+			online = false;
+		}
+		if (light.has(TradfriConstants.COLOR)) {
+			setColorLight(true);
+			final String new_color = light.getString(TradfriConstants.COLOR);
+			if ((color == null) || !color.equals(new_color)) {
+				updateListeners = true;
+			}
+			color = new_color;
+		}
+		return updateListeners;
+	}
+
 	public void removeLightBulbListner(final TradfriBulbListener l) {
 		listners.remove(l);
 	}
 
-	public void setColor(final String color, final int brightness) {
+	public void setColor(final String color) {
 		try {
 
 			final JSONObject json = new JSONObject();
@@ -231,7 +237,6 @@ public class LightBulb {
 
 			array.put(settings);
 			json.put(TradfriConstants.LIGHT, array);
-			// settings.put(TradfriConstants.COLOR, color);
 			settings.put(TradfriConstants.COLOR_X, colorPoint.xyX.intValue());
 			settings.put(TradfriConstants.COLOR_Y, colorPoint.xyY.intValue());
 			final String payload = json.toString();

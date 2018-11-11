@@ -3,7 +3,7 @@ package cm.homeautomation.tradfri;
 public class Main {
 
 	protected static String gateway_ip = "192.168.1.115";
-	protected static String security_key = "BOnI8cZukkydrxBp";
+	protected static String security_key = "";
 
 	public static void main(final String[] args) {
 
@@ -14,12 +14,7 @@ public class Main {
 		gw.initCoap();
 		gw.dicoverBulbs();
 
-		/*
-		 * for (final LightBulb b : gw.bulbs) {
-		 * 
-		 * // System.out.println(b.getId()); System.out.print(b.toString());
-		 * System.out.println("\t on: " + b.isOn()); }
-		 */
+
 
 		System.exit(0);
 	}
