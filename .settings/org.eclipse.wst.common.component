@@ -1,13 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+        
     <wb-module deploy-name="HomeAutomation-0.0.1-SNAPSHOT">
+                
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+                
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
+                
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <dependent-module archiveName="odata-jpa-processor-0.2.10-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/odata-jpa-processor/odata-jpa-processor">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="odata-jpa-annotation-0.2.10-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/odata-jpa-annotation/odata-jpa-annotation">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="odata-jpa-metadata-0.2.10-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/odata-jpa-metadata/odata-jpa-metadata">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <dependent-module archiveName="HomeAutomationZWave-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/HomeAutomationZWave/HomeAutomationZWave">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+                
         <property name="context-root" value="HomeAutomation"/>
+                
         <property name="java-output-path" value="/HomeAutomation/target/classes"/>
+                
         <property name="component.inclusion.patterns" value="WEB-INF/lib/*.jar"/>
+            
     </wb-module>
+    
 </project-modules>
