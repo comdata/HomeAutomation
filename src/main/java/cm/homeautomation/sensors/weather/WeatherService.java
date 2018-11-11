@@ -29,17 +29,15 @@ public class WeatherService {
 		Properties props = new Properties();
 		try {
 			File file = new File("weather.properties");
-			System.out.println("Weather properties: "+file.getAbsolutePath());
-			LogManager.getLogger(WeatherService.class).info("Weather properties: "+file.getAbsolutePath());
+			LogManager.getLogger(WeatherService.class).info("Weather properties: " + file.getAbsolutePath());
 			FileReader fileReader = new FileReader(file);
-			
+
 			props.load(fileReader);
 			apiKey = props.getProperty("apiKey");
 			city = props.getProperty("city");
 			country = props.getProperty("country");
 			zmw = props.getProperty("zmw");
 		} catch (IOException e) {
-			e.printStackTrace();
 			LogManager.getLogger(WeatherService.class).info("Could not find weather properties!");
 			return null;
 		}
@@ -52,13 +50,13 @@ public class WeatherService {
 		req.addFeature(Feature.CONDITIONS);
 		req.addFeature(Feature.FORECAST);
 		WeatherResponse weather = req.query(country, city);
-		System.out.println(weather.getResponse());
-		
-		if (weather!=null && weather.getCurrent_observation()!=null) {
+		LogManager.getLogger(WeatherData.class).debug(weather.getResponse());
+
+		if (weather.getCurrent_observation() != null) {
 			weatherData.setHumidity(weather.getCurrent_observation().getRelativeHumidity().replace("%", ""));
 			weatherData.setTempC(weather.getCurrent_observation().getTempC());
 			weatherData.setPressure(Float.toString(weather.getCurrent_observation().getPressureMb()));
-			System.out.println(weatherData.toString());
+			LogManager.getLogger(WeatherService.class).debug(weatherData.toString());
 		} else {
 			LogManager.getLogger(WeatherService.class).info("Could not access weather information");
 		}
@@ -68,7 +66,7 @@ public class WeatherService {
 
 	public static void main(String[] args) {
 		WeatherData weather = WeatherService.getWeather();
-		if (weather!=null) {
+		if (weather != null) {
 			LogManager.getLogger(WeatherService.class).info(weather.getTempC());
 			LogManager.getLogger(WeatherService.class).info(weather.getHumidity());
 		}
