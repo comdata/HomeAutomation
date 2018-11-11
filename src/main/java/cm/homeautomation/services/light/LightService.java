@@ -199,8 +199,7 @@ public class LightService extends BaseService {
 			String colorUrl = colorLight.getColorUrl();
 
 			if (TRADFRI.equals(colorLight.getLightType())) {
-				TradfriStartupService.getInstance().setColor(light.getExternalId(), shortHex,
-						colorLight.getBrightnessLevel());
+				TradfriStartupService.getInstance().setColor(light.getExternalId(), shortHex);
 			} else {
 				if (colorUrl != null) {
 					colorUrl = colorUrl.replace("{HEXVALUE}", shortHex);
