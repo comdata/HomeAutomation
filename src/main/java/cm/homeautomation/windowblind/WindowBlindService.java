@@ -23,10 +23,10 @@ public class WindowBlindService extends BaseService {
 	 *
 	 * @param args
 	 */
-	public synchronized static void cronPerformCalibration(String[] args) {
+	public static synchronized void cronPerformCalibration(String[] args) {
 		final String windowBlindId = args[0];
 
-		new WindowBlindService().performCalibration(new Long(windowBlindId));
+		new WindowBlindService().performCalibration(Long.valueOf(windowBlindId));
 	}
 
 	/**
@@ -34,11 +34,11 @@ public class WindowBlindService extends BaseService {
 	 *
 	 * @param args
 	 */
-	public synchronized static void cronSetDim(String[] args) {
+	public static synchronized void cronSetDim(String[] args) {
 		final String windowBlindId = args[0];
 		final String dimValue = args[1];
 
-		new WindowBlindService().setDim(new Long(windowBlindId), dimValue);
+		new WindowBlindService().setDim(Long.valueOf(windowBlindId), dimValue);
 	}
 
 	public WindowBlindsList getAll() {
@@ -52,8 +52,6 @@ public class WindowBlindService extends BaseService {
 
 		if (windowBlinds != null) {
 			for (final WindowBlind windowBlind : windowBlinds) {
-				// windowBlind.setDimUrl(null);
-				// windowBlind.setStatusUrl(null);
 				windowBlindsList.getWindowBlinds().add(windowBlind);
 			}
 		}
