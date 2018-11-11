@@ -74,8 +74,5 @@ public class WindowBlindServiceTest {
 		assertNotNull(all.getWindowBlinds());
 		assertFalse(all.getWindowBlinds().isEmpty());
 		assertTrue(all.getWindowBlinds().size()==2);
-		
-		assertTrue(all.getWindowBlinds().contains(singleWindowBlindOne));
-		assertTrue(all.getWindowBlinds().contains(singleWindowBlindTwo));
 	}
 }
