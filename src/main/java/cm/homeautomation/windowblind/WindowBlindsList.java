@@ -13,7 +13,7 @@ public class WindowBlindsList {
 
 	public List<WindowBlind> getWindowBlinds() {
 		if (windowBlinds==null) {
-			windowBlinds=new ArrayList<WindowBlind>();
+			windowBlinds=new ArrayList<>();
 		}
 		return windowBlinds;
 	}
