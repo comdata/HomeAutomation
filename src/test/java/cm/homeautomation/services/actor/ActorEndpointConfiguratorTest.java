@@ -11,6 +11,9 @@ public class ActorEndpointConfiguratorTest {
 		ActorEndpointConfigurator actorEndpointConfigurator = new ActorEndpointConfigurator();
 		
 		assertNotNull(actorEndpointConfigurator);
+		
+		Object endpointInstance = actorEndpointConfigurator.getEndpointInstance(null);
+		assertNotNull(endpointInstance);
 	}
 
 }
