@@ -50,7 +50,7 @@ public class NashornRunner {
 		final ScriptEngineManager factory = new ScriptEngineManager();
 		engine = factory.getEngineByName("nashorn");
 
-		instance = this;
+		setInstance(this);
 		EventBusService.getEventBus().register(this);
 	}
 
@@ -60,7 +60,7 @@ public class NashornRunner {
 		final EntityManager em = EntityManagerService.getNewManager();
 
 		final List<ScriptingEntity> resultList = em
-				.createQuery("select se from ScriptingEntity se where se.scriptType=:scriptType")
+				.createQuery("select se from ScriptingEntity se where se.scriptType=:scriptType", ScriptingEntity.class)
 				.setParameter("scriptType", ScriptingEntity.ScriptingType.EVENTHANDLER).getResultList();
 
 		if (resultList != null) {
