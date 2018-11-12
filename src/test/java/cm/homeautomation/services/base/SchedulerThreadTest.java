@@ -32,10 +32,14 @@ public class SchedulerThreadTest {
 
 		assertTrue(reloadedScheduler);
 	}
-
+	
 	@Test
 	public void testStopScheduler() throws Exception {
 		SchedulerThread instance = SchedulerThread.getInstance();
+		Scheduler newScheduler = new Scheduler();
+		
+		assertNotEquals(newScheduler, instance.getScheduler());	
+		instance.setScheduler( newScheduler);
 		instance.getScheduler().start();
 		instance.stopScheduler();
 
