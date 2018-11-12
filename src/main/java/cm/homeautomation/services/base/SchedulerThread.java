@@ -39,25 +39,23 @@ public class SchedulerThread {
 
 	public boolean reloadScheduler() {
 		Scheduler currentScheduler = getScheduler();
-		if (currentScheduler != null) {
 
-			if (scheduleFile != null) {
-				currentScheduler.descheduleFile(scheduleFile);
-			}
-
-			String configFile = ConfigurationService.getConfigurationProperty("scheduler", "configFile");
-
-			scheduleFile = new File(configFile);
-			currentScheduler.scheduleFile(scheduleFile);
-
-			if (!currentScheduler.isStarted()) {
-				currentScheduler.start();
-			}
-
-			LogManager.getLogger(this.getClass()).info("Reloaded scheduler");
-			return true;
+		if (scheduleFile != null) {
+			currentScheduler.descheduleFile(scheduleFile);
 		}
-		return false;
+
+		String configFile = ConfigurationService.getConfigurationProperty("scheduler", "configFile");
+
+		scheduleFile = new File(configFile);
+		currentScheduler.scheduleFile(scheduleFile);
+
+		if (!currentScheduler.isStarted()) {
+			currentScheduler.start();
+		}
+
+		LogManager.getLogger(this.getClass()).info("Reloaded scheduler");
+		return true;
+
 	}
 
 	public void stopScheduler() {
