@@ -46,7 +46,7 @@ public class DashButtonEventListener {
 
 			final DashButtonEvent dbEvent = (DashButtonEvent) data;
 
-			final String mac = dbEvent.getMac();
+			final String mac = dbEvent.getMac().replaceAll(":", "").toUpperCase();
 
 			DashButton dashButton = findOrCreateDashbutton(em, mac);
 
