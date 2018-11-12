@@ -37,7 +37,7 @@ public class SchedulerThread {
 		return instance;
 	}
 
-	public void reloadScheduler() {
+	public boolean reloadScheduler() {
 		Scheduler currentScheduler = getScheduler();
 		if (currentScheduler != null) {
 
@@ -55,7 +55,9 @@ public class SchedulerThread {
 			}
 
 			LogManager.getLogger(this.getClass()).info("Reloaded scheduler");
+			return true;
 		}
+		return false;
 	}
 
 	public void stopScheduler() {

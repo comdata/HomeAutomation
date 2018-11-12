@@ -35,5 +35,15 @@
 			<attribute name="maven.scope" value="compile"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/Users/christoph/.m2/repository/org/mockito/mockito-core/2.9.0/mockito-core-2.9.0.jar" sourcepath="/Users/christoph/.m2/repository/org/mockito/mockito-core/2.9.0/mockito-core-2.9.0-sources.jar">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="test" value="true"/>
+			<attribute name="maven.groupId" value="org.mockito"/>
+			<attribute name="maven.artifactId" value="mockito-core"/>
+			<attribute name="maven.version" value="2.9.0"/>
+			<attribute name="maven.scope" value="test"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
