@@ -21,7 +21,7 @@ public class NashornService extends BaseService {
 	public List<ScriptingEntity> getAllEntities() {
 		final EntityManager em = EntityManagerService.getNewManager();
 
-		final List<ScriptingEntity> resultList = em.createQuery("select se from ScriptingEntity se").getResultList();
+		final List<ScriptingEntity> resultList = em.createQuery("select se from ScriptingEntity se", ScriptingEntity.class).getResultList();
 
 		return resultList;
 	}
@@ -44,7 +44,7 @@ public class NashornService extends BaseService {
 		em.getTransaction().begin();
 		ScriptingEntity modifiedEntity = entity;
 
-		final List<ScriptingEntity> resultList = em.createQuery("select se from ScriptingEntity se where se.id=:id")
+		final List<ScriptingEntity> resultList = em.createQuery("select se from ScriptingEntity se where se.id=:id", ScriptingEntity.class)
 				.setParameter("id", entity.getId()).getResultList();
 
 		if (resultList != null) {
