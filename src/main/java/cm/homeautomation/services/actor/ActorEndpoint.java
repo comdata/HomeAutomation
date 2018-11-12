@@ -1,7 +1,10 @@
 package cm.homeautomation.services.actor;
 
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -16,7 +19,7 @@ import org.apache.logging.log4j.LogManager;
 		MessageTranscoder.class }, decoders = { MessageTranscoder.class })
 public class ActorEndpoint {
 
-	private ConcurrentHashMap<String, Session> userSessions = new ConcurrentHashMap<>();
+	private ConcurrentMap<String, Session> userSessions = new ConcurrentHashMap<>();
 
 	/**
 	 * Callback hook for Connection open events. This method will be invoked
@@ -39,7 +42,17 @@ public class ActorEndpoint {
 	 */
 	@OnClose
 	public void onClose(Session userSession) {
-		userSessions.remove(userSession);
+		Iterator<String> keySet = userSessions.keySet().iterator();
+
+		while (keySet.hasNext()) {
+			String key = keySet.next();
+
+			Session session = userSessions.get(key);
+			
+			if (session.equals(userSession)) {
+				userSessions.remove(key);
+			}
+		}	
 	}
 
 	public void handleEvent(String id, String status) {
@@ -48,10 +61,10 @@ public class ActorEndpoint {
 		switchEvent.setSwitchId(id);
 		switchEvent.setStatus(status);
 
-		Enumeration<String> keySet = userSessions.keys();
+		Iterator<String> keySet = userSessions.keySet().iterator();
 
-		while (keySet.hasMoreElements()) {
-			String key = keySet.nextElement();
+		while (keySet.hasNext()) {
+			String key = keySet.next();
 
 			Session session = userSessions.get(key);
 
@@ -71,5 +84,13 @@ public class ActorEndpoint {
 	@OnMessage
 	public void onMessage(String message, Session userSession) {
 		// we don't react on messages
+	}
+
+	public ConcurrentMap<String, Session> getUserSessions() {
+		return userSessions;
+	}
+
+	public void setUserSessions(ConcurrentMap<String, Session> userSessions) {
+		this.userSessions = userSessions;
 	}
 }
