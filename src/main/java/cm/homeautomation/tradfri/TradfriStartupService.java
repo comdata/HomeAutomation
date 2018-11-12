@@ -53,7 +53,6 @@ public class TradfriStartupService {
 				try {
 					gw.startTradfriGateway();
 				} catch (final Exception e) {
-					e.printStackTrace();
 					LogManager.getLogger(this.getClass()).info("Failed creating class");
 				}
 			}
