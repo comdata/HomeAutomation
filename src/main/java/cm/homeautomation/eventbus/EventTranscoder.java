@@ -32,7 +32,7 @@ public class EventTranscoder implements Encoder.Text<EventObject>, Decoder.Text<
 
 	@Override
 	public void destroy() {
-
+		// do nothing
 	}
 
 	@Override
@@ -51,7 +51,6 @@ public class EventTranscoder implements Encoder.Text<EventObject>, Decoder.Text<
 	@Override
 	public void init(final EndpointConfig config) {
 		mapper = new ObjectMapper();
-		// mapper.setSerializationInclusion(Include.NON_NULL);
 	}
 
 	@Override
