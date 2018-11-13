@@ -9,7 +9,6 @@ import org.telegram.telegrambots.logging.BotLogger;
 
 import cm.homeautomation.telegram.commands.AuthenticateCommand;
 import cm.homeautomation.telegram.commands.HelpCommand;
-import cm.homeautomation.telegram.services.Emoji;
 
 /**
  * This handler mainly works with commands to demonstrate the Commands feature
@@ -37,7 +36,7 @@ public class CommandsHandler extends TelegramLongPollingCommandBot {
 			SendMessage commandUnknownMessage = new SendMessage();
 			commandUnknownMessage.setChatId(message.getChatId());
 			commandUnknownMessage.setText("The command '" + message.getText()
-					+ "' is not known by this bot. Here comes some help " + Emoji.AMBULANCE);
+					+ "' is not known by this bot. ");
 			try {
 				absSender.sendMessage(commandUnknownMessage);
 			} catch (TelegramApiException e) {
