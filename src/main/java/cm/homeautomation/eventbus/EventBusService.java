@@ -9,6 +9,10 @@ package cm.homeautomation.eventbus;
 public class EventBusService {
 	private static CustomEventBus eventBus = null;
 
+	private EventBusService() {
+		// do nothing
+	}
+	
 	public static CustomEventBus getEventBus() {
 		if (eventBus == null) {
 			init();
