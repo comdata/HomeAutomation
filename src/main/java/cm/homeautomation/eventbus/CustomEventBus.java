@@ -3,6 +3,7 @@ package cm.homeautomation.eventbus;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.EventBusException;
 
@@ -14,10 +15,12 @@ public class CustomEventBus {
 
 	public CustomEventBus() {
 		if (eventBus == null) {
-			// eventBus = new AsyncEventBus(Executors.newFixedThreadPool(4));
-
 			eventBus = EventBus.getDefault();
 		}
+	}
+	
+	public static EventBus getEventBus() {
+		return eventBus;
 	}
 
 	public Map<String, Class> getClasses() {
@@ -34,9 +37,9 @@ public class CustomEventBus {
 		final String clazzName = clazz.getName();
 
 		if (getClasses().containsKey(clazzName)) {
-			System.out.println("Class already registered on eventbus: " + clazzName);
+			LogManager.getLogger(this.getClass()).debug("Class already registered on eventbus: " + clazzName);
 		} else {
-			System.out.println("Registering Class on eventbus: " + clazz.getName());
+			LogManager.getLogger(this.getClass()).debug("Registering Class on eventbus: " + clazz.getName());
 			try {
 				eventBus.register(object);
 			} catch (final EventBusException e) {
