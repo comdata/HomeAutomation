@@ -276,28 +276,28 @@ public class TradfriColor {
 	 * RGB color values in the range 0 to 255. May be <code>null</code> if the
 	 * calculation method does not support this color range.
 	 */
-	public Integer rgbR;
-	public Integer rgbG;
-	public Integer rgbB;
+	private Integer rgbR;
+	private Integer rgbG;
+	private Integer rgbB;
 
 	/**
 	 * CIE XY color values in the tradfri range 0 to 65535. May be <code>null</code>
 	 * if the calculation method does not support this color range.
 	 */
-	public Integer xyX;
-	public Integer xyY;
+	private Integer xyX;
+	private Integer xyY;
 
 	/**
 	 * Brightness level in the tradfri range 0 to 254. May be <code>null</code> if
 	 * the calculation method does not support this color range.
 	 */
-	public Integer brightness;
+	private Integer brightness;
 
 	/**
 	 * {@link HSBType} color object. May be <code>null</code> if the calculation
 	 * method does not support this color range.
 	 */
-	public HSBType hsbType;
+	private HSBType hsbType;
 
 	/**
 	 * Private constructor based on all fields.
@@ -320,13 +320,69 @@ public class TradfriColor {
 	private TradfriColor(final Integer rgbR, final Integer rgbG, final Integer rgbB, final Integer xyX,
 			final Integer xyY, final Integer brightness, final HSBType hsbType) {
 		super();
-		this.rgbR = rgbR;
-		this.rgbG = rgbG;
-		this.rgbB = rgbB;
-		this.xyX = xyX;
-		this.xyY = xyY;
+		this.setRgbR(rgbR);
+		this.setRgbG(rgbG);
+		this.setRgbB(rgbB);
+		this.setXyX(xyX);
+		this.setXyY(xyY);
+		this.setBrightness(brightness);
+		this.setHsbType(hsbType);
+	}
+
+	public Integer getBrightness() {
+		return brightness;
+	}
+
+	public void setBrightness(Integer brightness) {
 		this.brightness = brightness;
+	}
+
+	public HSBType getHsbType() {
+		return hsbType;
+	}
+
+	public void setHsbType(HSBType hsbType) {
 		this.hsbType = hsbType;
+	}
+
+	public Integer getXyX() {
+		return xyX;
+	}
+
+	public void setXyX(Integer xyX) {
+		this.xyX = xyX;
+	}
+
+	public Integer getXyY() {
+		return xyY;
+	}
+
+	public void setXyY(Integer xyY) {
+		this.xyY = xyY;
+	}
+
+	public Integer getRgbR() {
+		return rgbR;
+	}
+
+	public void setRgbR(Integer rgbR) {
+		this.rgbR = rgbR;
+	}
+
+	public Integer getRgbG() {
+		return rgbG;
+	}
+
+	public void setRgbG(Integer rgbG) {
+		this.rgbG = rgbG;
+	}
+
+	public Integer getRgbB() {
+		return rgbB;
+	}
+
+	public void setRgbB(Integer rgbB) {
+		this.rgbB = rgbB;
 	}
 
 }
