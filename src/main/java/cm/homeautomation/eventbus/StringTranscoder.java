@@ -10,11 +10,12 @@ public class StringTranscoder implements Encoder.Text<String>, Decoder.Text<Stri
 
 	@Override
 	public void init(EndpointConfig endpointConfig) {
-		
+		// do nothing
 	}
 
 	@Override
 	public void destroy() {
+		// do nothing
 	}
 
 	@Override
