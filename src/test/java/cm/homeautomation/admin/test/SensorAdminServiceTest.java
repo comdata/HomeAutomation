@@ -40,8 +40,7 @@ public class SensorAdminServiceTest {
 	public void cleanup() {
 		em.getTransaction().begin();
 
-		@SuppressWarnings("unchecked")
-		List<Room> rooms = (List<Room>) em.createQuery("select r from Room r where r.name=:roomName")
+		List<Room> rooms = em.createQuery("select r from Room r where r.roomName=:roomName", Room.class)
 				.setParameter("roomName", TEST_ROOM).getResultList();
 
 		for (Room room : rooms) {
@@ -51,7 +50,7 @@ public class SensorAdminServiceTest {
 		em.getTransaction().commit();
 	}
 
-	//@Test
+	@Test
 	public void testCreateSensor() throws Exception {
 		GenericStatus createSensorResult = sensorAdminService.createSensor(room.getId(), "Test Sensor", "TEMPERATURE");
 		Sensor sensor=(Sensor)createSensorResult.getObject();
@@ -61,13 +60,13 @@ public class SensorAdminServiceTest {
 		assertTrue(sensor.getId().longValue()>0);
 		assertTrue(createSensorResult.isSuccess());
 		
-		/*em.getTransaction().begin();
+		em.getTransaction().begin();
 		sensor=em.merge(sensor);
 		em.remove(sensor);
-		em.getTransaction().commit();*/
+		em.getTransaction().commit();
 	}
 
-	//@Test
+	@Test
 	public void testUpdateSensor() throws Exception {
 		Long sensorId = new Long(1);
 		GenericStatus updateSensorResult = sensorAdminService.updateSensor(sensorId, "Test Sensor 2", "HUMIDITY");
