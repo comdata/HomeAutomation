@@ -71,13 +71,8 @@ public class TransmissionMonitor {
 			torrentData.setDoneTorrents(numberOfDoneTorrents);
 			EventObject eventObject = new EventObject(torrentData);
 			EventBusService.getEventBus().post(eventObject);
-
-
-		} catch (RpcException e) {
-		
-
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (RpcException|Exception e) {
+			LogManager.getLogger(TransmissionMonitor.class).error(e);
 		}
 	}
 }
