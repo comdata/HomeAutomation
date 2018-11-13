@@ -91,8 +91,6 @@ public class ConfigurationService {
 		em.createQuery("delete from ConfigurationSetting").executeUpdate();
 		
 		em.getTransaction().commit();
-		
-		
 	}
 
 
