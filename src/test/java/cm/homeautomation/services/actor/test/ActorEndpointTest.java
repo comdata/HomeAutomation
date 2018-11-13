@@ -1,9 +1,12 @@
 package cm.homeautomation.services.actor.test;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.websocket.Session;
@@ -76,4 +79,18 @@ public class ActorEndpointTest {
 		assertTrue(userSessions.size()==1);
 	}
 
+	@Test
+	public void testSetSessions() {
+		ActorEndpoint actorEndpoint = new ActorEndpoint();
+		actorEndpoint.setUserSessions(null);
+		
+		assertNull(actorEndpoint.getUserSessions());
+		
+		ConcurrentMap<String, Session> userSessions=new ConcurrentHashMap<>();
+		actorEndpoint.setUserSessions(userSessions);
+		
+		assertNotNull(actorEndpoint.getUserSessions());
+		assertEquals(userSessions, actorEndpoint.getUserSessions());
+	}
+	
 }
