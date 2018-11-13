@@ -56,7 +56,6 @@ public class Pushpad {
 	@Subscribe
 	public void handleEvent(final EventObject eventObject) {
 		if (enabled) {
-			// try {
 			if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
 				final HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventObject
 						.getData();
@@ -64,8 +63,6 @@ public class Pushpad {
 				final Notification notification = this.buildNotification(humanMessage.getTitle(),
 						humanMessage.getMessageString(), notificationUrl);
 
-				// optional, defaults to the project icon
-				// notification.iconUrl = notificationUrl;
 				notification.iconUrl = iconUrl;
 				// optional, drop the notification after this number of seconds if a
 				// device is offline
@@ -81,7 +78,7 @@ public class Pushpad {
 							LogManager.getLogger(this.getClass()).info("Notification sent.");
 
 						} catch (final DeliveryException e) {
-							e.printStackTrace();
+							LogManager.getLogger(this.getClass()).error(e);
 						}
 					}
 				});
@@ -130,7 +127,7 @@ public class Pushpad {
 			final byte[] rawHmac = mac.doFinal(data.getBytes());
 			encoded = Base64.getEncoder().withoutPadding().encodeToString(rawHmac);
 		} catch (NoSuchAlgorithmException | InvalidKeyException e) {
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error(e);
 		}
 
 		return encoded;
