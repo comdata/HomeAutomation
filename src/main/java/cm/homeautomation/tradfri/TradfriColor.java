@@ -26,8 +26,8 @@ public class TradfriColor {
 	// which uses x,y-coordinates.
 	// Its own app comes with 3 predefined color temperature settings (0,1,2), which
 	// have those values:
-	private final static double[] PRESET_X = new double[] { 24933.0, 30138.0, 33137.0 };
-	private final static double[] PRESET_Y = new double[] { 24691.0, 26909.0, 27211.0 };
+	private static final  double[] PRESET_X = new double[] { 24933.0, 30138.0, 33137.0 };
+	private static final  double[] PRESET_Y = new double[] { 24691.0, 26909.0, 27211.0 };
 
 	/**
 	 * Calculate the color temperature from given x and y values.
@@ -83,8 +83,7 @@ public class TradfriColor {
 		// get hue and saturation from HSBType and construct new HSBType based on these
 		// values with the given brightness
 		final PercentType brightnessPercent = xyBrightnessToPercentType(xyBrightness);
-		final HSBType hsb = new HSBType(hsbFullBright.getHue(), hsbFullBright.getSaturation(), brightnessPercent);
-		return hsb;
+		return new HSBType(hsbFullBright.getHue(), hsbFullBright.getSaturation(), brightnessPercent);
 	}
 
 	/**
@@ -137,14 +136,6 @@ public class TradfriColor {
 			blue = 1.0;
 		}
 
-		// gamma correction - disabled for now - needs tweaking
-		// red = red <= 0.0031308 ? 12.92 * red : (1.0 + 0.055) * Math.pow(red, (1.0 /
-		// 2.4)) - 0.055;
-		// green = green <= 0.0031308 ? 12.92 * green : (1.0 + 0.055) * Math.pow(green,
-		// (1.0 / 2.4)) - 0.055;
-		// blue = blue <= 0.0031308 ? 12.92 * blue : (1.0 + 0.055) * Math.pow(blue, (1.0
-		// / 2.4)) - 0.055;
-
 		// calculated values can be slightly negative, so cap them to minimum 0.0
 		red = Math.max(0.0, red);
 		green = Math.max(0.0, green);
@@ -179,7 +170,8 @@ public class TradfriColor {
 	public static TradfriColor fromColorTemperature(final PercentType percentType) {
 		final double percent = percentType.doubleValue();
 
-		int x, y;
+		int x;
+		int y;
 		if (percent < 50.0) {
 			// we calculate a value that is between preset 0 and 1
 			final double p = percent / 50.0;
@@ -220,14 +212,6 @@ public class TradfriColor {
 		final int rgbG = (int) green;
 		final int rgbB = (int) blue;
 
-		// gamma correction - disabled for now - needs tweaking
-		// red = (red > 0.04045) ? Math.pow((red + 0.055) / (1.0 + 0.055), 2.4) : (red /
-		// 12.92);
-		// green = (green > 0.04045) ? Math.pow((green + 0.055) / (1.0 + 0.055), 2.4) :
-		// (green / 12.92);
-		// blue = (blue > 0.04045) ? Math.pow((blue + 0.055) / (1.0 + 0.055), 2.4) :
-		// (blue / 12.92);
-
 		// Wide RGB D65 conversion
 		// math inspiration:
 		// http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
@@ -247,13 +231,6 @@ public class TradfriColor {
 				brightness);
 
 		return new TradfriColor(rgbR, rgbG, rgbB, xyX, xyY, brightness, hsbTypeConcreteValues);
-	}
-
-	public static void main(String[] args) {
-		final TradfriColor fromRGBValues = TradfriColor.fromRGBValues(255, 0, 0, 254);
-		System.out.println("xyX: " + fromRGBValues.xyX);
-		System.out.println("xyY: " + fromRGBValues.xyY);
-
 	}
 
 	/**
@@ -299,13 +276,16 @@ public class TradfriColor {
 	 * RGB color values in the range 0 to 255. May be <code>null</code> if the
 	 * calculation method does not support this color range.
 	 */
-	public Integer rgbR, rgbG, rgbB;
+	public Integer rgbR;
+	public Integer rgbG;
+	public Integer rgbB;
 
 	/**
 	 * CIE XY color values in the tradfri range 0 to 65535. May be <code>null</code>
 	 * if the calculation method does not support this color range.
 	 */
-	public Integer xyX, xyY;
+	public Integer xyX;
+	public Integer xyY;
 
 	/**
 	 * Brightness level in the tradfri range 0 to 254. May be <code>null</code> if
