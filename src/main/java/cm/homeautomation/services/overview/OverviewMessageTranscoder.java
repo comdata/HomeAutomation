@@ -16,15 +16,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class OverviewMessageTranscoder implements Encoder.Text<OverviewTile>, Decoder.Text<OverviewTile> {
 
 	private ObjectMapper mapper;
+	
+	public OverviewMessageTranscoder() {
+		init(null);
+	}
 
 	@Override
 	public void init(EndpointConfig config) {
 		mapper = new ObjectMapper();
 	}
+	
+	public ObjectMapper getMapper() {
+		return mapper;
+	}
 
 	@Override
 	public void destroy() {
-		
+		// do nothing
 	}
 
 	@Override
