@@ -10,29 +10,26 @@ public class FHEMWindowDataReceiver {
 	private FHEMWindowDataReceiver() {
 		// do not create instance
 	}
-	
+
 	public static void receive(String topic, String messageContent, FHEMDevice fhemDevice) {
 
 		String[] topicParts = topic.split("/");
 
-		String topicLastPart = topicParts[topicParts.length-1].toLowerCase();
+		String topicLastPart = topicParts[topicParts.length - 1].toLowerCase();
 
-		switch (topicLastPart) {
-		case "alarm":
-			
-			String state="";
-			
+		if ("alarm".equals(topicLastPart)) {
+
+			String state = "";
+
 			if (messageContent.contains("open")) {
-				state="open";
+				state = "open";
 			} else {
-				state="closed";
+				state = "closed";
 			}
-			
-			((WindowStateService)WindowStateService.getInstance()).handleWindowState(fhemDevice.getReferencedId(), state);
-			
-			break;
 
-		default:
+			WindowStateService.getInstance().handleWindowState(fhemDevice.getReferencedId(), state);
+
+		} else {
 			LogManager.getLogger(FHEMDataReceiver.class).error("Window: add handling for last part: " + topicLastPart);
 		}
 	}
