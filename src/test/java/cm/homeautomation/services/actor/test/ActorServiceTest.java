@@ -1,4 +1,4 @@
-package cm.homeautomation.services.actor;
+package cm.homeautomation.services.actor.test;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

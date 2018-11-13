@@ -1,4 +1,4 @@
-package cm.homeautomation.services.actor;
+package cm.homeautomation.services.actor.test;
 
 import java.io.IOException;
 import java.net.URI;

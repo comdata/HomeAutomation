@@ -1,4 +1,4 @@
-package cm.homeautomation.services.actor;
+package cm.homeautomation.services.actor.test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentMap;
 import javax.websocket.Session;
 
 import org.junit.jupiter.api.Test;
+
+import cm.homeautomation.services.actor.ActorEndpoint;
 
 public class ActorEndpointTest {
 

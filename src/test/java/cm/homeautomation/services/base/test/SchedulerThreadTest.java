@@ -1,4 +1,4 @@
-package cm.homeautomation.services.base;
+package cm.homeautomation.services.base.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import cm.homeautomation.configuration.ConfigurationService;
+import cm.homeautomation.services.base.SchedulerThread;
 import it.sauronsoftware.cron4j.Scheduler;
 
 public class SchedulerThreadTest {
