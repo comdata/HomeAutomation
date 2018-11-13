@@ -21,8 +21,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import cm.homeautomation.logging.WebSocketEvent;
 
 @ServerEndpoint(value = "/eventbus/{clientId}", configurator = EventBusEndpointConfigurator.class, encoders = {
-		EventTranscoder.class,
-		WebSocketEventTranscoder.class, StringTranscoder.class }, decoders = { EventTranscoder.class, WebSocketEventTranscoder.class, StringTranscoder.class })
+		EventTranscoder.class, WebSocketEventTranscoder.class, StringTranscoder.class }, decoders = {
+				EventTranscoder.class, WebSocketEventTranscoder.class, StringTranscoder.class })
 public class EventBusEndpoint {
 
 	private final ConcurrentHashMap<String, Session> userSessions = new ConcurrentHashMap<>();
@@ -50,10 +50,10 @@ public class EventBusEndpoint {
 		userSessions.keys();
 		try {
 			if (eventObject != null) {
-				if (eventTranscoder!=null) {
+				if (eventTranscoder != null) {
 					eventTranscoder.encode(eventObject);
 				}
-				
+
 				sendObjectToAllSession(eventObject);
 			} else {
 				LogManager.getLogger(this.getClass()).error("Encoding got an empty message");
@@ -115,8 +115,6 @@ public class EventBusEndpoint {
 	@OnOpen
 	public void onOpen(@PathParam("clientId") final String clientId, final Session userSession) {
 		try {
-			// userSession.getUserProperties().put("org.apache.tomcat.websocket.BLOCKING_SEND_TIMEOUT",
-			// 10);
 			userSession.getBasicRemote().setBatchingAllowed(false);
 		} catch (final IOException e) {
 			LogManager.getLogger(this.getClass()).error("Setting batching allowed to false failed.", e); //
@@ -137,11 +135,8 @@ public class EventBusEndpoint {
 				synchronized (session) {
 					if (session.isOpen()) {
 						try {
-							// LogManager.getLogger(this.getClass()).error("Websocket: trigger message");
 							session.getBasicRemote().sendObject(object);
 							session.getBasicRemote().flushBatch();
-							// LogManager.getLogger(this.getClass()).error("Websocket: message triggered");
-
 						} catch (IllegalStateException | IOException | EncodeException e) {
 							LogManager.getLogger(this.getClass())
 									.error("Sending failed" + session.getId() + " key: " + key, e); //
