@@ -237,8 +237,8 @@ public class LightBulb {
 
 			array.put(settings);
 			json.put(TradfriConstants.LIGHT, array);
-			settings.put(TradfriConstants.COLOR_X, colorPoint.xyX.intValue());
-			settings.put(TradfriConstants.COLOR_Y, colorPoint.xyY.intValue());
+			settings.put(TradfriConstants.COLOR_X, colorPoint.getXyX().intValue());
+			settings.put(TradfriConstants.COLOR_Y, colorPoint.getXyY().intValue());
 			final String payload = json.toString();
 			gateway.set(TradfriConstants.DEVICES + "/" + this.getId(), payload);
 
