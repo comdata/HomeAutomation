@@ -55,6 +55,29 @@ public class ActorEndpointTest {
 		assertTrue(userSessionsAfterClose.isEmpty());
 		assertTrue(userSessionsAfterClose.size()==0);
 	}
+	
+	@Test
+	public void testOnCloseSessionNotInList() throws Exception {
+		ActorEndpoint actorEndpoint = new ActorEndpoint();
+		
+		String clientId="TestClient";
+		
+		Session userSession=new DummyUserSession();
+		actorEndpoint.onOpen(clientId, userSession);
+		
+		ConcurrentMap<String, Session> userSessions = actorEndpoint.getUserSessions();
+		assertNotNull(userSessions);
+		assertFalse(userSessions.isEmpty());
+		assertTrue(userSessions.size()==1);
+		
+		Session wrongUserSession=new DummyUserSession();
+		actorEndpoint.onClose(wrongUserSession);
+		
+		ConcurrentMap<String, Session> userSessionsAfterClose = actorEndpoint.getUserSessions();
+		assertNotNull(userSessionsAfterClose);
+		assertFalse(userSessionsAfterClose.isEmpty());
+		assertTrue(userSessionsAfterClose.size()==1);
+	}
 
 	@Test
 	public void testHandleEvent() throws Exception {
