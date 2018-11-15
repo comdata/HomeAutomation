@@ -37,8 +37,6 @@ public class NashornRunner {
 
 	private final ScriptEngine engine;
 
-	private final Logger logger = LogManager.getLogger(this.getClass());
-
 	public NashornRunner() {
 		final ScriptEngineManager factory = new ScriptEngineManager();
 		engine = factory.getEngineByName("nashorn");
@@ -49,7 +47,7 @@ public class NashornRunner {
 
 	@Subscribe
 	public void handleEvent(final EventObject event) {
-
+		Logger logger = LogManager.getLogger(this.getClass());
 		final EntityManager em = EntityManagerService.getNewManager();
 
 		final List<ScriptingEntity> resultList = em
