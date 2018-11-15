@@ -31,13 +31,6 @@ public class NashornRunner {
 		return instance;
 	}
 
-	public static void main(final String[] args) throws Exception {
-		// Script Engine Manager
-
-		// Evaluate JavaScript code
-		getInstance().run("print(\"This is a hello from JavaScript in Java\");");
-	}
-
 	public static void setInstance(final NashornRunner instance) {
 		NashornRunner.instance = instance;
 	}
