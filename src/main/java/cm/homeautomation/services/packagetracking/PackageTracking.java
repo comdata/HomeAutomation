@@ -405,7 +405,6 @@ public class PackageTracking {
 		HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
 
 		String cookie = args[0];
-		// LogManager.getLogger(this.getClass()).info(cookie);
 
 		HttpGet request = new HttpGet(url);
 
