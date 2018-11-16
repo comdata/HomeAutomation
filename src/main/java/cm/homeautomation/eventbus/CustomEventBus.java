@@ -43,7 +43,7 @@ public class CustomEventBus {
 			try {
 				eventBus.register(object);
 			} catch (final EventBusException e) {
-
+				LogManager.getLogger(this.getClass()).error(e);
 			}
 			getClasses().put(clazzName, clazz);
 		}
