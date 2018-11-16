@@ -9,7 +9,7 @@ import org.greenrobot.eventbus.EventBusException;
 
 public class CustomEventBus {
 
-	static EventBus eventBus = null;
+	private EventBus eventBus = null;
 
 	private final Map<String, Class> classes = new HashMap<>();
 
@@ -20,7 +20,7 @@ public class CustomEventBus {
 	}
 	
 	public static EventBus getEventBus() {
-		return eventBus;
+		return EventBus.getDefault();
 	}
 
 	public Map<String, Class> getClasses() {
