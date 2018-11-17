@@ -13,7 +13,6 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.NetworkDevice;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
-import cm.homeautomation.services.base.AutoCreateInstance;
 
 public class NetworkDeviceDatabaseUpdater {
 
@@ -38,12 +37,12 @@ public class NetworkDeviceDatabaseUpdater {
 			LogManager.getLogger(this.getClass()).debug("got device for mac: "+mac);
 			
 			if (mac != null) {
-				resultList = em.createQuery("select n from NetworkDevice n where n.mac=:mac").setParameter("mac", mac)
+				resultList = em.createQuery("select n from NetworkDevice n where n.mac=:mac", NetworkDevice.class).setParameter("mac", mac)
 						.getResultList();
 			}
 
 			if ((resultList == null) || resultList.isEmpty()) {
-				resultList = em.createQuery("select n from NetworkDevice n where n.ip=:ip")
+				resultList = em.createQuery("select n from NetworkDevice n where n.ip=:ip", NetworkDevice.class)
 						.setParameter("ip", networkDevice.getIp()).getResultList();
 			}
 
