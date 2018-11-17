@@ -35,6 +35,10 @@ public class InfraredService extends BaseService {
 	private static InfraredService instance;
 
 	public static InfraredService getInstance() {
+		if (instance==null) {
+			instance=new InfraredService();
+		}
+		
 		return instance;
 	}
 
@@ -44,7 +48,6 @@ public class InfraredService extends BaseService {
 
 	public InfraredService() {
 		EventBusService.getEventBus().register(this);
-		instance = this;
 	}
 
 	/**
@@ -56,8 +59,7 @@ public class InfraredService extends BaseService {
 	@Path("get")
 	public List<IRCommand> getIRCommands() {
 		final EntityManager em = EntityManagerService.getNewManager();
-		final List<IRCommand> resultList = em.createQuery("select ic from IRCommand ic", IRCommand.class).getResultList();
-		return resultList;
+		return em.createQuery("select ic from IRCommand ic", IRCommand.class).getResultList();
 	}
 
 	/**
