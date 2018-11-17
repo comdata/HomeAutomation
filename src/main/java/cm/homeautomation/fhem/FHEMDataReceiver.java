@@ -82,7 +82,7 @@ public class FHEMDataReceiver {
 			}
 
 		} else {
-			LogManager.getLogger(FHEMDataReceiver.class).error("Device type for device: " + device);
+			LogManager.getLogger(FHEMDataReceiver.class).debug("Device type for device: " + device);
 		}
 	}
 
