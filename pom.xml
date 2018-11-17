@@ -457,7 +457,7 @@
 				</dependencies>
 				<configuration>
 					<argLine>
-						-javaagent:"${settings.localRepository}"/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar=coverage -Djmockit-coverage-outputDir=target/coverage-report
+						${argLine} -javaagent:"${settings.localRepository}"/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar=coverage -Djmockit-coverage-outputDir=target/coverage-report
 						<!-- coverage properties -->
 					</argLine>
 				</configuration>
