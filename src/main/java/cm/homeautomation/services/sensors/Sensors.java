@@ -39,15 +39,15 @@ public class Sensors extends BaseService {
 		private SensorDatas sensorDatas;
 		private final EntityManager em;
 		private final Date now;
-		private final Object object;
+		private final Sensor sensor;
 		private final CountDownLatch latch;
 
 		public DataLoadThread(final SensorDatas sensorDatas, final EntityManager em, final Date now,
-				final Object object, final CountDownLatch latch) {
+				final Sensor sensor, final CountDownLatch latch) {
 			this.sensorDatas = sensorDatas;
 			this.em = em;
 			this.now = now;
-			this.object = object;
+			this.sensor = sensor;
 			this.latch = latch;
 
 		}
@@ -58,9 +58,8 @@ public class Sensors extends BaseService {
 
 		@Override
 		public void run() {
-			loadSensorData(sensorDatas, em, now, object);
+			loadSensorData(sensorDatas, em, now, sensor);
 			this.latch.countDown();
-			this.stop();
 		}
 
 		public void setSensorDatas(final SensorDatas sensorDatas) {
@@ -90,17 +89,16 @@ public class Sensors extends BaseService {
 		final SensorDatas sensorDatas = new SensorDatas();
 
 		final EntityManager em = EntityManagerService.getNewManager();
-		@SuppressWarnings("unchecked")
-		final List<Object> sensors = em.createQuery(
-				"select s FROM Sensor s where s.showData=true and s.room=(select r from Room r where r.id=:room)")
+		final List<Sensor> sensors = em.createQuery(
+				"select s FROM Sensor s where s.showData=true and s.room=(select r from Room r where r.id=:room)", Sensor.class)
 				.setParameter("room", Long.parseLong(room)).getResultList();
 
 		final Date now = new Date();
 
 		final CountDownLatch latch = new CountDownLatch(sensors.size());
 
-		for (final Object object : sensors) {
-			final DataLoadThread dataLoadThread = new DataLoadThread(sensorDatas, em, now, object, latch);
+		for (final Sensor sensor : sensors) {
+			final DataLoadThread dataLoadThread = new DataLoadThread(sensorDatas, em, now, sensor, latch);
 			dataLoadThread.start();
 		}
 
@@ -123,12 +121,10 @@ public class Sensors extends BaseService {
 	 * @param sensorDatas
 	 * @param em
 	 * @param now
-	 * @param object
+	 * @param sensor
 	 */
 	public void loadSensorData(final SensorDatas sensorDatas, final EntityManager em, final Date now,
-			final Object object) {
-		if (object instanceof Sensor) {
-			final Sensor sensor = (Sensor) object;
+			final Sensor sensor) {
 
 			final EntityManager emSensor = EntityManagerService.getNewManager();
 
@@ -182,7 +178,7 @@ public class Sensors extends BaseService {
 				}
 			} else {
 				for (final SensorData sData : data) {
-					if ((lastSensorValue == null) || ((sData.getValue() != lastSensorValue.getValue()))) {
+					if ((lastSensorValue == null) || (sData.getValue() != lastSensorValue.getValue())) {
 						if (lastSensorValue != null) {
 							final SensorValue tempSensorValue = new SensorValue();
 							tempSensorValue.setValue(lastSensorValue.getValue());
@@ -209,7 +205,7 @@ public class Sensors extends BaseService {
 			sensorDatas.getSensorData().add(sensorData);
 
 			emSensor.getTransaction().commit();
-		}
+
 
 		try {
 			em.close();
@@ -348,37 +344,39 @@ public class Sensors extends BaseService {
 			request.setTimestamp(new Date());
 		}
 
+		saveSensorData(request, roomID, sensorList);
+		em.close();
+		return new GenericStatus(true);
+	}
+
+	private void saveSensorData(final SensorDataRoomSaveRequest request, Long roomID, final List<Sensor> sensorList) {
 		if (sensorList != null) {
 			for (final Sensor sensor : sensorList) {
 
-				if ("TEMPERATURE".equals(sensor.getSensorType())) {
-					LogManager.getLogger(this.getClass()).info("Saving temperature to sensor: " + sensor.getId());
-					saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getTemperature()),
-							request.getTimestamp());
-				}
-
-				if ("HUMIDITY".equals(sensor.getSensorType())) {
-					LogManager.getLogger(this.getClass()).info("Saving humidity to sensor: " + sensor.getId());
-					saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getHumidity()),
-							request.getTimestamp());
-				}
-
-				if ("PRESSURE".equals(sensor.getSensorType())) {
-					saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getPressure()),
-							request.getTimestamp());
-				}
-
-				if ("VCC".equals(sensor.getSensorType())) {
-					saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getVcc()),
-							request.getTimestamp());
-				}
+				saveSingleSensorData(request, sensor);
 			}
 
 		} else {
 			LogManager.getLogger(this.getClass()).info("found no sensors for room " + roomID);
 		}
-		em.close();
-		return new GenericStatus(true);
+	}
+
+	private void saveSingleSensorData(final SensorDataRoomSaveRequest request, final Sensor sensor) {
+		if ("TEMPERATURE".equals(sensor.getSensorType())) {
+			LogManager.getLogger(this.getClass()).info("Saving temperature to sensor: " + sensor.getId());
+			saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getTemperature()),
+					request.getTimestamp());
+		} else if ("HUMIDITY".equals(sensor.getSensorType())) {
+			LogManager.getLogger(this.getClass()).info("Saving humidity to sensor: " + sensor.getId());
+			saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getHumidity()),
+					request.getTimestamp());
+		} else if ("PRESSURE".equals(sensor.getSensorType())) {
+			saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getPressure()),
+					request.getTimestamp());
+		} else if ("VCC".equals(sensor.getSensorType())) {
+			saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getVcc()),
+					request.getTimestamp());
+		}
 	}
 
 	@GET
