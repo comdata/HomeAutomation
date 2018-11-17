@@ -17,7 +17,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import cm.homeautomation.entities.Room;
 import cm.homeautomation.services.overview.OverviewMessageTranscoder;
 import cm.homeautomation.services.overview.OverviewTile;
 import mockit.Expectations;
