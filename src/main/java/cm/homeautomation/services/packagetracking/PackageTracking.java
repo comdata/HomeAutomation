@@ -350,8 +350,8 @@ public class PackageTracking {
 		return carrierMap;
 	}
 
-	public static void main(String[] args) throws KeyManagementException, ClientProtocolException,
-			NoSuchAlgorithmException, KeyStoreException, IOException {
+	public static void main(String[] args) throws KeyManagementException,
+			NoSuchAlgorithmException, IOException {
 		updateTrackingInformation(args);
 	}
 
