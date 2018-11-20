@@ -11,6 +11,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
+import cm.homeautomation.ebus.EBUSDataReceiver;
 import cm.homeautomation.fhem.FHEMDataReceiver;
 import cm.homeautomation.jeromq.server.JSONSensorDataReceiver;
 import cm.homeautomation.services.base.AutoCreateInstance;
@@ -91,6 +92,7 @@ public class MQTTReceiverClient implements MqttCallback {
 		client.subscribe("/distanceSensor");
 		client.subscribe("/switch");
 		client.subscribe("/fhem/#");
+		client.subscribe("/ebusd/#");
 		LogManager.getLogger(this.getClass()).info("Started MQTT client");
 	}
 
@@ -130,6 +132,8 @@ public class MQTTReceiverClient implements MqttCallback {
 			Runnable receiver=null;
 			if (topic.startsWith("/fhem")) {
 				receiver = () -> FHEMDataReceiver.receiveFHEMData(topic, messageContent);
+			} else if (topic.startsWith("/ebusd")) {
+				receiver = () -> EBUSDataReceiver.receiveEBUSData(topic, messageContent);
 			} else {
 				receiver = () -> JSONSensorDataReceiver.receiveSensorData(messageContent);
 			}
