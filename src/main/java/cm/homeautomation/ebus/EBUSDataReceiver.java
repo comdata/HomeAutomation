@@ -6,15 +6,18 @@ import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 
 public class EBUSDataReceiver {
-	
+
 	private EBUSDataReceiver() {
 		// do nothing
 	}
 
 	public static void receiveEBUSData(String topic, String messageContent) {
-		LogManager.getLogger(EBUSDataReceiver.class).debug("EBUS. Topic: "+ topic+" message: "+messageContent );
-		EBusMessageEvent ebusMessageEvent=new EBusMessageEvent(topic, messageContent);
-		EventBusService.getEventBus().post(new EventObject(ebusMessageEvent));
+		LogManager.getLogger(EBUSDataReceiver.class).debug("EBUS. Topic: " + topic + " message: " + messageContent);
+
+		if (false) {
+			EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
+			EventBusService.getEventBus().post(new EventObject(ebusMessageEvent));
+		}
 	}
 
 }
