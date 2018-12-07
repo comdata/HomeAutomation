@@ -83,7 +83,6 @@ public class JSONSensorDataReceiver {
 				RainData rainData = (RainData)sensorData;
 				EventObject eventObject=new EventObject(rainData);
 				EventBusService.getEventBus().post(eventObject);
-				System.out.println(rainData.getRc());
 			}
 			
 			else if (sensorData instanceof WindowSensorData) {
