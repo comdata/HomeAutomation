@@ -18,6 +18,7 @@ import cm.homeautomation.services.sensors.Sensors;
 
 public class SensorsTest {
 
+	private static final String RF_SWITCH_ROOM = "rf switch room";
 	private Sensors sensors;
 	private EntityManager em;
 	private Room room;
@@ -28,8 +29,14 @@ public class SensorsTest {
 		em = EntityManagerService.getNewManager();
 
 		em.getTransaction().begin();
+		
+		
+		em.createQuery("delete from Switch").executeUpdate();
+		em.createQuery("delete from Room r where r.roomName=:roomName").setParameter("roomName", RF_SWITCH_ROOM)
+				.executeUpdate();
+		
 		room = new Room();
-		room.setRoomName("rf switch room");
+		room.setRoomName(RF_SWITCH_ROOM);
 
 		em.persist(room);
 
