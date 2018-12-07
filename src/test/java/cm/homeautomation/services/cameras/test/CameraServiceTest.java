@@ -17,6 +17,7 @@ import cm.homeautomation.entities.Room;
 import cm.homeautomation.services.cameras.CameraService;
 
 public class CameraServiceTest {
+	private static final String CAMERA_ROOM = "camera room";
 	private Camera camera;
 	private EntityManager em;
 	private Room room;
@@ -28,8 +29,13 @@ public class CameraServiceTest {
 		em = EntityManagerService.getNewManager();
 		
 		em.getTransaction().begin();
+		
+		em.createQuery("delete from Camera").executeUpdate();
+		em.createQuery("delete from Room r where r.roomName=:roomName").setParameter("roomName", CAMERA_ROOM)
+				.executeUpdate();
+		
 		room = new Room();
-		room.setRoomName("camera room");
+		room.setRoomName(CAMERA_ROOM);
 		
 		em.persist(room);
 		
