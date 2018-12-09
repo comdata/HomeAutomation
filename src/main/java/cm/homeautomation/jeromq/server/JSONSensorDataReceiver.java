@@ -29,20 +29,20 @@ import cm.homeautomation.services.sensors.Sensors;
  */
 public class JSONSensorDataReceiver {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws NoClassInformationContainedException {
 		String messageContent="{\"@c\": \".RainData\",\"rc\":48,\"state\":0, \"mac\": \":::::12\"}";
 		receiveSensorData(messageContent);
 	}
 	
-	public JSONSensorDataReceiver() {
+	private JSONSensorDataReceiver() {
 		// intentionally left empty
 	}
 
-	public static void receiveSensorData(String messageContent) {
+	public static void receiveSensorData(String messageContent) throws NoClassInformationContainedException {
 
 		try {
 			if (!messageContent.contains("@c") ) {
-				return;
+				throw new NoClassInformationContainedException();
 			}
 			
 			
