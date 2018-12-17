@@ -14,10 +14,9 @@ public class EBUSDataReceiver {
 	public static void receiveEBUSData(String topic, String messageContent) {
 		LogManager.getLogger(EBUSDataReceiver.class).debug("EBUS. Topic: " + topic + " message: " + messageContent);
 
-		if (false) {
-			EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
-			EventBusService.getEventBus().post(new EventObject(ebusMessageEvent));
-		}
+		EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
+		EventBusService.getEventBus().post(new EventObject(ebusMessageEvent));
+
 	}
 
 }

@@ -90,8 +90,8 @@ public class Sensors extends BaseService {
 
 		final EntityManager em = EntityManagerService.getNewManager();
 		final List<Sensor> sensors = em.createQuery(
-				"select s FROM Sensor s where s.showData=true and s.room=(select r from Room r where r.id=:room)", Sensor.class)
-				.setParameter("room", Long.parseLong(room)).getResultList();
+				"select s FROM Sensor s where s.showData=true and s.room=(select r from Room r where r.id=:room)",
+				Sensor.class).setParameter("room", Long.parseLong(room)).getResultList();
 
 		final Date now = new Date();
 
@@ -126,86 +126,85 @@ public class Sensors extends BaseService {
 	public void loadSensorData(final SensorDatas sensorDatas, final EntityManager em, final Date now,
 			final Sensor sensor) {
 
-			final EntityManager emSensor = EntityManagerService.getNewManager();
+		final EntityManager emSensor = EntityManagerService.getNewManager();
 
-			emSensor.getTransaction().begin();
+		emSensor.getTransaction().begin();
 
-			final SensorValues sensorData = new SensorValues();
+		final SensorValues sensorData = new SensorValues();
 
-			sensorData.setSensorName(sensor.getSensorName());
+		sensorData.setSensorName(sensor.getSensorName());
 
-			final String queryString = "select sd from SensorData sd where sd.sensor=:sensor and sd.dateTime>=:timeframe";
+		final String queryString = "select sd from SensorData sd where sd.sensor=:sensor and sd.dateTime>=:timeframe";
 
-			final Date twoDaysAgo = new Date((new Date()).getTime() - (86400 * 1000));
+		final Date twoDaysAgo = new Date((new Date()).getTime() - (86400 * 1000));
 
-			final List<SensorData> data = emSensor.createQuery(queryString, SensorData.class)
-					.setParameter("sensor", sensor).setParameter("timeframe", twoDaysAgo).getResultList();
+		final List<SensorData> data = emSensor.createQuery(queryString, SensorData.class).setParameter("sensor", sensor)
+				.setParameter("timeframe", twoDaysAgo).getResultList();
 
-			String latestValue = "";
-			SensorValue lastSensorValue = null;
+		String latestValue = "";
+		SensorValue lastSensorValue = null;
 
-			// filter pressure by 0.2 percent changes only
-			if ("PRESSURE".equals(sensor.getSensorType())) {
-				for (final SensorData sData : data) {
-					final String currentValue = sData.getValue().replace(",", ".");
-					String lastValue = "0";
+		// filter pressure by 0.2 percent changes only
+		if ("PRESSURE".equals(sensor.getSensorType())) {
+			for (final SensorData sData : data) {
+				final String currentValue = sData.getValue().replace(",", ".");
+				String lastValue = "0";
 
-					if (lastSensorValue != null) {
-						lastValue = lastSensorValue.getValue().replace(",", ".");
-					}
-
-					final double floatCurrentValue = Double.parseDouble(currentValue);
-
-					final double floatLastValue = Double.parseDouble(lastValue);
-
-					if (floatLastValue != floatCurrentValue) {
-						final double diff = floatLastValue - floatCurrentValue;
-						final double diffAbsolute = Math.sqrt(diff * diff);
-
-						if (diffAbsolute >= 1) {
-
-							final SensorValue sensorValue = new SensorValue();
-							sensorValue.setDateTime(sData.getDateTime());
-
-							sensorValue.setValue(currentValue);
-
-							latestValue = sData.getValue();
-							lastSensorValue = sensorValue;
-							sensorData.getValues().add(sensorValue);
-
-						}
-					}
+				if (lastSensorValue != null) {
+					lastValue = lastSensorValue.getValue().replace(",", ".");
 				}
-			} else {
-				for (final SensorData sData : data) {
-					if ((lastSensorValue == null) || (sData.getValue() != lastSensorValue.getValue())) {
-						if (lastSensorValue != null) {
-							final SensorValue tempSensorValue = new SensorValue();
-							tempSensorValue.setValue(lastSensorValue.getValue());
-							tempSensorValue.setDateTime(new Date(sData.getDateTime().getTime() - 1000));
-						}
+
+				final double floatCurrentValue = Double.parseDouble(currentValue);
+
+				final double floatLastValue = Double.parseDouble(lastValue);
+
+				if (floatLastValue != floatCurrentValue) {
+					final double diff = floatLastValue - floatCurrentValue;
+					final double diffAbsolute = Math.sqrt(diff * diff);
+
+					if (diffAbsolute >= 1) {
 
 						final SensorValue sensorValue = new SensorValue();
 						sensorValue.setDateTime(sData.getDateTime());
-						sensorValue.setValue(sData.getValue());
+
+						sensorValue.setValue(currentValue);
 
 						latestValue = sData.getValue();
 						lastSensorValue = sensorValue;
 						sensorData.getValues().add(sensorValue);
+
 					}
 				}
 			}
+		} else {
+			for (final SensorData sData : data) {
+				if ((lastSensorValue == null) || (sData.getValue() != lastSensorValue.getValue())) {
+					if (lastSensorValue != null) {
+						final SensorValue tempSensorValue = new SensorValue();
+						tempSensorValue.setValue(lastSensorValue.getValue());
+						tempSensorValue.setDateTime(new Date(sData.getDateTime().getTime() - 1000));
+					}
 
-			// add a last value for the charts
-			final SensorValue latestInterpolatedValue = new SensorValue();
-			latestInterpolatedValue.setDateTime(now);
-			latestInterpolatedValue.setValue(latestValue);
-			sensorData.getValues().add(latestInterpolatedValue);
+					final SensorValue sensorValue = new SensorValue();
+					sensorValue.setDateTime(sData.getDateTime());
+					sensorValue.setValue(sData.getValue());
 
-			sensorDatas.getSensorData().add(sensorData);
+					latestValue = sData.getValue();
+					lastSensorValue = sensorValue;
+					sensorData.getValues().add(sensorValue);
+				}
+			}
+		}
 
-			emSensor.getTransaction().commit();
+		// add a last value for the charts
+		final SensorValue latestInterpolatedValue = new SensorValue();
+		latestInterpolatedValue.setDateTime(now);
+		latestInterpolatedValue.setValue(latestValue);
+		sensorData.getValues().add(latestInterpolatedValue);
 
+		sensorDatas.getSensorData().add(sensorData);
+
+		emSensor.getTransaction().commit();
 
 		try {
 			em.close();
@@ -374,8 +373,7 @@ public class Sensors extends BaseService {
 			saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getPressure()),
 					request.getTimestamp());
 		} else if ("VCC".equals(sensor.getSensorType())) {
-			saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getVcc()),
-					request.getTimestamp());
+			saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getVcc()), request.getTimestamp());
 		}
 	}
 
@@ -390,51 +388,62 @@ public class Sensors extends BaseService {
 	public void saveSensorData(final SensorDataSaveRequest request) {
 		final EntityManager em = EntityManagerService.getNewManager();
 
-		final Sensor sensor = em.createQuery("select s from Sensor s where s.id=:sensorId", Sensor.class)
-				.setParameter("sensorId", request.getSensorId()).getSingleResult();
-
-		em.getTransaction().begin();
-
-		final SensorData sensorData;
-
-		final List<SensorData> existingSensorDataList = em.createQuery(
-				"select sd from SensorData sd where sd.sensor IN (select s from Sensor s where s.id=:sensorId) order by sd.dateTime desc",
-				SensorData.class).setMaxResults(1).setParameter("sensorId", request.getSensorId()).getResultList();
-
-		SensorData existingSensorData = null;
-		if (!existingSensorDataList.isEmpty()) {
-			existingSensorData = existingSensorDataList.get(0);
+		Sensor sensor = null;
+		if (request.getSensorId() != null) {
+			sensor = em.createQuery("select s from Sensor s where s.id=:sensorId", Sensor.class)
+					.setParameter("sensorId", request.getSensorId()).getSingleResult();
+		} else {
+			List<Sensor> sensors = em.createQuery("select s from Sensor s where s.sensorType=:sensorType", Sensor.class)
+					.setParameter("sensorType", request.getSensorData().getSensor().getSensorType()).getResultList();
+		
+			if (sensors!=null && !sensors.isEmpty()) {
+				sensor=sensors.get(0);
+			}
 		}
 
-		final SensorData requestSensorData = request.getSensorData();
-		final double valueAsDouble = Double.parseDouble(requestSensorData.getValue().replace(",", "."));
-		final DecimalFormat df = new DecimalFormat("#.##");
-		df.setRoundingMode(RoundingMode.CEILING);
+		if (sensor != null) {
+			em.getTransaction().begin();
 
-		requestSensorData.setValue(df.format(valueAsDouble));
+			final SensorData sensorData;
 
-		final boolean mergeExisting = mergeExistingData(existingSensorData, requestSensorData);
+			final List<SensorData> existingSensorDataList = em.createQuery(
+					"select sd from SensorData sd where sd.sensor IN (select s from Sensor s where s.id=:sensorId) order by sd.dateTime desc",
+					SensorData.class).setMaxResults(1).setParameter("sensorId", sensor.getId()).getResultList();
 
-		if (mergeExisting && existingSensorData != null) {
-			existingSensorData.setValidThru(new Date());
-			em.merge(existingSensorData);
-			LogManager.getLogger(this.getClass()).info("Committing data: " + existingSensorData.getValue());
-		} else {
-			if ((existingSensorData != null) && (requestSensorData.getDateTime() != null)) {
-				existingSensorData.setValidThru(new Date(requestSensorData.getDateTime().getTime() - 1000));
-				em.merge(existingSensorData);
+			SensorData existingSensorData = null;
+			if (!existingSensorDataList.isEmpty()) {
+				existingSensorData = existingSensorDataList.get(0);
 			}
 
-			sensorData = requestSensorData;
-			sensorData.setSensor(sensor);
-			em.persist(sensorData);
+			final SensorData requestSensorData = request.getSensorData();
+			final double valueAsDouble = Double.parseDouble(requestSensorData.getValue().replace(",", "."));
+			final DecimalFormat df = new DecimalFormat("#.##");
+			df.setRoundingMode(RoundingMode.CEILING);
 
-			EventBusService.getEventBus().post(new EventObject(sensorData));
-			LogManager.getLogger(this.getClass()).info("Committing data: " + sensorData.getValue());
+			requestSensorData.setValue(df.format(valueAsDouble));
+
+			final boolean mergeExisting = mergeExistingData(existingSensorData, requestSensorData);
+
+			if (mergeExisting && existingSensorData != null) {
+				existingSensorData.setValidThru(new Date());
+				em.merge(existingSensorData);
+				LogManager.getLogger(this.getClass()).info("Committing data: " + existingSensorData.getValue());
+			} else {
+				if ((existingSensorData != null) && (requestSensorData.getDateTime() != null)) {
+					existingSensorData.setValidThru(new Date(requestSensorData.getDateTime().getTime() - 1000));
+					em.merge(existingSensorData);
+				}
+
+				sensorData = requestSensorData;
+				sensorData.setSensor(sensor);
+				em.persist(sensorData);
+
+				EventBusService.getEventBus().post(new EventObject(sensorData));
+				LogManager.getLogger(this.getClass()).info("Committing data: " + sensorData.getValue());
+			}
+
+			em.getTransaction().commit();
 		}
-
-		em.getTransaction().commit();
-
 		em.close();
 	}
 
