@@ -72,7 +72,12 @@ public class TelegramBotService {
 		if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
 			final HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventObject
 					.getData();
-			TelegramBotService.getInstance().sendMessage(humanMessage.getMessageString());
+
+			boolean ignore = humanMessage.getClass().isAnnotationPresent(TelegramIgnore.class);
+
+			if (!ignore) {
+				TelegramBotService.getInstance().sendMessage(humanMessage.getMessageString());
+			}
 		}
 	}
 
@@ -90,7 +95,7 @@ public class TelegramBotService {
 	}
 
 	private void registerBot() {
-		
+
 		try {
 			bot = new CommandsHandler(user, token);
 			telegramBotApi.registerBot(bot);
