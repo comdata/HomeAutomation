@@ -1,7 +1,9 @@
 package cm.homeautomation.ebus;
 
 import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
+import cm.homeautomation.telegram.TelegramIgnore;
 
+@TelegramIgnore
 public class EBusMessageEvent implements HumanMessageGenerationInterface {
 
 	private String topic;
