@@ -13,7 +13,7 @@ public class EBusMessageEvent implements HumanMessageGenerationInterface {
 
 	public EBusMessageEvent(String topic, String messageContent) {
 		this.setTopic(topic);
-		this.messageContent = messageContent;
+		this.setMessageContent(messageContent);
 
 	}
 
@@ -25,7 +25,7 @@ public class EBusMessageEvent implements HumanMessageGenerationInterface {
 
 	@Override
 	public String getMessageString() {
-		return "Topic: " + getTopic() + " message: " + messageContent;
+		return "Topic: " + getTopic() + " message: " + getMessageContent();
 	}
 
 	@Override
@@ -51,5 +51,13 @@ public class EBusMessageEvent implements HumanMessageGenerationInterface {
 
 	public void setTopic(String topic) {
 		this.topic = topic;
+	}
+
+	public String getMessageContent() {
+		return messageContent;
+	}
+
+	public void setMessageContent(String messageContent) {
+		this.messageContent = messageContent;
 	}
 }

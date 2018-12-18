@@ -28,7 +28,7 @@ public class EBUSStatus01Receiver {
 			if ("ebusd/bai/Status01".equals(messageEvent.getTopic())) {
 				String[] technicalNames = { "HEATINGTEMP", "RETURNTEMP", "OUTSIDETEMP", "WARMWATERTEMP", "STORAGETEMP",
 						"PUMPSTATE" };
-				String messageString = messageEvent.getMessageString();
+				String messageString = messageEvent.getMessageContent();
 				messageString = messageString.replace("on", "1").replace("off", "0");
 
 				Sensors sensorsInstance = Sensors.getInstance();
