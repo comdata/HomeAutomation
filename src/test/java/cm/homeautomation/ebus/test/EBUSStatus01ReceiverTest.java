@@ -83,7 +83,12 @@ class EBUSStatus01ReceiverTest {
 
 		ebusStatus01Receiver.receive(new EventObject(ebusMessageEvent));
 		
+		em.getTransaction().begin();
 		
+		em.createQuery("delete from SensorData").executeUpdate();
+		em.createQuery("delete from Sensor").executeUpdate();
+		
+		em.getTransaction().commit();
 		
 		em.close();
 	}
