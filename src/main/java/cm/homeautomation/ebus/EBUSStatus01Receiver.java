@@ -47,7 +47,7 @@ public class EBUSStatus01Receiver {
 					if (sensorsInstance != null) {
 						try {
 							LogManager.getLogger(EBUSStatus01Receiver.class)
-									.debug("Stored ebus value: " + sensorValue + " for: " + technicalNames[i]);
+									.error("Stored ebus value: " + sensorValue + " for: " + technicalNames[i]);
 							sensorsInstance.saveSensorData(sensorDataSaveRequest);
 						} catch (NoResultException e) {
 							LogManager.getLogger(EBUSStatus01Receiver.class)
