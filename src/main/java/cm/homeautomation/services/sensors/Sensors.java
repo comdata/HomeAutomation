@@ -392,13 +392,17 @@ public class Sensors extends BaseService {
 		if (request.getSensorId() != null) {
 			sensor = em.createQuery("select s from Sensor s where s.id=:sensorId", Sensor.class)
 					.setParameter("sensorId", request.getSensorId()).getSingleResult();
-		} else if (request.getSensorData()!=null && request.getSensorData().getSensor() != null) {
-			String sensorType = request.getSensorData().getSensor().getSensorType();
-			List<Sensor> sensors = em.createQuery("select s from Sensor s where s.sensorType=:sensorType", Sensor.class)
-					.setParameter("sensorType", sensorType).getResultList();
+		} else if (request.getSensorData() != null && request.getSensorData().getSensor() != null) {
+			String sensorTechnicalType = request.getSensorData().getSensor().getSensorTechnicalType();
+			List<Sensor> sensors = em
+					.createQuery("select s from Sensor s where s.sensorTechnicalType=:sensorTechnicalType",
+							Sensor.class)
+					.setParameter("sensorTechnicalType", sensorTechnicalType).getResultList();
 
 			if (sensors != null && !sensors.isEmpty()) {
 				sensor = sensors.get(0);
+			} else {
+				throw new NoResultException();
 			}
 		} else {
 			throw new NoResultException();

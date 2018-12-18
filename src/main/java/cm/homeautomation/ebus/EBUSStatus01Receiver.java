@@ -28,7 +28,7 @@ public class EBUSStatus01Receiver {
 				sensorData.setValue(outsideTemp);
 				Sensor sensor = new Sensor();
 				sensor.setSensorName("OUTSIDETEMP");
-				sensor.setSensorType("OUTSIDETEMP");
+				sensor.setSensorTechnicalType("OUTSIDETEMP");
 				sensorData.setSensor(sensor);
 				sensorDataSaveRequest.setSensorData(sensorData);
 				Sensors sensorsInstance = Sensors.getInstance();
