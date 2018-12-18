@@ -43,15 +43,15 @@ public class EBUSStatus01Receiver {
 					sensor.setSensorTechnicalType(technicalNames[i]);
 					sensorData.setSensor(sensor);
 					sensorDataSaveRequest.setSensorData(sensorData);
-					
+
 					if (sensorsInstance != null) {
 						try {
 							LogManager.getLogger(EBUSStatus01Receiver.class)
-							.debug("Stored ebus value: "+sensorValue+" for: "+technicalNames[i]);
+									.debug("Stored ebus value: " + sensorValue + " for: " + technicalNames[i]);
 							sensorsInstance.saveSensorData(sensorDataSaveRequest);
 						} catch (NoResultException e) {
 							LogManager.getLogger(EBUSStatus01Receiver.class)
-									.error("Sensor not defined for: "+technicalNames[i]);
+									.error("Sensor not defined for: " + technicalNames[i]);
 
 						}
 					} else {
