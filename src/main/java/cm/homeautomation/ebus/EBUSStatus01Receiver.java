@@ -2,6 +2,8 @@ package cm.homeautomation.ebus;
 
 import java.util.Date;
 
+import javax.persistence.NoResultException;
+
 import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -24,22 +26,36 @@ public class EBUSStatus01Receiver {
 			EBusMessageEvent messageEvent = (EBusMessageEvent) eventObject.getData();
 
 			if ("ebusd/bai/Status01".equals(messageEvent.getTopic())) {
-				String outsideTemp = messageEvent.getMessageString().split(";")[2];
-				SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
-				SensorData sensorData = new SensorData();
-				sensorData.setValue(outsideTemp);
-				sensorData.setDateTime(new Date());
-				Sensor sensor = new Sensor();
-				sensor.setSensorName("OUTSIDETEMP");
-				sensor.setSensorTechnicalType("OUTSIDETEMP");
-				sensorData.setSensor(sensor);
-				sensorDataSaveRequest.setSensorData(sensorData);
-				Sensors sensorsInstance = Sensors.getInstance();
-				if (sensorsInstance != null) {
-					sensorsInstance.saveSensorData(sensorDataSaveRequest);
-				} else {
-					LogManager.getLogger(EBUSStatus01Receiver.class).error("Sensors class not initialized correctly. Got no instance back.");
+				String[] technicalNames = { "HEATINGTEMP", "RETURNTEMP", "OUTSIDETEMP", "WARMWATERTEMP", "STORAGETEMP",
+						"PUMPSTATE" };
+				String messageString = messageEvent.getMessageString();
 
+				for (int i = 0; i < 6; i++) {
+
+					String sensorValue = messageString.split(";")[i];
+					SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
+					SensorData sensorData = new SensorData();
+					sensorData.setValue(sensorValue);
+					sensorData.setDateTime(new Date());
+					Sensor sensor = new Sensor();
+					sensor.setSensorName(technicalNames[i]);
+					sensor.setSensorTechnicalType(technicalNames[i]);
+					sensorData.setSensor(sensor);
+					sensorDataSaveRequest.setSensorData(sensorData);
+					Sensors sensorsInstance = Sensors.getInstance();
+					if (sensorsInstance != null) {
+						try {
+							sensorsInstance.saveSensorData(sensorDataSaveRequest);
+						} catch (NoResultException e) {
+							LogManager.getLogger(EBUSStatus01Receiver.class)
+									.error("Sensor not defined for: "+technicalNames[i]);
+
+						}
+					} else {
+						LogManager.getLogger(EBUSStatus01Receiver.class)
+								.error("Sensors class not initialized correctly. Got no instance back.");
+
+					}
 				}
 
 			}

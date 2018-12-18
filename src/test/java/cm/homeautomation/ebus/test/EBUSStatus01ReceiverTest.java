@@ -1,7 +1,6 @@
 package cm.homeautomation.ebus.test;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 
 import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.Assertions;
@@ -29,28 +28,28 @@ class EBUSStatus01ReceiverTest {
 		EventBusService.getEventBus().unregister(ebusStatus01Receiver);
 	}
 
-	@Test
-	public void testReceiveStatus01NoResultException() {
-		new Sensors();
-		String messageContent = "37.0;36.0;2.250;36.0;39.0;off";
-		String topic = "ebusd/bai/Status01";
-
-		EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
-
-		EBUSStatus01Receiver ebusStatus01Receiver = new EBUSStatus01Receiver();
-		boolean containsKey = EventBusService.getEventBus().getClasses()
-				.containsKey("cm.homeautomation.ebus.EBUSStatus01Receiver");
-		Assertions.assertTrue(containsKey);
-
-		new Expectations() {
-			{
-				// logger.debug(message);
-			}
-		};
-		Assertions.assertThrows(NoResultException.class, () -> {
-			ebusStatus01Receiver.receive(new EventObject(ebusMessageEvent));
-		});
-	}
+//	@Test
+//	public void testReceiveStatus01NoResultException() {
+//		new Sensors();
+//		String messageContent = "37.0;36.0;2.250;36.0;39.0;off";
+//		String topic = "ebusd/bai/Status01";
+//
+//		EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
+//
+//		EBUSStatus01Receiver ebusStatus01Receiver = new EBUSStatus01Receiver();
+//		boolean containsKey = EventBusService.getEventBus().getClasses()
+//				.containsKey("cm.homeautomation.ebus.EBUSStatus01Receiver");
+//		Assertions.assertTrue(containsKey);
+//
+//		new Expectations() {
+//			{
+//				// logger.debug(message);
+//			}
+//		};
+//		Assertions.assertThrows(NoResultException.class, () -> {
+//			ebusStatus01Receiver.receive(new EventObject(ebusMessageEvent));
+//		});
+//	}
 
 	@Test
 	public void testReceiveStatus01() {
