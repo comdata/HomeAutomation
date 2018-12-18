@@ -43,13 +43,16 @@ public class OverviewService extends BaseService {
 					final SensorData data = sensorData.get(sensor);
 
 					if ("TEMPERATURE".equals(sensor.getSensorType())) {
-
-						temperature = data.getValue();
-						sensorDate = data.getValidThru();
+						if (Integer.parseInt(data.getValue()) <= 50) {
+							temperature = data.getValue();
+							sensorDate = data.getValidThru();
+						}
 					}
 					if ("HUMIDITY".equals(sensor.getSensorType())) {
+						if (Integer.parseInt(data.getValue()) <= 100) {
 						humidity = data.getValue();
 						sensorDate = data.getValidThru();
+						}
 					}
 				}
 			}
