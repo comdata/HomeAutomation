@@ -30,6 +30,7 @@ public class EBUSStatus01Receiver {
 						"PUMPSTATE" };
 				String messageString = messageEvent.getMessageString();
 
+				Sensors sensorsInstance = Sensors.getInstance();
 				for (int i = 0; i < 6; i++) {
 
 					String sensorValue = messageString.split(";")[i];
@@ -42,9 +43,11 @@ public class EBUSStatus01Receiver {
 					sensor.setSensorTechnicalType(technicalNames[i]);
 					sensorData.setSensor(sensor);
 					sensorDataSaveRequest.setSensorData(sensorData);
-					Sensors sensorsInstance = Sensors.getInstance();
+					
 					if (sensorsInstance != null) {
 						try {
+							LogManager.getLogger(EBUSStatus01Receiver.class)
+							.debug("Stored ebus value: "+sensorValue+" for: "+technicalNames[i]);
 							sensorsInstance.saveSensorData(sensorDataSaveRequest);
 						} catch (NoResultException e) {
 							LogManager.getLogger(EBUSStatus01Receiver.class)
