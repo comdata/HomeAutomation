@@ -402,6 +402,8 @@ public class Sensors extends BaseService {
 			if (sensors != null && !sensors.isEmpty()) {
 				sensor = sensors.get(0);
 			} else {
+				LogManager.getLogger(this.getClass()).error("found no sensor for technical type: "+sensorTechnicalType);
+
 				throw new NoResultException();
 			}
 		} else {

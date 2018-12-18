@@ -53,6 +53,10 @@ public class EBUSStatus01Receiver {
 							LogManager.getLogger(EBUSStatus01Receiver.class)
 									.error("Sensor not defined for: " + technicalNames[i]);
 
+						} catch (Exception e) {
+							LogManager.getLogger(EBUSStatus01Receiver.class)
+							.error("Error saving ebus data", e);
+
 						}
 					} else {
 						LogManager.getLogger(EBUSStatus01Receiver.class)
