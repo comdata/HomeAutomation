@@ -1,5 +1,7 @@
 package cm.homeautomation.ebus;
 
+import java.util.Date;
+
 import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -26,6 +28,7 @@ public class EBUSStatus01Receiver {
 				SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
 				SensorData sensorData = new SensorData();
 				sensorData.setValue(outsideTemp);
+				sensorData.setDateTime(new Date());
 				Sensor sensor = new Sensor();
 				sensor.setSensorName("OUTSIDETEMP");
 				sensor.setSensorTechnicalType("OUTSIDETEMP");
