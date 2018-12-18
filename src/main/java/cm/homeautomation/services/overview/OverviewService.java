@@ -39,16 +39,18 @@ public class OverviewService extends BaseService {
 			final Set<Sensor> sensorKeys = sensorData.keySet();
 
 			for (final Sensor sensor : sensorKeys) {
-				final SensorData data = sensorData.get(sensor);
+				if (sensor.isShowData()) {
+					final SensorData data = sensorData.get(sensor);
 
-				if ("TEMPERATURE".equals(sensor.getSensorType())) {
+					if ("TEMPERATURE".equals(sensor.getSensorType())) {
 
-					temperature = data.getValue();
-					sensorDate = data.getValidThru();
-				}
-				if ("HUMIDITY".equals(sensor.getSensorType())) {
-					humidity = data.getValue();
-					sensorDate = data.getValidThru();
+						temperature = data.getValue();
+						sensorDate = data.getValidThru();
+					}
+					if ("HUMIDITY".equals(sensor.getSensorType())) {
+						humidity = data.getValue();
+						sensorDate = data.getValidThru();
+					}
 				}
 			}
 		}
@@ -94,15 +96,16 @@ public class OverviewService extends BaseService {
 
 		if (sensors != null) {
 			for (final Sensor sensor : sensors) {
+				if (sensor.isShowData()) {
 
-				final List<SensorData> latestDataList = em
-						.createQuery("select sd from SensorData sd where sd.sensor=:sensor order by sd.dateTime desc",
-								SensorData.class)
-						.setParameter("sensor", sensor).setMaxResults(1).getResultList();
-				if ((latestDataList != null) && !latestDataList.isEmpty()) {
+					final List<SensorData> latestDataList = em.createQuery(
+							"select sd from SensorData sd where sd.sensor=:sensor order by sd.dateTime desc",
+							SensorData.class).setParameter("sensor", sensor).setMaxResults(1).getResultList();
+					if ((latestDataList != null) && !latestDataList.isEmpty()) {
 
-					final SensorData latestData = latestDataList.get(0);
-					roomTile.getSensorData().put(sensor, latestData);
+						final SensorData latestData = latestDataList.get(0);
+						roomTile.getSensorData().put(sensor, latestData);
+					}
 				}
 
 			}
@@ -135,7 +138,8 @@ public class OverviewService extends BaseService {
 		final EntityManager em = EntityManagerService.getNewManager();
 
 		em.getTransaction().begin();
-		final List<Room> results = em.createQuery("select r FROM Room r where r.visible=true order by r.sortOrder", Room.class)
+		final List<Room> results = em
+				.createQuery("select r FROM Room r where r.visible=true order by r.sortOrder", Room.class)
 				.getResultList();
 
 		for (final Room room : results) {
