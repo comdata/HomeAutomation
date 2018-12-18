@@ -29,6 +29,7 @@ public class EBUSStatus01Receiver {
 				String[] technicalNames = { "HEATINGTEMP", "RETURNTEMP", "OUTSIDETEMP", "WARMWATERTEMP", "STORAGETEMP",
 						"PUMPSTATE" };
 				String messageString = messageEvent.getMessageString();
+				messageString = messageString.replace("on", "1").replace("off", "0");
 
 				Sensors sensorsInstance = Sensors.getInstance();
 				for (int i = 0; i < 6; i++) {
@@ -54,8 +55,7 @@ public class EBUSStatus01Receiver {
 									.error("Sensor not defined for: " + technicalNames[i]);
 
 						} catch (Exception e) {
-							LogManager.getLogger(EBUSStatus01Receiver.class)
-							.error("Error saving ebus data", e);
+							LogManager.getLogger(EBUSStatus01Receiver.class).error("Error saving ebus data", e);
 
 						}
 					} else {
