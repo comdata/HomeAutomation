@@ -1,6 +1,6 @@
 package cm.homeautomation.services.base.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 import java.lang.reflect.Method;
 import java.util.Map;

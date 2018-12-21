@@ -11,7 +11,6 @@ import javax.ws.rs.Path;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.GasIntervalData;
-import cm.homeautomation.entities.PowerIntervalData;
 import cm.homeautomation.services.base.BaseService;
 
 @Path("gas")

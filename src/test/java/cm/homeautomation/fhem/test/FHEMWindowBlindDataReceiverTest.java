@@ -1,6 +1,8 @@
 package cm.homeautomation.fhem.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import javax.persistence.EntityManager;
 
@@ -9,12 +11,11 @@ import org.junit.Test;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.FHEMDevice;
-import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.FHEMDevice.FHEMDeviceType;
+import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.fhem.FHEMWindowBlindDataReceiver;
 import cm.homeautomation.services.base.GenericStatus;
-import cm.homeautomation.services.sensors.Sensors;
 
 public class FHEMWindowBlindDataReceiverTest {
 	private EntityManager em;

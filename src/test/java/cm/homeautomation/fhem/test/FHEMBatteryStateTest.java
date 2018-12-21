@@ -1,20 +1,21 @@
 package cm.homeautomation.fhem.test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 
 import javax.persistence.EntityManager;
 
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.FHEMDevice;
 import cm.homeautomation.fhem.BatteryStateResult;
-import cm.homeautomation.fhem.FHEMBatteryStateReceiver;
-import cm.homeautomation.fhem.FHEMWindowDataReceiver;
 import cm.homeautomation.fhem.BatteryStateResult.BatteryState;
+import cm.homeautomation.fhem.FHEMBatteryStateReceiver;
 
 class FHEMBatteryStateTest {
 

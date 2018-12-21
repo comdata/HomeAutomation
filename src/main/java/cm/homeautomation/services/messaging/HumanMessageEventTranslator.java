@@ -2,9 +2,9 @@ package cm.homeautomation.services.messaging;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import cm.homeautomation.eventbus.EventBusHumanMessageIgnore;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
-import cm.homeautomation.eventbus.EventBusHumanMessageIgnore;
 import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
 
 public class HumanMessageEventTranslator {

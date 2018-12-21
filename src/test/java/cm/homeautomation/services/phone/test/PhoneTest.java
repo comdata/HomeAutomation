@@ -1,13 +1,13 @@
 package cm.homeautomation.services.phone.test;
 
-import static org.junit.Assert.*;
-
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
 import javax.persistence.EntityManager;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.PhoneCallEvent;
