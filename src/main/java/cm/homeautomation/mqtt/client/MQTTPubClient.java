@@ -33,7 +33,6 @@ public class MQTTPubClient {
             LogManager.getLogger(MQTTPubClient.class).debug("Message published");
             sampleClient.disconnect();
             LogManager.getLogger(MQTTPubClient.class).debug("Disconnected");
-            System.exit(0);
         } catch(MqttException me) {
         	LogManager.getLogger(MQTTPubClient.class).error("MQTT Exception "+me.getReasonCode(), me);
         }

@@ -103,7 +103,7 @@ public class EBUSStatus01Receiver {
 
 					}
 				}
-			}else if ("ebusd/bai/SolBackTemp".equals(messageEvent.getTopic())) {
+			} else if ("ebusd/bai/SolBackTemp".equals(messageEvent.getTopic())) {
 				String[] technicalNames = { "SOLARBACKTEMP" };
 				String messageString = messageEvent.getMessageContent();
 				messageString = messageString.replace("on", "1").replace("off", "0");
