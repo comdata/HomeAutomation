@@ -1,13 +1,13 @@
 package cm.homeautomation.ebus;
 
 import cm.homeautomation.eventbus.EventBusHumanMessageIgnore;
-import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
 import cm.homeautomation.telegram.TelegramIgnore;
 
 @EventBusHumanMessageIgnore
 @TelegramIgnore
-public class EBusMessageEvent implements HumanMessageGenerationInterface {
+public class EBusMessageEvent {
 
+	private static final String EBUS = "EBUS";
 	private String topic;
 	private String messageContent;
 
@@ -17,13 +17,11 @@ public class EBusMessageEvent implements HumanMessageGenerationInterface {
 
 	}
 
-	@Override
 	public String getTitle() {
 
-		return "EBUS";
+		return EBUS;
 	}
 
-	@Override
 	public String getMessageString() {
 		return "Topic: " + getTopic() + " message: " + getMessageContent();
 	}
