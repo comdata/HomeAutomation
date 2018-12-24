@@ -20,18 +20,19 @@ public class MQTTPubClient {
         MemoryPersistence persistence = new MemoryPersistence();
 
         try {
-            MqttClient sampleClient = new MqttClient(broker, clientId, persistence);
+            MqttClient mqttClient = new MqttClient(broker, clientId, persistence);
             MqttConnectOptions connOpts = new MqttConnectOptions();
             connOpts.setCleanSession(true);
             LogManager.getLogger(MQTTPubClient.class).debug("Connecting to broker: "+broker);
-            sampleClient.connect(connOpts);
+            mqttClient.connect(connOpts);
             LogManager.getLogger(MQTTPubClient.class).debug("Connected");
             LogManager.getLogger(MQTTPubClient.class).debug("Publishing message: "+content);
             MqttMessage message = new MqttMessage(content.getBytes());
             message.setQos(qos);
-            sampleClient.publish(topic, message);
+            mqttClient.publish(topic, message);
+            mqttClient.close();
             LogManager.getLogger(MQTTPubClient.class).debug("Message published");
-            sampleClient.disconnect();
+            mqttClient.disconnect();
             LogManager.getLogger(MQTTPubClient.class).debug("Disconnected");
         } catch(MqttException me) {
         	LogManager.getLogger(MQTTPubClient.class).error("MQTT Exception "+me.getReasonCode(), me);
