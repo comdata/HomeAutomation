@@ -30,7 +30,9 @@ public class MQTTPubClient {
             MqttMessage message = new MqttMessage(content.getBytes());
             message.setQos(qos);
             mqttClient.publish(topic, message);
-            mqttClient.close();
+            mqttClient.disconnect();
+            mqttClient.close(true);
+           
             LogManager.getLogger(MQTTPubClient.class).debug("Message published");
             mqttClient.disconnect();
             LogManager.getLogger(MQTTPubClient.class).debug("Disconnected");
