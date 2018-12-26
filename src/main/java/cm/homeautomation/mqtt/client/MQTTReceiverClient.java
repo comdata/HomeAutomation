@@ -30,6 +30,7 @@ public class MQTTReceiverClient implements MqttCallback {
 	}
 
 	public void runClient() {
+		Thread.currentThread().setName(MQTTReceiverClient.class.getName());
 
 		try {
 			connect();
