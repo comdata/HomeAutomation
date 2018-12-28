@@ -410,6 +410,9 @@ public class Sensors extends BaseService {
 			throw new NoResultException();
 		}
 
+
+
+		
 		if (sensor != null) {
 			em.getTransaction().begin();
 
@@ -431,6 +434,22 @@ public class Sensors extends BaseService {
 
 			requestSensorData.setValue(df.format(valueAsDouble));
 
+			if (sensor.getMinValue()!=null) {
+				double minValue = Double.parseDouble(sensor.getMinValue());
+				if (valueAsDouble<minValue) {
+					LogManager.getLogger(this.getClass()).error("Sensor ID: "+sensor.getId()+" Name: "+sensor.getSensorName()+" Value: "+valueAsDouble+" less than minimum: "+minValue);
+					return;
+				}
+			}
+			
+			if (sensor.getMaxValue()!=null) {
+				double maxValue = Double.parseDouble(sensor.getMinValue());
+				if (valueAsDouble>maxValue) {
+					LogManager.getLogger(this.getClass()).error("Sensor ID: "+sensor.getId()+" Name: "+sensor.getSensorName()+" Value: "+valueAsDouble+" more than maxmum: "+maxValue);
+					return;
+				}
+			}
+			
 			final boolean mergeExisting = mergeExistingData(existingSensorData, requestSensorData);
 
 			if (mergeExisting && existingSensorData != null) {
