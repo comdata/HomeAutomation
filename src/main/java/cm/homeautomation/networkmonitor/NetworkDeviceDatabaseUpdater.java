@@ -6,8 +6,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.apache.log4j.LogManager;
-
-import com.google.common.eventbus.Subscribe;
+import org.greenrobot.eventbus.Subscribe;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.NetworkDevice;
