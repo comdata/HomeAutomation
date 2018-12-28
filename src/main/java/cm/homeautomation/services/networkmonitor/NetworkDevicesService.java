@@ -164,6 +164,9 @@ public class NetworkDevicesService extends BaseService {
 			final InetAddress address = InetAddress.getByName(BROADCAST_IP_ADDRESS);
 			final DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address, PORT);
 			socket.send(packet);
+			
+			// send post wake up message
+			EventBusService.getEventBus().post(new EventObject(new NetworkWakeupEvent(macStr)));
 
 			LogManager.getLogger(this.getClass()).info("Wake-on-LAN packet sent.");
 			return new GenericStatus(true);
