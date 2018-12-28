@@ -141,8 +141,46 @@ public class EBUSStatus01Receiver {
 
 					}
 				}
-			}else if ("ebusd/bai/SolPump".equals(messageEvent.getTopic())) {
+			} else if ("ebusd/bai/SolPump".equals(messageEvent.getTopic())) {
 				String[] technicalNames = { "SOLARPUMP" };
+				String messageString = messageEvent.getMessageContent();
+				messageString = messageString.replace("on", "1").replace("off", "0");
+
+				Sensors sensorsInstance = Sensors.getInstance();
+				for (int i = 0; i < 1; i++) {
+
+					String sensorValue = messageString.split(";")[i];
+					SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
+					SensorData sensorData = new SensorData();
+					sensorData.setValue(sensorValue);
+					sensorData.setDateTime(new Date());
+					Sensor sensor = new Sensor();
+					sensor.setSensorName(technicalNames[i]);
+					sensor.setSensorTechnicalType(technicalNames[i]);
+					sensorData.setSensor(sensor);
+					sensorDataSaveRequest.setSensorData(sensorData);
+
+					if (sensorsInstance != null) {
+						try {
+							LogManager.getLogger(EBUSStatus01Receiver.class)
+									.error("Stored ebus value: " + sensorValue + " for: " + technicalNames[i]);
+							sensorsInstance.saveSensorData(sensorDataSaveRequest);
+						} catch (NoResultException e) {
+							LogManager.getLogger(EBUSStatus01Receiver.class)
+									.error("Sensor not defined for: " + technicalNames[i]);
+
+						} catch (Exception e) {
+							LogManager.getLogger(EBUSStatus01Receiver.class).error("Error saving ebus data", e);
+
+						}
+					} else {
+						LogManager.getLogger(EBUSStatus01Receiver.class)
+								.error("Sensors class not initialized correctly. Got no instance back.");
+
+					}
+				}
+			}else if ("ebusd/bai/Flame".equals(messageEvent.getTopic())) {
+				String[] technicalNames = { "FLAME" };
 				String messageString = messageEvent.getMessageContent();
 				messageString = messageString.replace("on", "1").replace("off", "0");
 
