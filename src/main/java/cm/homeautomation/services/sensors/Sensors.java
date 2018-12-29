@@ -13,6 +13,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.db.EntityManagerService;
@@ -402,7 +403,8 @@ public class Sensors extends BaseService {
 			if (sensors != null && !sensors.isEmpty()) {
 				sensor = sensors.get(0);
 			} else {
-				LogManager.getLogger(this.getClass()).error("found no sensor for technical type: "+sensorTechnicalType);
+				LogManager.getLogger(this.getClass())
+						.error("found no sensor for technical type: " + sensorTechnicalType);
 
 				throw new NoResultException();
 			}
@@ -410,9 +412,6 @@ public class Sensors extends BaseService {
 			throw new NoResultException();
 		}
 
-
-
-		
 		if (sensor != null) {
 			em.getTransaction().begin();
 
@@ -428,28 +427,39 @@ public class Sensors extends BaseService {
 			}
 
 			final SensorData requestSensorData = request.getSensorData();
-			final double valueAsDouble = Double.parseDouble(requestSensorData.getValue().replace(",", "."));
-			final DecimalFormat df = new DecimalFormat("#.##");
-			df.setRoundingMode(RoundingMode.CEILING);
+			String currentValue = requestSensorData.getValue();
 
-			requestSensorData.setValue(df.format(valueAsDouble));
+			boolean isNumeric = StringUtils.isNumeric(currentValue);
+			if (isNumeric) {
+				final double valueAsDouble = Double.parseDouble(currentValue.replace(",", "."));
+				final DecimalFormat df = new DecimalFormat("#.##");
+				df.setRoundingMode(RoundingMode.CEILING);
 
-			if (sensor.getMinValue()!=null) {
-				double minValue = Double.parseDouble(sensor.getMinValue());
-				if (valueAsDouble<minValue) {
-					LogManager.getLogger(this.getClass()).error("Sensor ID: "+sensor.getId()+" Name: "+sensor.getSensorName()+" Value: "+valueAsDouble+" less than minimum: "+minValue);
-					return;
+				requestSensorData.setValue(df.format(valueAsDouble));
+
+				if (sensor.getMinValue() != null) {
+					double minValue = Double.parseDouble(sensor.getMinValue());
+					if (valueAsDouble < minValue) {
+						LogManager.getLogger(this.getClass())
+								.error("Sensor ID: " + sensor.getId() + " Name: " + sensor.getSensorName() + " Value: "
+										+ valueAsDouble + " less than minimum: " + minValue);
+						return;
+					}
 				}
-			}
-			
-			if (sensor.getMaxValue()!=null) {
-				double maxValue = Double.parseDouble(sensor.getMinValue());
-				if (valueAsDouble>maxValue) {
-					LogManager.getLogger(this.getClass()).error("Sensor ID: "+sensor.getId()+" Name: "+sensor.getSensorName()+" Value: "+valueAsDouble+" more than maxmum: "+maxValue);
-					return;
+
+				if (sensor.getMaxValue() != null) {
+					double maxValue = Double.parseDouble(sensor.getMinValue());
+					if (valueAsDouble > maxValue) {
+						LogManager.getLogger(this.getClass())
+								.error("Sensor ID: " + sensor.getId() + " Name: " + sensor.getSensorName() + " Value: "
+										+ valueAsDouble + " more than maxmum: " + maxValue);
+						return;
+					}
 				}
+			} else {
+				requestSensorData.setValue(currentValue);
 			}
-			
+
 			final boolean mergeExisting = mergeExistingData(existingSensorData, requestSensorData);
 
 			if (mergeExisting && existingSensorData != null) {
