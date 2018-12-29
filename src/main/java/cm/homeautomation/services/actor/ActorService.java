@@ -116,6 +116,27 @@ public class ActorService extends BaseService implements MqttCallback {
 				}
 			}
 		}
+		
+		private void sendMQTTMessage(final ActorMessage actorMessage) {
+
+			try {
+				final ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+				final String jsonMessage = ow.writeValueAsString(actorMessage);
+
+				MQTTSender.sendMQTTMessage("/switch", jsonMessage);
+
+			} catch (final JsonProcessingException e) {
+				LogManager.getLogger(this.getClass()).error(e);
+			}
+		}
+		
+		private void sendHTTPMessage(final Switch singleSwitch, final ActorMessage actorMessage) {
+			String switchSetUrl = singleSwitch.getSwitchSetUrl();
+			switchSetUrl = switchSetUrl.replace("{STATE}", ((actorMessage.getStatus() == "0") ? "off" : "on"));
+
+			HTTPHelper.performHTTPRequest(switchSetUrl);
+		}
+
 	}
 
 	private static ActorService instance;
@@ -250,26 +271,6 @@ public class ActorService extends BaseService implements MqttCallback {
 	 */
 	public synchronized SwitchPressResponse pressSwitch(final String[] params) {
 		return pressSwitch(params[0], params[1]);
-	}
-
-	private void sendHTTPMessage(final Switch singleSwitch, final ActorMessage actorMessage) {
-		String switchSetUrl = singleSwitch.getSwitchSetUrl();
-		switchSetUrl = switchSetUrl.replace("{STATE}", ((actorMessage.getStatus() == "0") ? "off" : "on"));
-
-		HTTPHelper.performHTTPRequest(switchSetUrl);
-	}
-
-	private void sendMQTTMessage(final ActorMessage actorMessage) {
-
-		try {
-			final ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-			final String jsonMessage = ow.writeValueAsString(actorMessage);
-
-			MQTTSender.sendMQTTMessage("/switch", jsonMessage);
-
-		} catch (final JsonProcessingException e) {
-			LogManager.getLogger(this.getClass()).error(e);
-		}
 	}
 
 	/**
