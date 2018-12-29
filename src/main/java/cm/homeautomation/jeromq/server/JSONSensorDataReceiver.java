@@ -42,7 +42,7 @@ public class JSONSensorDataReceiver {
 
 		try {
 			if (!messageContent.contains("@c") ) {
-				throw new NoClassInformationContainedException();
+				throw new NoClassInformationContainedException(messageContent);
 			}
 			
 			
