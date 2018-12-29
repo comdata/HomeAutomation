@@ -245,7 +245,7 @@ public class ActorService extends BaseService implements MqttCallback {
 	 * press a switch
 	 *
 	 * @param switchId
-	 *            id of the swtich
+	 *            id of the switch
 	 * @param targetStatus
 	 *            status ON or OFF
 	 * @return
