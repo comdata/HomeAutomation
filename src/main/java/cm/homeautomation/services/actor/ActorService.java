@@ -64,6 +64,15 @@ public class ActorService extends BaseService implements MqttCallback {
 			EventBusService.getEventBus().post(new EventObject(actorMessage));
 
 		}
+		
+		private ActorMessage createActorMessage(final String targetStatus, final Switch singleSwitch) {
+			final ActorMessage actorMessage = new ActorMessage();
+			actorMessage.setHouseCode(singleSwitch.getHouseCode());
+			actorMessage.setStatus((targetStatus.equals("ON") ? "1" : "0"));
+			actorMessage.setSwitchNo(singleSwitch.getSwitchNo());
+
+			return actorMessage;
+		}
 
 		private void switchSockets(final Switch singleSwitch, final ActorMessage actorMessage) {
 			// standard lights
@@ -146,14 +155,7 @@ public class ActorService extends BaseService implements MqttCallback {
 
 	}
 
-	private ActorMessage createActorMessage(final String targetStatus, final Switch singleSwitch) {
-		final ActorMessage actorMessage = new ActorMessage();
-		actorMessage.setHouseCode(singleSwitch.getHouseCode());
-		actorMessage.setStatus((targetStatus.equals("ON") ? "1" : "0"));
-		actorMessage.setSwitchNo(singleSwitch.getSwitchNo());
 
-		return actorMessage;
-	}
 
 	@Override
 	public void deliveryComplete(final IMqttDeliveryToken arg0) {
