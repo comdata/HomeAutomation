@@ -429,7 +429,7 @@ public class Sensors extends BaseService {
 			final SensorData requestSensorData = request.getSensorData();
 			String currentValue = requestSensorData.getValue();
 
-			boolean isNumeric = StringUtils.isNumeric(currentValue);
+			boolean isNumeric = StringUtils.isNumeric(currentValue.replace(",", "."));
 			if (isNumeric) {
 				final double valueAsDouble = Double.parseDouble(currentValue.replace(",", "."));
 				final DecimalFormat df = new DecimalFormat("#.##");
