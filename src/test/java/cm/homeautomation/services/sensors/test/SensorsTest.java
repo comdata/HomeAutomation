@@ -138,4 +138,31 @@ public class SensorsTest {
 			sensors.saveSensorData(saveRequest);
 		});
 	}
+	
+	@Test
+	public void testMinLimitCheck() {
+		em.getTransaction().begin();
+
+		Sensor sensor = new Sensor();
+		sensor.setMinValue("0");
+		sensor.setSensorName("Test Sensor");
+		sensor.setRoom(room);
+		String sensorTechnicalType = "TESTMINSENSOR";
+		sensor.setSensorTechnicalType(sensorTechnicalType);
+
+		em.persist(sensor);
+
+		em.getTransaction().commit();
+
+		SensorDataSaveRequest saveRequest = new SensorDataSaveRequest();
+		SensorData sensorData = new SensorData();
+		sensorData.setSensor(sensor);
+		sensorData.setValue("-1");
+		sensorData.setDateTime(new Date());
+		saveRequest.setSensorData(sensorData);
+
+		Assertions.assertThrows(SensorDataLimitViolationException.class, () -> {
+			sensors.saveSensorData(saveRequest);
+		});
+	}
 }

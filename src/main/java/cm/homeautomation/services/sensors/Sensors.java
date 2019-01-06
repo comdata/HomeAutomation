@@ -13,7 +13,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.db.EntityManagerService;
@@ -432,7 +432,7 @@ public class Sensors extends BaseService {
 			final SensorData requestSensorData = request.getSensorData();
 			String currentValue = requestSensorData.getValue();
 
-			boolean isNumeric = StringUtils.isNumeric(currentValue.replace(",", "."));
+			boolean isNumeric = NumberUtils.isNumber(currentValue.replace(",", "."));
 			if (isNumeric) {
 				final double valueAsDouble = Double.parseDouble(currentValue.replace(",", "."));
 				final DecimalFormat df = new DecimalFormat("#.##");
