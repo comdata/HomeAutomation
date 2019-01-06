@@ -17,6 +17,7 @@ import cm.homeautomation.sensors.RainData;
 import cm.homeautomation.sensors.SensorDataRoomSaveRequest;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.sensors.WindowSensorData;
+import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
 
 /**
@@ -95,6 +96,8 @@ public class JSONSensorDataReceiver {
 			}
 		} catch (IOException e) {
 			LogManager.getLogger(JSONSensorDataReceiver.class).error("received IOException", e);
+		} catch (SensorDataLimitViolationException e) {
+			LogManager.getLogger(JSONSensorDataReceiver.class).error("received SensorDataLimitViolationException", e);
 		}
 	}
 }

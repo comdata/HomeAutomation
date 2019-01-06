@@ -23,6 +23,7 @@ import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.sensors.window.WindowStateData;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
+import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
 
 @Path("window")
@@ -53,7 +54,7 @@ public class WindowStateService extends BaseService {
 		final EntityManager em = EntityManagerService.getNewManager();
 
 		final List<WindowState> results = em.createQuery(
-				"select ws from WindowState ws where ws.id in (select max(w.id) from WindowState w group by w.window)")
+				"select ws from WindowState ws where ws.id in (select max(w.id) from WindowState w group by w.window)", WindowState.class)
 				.getResultList();
 
 		for (final WindowState windowState : results) {
@@ -83,15 +84,15 @@ public class WindowStateService extends BaseService {
 
 		synchronized (this) {
 
-			LogManager.getLogger(this.getClass()).error("window: " + windowId + " state: ---" + state + "---");
+			LogManager.getLogger(this.getClass()).debug("window: " + windowId + " state: ---" + state + "---");
 
 			final EntityManager em = EntityManagerService.getNewManager();
 
-			final List resultList = em.createQuery("select w from Window w where w.id=:id").setParameter("id", windowId)
+			final List<Window> resultList = em.createQuery("select w from Window w where w.id=:id", Window.class).setParameter("id", windowId)
 					.getResultList();
 
 			if ((resultList != null) && !resultList.isEmpty()) {
-				final Window window = (Window) resultList.get(0);
+				final Window window = resultList.get(0);
 
 				if (window.getStateSensor() == null) {
 					em.getTransaction().begin();
@@ -131,7 +132,11 @@ public class WindowStateService extends BaseService {
 
 					sensorDataSaveRequest.setSensorData(sensorData);
 
-					Sensors.getInstance().saveSensorData(sensorDataSaveRequest);
+					try {
+						Sensors.getInstance().saveSensorData(sensorDataSaveRequest);
+					} catch (SensorDataLimitViolationException e) {
+						LogManager.getLogger(this.getClass()).error("window: " + windowId + " state: ---" + state + "---", e);
+					}
 				}
 
 				final WindowStateData windowStateData = new WindowStateData();

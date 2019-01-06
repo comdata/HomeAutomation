@@ -3,10 +3,13 @@ package cm.homeautomation.services.sensors.test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
+
 import javax.persistence.EntityManager;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Room;
@@ -14,6 +17,8 @@ import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.sensors.RFEvent;
+import cm.homeautomation.sensors.SensorDataSaveRequest;
+import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
 
 public class SensorsTest {
@@ -23,18 +28,19 @@ public class SensorsTest {
 	private EntityManager em;
 	private Room room;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		sensors = new Sensors();
 		em = EntityManagerService.getNewManager();
 
 		em.getTransaction().begin();
-		
-		
+
+		em.createQuery("delete from SensorData").executeUpdate();
+		em.createQuery("delete from Sensor").executeUpdate();
 		em.createQuery("delete from Switch").executeUpdate();
 		em.createQuery("delete from Room r where r.roomName=:roomName").setParameter("roomName", RF_SWITCH_ROOM)
 				.executeUpdate();
-		
+
 		room = new Room();
 		room.setRoomName(RF_SWITCH_ROOM);
 
@@ -68,7 +74,7 @@ public class SensorsTest {
 			SensorData requestSensorData = new SensorData();
 			Sensor sensor = new Sensor();
 			sensor.setDeadbandPercent(1);
-			
+
 			existingSensorData.setValue("20");
 			requestSensorData.setValue("21");
 
@@ -104,5 +110,32 @@ public class SensorsTest {
 
 		}
 
+	}
+
+	@Test
+	public void testMaxLimitCheck() {
+		em.getTransaction().begin();
+
+		Sensor sensor = new Sensor();
+		sensor.setMaxValue("100");
+		sensor.setSensorName("Test Sensor");
+		sensor.setRoom(room);
+		String sensorTechnicalType = "TESTSENSOR";
+		sensor.setSensorTechnicalType(sensorTechnicalType);
+
+		em.persist(sensor);
+
+		em.getTransaction().commit();
+
+		SensorDataSaveRequest saveRequest = new SensorDataSaveRequest();
+		SensorData sensorData = new SensorData();
+		sensorData.setSensor(sensor);
+		sensorData.setValue("101");
+		sensorData.setDateTime(new Date());
+		saveRequest.setSensorData(sensorData);
+
+		Assertions.assertThrows(SensorDataLimitViolationException.class, () -> {
+			sensors.saveSensorData(saveRequest);
+		});
 	}
 }

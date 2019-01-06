@@ -252,7 +252,7 @@ public class Sensors extends BaseService {
 
 	@POST
 	@Path("rfsniffer")
-	public void registerRFEvent(final RFEvent event) {
+	public void registerRFEvent(final RFEvent event) throws SensorDataLimitViolationException {
 		final String code = Integer.toString(event.getCode());
 		LogManager.getLogger(this.getClass()).info("RF Event: " + code);
 		final EntityManager em = EntityManagerService.getNewManager();
@@ -311,7 +311,7 @@ public class Sensors extends BaseService {
 
 	@POST
 	@Path("save")
-	public GenericStatus save(final SensorDataRoomSaveRequest request) {
+	public GenericStatus save(final SensorDataRoomSaveRequest request) throws SensorDataLimitViolationException {
 
 		if (request == null) {
 			LogManager.getLogger(this.getClass()).info("got null request");
@@ -349,7 +349,8 @@ public class Sensors extends BaseService {
 		return new GenericStatus(true);
 	}
 
-	private void saveSensorData(final SensorDataRoomSaveRequest request, Long roomID, final List<Sensor> sensorList) {
+	private void saveSensorData(final SensorDataRoomSaveRequest request, Long roomID, final List<Sensor> sensorList)
+			throws SensorDataLimitViolationException {
 		if (sensorList != null) {
 			for (final Sensor sensor : sensorList) {
 
@@ -361,7 +362,8 @@ public class Sensors extends BaseService {
 		}
 	}
 
-	private void saveSingleSensorData(final SensorDataRoomSaveRequest request, final Sensor sensor) {
+	private void saveSingleSensorData(final SensorDataRoomSaveRequest request, final Sensor sensor)
+			throws SensorDataLimitViolationException {
 		if ("TEMPERATURE".equals(sensor.getSensorType())) {
 			LogManager.getLogger(this.getClass()).info("Saving temperature to sensor: " + sensor.getId());
 			saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getTemperature()),
@@ -380,13 +382,14 @@ public class Sensors extends BaseService {
 
 	@GET
 	@Path("forroom/save/{sensorId}/{value}")
-	public boolean saveSensorData(@PathParam("sensorId") final Long sensorId, @PathParam("value") final String value) {
+	public boolean saveSensorData(@PathParam("sensorId") final Long sensorId, @PathParam("value") final String value)
+			throws SensorDataLimitViolationException {
 		return saveSensorDataWithTime(sensorId, value, new Date());
 	}
 
 	@POST
 	@Path("forroom/save")
-	public void saveSensorData(final SensorDataSaveRequest request) {
+	public void saveSensorData(final SensorDataSaveRequest request) throws SensorDataLimitViolationException {
 		final EntityManager em = EntityManagerService.getNewManager();
 
 		Sensor sensor = null;
@@ -443,17 +446,17 @@ public class Sensors extends BaseService {
 						LogManager.getLogger(this.getClass())
 								.error("Sensor ID: " + sensor.getId() + " Name: " + sensor.getSensorName() + " Value: "
 										+ valueAsDouble + " less than minimum: " + minValue);
-						return;
+						throw new SensorDataLimitViolationException();
 					}
 				}
 
 				if (sensor.getMaxValue() != null) {
-					double maxValue = Double.parseDouble(sensor.getMinValue());
+					double maxValue = Double.parseDouble(sensor.getMaxValue());
 					if (valueAsDouble > maxValue) {
 						LogManager.getLogger(this.getClass())
 								.error("Sensor ID: " + sensor.getId() + " Name: " + sensor.getSensorName() + " Value: "
 										+ valueAsDouble + " more than maxmum: " + maxValue);
-						return;
+						throw new SensorDataLimitViolationException();
 					}
 				}
 			} else {
@@ -485,7 +488,8 @@ public class Sensors extends BaseService {
 		em.close();
 	}
 
-	private boolean saveSensorDataWithTime(final Long sensorId, final String value, final Date timestamp) {
+	private boolean saveSensorDataWithTime(final Long sensorId, final String value, final Date timestamp)
+			throws SensorDataLimitViolationException {
 		final SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
 		sensorDataSaveRequest.setSensorId(sensorId);
 		final SensorData sensorData = new SensorData();
