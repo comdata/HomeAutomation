@@ -217,12 +217,12 @@ public class Sensors extends BaseService {
 	/**
 	 * @param existingSensorData
 	 * @param requestSensorData
+	 * @param isNumeric
 	 * @param valueAsDouble
 	 * @return
 	 */
-	public boolean mergeExistingData(SensorData existingSensorData, final SensorData requestSensorData) {
-
-		final double valueAsDouble = Double.parseDouble(requestSensorData.getValue().replace(",", "."));
+	public boolean mergeExistingData(SensorData existingSensorData, final SensorData requestSensorData,
+			boolean isNumeric) {
 
 		boolean mergeExisting = false;
 		if ((existingSensorData != null)) {
@@ -230,18 +230,21 @@ public class Sensors extends BaseService {
 			if (existingSensorData.getValue().equals(requestSensorData.getValue())) {
 				mergeExisting = true;
 			} else {
-				final double deadbandPercent = existingSensorData.getSensor().getDeadbandPercent();
+				if (isNumeric) {
+					final double valueAsDouble = Double.parseDouble(requestSensorData.getValue().replace(",", "."));
+					final double deadbandPercent = existingSensorData.getSensor().getDeadbandPercent();
 
-				final double existingValueAsDouble = Double
-						.parseDouble(existingSensorData.getValue().replace(",", "."));
+					final double existingValueAsDouble = Double
+							.parseDouble(existingSensorData.getValue().replace(",", "."));
 
-				final double difference = existingValueAsDouble * (deadbandPercent / 1000);
+					final double difference = existingValueAsDouble * (deadbandPercent / 1000);
 
-				final double lowerLimit = existingValueAsDouble - difference;
-				final double higherLimit = existingValueAsDouble + difference;
+					final double lowerLimit = existingValueAsDouble - difference;
+					final double higherLimit = existingValueAsDouble + difference;
 
-				if ((lowerLimit <= valueAsDouble) && (valueAsDouble <= higherLimit)) {
-					mergeExisting = true;
+					if ((lowerLimit <= valueAsDouble) && (valueAsDouble <= higherLimit)) {
+						mergeExisting = true;
+					}
 				}
 
 			}
@@ -463,7 +466,7 @@ public class Sensors extends BaseService {
 				requestSensorData.setValue(currentValue);
 			}
 
-			final boolean mergeExisting = mergeExistingData(existingSensorData, requestSensorData);
+			final boolean mergeExisting = mergeExistingData(existingSensorData, requestSensorData, isNumeric);
 
 			if (mergeExisting && existingSensorData != null) {
 				existingSensorData.setValidThru(new Date());
