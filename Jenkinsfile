@@ -14,7 +14,7 @@ pipeline {
 			sh 'apk add nodejs rsync graphviz openssh mariadb mariadb-client openrc git'
 			sh 'mysql_install_db --user=mysql --rpm'
 			sh '/usr/bin/mysqld_safe &'
-			sh 'sleep 5' // for mysql to startup
+			sh 'sleep 15' // for mysql to startup
 			sh 'mysql -u root -e "CREATE DATABASE HA;"'
 			sh 'mysql -u root HA < WebContent/WEB-INF/log4j.sql'
 		    } 
