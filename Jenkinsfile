@@ -15,7 +15,7 @@ pipeline {
 			sh 'mysql_install_db --user=mysql --rpm'
 			sh 'rc-service mariadb start'
 			sh '/usr/bin/mysqld_safe &'
-			sh 'sleep 30' // for mysql to startup
+			sh 'sleep 300' // for mysql to startup
 			sh 'mysql -u root -e "CREATE DATABASE HA;"'
 			sh 'mysql -u root HA < WebContent/WEB-INF/log4j.sql'
 		    } 
