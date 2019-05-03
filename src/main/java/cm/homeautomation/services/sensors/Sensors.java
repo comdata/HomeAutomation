@@ -179,7 +179,7 @@ public class Sensors extends BaseService {
 			}
 		} else {
 			for (final SensorData sData : data) {
-				if ((lastSensorValue == null) || (sData.getValue() != lastSensorValue.getValue())) {
+				if ((lastSensorValue == null) || !(lastSensorValue.getValue().equals(sData.getValue()))) {
 					if (lastSensorValue != null) {
 						final SensorValue tempSensorValue = new SensorValue();
 						tempSensorValue.setValue(lastSensorValue.getValue());
