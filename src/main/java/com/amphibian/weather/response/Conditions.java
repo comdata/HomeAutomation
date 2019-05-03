@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @XmlRootElement(name="current_observation")
 @JsonIgnoreProperties(ignoreUnknown=true)

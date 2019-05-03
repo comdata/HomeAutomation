@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.KeyManagementException;
-import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
@@ -53,11 +52,11 @@ import cm.homeautomation.entities.PackagePK;
 @Path("packages")
 public class PackageTracking {
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
-	private static final String acceptHeader = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
-	private static final Map<String, String> carrierMap = createCarrierMap();
+	private static final String ACCEPT_HEADER = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
+	private static final Map<String, String> CARRIER_MAP = createCarrierMap();
 
 	private static Map<String, String> createCarrierMap() {
-		Map<String, String> carrierMap = new HashMap<String, String>();
+		Map<String, String> carrierMap = new HashMap<>();
 		carrierMap.put("ex007", "007EX");
 		carrierMap.put("ten13", "13ten");
 		carrierMap.put("post17", "17PostService");
@@ -350,8 +349,8 @@ public class PackageTracking {
 		return carrierMap;
 	}
 
-	public static void main(String[] args) throws KeyManagementException, ClientProtocolException,
-			NoSuchAlgorithmException, KeyStoreException, IOException {
+	public static void main(String[] args) throws KeyManagementException,
+			NoSuchAlgorithmException, IOException {
 		updateTrackingInformation(args);
 	}
 
@@ -369,7 +368,7 @@ public class PackageTracking {
 	}
 
 	public static void updateTrackingInformation(String[] args) throws ClientProtocolException, IOException,
-			NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+			NoSuchAlgorithmException, KeyManagementException {
 		SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
 
 		// set up a TrustManager that trusts everything
@@ -405,13 +404,12 @@ public class PackageTracking {
 		HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
 
 		String cookie = args[0];
-		// LogManager.getLogger(this.getClass()).info(cookie);
 
 		HttpGet request = new HttpGet(url);
 
 		// add request header
 		request.addHeader("User-Agent", USER_AGENT);
-		request.addHeader("Accept", acceptHeader);
+		request.addHeader("Accept", ACCEPT_HEADER);
 		request.addHeader("Cookie", cookie);
 		HttpResponse response = client.execute(request);
 
@@ -423,7 +421,6 @@ public class PackageTracking {
 		String line = "";
 		while ((line = rd.readLine()) != null) {
 			result.append(line);
-			// LogManager.getLogger(this.getClass()).info(line);
 		}
 
 		String resultString = result.toString();
@@ -432,9 +429,7 @@ public class PackageTracking {
 		resultString = resultString.substring(0, resultString.length() - 1);
 		resultString = "{\"packages\":" + resultString + "}";
 
-		// LogManager.getLogger(this.getClass()).info(resultString);
-
-		List<SimpleDateFormat> knownPatterns = new ArrayList<SimpleDateFormat>();
+		List<SimpleDateFormat> knownPatterns = new ArrayList<>();
 		knownPatterns.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 		knownPatterns.add(new SimpleDateFormat("yyyy-MM-dd HH:mm"));
 		knownPatterns.add(new SimpleDateFormat("dd.MM.yyyy HH:mm:ss"));
@@ -446,12 +441,10 @@ public class PackageTracking {
 		JsonNode rootNode = om.readTree(resultString);
 
 		Iterator<Map.Entry<String, JsonNode>> fieldsIterator = rootNode.fields();
-		List<Package> trackedPackages=new ArrayList<Package>();
+		List<Package> trackedPackages=new ArrayList<>();
 		while (fieldsIterator.hasNext()) {
 
 			Map.Entry<String, JsonNode> field = fieldsIterator.next();
-			// LogManager.getLogger(this.getClass()).info("Key: " + field.getKey() + "\tValue:" +
-			// field.getValue());
 
 			JsonNode jsonNode = field.getValue().get(0);
 
@@ -466,7 +459,7 @@ public class PackageTracking {
 				String trackingNumber = singleShipment.get(0).asText();
 				String packageName = singleShipment.get(1).asText();
 				String carrier = singleShipment.get(2).asText();
-				boolean delivered = (singleShipment.get(3).asText().equals("no")) ? true : false;
+				boolean delivered = singleShipment.get(3).asText().equals("no");
 
 				JsonNode steps = singleShipment.get(4);
 				LogManager.getLogger(PackageHistory.class).info("Steps:" + steps.get(0));
@@ -474,7 +467,7 @@ public class PackageTracking {
 				String dateChanged = singleShipment.get(7).asText();
 				LogManager.getLogger(PackageHistory.class).info("Status: " + singleShipment.get(8).asText());
 
-				String carrierFullname = carrierMap.get(carrier);
+				String carrierFullname = CARRIER_MAP.get(carrier);
 
 				trackedPackage.setId(new PackagePK(trackingNumber, carrier));
 				trackedPackage.setPackageName(packageName);
@@ -500,7 +493,6 @@ public class PackageTracking {
 						historyEntry.setTrackedPackage(trackedPackage);
 
 						historyEntry.setLocationText(step.get(3).asText());
-						// historyEntry.setTrackedPackage(trackedPackage);
 						trackedPackage.getPackageHistory().add(historyEntry);
 						hashCodes.add(id);
 						LogManager.getLogger(PackageHistory.class).info("adding history event");
@@ -552,12 +544,12 @@ public class PackageTracking {
 		
 		Map<String, String> createCarrierMap = createCarrierMap();
 
-		List<Package> resultList = (List<Package>) em.createQuery("select p from Package p where p.delivered=0").getResultList();
-		List<Package> newPackageList=new ArrayList<Package>();
+		List<Package> resultList = em.createQuery("select p from Package p where p.delivered=0", Package.class).getResultList();
+		List<Package> newPackageList=new ArrayList<>();
 		for (Package singlePackage : resultList) {
 			
-			List<PackageHistory> phList = (List<PackageHistory>) em
-					.createQuery("select p from PackageHistory p where p.id.trackingNumber=:trackingNumber and p.id.carrier=:carrier order by p.id.timestamp desc")
+			List<PackageHistory> phList = em
+					.createQuery("select p from PackageHistory p where p.id.trackingNumber=:trackingNumber and p.id.carrier=:carrier order by p.id.timestamp desc", PackageHistory.class)
 
 					.setParameter("trackingNumber", singlePackage.getId().getTrackingNumber())
 					.setParameter("carrier", singlePackage.getId().getCarrier()).getResultList();
@@ -578,14 +570,14 @@ public class PackageTracking {
 	private static void mergeTrackedPackage(Package trackedPackage) {
 		EntityManager em = EntityManagerService.getNewManager();
 
-		List<Package> results = (List<Package>) em
+		List<Package> results =  em
 				.createQuery(
-						"select p from Package p where p.id.trackingNumber=:trackingNumber and p.id.carrier=:carrier")
+						"select p from Package p where p.id.trackingNumber=:trackingNumber and p.id.carrier=:carrier", Package.class)
 				.setParameter("trackingNumber", trackedPackage.getId().getTrackingNumber())
 				.setParameter("carrier", trackedPackage.getId().getCarrier()).getResultList();
 
 		List<PackageHistory> packageHistories = trackedPackage.getPackageHistory();
-		List<PackageHistory> mergedPackageHistories = new ArrayList<PackageHistory>();
+		List<PackageHistory> mergedPackageHistories = new ArrayList<>();
 		for (PackageHistory packageHistory : packageHistories) {
 			PackageHistory mergedPackageHistory = mergePackageHistory(em, packageHistory);
 			em.merge(mergedPackageHistory);
@@ -617,8 +609,8 @@ public class PackageTracking {
 	}
 
 	private static PackageHistory mergePackageHistory(EntityManager em, PackageHistory packageHistory) {
-		List<PackageHistory> results = (List<PackageHistory>) em
-				.createQuery("select p from PackageHistory p where p.id=:id")
+		List<PackageHistory> results = em
+				.createQuery("select p from PackageHistory p where p.id=:id", PackageHistory.class)
 
 				.setParameter("id", packageHistory.getId()).getResultList();
 

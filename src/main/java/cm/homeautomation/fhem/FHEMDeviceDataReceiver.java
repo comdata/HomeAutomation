@@ -10,6 +10,7 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Device;
 import cm.homeautomation.entities.FHEMDevice;
 import cm.homeautomation.entities.Sensor;
+import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
 
 /**
@@ -44,7 +45,12 @@ public class FHEMDeviceDataReceiver {
 		Sensor sensor = getSensorForTopic(device, topicLastPart);
 
 		if (sensor != null) {
-			Sensors.getInstance().saveSensorData(sensor.getId(), messageContent.split(" ")[0]);
+			try {
+				Sensors.getInstance().saveSensorData(sensor.getId(), messageContent.split(" ")[0]);
+			} catch (SensorDataLimitViolationException e) {
+				LogManager.getLogger(FHEMDeviceDataReceiver.class).error("Message for device: "+device+" topic: "+topicLastPart+" message: "+messageContent
+						+" received. Value exceeds limit.", e);
+			}
 		} else {
 			LogManager.getLogger(FHEMDeviceDataReceiver.class).error("Message for device: "+device+" topic: "+topicLastPart+" message: "+messageContent
 					+" received. No Sensor attached.");

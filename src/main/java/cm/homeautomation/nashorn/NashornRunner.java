@@ -31,20 +31,11 @@ public class NashornRunner {
 		return instance;
 	}
 
-	public static void main(final String[] args) throws Exception {
-		// Script Engine Manager
-
-		// Evaluate JavaScript code
-		getInstance().run("print(\"This is a hello from JavaScript in Java\");");
-	}
-
 	public static void setInstance(final NashornRunner instance) {
 		NashornRunner.instance = instance;
 	}
 
 	private final ScriptEngine engine;
-
-	private final Logger logger = LogManager.getLogger(this.getClass());
 
 	public NashornRunner() {
 		final ScriptEngineManager factory = new ScriptEngineManager();
@@ -56,7 +47,7 @@ public class NashornRunner {
 
 	@Subscribe
 	public void handleEvent(final EventObject event) {
-
+		Logger logger = LogManager.getLogger(this.getClass());
 		final EntityManager em = EntityManagerService.getNewManager();
 
 		final List<ScriptingEntity> resultList = em

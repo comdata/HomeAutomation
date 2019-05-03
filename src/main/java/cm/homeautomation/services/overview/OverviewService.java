@@ -21,7 +21,7 @@ import cm.homeautomation.services.base.BaseService;
 @Path("overview")
 public class OverviewService extends BaseService {
 
-	private OverviewTiles overviewTiles;
+	private static OverviewTiles overviewTiles;
 
 	public OverviewService() {
 		super();
@@ -39,16 +39,21 @@ public class OverviewService extends BaseService {
 			final Set<Sensor> sensorKeys = sensorData.keySet();
 
 			for (final Sensor sensor : sensorKeys) {
-				final SensorData data = sensorData.get(sensor);
+				if (sensor.isShowData()) {
+					final SensorData data = sensorData.get(sensor);
 
-				if ("TEMPERATURE".equals(sensor.getSensorType())) {
-
-					temperature = data.getValue();
-					sensorDate = data.getValidThru();
-				}
-				if ("HUMIDITY".equals(sensor.getSensorType())) {
-					humidity = data.getValue();
-					sensorDate = data.getValidThru();
+					if ("TEMPERATURE".equals(sensor.getSensorType())) {
+						if (data.getValue() != null && Float.parseFloat(data.getValue().replace(',', '.')) <= 50) {
+							temperature = data.getValue();
+							sensorDate = data.getValidThru();
+						}
+					}
+					if ("HUMIDITY".equals(sensor.getSensorType())) {
+						if (data.getValue() != null && Float.parseFloat(data.getValue().replace(',', '.')) <= 100) {
+							humidity = data.getValue();
+							sensorDate = data.getValidThru();
+						}
+					}
 				}
 			}
 		}
@@ -94,15 +99,16 @@ public class OverviewService extends BaseService {
 
 		if (sensors != null) {
 			for (final Sensor sensor : sensors) {
+				if (sensor.isShowData()) {
 
-				final List<SensorData> latestDataList = em
-						.createQuery("select sd from SensorData sd where sd.sensor=:sensor order by sd.dateTime desc",
-								SensorData.class)
-						.setParameter("sensor", sensor).setMaxResults(1).getResultList();
-				if ((latestDataList != null) && !latestDataList.isEmpty()) {
+					final List<SensorData> latestDataList = em.createQuery(
+							"select sd from SensorData sd where sd.sensor=:sensor order by sd.dateTime desc",
+							SensorData.class).setParameter("sensor", sensor).setMaxResults(1).getResultList();
+					if ((latestDataList != null) && !latestDataList.isEmpty()) {
 
-					final SensorData latestData = latestDataList.get(0);
-					roomTile.getSensorData().put(sensor, latestData);
+						final SensorData latestData = latestDataList.get(0);
+						roomTile.getSensorData().put(sensor, latestData);
+					}
 				}
 
 			}
@@ -130,24 +136,28 @@ public class OverviewService extends BaseService {
 	}
 
 	private void init() {
-		overviewTiles = new OverviewTiles();
 
-		final EntityManager em = EntityManagerService.getNewManager();
+		if (overviewTiles == null) {
+			overviewTiles = new OverviewTiles();
 
-		em.getTransaction().begin();
-		final List<Room> results = em.createQuery("select r FROM Room r where r.visible=true order by r.sortOrder", Room.class)
-				.getResultList();
+			final EntityManager em = EntityManagerService.getNewManager();
 
-		for (final Room room : results) {
+			em.getTransaction().begin();
+			final List<Room> results = em
+					.createQuery("select r FROM Room r where r.visible=true order by r.sortOrder", Room.class)
+					.getResultList();
 
-			final OverviewTile roomTile = getOverviewTileForRoom(em, room);
+			for (final Room room : results) {
 
-			overviewTiles.getOverviewTiles().add(roomTile);
+				final OverviewTile roomTile = getOverviewTileForRoom(em, room);
 
+				overviewTiles.getOverviewTiles().add(roomTile);
+
+			}
+
+			em.getTransaction().commit();
+			em.close();
 		}
-
-		em.getTransaction().commit();
-		em.close();
 	}
 
 	public OverviewTile updateOverviewTile(SensorData sensorData) {

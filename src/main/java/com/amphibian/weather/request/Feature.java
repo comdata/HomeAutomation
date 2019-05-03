@@ -15,6 +15,7 @@ public enum Feature {
 		this.name = f;
 	}
 	
+	@Override
 	public String toString() {
 		return this.name;
 	}

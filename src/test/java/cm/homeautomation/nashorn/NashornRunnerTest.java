@@ -70,4 +70,19 @@ public class NashornRunnerTest {
 
 		assertEquals(data.getTestResultData(), testData);
 	}
+	
+	@Test
+	public void testHandleEventNoScriptingEntity() throws Exception {
+		
+
+		NashornRunner instance = NashornRunner.getInstance();
+
+		NashhornRunnerTestEvent data = new NashhornRunnerTestEvent();
+		String testData = "Hello World";
+		data.setTestData(testData);
+
+		instance.handleEvent(new EventObject(data));
+
+		assertEquals(data.getTestResultData(), null);
+	}
 }

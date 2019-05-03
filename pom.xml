@@ -18,6 +18,7 @@
 		<odata.version>4.5.0</odata.version>
 		<junit.platform.version>1.3.1</junit.platform.version>
 		<junit.jupiter.version>5.3.1</junit.jupiter.version>
+		<jmockit.version>1.43</jmockit.version>
 	</properties>
 
 	<distributionManagement>
@@ -82,6 +83,12 @@
 	</pluginRepositories>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.jmockit</groupId>
+			<artifactId>jmockit</artifactId>
+			<version>${jmockit.version}</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
@@ -191,7 +198,7 @@
 		<dependency>
 			<groupId>com.purej</groupId>
 			<artifactId>purej-vminspect</artifactId>
-			<version>1.4.0</version>
+			<version>1.5.0</version>
 
 			<exclusions>
 				<exclusion>
@@ -428,6 +435,22 @@
 		</resources>
 		<plugins>
 			<plugin>
+				<groupId>org.pitest</groupId>
+				<artifactId>pitest-maven</artifactId>
+				<version>1.4.3</version>
+				<configuration>
+					<inScopeClasses>
+						<param>cm.homeautomation*</param>
+					</inScopeClasses>
+					<targetClasses>
+						<param>cm.homeautomation*</param>
+					</targetClasses>
+					<outputFormats>
+						<outputFormat>XML</outputFormat>
+					</outputFormats>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.22.1</version>
@@ -448,6 +471,14 @@
 						<version>${junit.jupiter.version}</version>
 					</dependency>
 				</dependencies>
+				<configuration>
+					<argLine>
+						${argLine}
+						-javaagent:"${settings.localRepository}"/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar=coverage
+						-Djmockit-coverage-outputDir=target/coverage-report
+						<!-- coverage properties -->
+					</argLine>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.sonarsource.scanner.maven</groupId>

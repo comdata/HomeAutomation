@@ -17,6 +17,7 @@ import cm.homeautomation.sensors.RainData;
 import cm.homeautomation.sensors.SensorDataRoomSaveRequest;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.sensors.WindowSensorData;
+import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
 
 /**
@@ -29,20 +30,20 @@ import cm.homeautomation.services.sensors.Sensors;
  */
 public class JSONSensorDataReceiver {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws NoClassInformationContainedException {
 		String messageContent="{\"@c\": \".RainData\",\"rc\":48,\"state\":0, \"mac\": \":::::12\"}";
 		receiveSensorData(messageContent);
 	}
 	
-	public JSONSensorDataReceiver() {
+	private JSONSensorDataReceiver() {
 		// intentionally left empty
 	}
 
-	public static void receiveSensorData(String messageContent) {
+	public static void receiveSensorData(String messageContent) throws NoClassInformationContainedException {
 
 		try {
 			if (!messageContent.contains("@c") ) {
-				return;
+				throw new NoClassInformationContainedException(messageContent);
 			}
 			
 			
@@ -83,7 +84,6 @@ public class JSONSensorDataReceiver {
 				RainData rainData = (RainData)sensorData;
 				EventObject eventObject=new EventObject(rainData);
 				EventBusService.getEventBus().post(eventObject);
-				System.out.println(rainData.getRc());
 			}
 			
 			else if (sensorData instanceof WindowSensorData) {
@@ -96,6 +96,8 @@ public class JSONSensorDataReceiver {
 			}
 		} catch (IOException e) {
 			LogManager.getLogger(JSONSensorDataReceiver.class).error("received IOException", e);
+		} catch (SensorDataLimitViolationException e) {
+			LogManager.getLogger(JSONSensorDataReceiver.class).error("received SensorDataLimitViolationException", e);
 		}
 	}
 }

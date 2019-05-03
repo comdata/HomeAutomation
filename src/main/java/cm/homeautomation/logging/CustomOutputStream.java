@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import org.apache.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.services.base.AutoCreateInstance;
 
@@ -17,7 +16,6 @@ public class CustomOutputStream extends OutputStream {
 
 	public CustomOutputStream() {
 		System.setOut(new PrintStream(this));
-		instance = this;
 	}
 
 	@Override
@@ -46,6 +44,10 @@ public class CustomOutputStream extends OutputStream {
 	}
 
 	public static CustomOutputStream getInstance() {
+		if (instance == null) {
+			instance = new CustomOutputStream();
+		}
+		
 		return instance;
 	}
 }

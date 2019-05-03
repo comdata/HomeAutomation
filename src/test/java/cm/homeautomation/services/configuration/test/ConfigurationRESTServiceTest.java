@@ -1,11 +1,8 @@
 package cm.homeautomation.services.configuration.test;
 
-import static org.junit.Assert.*;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.services.configuration.ConfigurationRESTService;
 
 public class ConfigurationRESTServiceTest {

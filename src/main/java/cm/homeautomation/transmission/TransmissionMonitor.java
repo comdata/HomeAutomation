@@ -12,10 +12,8 @@ import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import nl.stil4m.transmission.api.TransmissionRpcClient;
 import nl.stil4m.transmission.api.domain.RemoveTorrentInfo;
-import nl.stil4m.transmission.api.domain.TorrentAction;
 import nl.stil4m.transmission.api.domain.TorrentInfo;
 import nl.stil4m.transmission.api.domain.TorrentInfoCollection;
-import nl.stil4m.transmission.api.domain.ids.Ids;
 import nl.stil4m.transmission.api.domain.ids.NumberListIds;
 import nl.stil4m.transmission.rpc.RpcClient;
 import nl.stil4m.transmission.rpc.RpcConfiguration;
@@ -71,13 +69,8 @@ public class TransmissionMonitor {
 			torrentData.setDoneTorrents(numberOfDoneTorrents);
 			EventObject eventObject = new EventObject(torrentData);
 			EventBusService.getEventBus().post(eventObject);
-
-
-		} catch (RpcException e) {
-		
-
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (RpcException|Exception e) {
+			LogManager.getLogger(TransmissionMonitor.class).error(e);
 		}
 	}
 }

@@ -35,6 +35,10 @@ public class InfraredService extends BaseService {
 	private static InfraredService instance;
 
 	public static InfraredService getInstance() {
+		if (instance==null) {
+			instance=new InfraredService();
+		}
+		
 		return instance;
 	}
 
@@ -44,7 +48,6 @@ public class InfraredService extends BaseService {
 
 	public InfraredService() {
 		EventBusService.getEventBus().register(this);
-		instance = this;
 	}
 
 	/**
@@ -56,9 +59,7 @@ public class InfraredService extends BaseService {
 	@Path("get")
 	public List<IRCommand> getIRCommands() {
 		final EntityManager em = EntityManagerService.getNewManager();
-		@SuppressWarnings("unchecked")
-		final List<IRCommand> resultList = em.createQuery("select ic from IRCommand ic").getResultList();
-		return resultList;
+		return em.createQuery("select ic from IRCommand ic", IRCommand.class).getResultList();
 	}
 
 	/**
@@ -84,15 +85,12 @@ public class InfraredService extends BaseService {
 				return;
 			}
 
-			@SuppressWarnings("unchecked")
 			final List<IRCommand> resultList = em.createQuery(
-					"select ic from IRCommand ic where ic.typeClear=:typeClear and ic.address=:address and ic.command=:command and ic.data=:data")
+					"select ic from IRCommand ic where ic.typeClear=:typeClear and ic.address=:address and ic.command=:command and ic.data=:data", IRCommand.class)
 					.setParameter("data", irData.getData()).setParameter("typeClear", typeClear)
 					.setParameter("command", command).setParameter("address", address).getResultList();
 
-			if ((resultList != null) && !resultList.isEmpty()) {
-
-			} else {
+			if ((resultList == null) || resultList.isEmpty()) {
 				// not found create an entry
 
 				em.getTransaction().begin();
@@ -129,8 +127,7 @@ public class InfraredService extends BaseService {
 	@Path("sendCommand/{id}")
 	public GenericStatus sendCommand(@PathParam("id") final Long id) throws JsonProcessingException {
 		final EntityManager em = EntityManagerService.getNewManager();
-		@SuppressWarnings("unchecked")
-		final List<IRCommand> resultList = em.createQuery("select ic from IRCommand ic where ic.id=:id")
+		final List<IRCommand> resultList = em.createQuery("select ic from IRCommand ic where ic.id=:id", IRCommand.class)
 				.setParameter("id", id).getResultList();
 
 		if ((resultList != null) && !resultList.isEmpty()) {

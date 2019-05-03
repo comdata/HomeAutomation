@@ -18,6 +18,19 @@
  */
 package org.dhcp4java;
 
+import static org.dhcp4java.DHCPConstants.BOOTREPLY;
+import static org.dhcp4java.DHCPConstants.DHO_DHCP_MESSAGE_TYPE;
+import static org.dhcp4java.DHCPConstants.DHO_END;
+import static org.dhcp4java.DHCPConstants.DHO_PAD;
+import static org.dhcp4java.DHCPConstants.HTYPE_ETHER;
+import static org.dhcp4java.DHCPConstants._BOOTP_ABSOLUTE_MIN_LEN;
+import static org.dhcp4java.DHCPConstants._BOOTP_VEND_SIZE;
+import static org.dhcp4java.DHCPConstants._BOOT_NAMES;
+import static org.dhcp4java.DHCPConstants._DHCP_DEFAULT_MAX_LEN;
+import static org.dhcp4java.DHCPConstants._DHCP_MAX_MTU;
+import static org.dhcp4java.DHCPConstants._HTYPE_NAMES;
+import static org.dhcp4java.DHCPConstants._MAGIC_COOKIE;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -36,8 +49,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static org.dhcp4java.DHCPConstants.*;
 
 /**
  * The basic class for manipulating DHCP packets.

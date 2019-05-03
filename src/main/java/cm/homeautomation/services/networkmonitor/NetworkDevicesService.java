@@ -163,7 +163,14 @@ public class NetworkDevicesService extends BaseService {
 
 			final InetAddress address = InetAddress.getByName(BROADCAST_IP_ADDRESS);
 			final DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address, PORT);
-			socket.send(packet);
+			
+			for (int i=0; i<10; i++) {
+				socket.send(packet);
+				Thread.sleep(1000);
+			}
+			
+			// send post wake up message
+			EventBusService.getEventBus().post(new EventObject(new NetworkWakeupEvent(macStr)));
 
 			LogManager.getLogger(this.getClass()).info("Wake-on-LAN packet sent.");
 			return new GenericStatus(true);

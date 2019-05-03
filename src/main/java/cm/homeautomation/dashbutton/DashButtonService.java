@@ -27,6 +27,7 @@ public class DashButtonService {
 
 		@Override
 		public void run() {
+			Thread.currentThread().setName(DashButtonRunnable.class.getName());
 
 			final int listenPort = 67;
 			final int MAX_BUFFER_SIZE = 1000;

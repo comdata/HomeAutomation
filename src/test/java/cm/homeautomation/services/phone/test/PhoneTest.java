@@ -1,12 +1,15 @@
 package cm.homeautomation.services.phone.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
-
+import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.PhoneCallEvent;
 import cm.homeautomation.services.phone.Phone;
 
@@ -23,6 +26,13 @@ public class PhoneTest {
 	@Before
 	public void setup() {
 		phone = new Phone();
+		
+		EntityManager em = EntityManagerService.getNewManager();
+		em.getTransaction().begin();
+
+		em.createQuery("delete from PhoneCallEvent").executeUpdate();
+		em.getTransaction().commit();
+
 	}
 	
 	@Test

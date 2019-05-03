@@ -150,6 +150,7 @@ public class TradfriGateway implements Runnable {
 
 	@Override
 	public void run() {
+		Thread.currentThread().setName(TradfriGateway.class.getName());
 		for (final TradfriGatewayListener l : listners) {
 			l.gateway_initializing();
 		}

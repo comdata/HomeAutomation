@@ -21,6 +21,7 @@ import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.PropertyList;
 import net.fortuna.ical4j.model.component.CalendarComponent;
+import net.fortuna.ical4j.util.MapTimeZoneCache;
 
 public class TripsICalReader {
 	private static final DateTimeFormatter DATE_FORMATTER = new DateTimeFormatterBuilder().appendYear(4, 4)
@@ -31,6 +32,7 @@ public class TripsICalReader {
 	}
 
 	public static void loadTrips(String[] args) throws IOException, ParserException {
+		System.setProperty("net.fortuna.ical4j.timezone.cache.impl", MapTimeZoneCache.class.getName());
 		CalendarBuilder calendarBuilder = new CalendarBuilder();
 
 		EntityManager em = EntityManagerService.getNewManager();

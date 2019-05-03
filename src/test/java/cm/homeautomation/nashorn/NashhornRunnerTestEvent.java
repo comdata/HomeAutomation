@@ -1,8 +1,8 @@
 package cm.homeautomation.nashorn;
 
 public class NashhornRunnerTestEvent {
-	private String testData;
-	private String testResultData;
+	private String testData=null;
+	private String testResultData=null;
 
 	public String getTestResultData() {
 		return testResultData;

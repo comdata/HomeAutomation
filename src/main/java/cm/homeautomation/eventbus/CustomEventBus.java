@@ -9,18 +9,14 @@ import org.greenrobot.eventbus.EventBusException;
 
 public class CustomEventBus {
 
-	static EventBus eventBus = null;
-
 	private final Map<String, Class> classes = new HashMap<>();
 
 	public CustomEventBus() {
-		if (eventBus == null) {
-			eventBus = EventBus.getDefault();
-		}
+		// do nothing
 	}
 	
 	public static EventBus getEventBus() {
-		return eventBus;
+		return EventBus.getDefault();
 	}
 
 	public Map<String, Class> getClasses() {
@@ -28,7 +24,7 @@ public class CustomEventBus {
 	}
 
 	public void post(final Object event) {
-		eventBus.post(event);
+		EventBus.getDefault().post(event);
 	}
 
 	public void register(final Object object) {
@@ -41,16 +37,16 @@ public class CustomEventBus {
 		} else {
 			LogManager.getLogger(this.getClass()).debug("Registering Class on eventbus: " + clazz.getName());
 			try {
-				eventBus.register(object);
+				EventBus.getDefault().register(object);
 			} catch (final EventBusException e) {
-
+				LogManager.getLogger(this.getClass()).error(e);
 			}
 			getClasses().put(clazzName, clazz);
 		}
 	}
 
 	public void unregister(final Object object) {
-		eventBus.unregister(object);
+		EventBus.getDefault().unregister(object);
 		getClasses().remove(object.getClass().getName());
 
 	}

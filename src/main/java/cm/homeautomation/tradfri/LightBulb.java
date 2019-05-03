@@ -152,9 +152,10 @@ public class LightBulb {
 
 	protected void parseResponse(final CoapResponse response) {
 		boolean updateListeners = false;
-		gateway.getLogger().log(Level.INFO, response.getResponseText());
+		String responseText = response.getResponseText();
+		gateway.getLogger().log(Level.INFO, responseText);
 		try {
-			final JSONObject json = new JSONObject(response.getResponseText());
+			final JSONObject json = new JSONObject(responseText);
 
 			final String new_name = json.getString(TradfriConstants.NAME);
 			if ((name == null) || !name.equals(new_name)) {
@@ -180,7 +181,7 @@ public class LightBulb {
 			updateListeners = updateListenersRequired(updateListeners, light);
 		} catch (final JSONException e) {
 			LogManager.getLogger(this.getClass())
-					.error("Cannot update bulb info: error parsing the response from the gateway.", e);
+					.error("Cannot update bulb info: error parsing the response from the gateway. Response: "+responseText, e);
 		}
 		if (updateListeners) {
 			for (final TradfriBulbListener l : listners) {
@@ -237,8 +238,8 @@ public class LightBulb {
 
 			array.put(settings);
 			json.put(TradfriConstants.LIGHT, array);
-			settings.put(TradfriConstants.COLOR_X, colorPoint.xyX.intValue());
-			settings.put(TradfriConstants.COLOR_Y, colorPoint.xyY.intValue());
+			settings.put(TradfriConstants.COLOR_X, colorPoint.getXyX().intValue());
+			settings.put(TradfriConstants.COLOR_Y, colorPoint.getXyY().intValue());
 			final String payload = json.toString();
 			gateway.set(TradfriConstants.DEVICES + "/" + this.getId(), payload);
 
