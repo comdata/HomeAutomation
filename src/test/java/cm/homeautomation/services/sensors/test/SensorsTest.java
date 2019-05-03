@@ -78,7 +78,7 @@ public class SensorsTest {
 			existingSensorData.setValue("20");
 			requestSensorData.setValue("21");
 
-			boolean mergeExistingData = sensors.mergeExistingData(existingSensorData, requestSensorData);
+			boolean mergeExistingData = sensors.mergeExistingData(existingSensorData, requestSensorData, true);
 			System.out.println(mergeExistingData);
 
 			assertTrue("merging possible", mergeExistingData);
@@ -102,7 +102,7 @@ public class SensorsTest {
 			existingSensorData.setValue("20");
 			requestSensorData.setValue("25");
 
-			boolean mergeExistingData = sensors.mergeExistingData(existingSensorData, requestSensorData);
+			boolean mergeExistingData = sensors.mergeExistingData(existingSensorData, requestSensorData, true);
 			System.out.println(mergeExistingData);
 
 			assertFalse("merging not possible", mergeExistingData);
