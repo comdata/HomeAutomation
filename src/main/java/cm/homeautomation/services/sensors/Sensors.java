@@ -417,7 +417,27 @@ public class Sensors extends BaseService {
 				LogManager.getLogger(this.getClass())
 						.error("found no sensor for technical type: " + sensorTechnicalType);
 
-				throw new NoResultException();
+				em.getTransaction().begin();
+				
+				sensor=new Sensor();
+				sensor.setSensorTechnicalType(sensorTechnicalType);
+				sensor.setSensorName(sensorTechnicalType);
+				sensor.setDeadbandPercent(0);
+				
+				em.persist(sensor);
+				
+				em.getTransaction().commit();
+				
+				List<Sensor> sensorsNew = em
+						.createQuery("select s from Sensor s where s.sensorTechnicalType=:sensorTechnicalType",
+								Sensor.class)
+						.setParameter("sensorTechnicalType", sensorTechnicalType).getResultList();
+				if (sensorsNew != null && !sensorsNew.isEmpty()) {
+					sensor = sensorsNew.get(0);
+					
+				} else  {
+					throw new NoResultException();
+				}
 			}
 		} else {
 			throw new NoResultException();
