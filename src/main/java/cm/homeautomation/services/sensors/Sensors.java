@@ -111,7 +111,7 @@ public class Sensors extends BaseService {
 		try {
 			em.close();
 		} catch (final IllegalStateException e) {
-
+			// do nothing
 		}
 		return sensorDatas;
 	}
@@ -230,8 +230,10 @@ public class Sensors extends BaseService {
 			if (existingSensorData.getValue().equals(requestSensorData.getValue())) {
 				mergeExisting = true;
 			} else {
-				if (isNumeric) {
-					final double valueAsDouble = Double.parseDouble(requestSensorData.getValue().replace(",", "."));
+				String sensorValue = requestSensorData.getValue().replace(",", ".");
+				boolean secondNumericCheck = NumberUtils.isCreatable(sensorValue);
+				if (isNumeric && secondNumericCheck) {
+					final double valueAsDouble = Double.parseDouble(sensorValue);
 					final double deadbandPercent = existingSensorData.getSensor().getDeadbandPercent();
 
 					final double existingValueAsDouble = Double
@@ -435,7 +437,7 @@ public class Sensors extends BaseService {
 			final SensorData requestSensorData = request.getSensorData();
 			String currentValue = requestSensorData.getValue();
 
-			boolean isNumeric = NumberUtils.isNumber(currentValue.replace(",", "."));
+			boolean isNumeric = NumberUtils.isCreatable(currentValue.replace(",", "."));
 			if (isNumeric) {
 				final double valueAsDouble = Double.parseDouble(currentValue.replace(",", "."));
 				final DecimalFormat df = new DecimalFormat("#.##");
