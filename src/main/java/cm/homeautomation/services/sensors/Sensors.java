@@ -71,6 +71,9 @@ public class Sensors extends BaseService {
 	private static Sensors instance;
 
 	public static Sensors getInstance() {
+		if (instance == null) {
+			instance = new Sensors();
+		}
 		return instance;
 	}
 
