@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.greenrobot.eventbus.Subscribe;
 
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.ScriptingEntity;
 import cm.homeautomation.eventbus.EventBusService;
@@ -22,6 +23,7 @@ import cm.homeautomation.services.base.AutoCreateInstance;
 public class NashornRunner {
 
 	private static NashornRunner instance;
+	private ScriptEngine engine = null;
 
 	public static NashornRunner getInstance() {
 		if (instance == null) {
@@ -35,45 +37,54 @@ public class NashornRunner {
 		NashornRunner.instance = instance;
 	}
 
-	private final ScriptEngine engine;
-
 	public NashornRunner() {
-		final ScriptEngineManager factory = new ScriptEngineManager();
-		engine = factory.getEngineByName("nashorn");
+		String nashornEnabled = ConfigurationService.getConfigurationProperty("nashorn", "enabled");
 
-		setInstance(this);
-		EventBusService.getEventBus().register(this);
+		if ("true".equalsIgnoreCase(nashornEnabled)) {
+			final ScriptEngineManager factory = new ScriptEngineManager();
+			engine = factory.getEngineByName("nashorn");
+
+			setInstance(this);
+			EventBusService.getEventBus().register(this);
+		}
 	}
 
 	@Subscribe
 	public void handleEvent(final EventObject event) {
 		Logger logger = LogManager.getLogger(this.getClass());
-		final EntityManager em = EntityManagerService.getNewManager();
+		if (engine != null) {
 
-		final List<ScriptingEntity> resultList = em
-				.createQuery("select se from ScriptingEntity se where se.scriptType=:scriptType", ScriptingEntity.class)
-				.setParameter("scriptType", ScriptingEntity.ScriptingType.EVENTHANDLER).getResultList();
+			final EntityManager em = EntityManagerService.getNewManager();
 
-		if (resultList != null) {
+			final List<ScriptingEntity> resultList = em
+					.createQuery("select se from ScriptingEntity se where se.scriptType=:scriptType",
+							ScriptingEntity.class)
+					.setParameter("scriptType", ScriptingEntity.ScriptingType.EVENTHANDLER).getResultList();
 
-			for (final ScriptingEntity scriptingEntity : resultList) {
+			if (resultList != null) {
 
-				try {
-					engine.eval(scriptingEntity.getJsCode());
+				for (final ScriptingEntity scriptingEntity : resultList) {
 
-					final Invocable invocable = (Invocable) engine;
+					try {
 
-					invocable.invokeFunction("eventFunction", event);
-				} catch (final ScriptException e) {
-					logger.error("ScriptException", e);
-				} catch (final NoSuchMethodException e) {
-					logger.error("NoSuchMethodException", e);
+						engine.eval(scriptingEntity.getJsCode());
+
+						final Invocable invocable = (Invocable) engine;
+
+						invocable.invokeFunction("eventFunction", event);
+					} catch (final ScriptException e) {
+						logger.error("ScriptException", e);
+					} catch (final NoSuchMethodException e) {
+						logger.error("NoSuchMethodException", e);
+					}
 				}
+
 			}
 
+			em.close();
+		} else {
+			logger.debug("nashorn engine not enabled");
 		}
-
-		em.close();
 
 	}
 
