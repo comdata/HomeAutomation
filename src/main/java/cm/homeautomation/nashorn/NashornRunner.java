@@ -91,4 +91,13 @@ public class NashornRunner {
 	public void run(final String jsCode) throws ScriptException {
 		engine.eval(jsCode);
 	}
+
+	public static void stopInstance() {
+		if (instance != null) {
+			EventBusService.getEventBus().unregister(instance);
+			instance=null;
+		}
+		
+	}
 }
+

@@ -1,4 +1,4 @@
-package cm.homeautomation.nashorn;
+Mpackage cm.homeautomation.nashorn;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.ScriptingEntity;
 import cm.homeautomation.services.base.BaseService;
@@ -59,4 +60,27 @@ public class NashornService extends BaseService {
 
 	}
 
+	@GET
+	@Path("enable")
+	public void enableService() {
+		String group = "nashorn";
+		String property = "enabled";
+		String value = "true";
+		ConfigurationService.createOrUpdate(group, property, value);
+		NashornRunner.getInstance();
+	}
+	
+	@GET
+	@Path("disable")
+	public void disableService() {
+		String group = "nashorn";
+		String property = "enabled";
+		String value = "true";
+		ConfigurationService.createOrUpdate(group, property, value);
+		NashornRunner.stopInstance();
+	}
 }
+
+
+
+
