@@ -35,8 +35,8 @@ public class EBUSStatus01Receiver {
 	private static final String FLAME = "FLAME";
 	private static final String SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK = "Sensors class not initialized correctly. Got no instance back.";
 	private static final String ERROR_SAVING_EBUS_DATA = "Error saving ebus data";
-	private static final String STORED_EBUS_VALUE_S_FOR_S = "Stored ebus value: %s for: %s";
-	private static final String SENSOR_NOT_DEFINED_FOR_S = "Sensor not defined for: %s";
+	private static final String STORED_EBUS_VALUE_S_FOR_S = "Stored ebus value: {0} for: {1}";
+	private static final String SENSOR_NOT_DEFINED_FOR_S = "Sensor not defined for: {0}";
 	private static final String EMPTY_EVENT_RECEIVED = "Empty event received.";
 
 	public EBUSStatus01Receiver() {
