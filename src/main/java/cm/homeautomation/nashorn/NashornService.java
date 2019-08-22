@@ -1,4 +1,4 @@
-Mpackage cm.homeautomation.nashorn;
+package cm.homeautomation.nashorn;
 
 import java.util.List;
 
