@@ -91,7 +91,6 @@ public class JSONSensorDataReceiver {
 			} else if (sensorData instanceof SensorDataRoomSaveRequest) {
 				sensorsService.save((SensorDataRoomSaveRequest) sensorData);
 			} else {
-			
 				for (Class<?> clazz : classList) {
 					if (clazz.isInstance(sensorData)) {
 						LogManager.getLogger(JSONSensorDataReceiver.class).debug("Casting to: %s", clazz.getSimpleName());
@@ -99,9 +98,7 @@ public class JSONSensorDataReceiver {
 						EventBusService.getEventBus().post(eventObject);	
 					}
 				}
-				
 			}
-			
 		} catch (IOException e) {
 			LogManager.getLogger(JSONSensorDataReceiver.class).error(RECEIVED_IO_EXCEPTION, e);
 		} catch (SensorDataLimitViolationException e) {
