@@ -6,6 +6,7 @@ import java.io.PrintStream;
 
 import org.apache.log4j.Logger;
 
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.services.base.AutoCreateInstance;
 
 @AutoCreateInstance
@@ -15,7 +16,11 @@ public class CustomOutputStream extends OutputStream {
 	private Logger logger = Logger.getLogger(this.getClass());
 
 	public CustomOutputStream() {
-		System.setOut(new PrintStream(this));
+		
+		if ("true".equalsIgnoreCase(ConfigurationService.getConfigurationProperty("logging", "logPrintStream"))) {
+			System.setOut(new PrintStream(this));
+		}
+		
 	}
 
 	@Override
