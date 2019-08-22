@@ -37,8 +37,14 @@ public class JSONSensorDataReceiver {
 	private static final String RECEIVED_SENSOR_DATA_LIMIT_VIOLATION_EXCEPTION = "received SensorDataLimitViolationException";
 	private static final String RECEIVED_IO_EXCEPTION = "received IOException";
 	private static final String MESSAGE_FOR_DESERIALIZATION_S = "message for deserialization: %s";
-	private static ObjectMapper mapper = new ObjectMapper();;
+	private static ObjectMapper mapper = new ObjectMapper();
 
+	/**
+	 * test data
+	 * 
+	 * @param args
+	 * @throws NoClassInformationContainedException
+	 */
 	public static void main(String[] args) throws NoClassInformationContainedException {
 		String messageContent="{\"@c\": \".RainData\",\"rc\":48,\"state\":0, \"mac\": \":::::12\"}";
 		receiveSensorData(messageContent);
@@ -92,7 +98,6 @@ public class JSONSensorDataReceiver {
 						EventObject eventObject=new EventObject(clazz.cast(sensorData));
 						EventBusService.getEventBus().post(eventObject);	
 					}
-					
 				}
 				
 			}
