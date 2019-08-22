@@ -1,6 +1,10 @@
 package cm.homeautomation.jeromq.server;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -30,6 +34,17 @@ import cm.homeautomation.services.sensors.Sensors;
  */
 public class JSONSensorDataReceiver {
 
+	private static final String RECEIVED_SENSOR_DATA_LIMIT_VIOLATION_EXCEPTION = "received SensorDataLimitViolationException";
+	private static final String RECEIVED_IO_EXCEPTION = "received IOException";
+	private static final String MESSAGE_FOR_DESERIALIZATION_S = "message for deserialization: %s";
+	private static ObjectMapper mapper = new ObjectMapper();
+
+	/**
+	 * test data
+	 * 
+	 * @param args
+	 * @throws NoClassInformationContainedException
+	 */
 	public static void main(String[] args) throws NoClassInformationContainedException {
 		String messageContent="{\"@c\": \".RainData\",\"rc\":48,\"state\":0, \"mac\": \":::::12\"}";
 		receiveSensorData(messageContent);
@@ -49,55 +64,56 @@ public class JSONSensorDataReceiver {
 			
 			Sensors sensorsService = new Sensors();
 			
-			ObjectMapper mapper = new ObjectMapper();
 			
-			messageContent=messageContent.replace("@class", "@c");
-			
-			messageContent=messageContent.replace("cm.homeautomation.sensors", "");
-			
-			messageContent=messageContent.replace("cm.homeautomation.transmission.TransmissionStatusData", ".TransmissionStatusData");
+		    messageContent = filterMessageContent(messageContent);
 			
 			if (messageContent.contains("\"}?")) {
 				String[] split = messageContent.split("[?]");
 				messageContent=split[0];
 			}
 			
-			
-			LogManager.getLogger(JSONSensorDataReceiver.class).info("message for deserialization: "+messageContent);
+			LogManager.getLogger(JSONSensorDataReceiver.class).info(MESSAGE_FOR_DESERIALIZATION_S, messageContent);
 			
 			JSONSensorDataBase sensorData = mapper.readValue(messageContent, JSONSensorDataBase.class);
-
+		
+			List<Class<?>> classList=new ArrayList<>();
+			classList.add(DistanceSensorData.class);
+			
+			classList.add(DistanceSensorData.class);
+			classList.add(PowerMeterData.class);
+			classList.add(GasmeterData.class);
+			classList.add(RainData.class);
+			classList.add(WindowSensorData.class);
+			classList.add(IRData.class);
+			
 			if (sensorData instanceof SensorDataSaveRequest) {
 				sensorsService.saveSensorData((SensorDataSaveRequest) sensorData);
 			} else if (sensorData instanceof SensorDataRoomSaveRequest) {
 				sensorsService.save((SensorDataRoomSaveRequest) sensorData);
-			} else if (sensorData instanceof DistanceSensorData) {
-				EventObject eventObject=new EventObject((DistanceSensorData)sensorData);
-				EventBusService.getEventBus().post(eventObject);	
-			} else if (sensorData instanceof PowerMeterData) {
-				EventObject eventObject=new EventObject((PowerMeterData)sensorData);
-				EventBusService.getEventBus().post(eventObject);	
-			}else if (sensorData instanceof GasmeterData) {
-				EventObject eventObject=new EventObject((GasmeterData)sensorData);
-				EventBusService.getEventBus().post(eventObject);	
-			}else if (sensorData instanceof RainData) {
-				RainData rainData = (RainData)sensorData;
-				EventObject eventObject=new EventObject(rainData);
-				EventBusService.getEventBus().post(eventObject);
-			}
-			
-			else if (sensorData instanceof WindowSensorData) {
-				EventObject eventObject=new EventObject((WindowSensorData)sensorData);
-				EventBusService.getEventBus().post(eventObject);	
-			}
-			else if (sensorData instanceof IRData) {
-				EventObject eventObject=new EventObject((IRData)sensorData);
-				EventBusService.getEventBus().post(eventObject);	
+			} else {
+				for (Class<?> clazz : classList) {
+					if (clazz.isInstance(sensorData)) {
+						LogManager.getLogger(JSONSensorDataReceiver.class).debug("Casting to: %s", clazz.getSimpleName());
+						EventObject eventObject=new EventObject(clazz.cast(sensorData));
+						EventBusService.getEventBus().post(eventObject);	
+					}
+				}
 			}
 		} catch (IOException e) {
-			LogManager.getLogger(JSONSensorDataReceiver.class).error("received IOException", e);
+			LogManager.getLogger(JSONSensorDataReceiver.class).error(RECEIVED_IO_EXCEPTION, e);
 		} catch (SensorDataLimitViolationException e) {
-			LogManager.getLogger(JSONSensorDataReceiver.class).error("received SensorDataLimitViolationException", e);
+			LogManager.getLogger(JSONSensorDataReceiver.class).error(RECEIVED_SENSOR_DATA_LIMIT_VIOLATION_EXCEPTION, e);
 		}
+	}
+
+	private static String filterMessageContent(String messageContent) {
+		Map<String, String> map = new HashMap<>();
+		map.put("@class", "@c");
+		map.put("cm.homeautomation.sensors", "");
+		map.put("cm.homeautomation.transmission.TransmissionStatusData", ".TransmissionStatusData");
+		for (Map.Entry<String, String> entry : map.entrySet()) {
+			messageContent = messageContent.replace("${" + entry.getKey() + "}", entry.getValue());
+		}
+		return messageContent;
 	}
 }

@@ -29,7 +29,7 @@ public class WeatherService {
 		Properties props = new Properties();
 		try {
 			File file = new File("weather.properties");
-			LogManager.getLogger(WeatherService.class).info("Weather properties: " + file.getAbsolutePath());
+			LogManager.getLogger(WeatherService.class).info("Weather properties: %s", file.getAbsolutePath());
 			FileReader fileReader = new FileReader(file);
 
 			props.load(fileReader);
@@ -56,7 +56,7 @@ public class WeatherService {
 			weatherData.setHumidity(weather.getCurrent_observation().getRelativeHumidity().replace("%", ""));
 			weatherData.setTempC(weather.getCurrent_observation().getTempC());
 			weatherData.setPressure(Float.toString(weather.getCurrent_observation().getPressureMb()));
-			LogManager.getLogger(WeatherService.class).debug(weatherData.toString());
+			LogManager.getLogger(WeatherService.class).debug(weatherData);
 		} else {
 			LogManager.getLogger(WeatherService.class).info("Could not access weather information");
 		}
