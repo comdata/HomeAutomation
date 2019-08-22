@@ -23,9 +23,7 @@ public class CustomOutputStream extends OutputStream {
 		// the correct way of doing this would be using a buffer
 		// to store characters until a newline is encountered,
 		// this implementation is for illustration only
-		Runnable writer = () -> {
-			logger.info((char) b);
-		};
+		Runnable writer = () -> logger.info((char) b);
 		new Thread(writer).start();
 	}
 
