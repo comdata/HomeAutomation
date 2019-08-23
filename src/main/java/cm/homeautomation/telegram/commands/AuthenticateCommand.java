@@ -39,7 +39,7 @@ public class AuthenticateCommand extends BotCommand {
 		SendMessage answer = new SendMessage();
 		answer.setChatId(chat.getId().toString());
 
-		LogManager.getLogger(this.getClass()).info("Request from user: %s", String.valueOf(user.getId()));
+		LogManager.getLogger(this.getClass()).info("Request from user: {}", String.valueOf(user.getId()));
 
 		if (arguments != null && arguments.length == 1) {
 
