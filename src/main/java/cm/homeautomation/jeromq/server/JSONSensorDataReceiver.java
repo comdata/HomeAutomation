@@ -36,7 +36,7 @@ public class JSONSensorDataReceiver {
 
 	private static final String RECEIVED_SENSOR_DATA_LIMIT_VIOLATION_EXCEPTION = "received SensorDataLimitViolationException";
 	private static final String RECEIVED_IO_EXCEPTION = "received IOException";
-	private static final String MESSAGE_FOR_DESERIALIZATION_S = "message for deserialization: %s";
+	private static final String MESSAGE_FOR_DESERIALIZATION_S = "message for deserialization: {}";
 	private static ObjectMapper mapper = new ObjectMapper();
 
 	/**
@@ -93,7 +93,7 @@ public class JSONSensorDataReceiver {
 			} else {
 				for (Class<?> clazz : classList) {
 					if (clazz.isInstance(sensorData)) {
-						LogManager.getLogger(JSONSensorDataReceiver.class).debug("Casting to: %s", clazz.getSimpleName());
+						LogManager.getLogger(JSONSensorDataReceiver.class).debug("Casting to: {}", clazz.getSimpleName());
 						EventObject eventObject=new EventObject(clazz.cast(sensorData));
 						EventBusService.getEventBus().post(eventObject);	
 					}
