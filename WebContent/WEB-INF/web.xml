@@ -111,7 +111,7 @@
 		<servlet-class>org.mitre.dsmiley.httpproxy.URITemplateProxyServlet</servlet-class>
 		<init-param>
 			<param-name>targetUri</param-name>
-			<param-value>http://192.168.1.{_ip}:{_port}/stream</param-value>
+			<param-value>http://192.168.1.{_ip}:{_port}/stream/video.mjpeg</param-value>
 		</init-param>
 		<init-param>
 			<param-name>log</param-name>
