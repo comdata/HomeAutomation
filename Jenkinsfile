@@ -13,7 +13,7 @@ pipeline {
 			sh 'apk update'
 			sh 'apk add nodejs rsync graphviz openssh mariadb mariadb-client openrc git'
 			sh 'mysql_install_db --user=mysql --rpm'
-			sh 'rm /var/lib/mysql/ib_logfile0 /var/lib/mysql/ib_logfile1'
+			//sh 'rm /var/lib/mysql/ib_logfile0 /var/lib/mysql/ib_logfile1'
 			sh 'rc-service mariadb start'
 			sh '/usr/bin/mysqld_safe &'
 			sh 'sleep 300' // for mysql to startup
