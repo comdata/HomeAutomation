@@ -12,9 +12,9 @@ pipeline {
 		    steps {
 			sh 'apk update'
 			sh 'apk add nodejs rsync graphviz openssh mariadb mariadb-client openrc git'
-			sh 'mysql_install_db --user=mysql --rpm'
+			sh 'mysql_install_db --user=root datadir=/var/lib/mysql '
 			//sh 'rm /var/lib/mysql/ib_logfile0 /var/lib/mysql/ib_logfile1'
-			sh 'rc-service mariadb start'
+			//sh 'rc-service mariadb start'
 			sh '/usr/bin/mysqld_safe &'
 			sh 'sleep 300' // for mysql to startup
 			sh 'mysql -u root -e "CREATE DATABASE HA;"'
