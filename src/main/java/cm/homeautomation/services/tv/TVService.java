@@ -1,5 +1,6 @@
 package cm.homeautomation.services.tv;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -37,6 +38,9 @@ public class TVService extends BaseService {
 	public static void getCurrentStatus(final String[] args) {
 		final boolean aliveStatus = getInstance().getAliveStatus();
 
+		LogManager.getLogger(TVService.class).debug("TVService got arguments: {}", Arrays.toString(args));
+		LogManager.getLogger(TVService.class).debug("TV status: {}", aliveStatus);
+		
 		final EntityManager em = EntityManagerService.getNewManager();
 
 		@SuppressWarnings("unchecked")
@@ -91,7 +95,7 @@ public class TVService extends BaseService {
 
 			final PhoneCallEvent callEvent = (PhoneCallEvent) eventData;
 
-			LogManager.getLogger(this.getClass()).debug("Tv IP: " + tvIp);
+			LogManager.getLogger(this.getClass()).debug("Tv IP: %s", tvIp);
 			final String event = callEvent.getEvent();
 
 			muteOrUnmuteTV(event);
