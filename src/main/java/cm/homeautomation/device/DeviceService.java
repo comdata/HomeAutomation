@@ -13,7 +13,7 @@ import cm.homeautomation.entities.Room;
 
 public class DeviceService {
 
-	private static final String MAC = "Mac: ";
+	private static final String MAC = "Mac: {}";
 
 	private DeviceService() {
 		// do nothing
@@ -27,7 +27,7 @@ public class DeviceService {
 		try {
 			final EntityManager em = EntityManagerService.getNewManager();
 			mac = mac.toLowerCase();
-			LogManager.getLogger(DeviceService.class).info(MAC + mac);
+			LogManager.getLogger(DeviceService.class).info(MAC, mac);
 			@SuppressWarnings("unchecked")
 			final List<Device> devices = em.createQuery("select d from Device d where d.mac=:mac")
 					.setParameter("mac", mac).getResultList();
@@ -47,7 +47,7 @@ public class DeviceService {
 			final Device device = getDeviceForMac(mac);
 
 			if (device == null) {
-				LogManager.getLogger(DeviceService.class).error("No Device for mac found: " + mac);
+				LogManager.getLogger(DeviceService.class).error("No Device for mac found: {}",  mac);
 				return null;
 			}
 
