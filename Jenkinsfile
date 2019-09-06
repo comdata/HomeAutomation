@@ -26,7 +26,7 @@ pipeline {
 				
 				withMaven() {
 					//properties([pipelineTriggers([snapshotDependencies()])])
-					sh 'mvn -DskipTests=true -T 1C -B clean deploy'
+					sh '$MVN_CMD -DskipTests=true -T 1C -B clean deploy'
 					//sh 'mvn org.pitest:pitest-maven:mutationCoverage -DtimeoutConstant=8000'
             	}
             }
@@ -43,7 +43,7 @@ pipeline {
 	       			steps {
 	       				withMaven() {
 	       					// org.jacoco:jacoco-maven-plugin:prepare-agent
-	       		    		sh 'mvn -DskipTests=true sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dsonar.organization=homeautomation'
+	       		    		sh '$MVN_CMD -DskipTests=true sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dsonar.organization=homeautomation'
 	       				}
 	       			}
 	       		}
