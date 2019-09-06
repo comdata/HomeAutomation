@@ -15,10 +15,10 @@ pipeline {
 			sh 'mysql_install_db --user=root'
 			//sh 'rm /var/lib/mysql/ib_logfile0 /var/lib/mysql/ib_logfile1'
 			//sh 'rc-service mariadb start'
-			sh '/usr/bin/mysqld_safe &'
-			sh 'sleep 30' // for mysql to startup
-			sh 'mysql -u root -e "CREATE DATABASE HA;"'
-			sh 'mysql -u root HA < WebContent/WEB-INF/log4j.sql'
+			//sh '/usr/bin/mysqld_safe &'
+			//sh 'sleep 30' // for mysql to startup
+			//sh 'mysql -u root -e "CREATE DATABASE HA;"'
+			//sh 'mysql -u root HA < WebContent/WEB-INF/log4j.sql'
 		    } 
 		}
 		stage('Build Backend') {
