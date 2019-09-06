@@ -34,11 +34,7 @@
 		</snapshotRepository>
 	</distributionManagement>
 	<repositories>
-		<repository>
-			<id>stil4m-releases</id>
-			<name>stil4m-releases</name>
-			<url>https://github.com/stil4m/maven-repository/raw/master/releases/</url>
-		</repository>
+
 		<repository>
 			<id>internal</id>
 			<name>Archiva Managed Internal Repository</name>
@@ -60,6 +56,16 @@
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
+		</repository>
+		<repository>
+			<id>stil4m-releases</id>
+			<name>stil4m-releases</name>
+			<url>https://github.com/stil4m/maven-repository/raw/master/releases/</url>
+		</repository>
+		<repository>
+			<id>eclipse-smarthome</id>
+			<name>smarthome-releases</name>
+			<url>https://repo.eclipse.org/content/repositories/smarthome-releases/</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>
@@ -209,7 +215,7 @@
 		<dependency>
 			<groupId>org.eclipse.smarthome.core</groupId>
 			<artifactId>org.eclipse.smarthome.core</artifactId>
-			<version>0.9.0</version>
+			<version>0.10.0</version>
 		</dependency>
 
 		<dependency>
