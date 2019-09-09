@@ -15,10 +15,10 @@ pipeline {
 			sh 'mysql_install_db --user=root'
 			//sh 'rm /var/lib/mysql/ib_logfile0 /var/lib/mysql/ib_logfile1'
 			//sh 'rc-service mariadb start'
-			sh '/usr/bin/mysqld_safe &'
-			sh 'sleep 30' // for mysql to startup
-			sh 'mysql -u root -e "CREATE DATABASE HA;"'
-			sh 'mysql -u root HA < WebContent/WEB-INF/log4j.sql'
+			//sh '/usr/bin/mysqld_safe &'
+			//sh 'sleep 30' // for mysql to startup
+			//sh 'mysql -u root -e "CREATE DATABASE HA;"'
+			//sh 'mysql -u root HA < WebContent/WEB-INF/log4j.sql'
 		    } 
 		}
 		stage('Build Backend') {
@@ -26,7 +26,7 @@ pipeline {
 				
 				withMaven() {
 					//properties([pipelineTriggers([snapshotDependencies()])])
-					sh 'mvn -DskipTests=true -T 1C -B clean deploy'
+					sh '$MVN_CMD -DskipTests=true -T 1C -B clean deploy'
 					//sh 'mvn org.pitest:pitest-maven:mutationCoverage -DtimeoutConstant=8000'
             	}
             }
@@ -43,7 +43,7 @@ pipeline {
 	       		//	steps {
 	       		//		withMaven() {
 	       		//			// org.jacoco:jacoco-maven-plugin:prepare-agent
-	       		//    		sh 'mvn -DskipTests=true sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dsonar.organization=homeautomation'
+	       		//    		sh 'MVN_CMD -DskipTests=true sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dsonar.organization=homeautomation'
 	       		//		}
 	       		//	}
 	       		//}
