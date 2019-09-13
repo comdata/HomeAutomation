@@ -29,7 +29,7 @@ public class EventBusAnnotationInitializerTest {
 	public void testEventBusInitialization() {
 		EventBusAnnotationInitializer eventBusAnnotationInitializer = new EventBusAnnotationInitializer();
 	
-		Map<Class, Object> instances = eventBusAnnotationInitializer.getInstances();
+		Map<Class<?>, Object> instances = eventBusAnnotationInitializer.getInstances();
 		assertFalse(instances.isEmpty());
 	}
 
