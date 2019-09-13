@@ -7,6 +7,7 @@ import java.util.Date;
 
 import javax.persistence.EntityManager;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -138,7 +139,7 @@ public class SensorsTest {
 			sensors.saveSensorData(saveRequest);
 		});
 	}
-	
+
 	@Test
 	public void testMinLimitCheck() {
 		em.getTransaction().begin();
@@ -164,5 +165,25 @@ public class SensorsTest {
 		Assertions.assertThrows(SensorDataLimitViolationException.class, () -> {
 			sensors.saveSensorData(saveRequest);
 		});
+	}
+
+	@Test
+
+	
+	
+	public void testMergeWithString() {
+		Sensors instance = new Sensors();
+		
+		SensorData existingSensorData=new SensorData();
+		SensorData requestSensorData=new SensorData();
+		
+		requestSensorData.setValue("overrun");
+		
+		boolean creatable = NumberUtils.isCreatable("overrun");
+		
+		System.out.println(creatable);
+		
+		boolean isNumeric=true;
+		instance.mergeExistingData(existingSensorData, requestSensorData, isNumeric);
 	}
 }
