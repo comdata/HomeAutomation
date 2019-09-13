@@ -34,11 +34,11 @@ pipeline {
 	
 	    stage('Deploy') {
 	       parallel {
-	       	    stage('CodeCoverage') {
-	       	    	steps {
-	       		 	   sh 'cd HomeAutomation && bash <(curl -s https://codecov.io/bash)'
-	       			}
-	       		}
+//	       	    stage('CodeCoverage') {
+//	       	    	steps {
+//	       		 	   sh 'cd HomeAutomation && bash <(curl -s https://codecov.io/bash)'
+//	       			}
+//	       		}
 	       		//stage('Sonarqube' ) {
 	       		//	steps {
 	       		//		withMaven() {
