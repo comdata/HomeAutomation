@@ -26,7 +26,7 @@ import com.google.common.base.Predicate;
  */
 public class StartupAnnotationInitializer extends Thread {
 
-	private Map<Class, Object> instances = new HashMap<>();
+	private Map<Class<?>, Object> instances = new HashMap<>();
 
 	public StartupAnnotationInitializer() {
 		// nothing special to be done
@@ -81,15 +81,15 @@ public class StartupAnnotationInitializer extends Thread {
 		return typesAnnotatedWith;
 	}
 
-	public Map<Class, Object> getInstances() {
+	public Map<Class<?>, Object> getInstances() {
 		return instances;
 	}
 
 	public void disposeInstances() {
 		synchronized(this) {
-			Set<Class> keySet = instances.keySet();
+			Set<Class<?>> keySet = instances.keySet();
 
-			for (Class clazz : keySet) {
+			for (Class<?> clazz : keySet) {
 				instances.remove(clazz);
 			}
 		}

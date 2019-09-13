@@ -26,7 +26,7 @@ import com.google.common.base.Predicate;
 @AutoCreateInstance
 public class EventBusAnnotationInitializer {
 
-	private static Map<Class, Object> instances = new HashMap<>();
+	private static Map<Class<?>, Object> instances = new HashMap<>();
 
 	public EventBusAnnotationInitializer() {
 		this(false);
@@ -38,7 +38,7 @@ public class EventBusAnnotationInitializer {
 		}
 	}
 	
-	public Map<Class, Object> getInstances() {
+	public Map<Class<?>, Object> getInstances() {
 		return instances;
 	}
 
@@ -79,7 +79,7 @@ public class EventBusAnnotationInitializer {
 				.setScanners(new TypeElementsScanner(), new TypeAnnotationsScanner(), new MethodAnnotationsScanner()).useParallelExecutor());
 
 		// MethodAnnotationsScanner
-		final Set<Method> resources = reflections.getMethodsAnnotatedWith(Subscribe.class);
-		return resources;
+		return reflections.getMethodsAnnotatedWith(Subscribe.class);
+
 	}
 }
