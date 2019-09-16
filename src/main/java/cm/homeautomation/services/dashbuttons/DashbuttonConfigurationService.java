@@ -42,7 +42,7 @@ public class DashbuttonConfigurationService extends BaseService {
 		
 		DashButton dashButton = new DashButton();
 		dashButton.setName(name);
-		dashButton.setMac(mac);
+		dashButton.setMac(mac.replace(":", "").toUpperCase());
 		em.persist(dashButton);
 		em.flush();
 		em.getTransaction().commit();
