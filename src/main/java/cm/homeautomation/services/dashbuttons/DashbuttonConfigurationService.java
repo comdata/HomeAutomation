@@ -9,9 +9,10 @@ import javax.ws.rs.core.GenericEntity;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DashButton;
+import cm.homeautomation.services.base.BaseService;
 
 @Path("dashbutton")
-public class DashbuttonConfigurationService {
+public class DashbuttonConfigurationService extends BaseService {
 
 	@Path("readAll")
 	@GET
