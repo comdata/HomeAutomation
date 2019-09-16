@@ -83,25 +83,21 @@ import cm.homeautomation.services.base.GenericStatus;
 public class LEGOTrainService extends BaseService {
 
 
-	private static final String topic = "/lego";
+	private static final String TOPIC = "/lego";
 
 	@GET
 	@Path("control/speed/{train}/{speed}")
 	public GenericStatus controlTrainSpeed(@PathParam("train") String train, @PathParam("speed") int speed) {
-		//{mode: 0, step: 0, output: 0, channel:0}
-		
 		String jsonMessage="{mode: 0, step: "+speed+", output: 0, channel:"+train+"}";
-		MQTTSender.sendMQTTMessage(topic, jsonMessage);
+		MQTTSender.sendMQTTMessage(TOPIC, jsonMessage);
 		return new GenericStatus(true);
 	}
 	
 	@GET
 	@Path("control/light/{train}/{light}")
 	public GenericStatus controlTrainLight(@PathParam("train") String train, @PathParam("light") int light) {
-		//{mode: 0, step: 0, output: 0, channel:0}
-		
 		String jsonMessage="{mode: 0, step: "+light+", output: 1, channel:"+train+"}";
-		MQTTSender.sendMQTTMessage(topic, jsonMessage);
+		MQTTSender.sendMQTTMessage(TOPIC, jsonMessage);
 		return new GenericStatus(true);
 	}
 	
@@ -112,12 +108,9 @@ public class LEGOTrainService extends BaseService {
 		for(int a=0;a<2;a++) {
 			for(int i=0;i<4;i++) { 
 				String jsonMessage="{mode: 0, step: 8, output: "+a+", channel:"+i+"}";
-				MQTTSender.sendMQTTMessage(topic ,jsonMessage);
+				MQTTSender.sendMQTTMessage(TOPIC ,jsonMessage);
 			}
 		}
 		return new GenericStatus(true);
 	}
-	
-	
-	
 }
