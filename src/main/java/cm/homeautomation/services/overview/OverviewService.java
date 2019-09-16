@@ -1,5 +1,6 @@
 package cm.homeautomation.services.overview;
 
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class OverviewService extends BaseService {
 		init();
 	}
 
-	private void decorateRoomTile(OverviewTile roomTile) {
+	private static void decorateRoomTile(OverviewTile roomTile) {
 		final Map<Sensor, SensorData> sensorData = roomTile.getSensorData();
 		String temperature = null;
 		String humidity = null;
@@ -42,41 +43,44 @@ public class OverviewService extends BaseService {
 				if (sensor.isShowData()) {
 					final SensorData data = sensorData.get(sensor);
 
-					if ("TEMPERATURE".equals(sensor.getSensorType())) {
-						if (data.getValue() != null && Float.parseFloat(data.getValue().replace(',', '.')) <= 50) {
-							temperature = data.getValue();
-							sensorDate = data.getValidThru();
-						}
+					if ("TEMPERATURE".equals(sensor.getSensorType()) && data.getValue() != null && Float.parseFloat(data.getValue().replace(',', '.')) <= 50) {
+						temperature = data.getValue();
+						sensorDate = data.getValidThru();
 					}
-					if ("HUMIDITY".equals(sensor.getSensorType())) {
-						if (data.getValue() != null && Float.parseFloat(data.getValue().replace(',', '.')) <= 100) {
-							humidity = data.getValue();
-							sensorDate = data.getValidThru();
-						}
+					if ("HUMIDITY".equals(sensor.getSensorType()) && data.getValue() != null && Float.parseFloat(data.getValue().replace(',', '.')) <= 100) {
+						humidity = data.getValue();
+						sensorDate = data.getValidThru();
 					}
 				}
 			}
 		}
 
-		icon = getIconForRoomTile(roomTile, icon);
+		icon = getIconForRoomTile(roomTile);
 
+		addDetailsToRoomTile(roomTile, temperature, humidity, sensorDate, icon);
+
+	}
+
+	private static void addDetailsToRoomTile(OverviewTile roomTile, String temperature, String humidity, Date sensorDate,
+			String icon) {
+		String humidityString = ((humidity != null) && !"".equals(humidity)) ? " / " + humidity.replace(",", ".") : "";
 		final String number = ((temperature != null) && !"".equals(temperature))
 				? (temperature.replace(",", ".")
-						+ (((humidity != null) && !"".equals(humidity)) ? " / " + humidity.replace(",", ".") : ""))
+						+ humidityString)
 				: "";
 		roomTile.setNumber(number);
 		roomTile.setNumberUnit("°C " + (number.contains("/") ? "/ %" : ""));
 		roomTile.setTitle(roomTile.getRoom().getRoomName());
 		roomTile.setRoomName(roomTile.getRoom().getRoomName());
-		roomTile.setInfo((sensorDate != null) ? sensorDate.toLocaleString() : "");
+		roomTile.setInfo((sensorDate != null) ? DateFormat.getDateInstance().format(sensorDate) : "");
 		roomTile.setInfoState("Success");
 		roomTile.setRoomId(Long.toString(roomTile.getRoom().getId()));
 		roomTile.setIcon(icon);
 		roomTile.setTileType("room");
-
 	}
 
-	private String getIconForRoomTile(OverviewTile roomTile, String icon) {
+	private static String getIconForRoomTile(OverviewTile roomTile) {
+		String icon="";
 		final Set<Switch> switches = roomTile.getSwitches();
 
 		for (final Switch singleSwitch : switches) {
@@ -91,7 +95,7 @@ public class OverviewService extends BaseService {
 		return icon;
 	}
 
-	private OverviewTile getOverviewTileForRoom(EntityManager em, Room room) {
+	private static OverviewTile getOverviewTileForRoom(EntityManager em, Room room) {
 		final OverviewTile roomTile = new OverviewTile();
 		roomTile.setRoom(room);
 
@@ -135,7 +139,7 @@ public class OverviewService extends BaseService {
 		return overviewTiles;
 	}
 
-	private void init() {
+	private static void init() {
 
 		if (overviewTiles == null) {
 			overviewTiles = new OverviewTiles();
