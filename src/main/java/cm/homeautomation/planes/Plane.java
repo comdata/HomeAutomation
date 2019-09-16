@@ -43,8 +43,8 @@ public class Plane implements Serializable {
 	@JsonProperty("seen")
 	private int seen;
 	@JsonIgnore
-	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-	private final static long serialVersionUID = -195055166643612312L;
+	private Map<String, Object> additionalProperties = new HashMap<>();
+	private static final long serialVersionUID = -195055166643612312L;
 
 	@JsonProperty("hex")
 	public String getHex() {
