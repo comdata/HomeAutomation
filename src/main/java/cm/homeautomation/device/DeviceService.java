@@ -28,8 +28,7 @@ public class DeviceService {
 			final EntityManager em = EntityManagerService.getNewManager();
 			mac = mac.toLowerCase();
 			LogManager.getLogger(DeviceService.class).info(MAC, mac);
-			@SuppressWarnings("unchecked")
-			final List<Device> devices = em.createQuery("select d from Device d where d.mac=:mac")
+			final List<Device> devices = em.createQuery("select d from Device d where d.mac=:mac", Device.class)
 					.setParameter("mac", mac).getResultList();
 
 			if ((devices != null) && !devices.isEmpty()) {
