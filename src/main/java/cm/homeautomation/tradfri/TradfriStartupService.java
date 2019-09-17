@@ -59,11 +59,12 @@ public class TradfriStartupService {
 		Light light = new Light();
 		light.setId(Integer.parseInt(id));
 		ModifyLightRequestBuilder builder = ModifyLightRequestBuilder.modify(light);
-		builder.withDimmer(dimValue);
+	
 		
 		if (dimValue==0) {
 			builder.withLightOn(false);
 		} else {
+			builder.withDimmer(dimValue);
 			builder.withLightOn(true);
 		}
 		
