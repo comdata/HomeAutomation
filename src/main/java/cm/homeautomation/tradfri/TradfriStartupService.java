@@ -31,10 +31,14 @@ import de.eckey.tradfrj.service.security.SimpleUserPskStore;
 @AutoCreateInstance
 public class TradfriStartupService {
 
-	
+	private static final String USER = "user";
+	private static final String TOKEN = "token";
+	private static final String SECRET = "secret";
+	private static final String GATEWAY = "gateway";
+	private static final String TRADFRI_GROUP = "tradfri";
 	private static final String TRADFRI = "TRADFRI";
 	private EntityManager em;
-	
+
 	private static TradfriStartupService instance;
 	private TradfrjRequestExecutor executor;
 
@@ -55,19 +59,18 @@ public class TradfriStartupService {
 	}
 
 	public void dimBulb(final String id, final int dimValue) {
-		
+
 		Light light = new Light();
 		light.setId(Integer.parseInt(id));
 		ModifyLightRequestBuilder builder = ModifyLightRequestBuilder.modify(light);
-	
-		
-		if (dimValue==0) {
+
+		if (dimValue == 0) {
 			builder.withLightOn(false);
 		} else {
 			builder.withDimmer(dimValue);
 			builder.withLightOn(true);
 		}
-		
+
 		LogManager.getLogger(this.getClass()).debug("setting dimValue: {}", dimValue);
 
 		try {
@@ -80,10 +83,10 @@ public class TradfriStartupService {
 
 	private void init() {
 
-		String gateway = ConfigurationService.getConfigurationProperty("tradfri", "gateway");
-		String secret = ConfigurationService.getConfigurationProperty("tradfri", "secret");
-		String token = ConfigurationService.getConfigurationProperty("tradfri", "token");
-		String user = ConfigurationService.getConfigurationProperty("tradfri", "user");
+		String gateway = ConfigurationService.getConfigurationProperty(TRADFRI_GROUP, GATEWAY);
+		String secret = ConfigurationService.getConfigurationProperty(TRADFRI_GROUP, SECRET);
+		String token = ConfigurationService.getConfigurationProperty(TRADFRI_GROUP, TOKEN);
+		String user = ConfigurationService.getConfigurationProperty(TRADFRI_GROUP, USER);
 
 		AuthoritySupplier authoritySupplier = new AuthoritySupplier(gateway, 5684);
 		TradfrjService service = new TradfrjService(authoritySupplier);
@@ -96,9 +99,21 @@ public class TradfriStartupService {
 
 			updateDevices();
 
+			Runnable tradfriUpdateRunnable = new Runnable() {
+				public void run() {
+					try {
+						TradfriStartupService.getInstance().updateDevices();
+					
+						Thread.sleep(10000);
+					} catch (ServiceException | InterruptedException e) {
+						LogManager.getLogger(this.getClass()).error("update devices failed", e);
+					}
+				}
+			};
+			new Thread(tradfriUpdateRunnable).start();
+			
 		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error("update devices failed", e);
 		}
 	}
 
@@ -108,12 +123,13 @@ public class TradfriStartupService {
 		lightList = executor.executeRequest(TradfrjRequests.lookupLights(deviceIds));
 
 		for (Light deviceLight : lightList) {
-			LogManager.getLogger(this.getClass()).debug("Found {} name: {}", deviceLight.getId(), deviceLight.getName());
-		
+			LogManager.getLogger(this.getClass()).debug("Found {} name: {}", deviceLight.getId(),
+					deviceLight.getName());
+
 			LogManager.getLogger(this.getClass()).trace("Bulb event registered");
 
-			final cm.homeautomation.entities.Light light = LightService.getInstance().getLightForTypeAndExternalId("TRADFRI",
-					Integer.toString(deviceLight.getId()));
+			final cm.homeautomation.entities.Light light = LightService.getInstance()
+					.getLightForTypeAndExternalId(TRADFRI, Integer.toString(deviceLight.getId()));
 
 			em = EntityManagerService.getNewManager();
 			em.getTransaction().begin();
@@ -122,7 +138,7 @@ public class TradfriStartupService {
 				final DimmableLight dimLight = (DimmableLight) light;
 				final int intensity = deviceLight.getLightData()[0].getDimmer();
 
-				if (deviceLight.getReachable()==1) {
+				if (deviceLight.getReachable() == 1) {
 					dimLight.setBrightnessLevel(intensity);
 				} else {
 					dimLight.setBrightnessLevel(dimLight.getMinimumValue());
@@ -132,13 +148,13 @@ public class TradfriStartupService {
 
 			if (light instanceof RGBLight) {
 				final RGBLight rgbLight = (RGBLight) light;
-				rgbLight.setColor( deviceLight.getLightData()[0].getColor());
+				rgbLight.setColor(deviceLight.getLightData()[0].getColor());
 
 			}
 
-			if (deviceLight.getReachable()==1) {
+			if (deviceLight.getReachable() == 1) {
 				// set on or off
-				light.setPowerState( deviceLight.getLightData()[0].getOnOff()==1);
+				light.setPowerState(deviceLight.getLightData()[0].getOnOff() == 1);
 			} else {
 				light.setPowerState(false);
 			}
@@ -150,9 +166,7 @@ public class TradfriStartupService {
 			em.getTransaction().commit();
 			LogManager.getLogger(this.getClass()).trace("Bulb event done");
 		}
-		
-		
-		
+
 	}
 
 	private String createToken(TradfrjService service, String secret, String user) throws ServiceException {
@@ -161,11 +175,11 @@ public class TradfriStartupService {
 
 	private void createPSK(TradfrjService service, String secret, String user, String token) throws ServiceException {
 
-		if (token==null || token.isEmpty()) {
+		if (token == null || token.isEmpty()) {
 			user = RandomStringUtils.randomAlphanumeric(8);
 			token = createToken(service, secret, user);
-			ConfigurationService.createOrUpdate("tradfri", "token", token);
-			ConfigurationService.createOrUpdate("tradfri", "user", user);
+			ConfigurationService.createOrUpdate(TRADFRI_GROUP, TOKEN, token);
+			ConfigurationService.createOrUpdate(TRADFRI_GROUP, USER, user);
 		}
 
 		service.setPskStore(new SimpleUserPskStore(user, token));
@@ -184,5 +198,9 @@ public class TradfriStartupService {
 		} catch (ServiceException e) {
 			LogManager.getLogger(this.getClass()).debug("setting color failed", e);
 		}
+	}
+
+	public static void update(String[] args) throws ServiceException {
+		TradfriStartupService.getInstance().updateDevices();
 	}
 }
