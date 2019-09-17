@@ -97,7 +97,7 @@ public class TradfriStartupService {
 
 	private void createPSK(TradfrjService service, String secret, String user, String token) throws ServiceException {
 
-		if (token.isEmpty()) {
+		if (token==null || token.isEmpty()) {
 			user = RandomStringUtils.randomAlphanumeric(8);
 			token = createToken(service, secret, user);
 			ConfigurationService.createOrUpdate("tradfri", "token", token);
