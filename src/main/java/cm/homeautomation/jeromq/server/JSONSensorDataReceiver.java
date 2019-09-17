@@ -112,7 +112,7 @@ public class JSONSensorDataReceiver {
 		map.put("cm.homeautomation.sensors", "");
 		map.put("cm.homeautomation.transmission.TransmissionStatusData", ".TransmissionStatusData");
 		for (Map.Entry<String, String> entry : map.entrySet()) {
-			messageContent = messageContent.replace("${" + entry.getKey() + "}", entry.getValue());
+			messageContent = messageContent.replace(entry.getKey(), entry.getValue());
 		}
 		return messageContent;
 	}
