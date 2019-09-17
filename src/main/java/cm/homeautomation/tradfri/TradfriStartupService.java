@@ -60,6 +60,13 @@ public class TradfriStartupService {
 		light.setId(Integer.parseInt(id));
 		ModifyLightRequestBuilder builder = ModifyLightRequestBuilder.modify(light);
 		builder.withDimmer(dimValue);
+		
+		if (dimValue==0) {
+			builder.withLightOn(false);
+		} else {
+			builder.withLightOn(true);
+		}
+		
 		LogManager.getLogger(this.getClass()).debug("setting dimValue: {}", dimValue);
 
 		try {
