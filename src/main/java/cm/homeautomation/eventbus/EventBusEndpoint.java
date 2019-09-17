@@ -9,6 +9,7 @@ import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
+import javax.websocket.RemoteEndpoint.Basic;
 import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
@@ -135,9 +136,12 @@ public class EventBusEndpoint {
 				synchronized (session) {
 					if (session.isOpen()) {
 						try {
-							session.getBasicRemote().sendObject(object);
-							session.getBasicRemote().flushBatch();
-						} catch (IllegalStateException | IOException | EncodeException e) {
+							Basic basicRemote = session.getBasicRemote();
+							if (basicRemote != null) {
+								basicRemote.sendObject(object);
+								basicRemote.flushBatch();
+							}
+						} catch (IllegalStateException | IOException | EncodeException | NullPointerException e) {
 							LogManager.getLogger(this.getClass())
 									.error("Sending failed" + session.getId() + " key: " + key, e); //
 							userSessions.remove(key);
