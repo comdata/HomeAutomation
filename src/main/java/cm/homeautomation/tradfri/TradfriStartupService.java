@@ -138,7 +138,7 @@ public class TradfriStartupService {
 				light=new cm.homeautomation.entities.Light();
 				
 				light.setExternalId(Integer.toString(deviceLight.getId()));
-				light.setType(TRADFRI);
+				light.setLightType(TRADFRI);
 				light.setName(deviceLight.getName());
 				
 				em.persist(light);
