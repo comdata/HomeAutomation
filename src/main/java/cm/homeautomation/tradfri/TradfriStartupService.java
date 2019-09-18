@@ -106,7 +106,7 @@ public class TradfriStartupService {
 						TradfriStartupService.getInstance().updateDevices();
 
 						Thread.sleep(10000);
-					} catch (ServiceException | InterruptedException e) {
+					} catch (ServiceException | InterruptedException | RuntimeException e) {
 						LogManager.getLogger(this.getClass()).error("update devices failed", e);
 					}
 				}
@@ -154,7 +154,7 @@ public class TradfriStartupService {
 				dimmableLight.setMinimumValue(0);
 				dimmableLight.setDateInstalled(new Date(deviceLight.getCreatedAt()));
 
-				em.persist(light);
+				em.persist(dimmableLight);
 
 				em.flush();
 				em.getTransaction().commit();
