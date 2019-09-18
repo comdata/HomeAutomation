@@ -2,7 +2,15 @@ package cm.homeautomation.sensors.window;
 
 import java.util.Date;
 
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.sap.olingo.jpa.metadata.core.edm.annotation.EdmIgnore;
 
 import cm.homeautomation.entities.Device;
 import cm.homeautomation.entities.Room;
@@ -12,11 +20,29 @@ import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
 public class WindowStateData implements HumanMessageGenerationInterface {
 	private int state;
 	private String mac;
+	
+	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+	@JsonIdentityReference(alwaysAsId = true)
+	@JsonBackReference("room")
+	@ManyToOne
+	@JoinColumn(name = "ROOM_ID")
+	@EdmIgnore
 	private Room room;
 
+	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+	@JsonIdentityReference(alwaysAsId = true)
+	@JsonBackReference("window")
+	@ManyToOne
+	@JoinColumn(name = "WINDOW_ID")
+	@EdmIgnore
 	private Window window;
 
-	@Transient
+	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+	@JsonIdentityReference(alwaysAsId = true)
+	@JsonBackReference("device")
+	@ManyToOne
+	@JoinColumn(name = "DEVICE_ID")
+	@EdmIgnore
 	private Device device;
 	private Date date;
 
