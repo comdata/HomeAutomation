@@ -1,6 +1,7 @@
 package cm.homeautomation.tradfri;
 
 import java.util.Collection;
+import java.util.Date;
 
 import javax.crypto.SecretKey;
 import javax.persistence.EntityManager;
@@ -103,7 +104,7 @@ public class TradfriStartupService {
 				public void run() {
 					try {
 						TradfriStartupService.getInstance().updateDevices();
-					
+
 						Thread.sleep(10000);
 					} catch (ServiceException | InterruptedException e) {
 						LogManager.getLogger(this.getClass()).error("update devices failed", e);
@@ -111,7 +112,7 @@ public class TradfriStartupService {
 				}
 			};
 			new Thread(tradfriUpdateRunnable).start();
-			
+
 		} catch (ServiceException e) {
 			LogManager.getLogger(this.getClass()).error("update devices failed", e);
 		}
@@ -123,62 +124,72 @@ public class TradfriStartupService {
 		lightList = executor.executeRequest(TradfrjRequests.lookupLights(deviceIds));
 
 		for (Light deviceLight : lightList) {
+			em = EntityManagerService.getNewManager();
+			
 			LogManager.getLogger(this.getClass()).debug("Found {} name: {}", deviceLight.getId(),
 					deviceLight.getName());
 
 			LogManager.getLogger(this.getClass()).trace("Bulb event registered");
 
-			cm.homeautomation.entities.Light light = LightService.getInstance()
-					.getLightForTypeAndExternalId(TRADFRI, Integer.toString(deviceLight.getId()));
+			cm.homeautomation.entities.Light light = LightService.getInstance().getLightForTypeAndExternalId(TRADFRI,
+					Integer.toString(deviceLight.getId()));
 
-			if (light==null) {
+			DimmableLight dimmableLight = null;
+
+			if (light instanceof DimmableLight) {
+				dimmableLight = (DimmableLight) light;
+			}
+
+			if (dimmableLight == null) {
+
 				em.getTransaction().begin();
-				
-				
-				light=new cm.homeautomation.entities.Light();
-				
-				light.setExternalId(Integer.toString(deviceLight.getId()));
-				light.setLightType(TRADFRI);
-				light.setName(deviceLight.getName());
-				
+
+				dimmableLight = new DimmableLight();
+
+				dimmableLight.setExternalId(Integer.toString(deviceLight.getId()));
+				dimmableLight.setLightType(TRADFRI);
+				dimmableLight.setName(deviceLight.getName());
+				dimmableLight.setMaximumValue(254);
+				dimmableLight.setMinimumValue(0);
+				dimmableLight.setDateInstalled(new Date(deviceLight.getCreatedAt()));
+
 				em.persist(light);
-				
+
 				em.flush();
 				em.getTransaction().commit();
 			}
-			
-			em = EntityManagerService.getNewManager();
+
 			em.getTransaction().begin();
+			
 
-			if (light instanceof DimmableLight) {
-				final DimmableLight dimLight = (DimmableLight) light;
-				final int intensity = deviceLight.getLightData()[0].getDimmer();
+			dimmableLight.setFirmware(deviceLight.getDeviceData().getFirmwareVersion());
 
-				if (deviceLight.getReachable() == 1) {
-					dimLight.setBrightnessLevel(intensity);
-				} else {
-					dimLight.setBrightnessLevel(dimLight.getMinimumValue());
-				}
+			
+			final int intensity = deviceLight.getLightData()[0].getDimmer();
 
+			if (deviceLight.getReachable() == 1) {
+				dimmableLight.setBrightnessLevel(intensity);
+			} else {
+				dimmableLight.setBrightnessLevel(dimmableLight.getMinimumValue());
 			}
 
-			if (light instanceof RGBLight) {
-				final RGBLight rgbLight = (RGBLight) light;
+			if (dimmableLight instanceof RGBLight) {
+				final RGBLight rgbLight = (RGBLight) dimmableLight;
 				rgbLight.setColor(deviceLight.getLightData()[0].getColor());
 
 			}
 
 			if (deviceLight.getReachable() == 1) {
 				// set on or off
-				light.setPowerState(deviceLight.getLightData()[0].getOnOff() == 1);
+				dimmableLight.setPowerState(deviceLight.getLightData()[0].getOnOff() == 1);
 			} else {
-				light.setPowerState(false);
+				dimmableLight.setPowerState(false);
 			}
 
 			EventBusService.getEventBus().post(new EventObject(new LightChangedEvent(light)));
 
-			em.merge(light);
-
+			em.merge(dimmableLight);
+			em.flush();
 			em.getTransaction().commit();
 			LogManager.getLogger(this.getClass()).trace("Bulb event done");
 		}
