@@ -122,9 +122,10 @@ public class TradfriStartupService {
 		Collection<Double> deviceIds = executor.executeRequest(TradfrjRequests.lookupDeviceIDs());
 
 		lightList = executor.executeRequest(TradfrjRequests.lookupLights(deviceIds));
+		em = EntityManagerService.getNewManager();
 
 		for (Light deviceLight : lightList) {
-			em = EntityManagerService.getNewManager();
+			
 			
 			LogManager.getLogger(this.getClass()).debug("Found {} name: {}", deviceLight.getId(),
 					deviceLight.getName());
@@ -193,6 +194,7 @@ public class TradfriStartupService {
 			em.getTransaction().commit();
 			LogManager.getLogger(this.getClass()).trace("Bulb event done");
 		}
+		em.close();
 
 	}
 
