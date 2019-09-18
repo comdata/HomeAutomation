@@ -128,9 +128,25 @@ public class TradfriStartupService {
 
 			LogManager.getLogger(this.getClass()).trace("Bulb event registered");
 
-			final cm.homeautomation.entities.Light light = LightService.getInstance()
+			cm.homeautomation.entities.Light light = LightService.getInstance()
 					.getLightForTypeAndExternalId(TRADFRI, Integer.toString(deviceLight.getId()));
 
+			if (light==null) {
+				em.getTransaction().begin();
+				
+				
+				light=new cm.homeautomation.entities.Light();
+				
+				light.setExternalId(Integer.toString(deviceLight.getId()));
+				light.setType(TRADFRI);
+				light.setName(deviceLight.getName());
+				
+				em.persist(light);
+				
+				em.flush();
+				em.getTransaction().commit();
+			}
+			
 			em = EntityManagerService.getNewManager();
 			em.getTransaction().begin();
 
