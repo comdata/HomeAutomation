@@ -1,8 +1,8 @@
 pipeline {
     agent {
         docker {
-            image 'maven:3.5.4-jdk-8-alpine' 
-            args '-v /root/.ssh:/root/.ssh' 
+            image 'maven:3.6.1-jdk-8-alpine' 
+            args '-v $HOME/.m2:/root/.m2 -v /root/.ssh:/root/.ssh' 
         }
     }
     triggers { upstream(upstreamProjects: 'comdata/HomeAutomationBase,comdata/olingo-jpa-processor-v4', threshold: hudson.model.Result.SUCCESS)}
