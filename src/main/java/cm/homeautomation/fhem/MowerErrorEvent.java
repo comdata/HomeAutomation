@@ -19,7 +19,7 @@ public class MowerErrorEvent implements HumanMessageGenerationInterface {
 
 	@Override
 	public String getMessageString() {
-		return getErrorMessage();
+		return "Mower has error: " + getErrorMessage();
 	}
 
 	public String getErrorMessage() {
