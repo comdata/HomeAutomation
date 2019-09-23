@@ -7,19 +7,25 @@ import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.EventBusException;
 
+/**
+ * Custom Eventbus object
+ * 
+ * @author cmertins
+ *
+ */
 public class CustomEventBus {
 
-	private final Map<String, Class> classes = new HashMap<>();
+	private final Map<String, Class<? extends Object>> classes = new HashMap<>();
 
 	public CustomEventBus() {
 		// do nothing
 	}
-	
+
 	public static EventBus getEventBus() {
 		return EventBus.getDefault();
 	}
 
-	public Map<String, Class> getClasses() {
+	public Map<String, Class<? extends Object>> getClasses() {
 		return classes;
 	}
 
@@ -29,13 +35,13 @@ public class CustomEventBus {
 
 	public void register(final Object object) {
 
-		final Class clazz = object.getClass();
+		final Class<? extends Object> clazz = object.getClass();
 		final String clazzName = clazz.getName();
 
 		if (getClasses().containsKey(clazzName)) {
-			LogManager.getLogger(this.getClass()).debug("Class already registered on eventbus: " + clazzName);
+			LogManager.getLogger(this.getClass()).debug("Class already registered on eventbus: {}", clazzName);
 		} else {
-			LogManager.getLogger(this.getClass()).debug("Registering Class on eventbus: " + clazz.getName());
+			LogManager.getLogger(this.getClass()).debug("Registering Class on eventbus: {}", clazz.getName());
 			try {
 				EventBus.getDefault().register(object);
 			} catch (final EventBusException e) {
