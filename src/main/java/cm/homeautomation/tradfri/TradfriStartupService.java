@@ -125,10 +125,10 @@ public class TradfriStartupService {
 		em = EntityManagerService.getNewManager();
 
 		for (Light deviceLight : lightList) {
-			
-			
 			LogManager.getLogger(this.getClass()).debug("Found {} name: {}", deviceLight.getId(),
 					deviceLight.getName());
+
+            
 
 			LogManager.getLogger(this.getClass()).trace("Bulb event registered");
 
@@ -145,7 +145,11 @@ public class TradfriStartupService {
 
 				em.getTransaction().begin();
 
-				dimmableLight = new DimmableLight();
+                if (deviceLight.getName().contains("CWS")) {
+                    dimmableLight = new RGBLight();
+                } else {
+				    dimmableLight = new DimmableLight();
+                }
 
 				dimmableLight.setExternalId(Integer.toString(deviceLight.getId()));
 				dimmableLight.setLightType(TRADFRI);
