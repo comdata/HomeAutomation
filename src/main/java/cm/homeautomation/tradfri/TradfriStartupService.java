@@ -3,7 +3,6 @@ package cm.homeautomation.tradfri;
 import java.util.Collection;
 import java.util.Date;
 
-import javax.crypto.SecretKey;
 import javax.persistence.EntityManager;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -16,11 +15,8 @@ import cm.homeautomation.entities.RGBLight;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.AutoCreateInstance;
-
 import cm.homeautomation.services.light.LightService;
-import de.eckey.tradfrj.item.device.Device;
 import de.eckey.tradfrj.item.device.light.Light;
-import de.eckey.tradfrj.item.device.light.LightData;
 import de.eckey.tradfrj.request.TradfrjRequestExecutor;
 import de.eckey.tradfrj.request.TradfrjRequests;
 import de.eckey.tradfrj.request.item.device.lamp.ModifyLightRequestBuilder;
