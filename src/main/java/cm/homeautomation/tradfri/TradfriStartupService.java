@@ -170,28 +170,25 @@ public class TradfriStartupService {
 
 			if (deviceLight.getReachable() == 1) {
 				dimmableLight.setBrightnessLevel(intensity);
+                // set on or off
+				dimmableLight.setPowerState(deviceLight.getLightData()[0].getOnOff() == 1);
 			} else {
 				dimmableLight.setBrightnessLevel(dimmableLight.getMinimumValue());
+                dimmableLight.setPowerState(false);
 			}
 
 			if (dimmableLight instanceof RGBLight) {
 				final RGBLight rgbLight = (RGBLight) dimmableLight;
 				rgbLight.setColor(deviceLight.getLightData()[0].getColor());
-
 			}
-
-			if (deviceLight.getReachable() == 1) {
-				// set on or off
-				dimmableLight.setPowerState(deviceLight.getLightData()[0].getOnOff() == 1);
-			} else {
-				dimmableLight.setPowerState(false);
-			}
-
-			EventBusService.getEventBus().post(new EventObject(new LightChangedEvent(light)));
 
 			em.merge(dimmableLight);
 			em.flush();
 			em.getTransaction().commit();
+
+            // emit light changed event
+			EventBusService.getEventBus().post(new EventObject(new LightChangedEvent(light)));
+
 			LogManager.getLogger(this.getClass()).trace("Bulb event done");
 		}
 		em.close();
