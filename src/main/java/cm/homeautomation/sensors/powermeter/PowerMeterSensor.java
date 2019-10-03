@@ -53,7 +53,7 @@ public class PowerMeterSensor {
 							+ " 60 * 60))*60 *60) as TIMESLICE, MIN(TIMESTAMP), MAX(TIMESTAMP) "
 							+ "from POWERMETERPING where COMPRESSED=0  and (FLOOR(UNIX_TIMESTAMP(TIMESTAMP)/(60*60))*60*60) <= UNIX_TIMESTAMP(now() - INTERVAL 4 HOUR)"
 							+ " GROUP BY FLOOR(UNIX_TIMESTAMP(TIMESTAMP)/(" + "60"
-							+ " * 60)) order by TIMESTAMP asc limit " + numberOfEntriesToCompress)
+							+ " * 60)) order by TIMESTAMP asc limit " + numberOfEntriesToCompress, Object[].class)
 					.getResultList();
 
 			for (final Object[] resultElement : rawResultList) {
@@ -66,8 +66,8 @@ public class PowerMeterSensor {
 				final Timestamp minTimestamp = (Timestamp) resultElement[2];
 				final Timestamp maxTimestamp = (Timestamp) resultElement[3];
 
-				LogManager.getLogger(PowerMeterSensor.class).error("Min Timestamp: " + minTimestamp.toString()
-						+ " max timestamp:" + maxTimestamp.toString() + " counter: " + powerCounter);
+				LogManager.getLogger(PowerMeterSensor.class).error("Min Timestamp: {} max timestamp: {} counter: {}",
+						minTimestamp, maxTimestamp, powerCounter);
 
 				em.createQuery(
 						"delete from PowerMeterPing p where p.timestamp>=:minTimestamp and p.timestamp<=:maxTimestamp")
@@ -88,7 +88,8 @@ public class PowerMeterSensor {
 	private RequestRateLimiter requestRateLimiter;
 
 	public PowerMeterSensor() {
-		final Set<RequestLimitRule> rules = Collections.singleton(RequestLimitRule.of(Duration.ofSeconds(60), 2)); // 1 per
+		final Set<RequestLimitRule> rules = Collections.singleton(RequestLimitRule.of(Duration.ofSeconds(60), 2)); // 1
+																													// per
 		// 2 minutes
 		requestRateLimiter = new InMemorySlidingWindowRequestRateLimiter(rules);
 		EventBusService.getEventBus().register(this);
@@ -118,8 +119,8 @@ public class PowerMeterSensor {
 
 				final PowerMeterPing powerMeterPing = new PowerMeterPing();
 
-				powerMeterPing.setTimestamp(new Date());
 				powerMeterPing.setPowermeter(powerData.getPowermeter());
+				powerMeterPing.setTimestamp(new Date());
 
 				em.getTransaction().begin();
 

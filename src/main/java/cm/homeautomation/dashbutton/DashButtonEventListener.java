@@ -6,7 +6,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.script.ScriptException;
 
-import org.apache.log4j.LogManager;
+import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
 
 import cm.homeautomation.db.EntityManagerService;
@@ -76,7 +76,11 @@ public class DashButtonEventListener {
 
 					final String newStatus = ("ON".equals(latestStatus) ? "OFF" : "ON");
 
-					ActorService.getInstance().pressSwitch(referencedSwitch.getId().toString(), newStatus);
+					String switchId = referencedSwitch.getId().toString();
+					
+					LogManager.getLogger(this.getClass()).info("Dashbutton: Pressing switch {} to status: {}", switchId, newStatus);
+					
+					ActorService.getInstance().pressSwitch(switchId, newStatus);
 				}
 
 			}
