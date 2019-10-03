@@ -40,6 +40,7 @@ public class TradfriStartupService {
 	private TradfrjRequestExecutor executor;
 
 	Collection<Light> lightList = null;
+    Collection<Device> deviceList = null;
 
 	public static TradfriStartupService getInstance() {
 		return instance;
@@ -94,12 +95,12 @@ public class TradfriStartupService {
 			service.start();
 			executor = new TradfrjRequestExecutor(service);
 
-			updateDevices();
+			updateLights();
 
 			Runnable tradfriUpdateRunnable = new Runnable() {
 				public void run() {
 					try {
-						TradfriStartupService.getInstance().updateDevices();
+						TradfriStartupService.getInstance().updateLights();
 
 						Thread.sleep(10000);
 					} catch (ServiceException | InterruptedException | RuntimeException e) {
@@ -114,7 +115,15 @@ public class TradfriStartupService {
 		}
 	}
 
-	private void updateDevices() throws ServiceException {
+    private void updateDevices() throws ServiceException {
+        Collection<Double> deviceIds = executor.executeRequest(TradfrjRequests.lookupDeviceIDs());
+
+		deviceList = executor.executeRequest(TradfrjRequests.lookup(deviceIds));
+		em = EntityManagerService.getNewManager();
+
+    }
+
+	private void updateLights() throws ServiceException {
 		Collection<Double> deviceIds = executor.executeRequest(TradfrjRequests.lookupDeviceIDs());
 
 		lightList = executor.executeRequest(TradfrjRequests.lookupLights(deviceIds));
@@ -124,7 +133,7 @@ public class TradfriStartupService {
 			LogManager.getLogger(this.getClass()).debug("Found {} name: {}", deviceLight.getId(),
 					deviceLight.getName());
 
-            
+
 
 			LogManager.getLogger(this.getClass()).trace("Bulb event registered");
 
@@ -161,11 +170,11 @@ public class TradfriStartupService {
 			}
 
 			em.getTransaction().begin();
-			
+
 
 			dimmableLight.setFirmware(deviceLight.getDeviceData().getFirmwareVersion());
 
-			
+
 			final int intensity = deviceLight.getLightData()[0].getDimmer();
 
 			if (deviceLight.getReachable() == 1) {
@@ -227,6 +236,6 @@ public class TradfriStartupService {
 	}
 
 	public static void update(String[] args) throws ServiceException {
-		TradfriStartupService.getInstance().updateDevices();
+		TradfriStartupService.getInstance().updateLights();
 	}
 }
