@@ -95,58 +95,20 @@ public class WindowStateService extends BaseService {
 				final Window window = resultList.get(0);
 
 				if (window.getStateSensor() == null) {
-					em.getTransaction().begin();
-					final Sensor stateSensor = new Sensor();
-					stateSensor.setRoom(window.getRoom());
-					stateSensor.setSensorName(window.getName());
-					stateSensor.setShowData(true);
-					window.setStateSensor(stateSensor);
-					em.persist(stateSensor);
-					em.merge(window);
-					em.getTransaction().commit();
+					addNewSensorToWindowIfMissing(em, window);
 
 				}
 
 				em.getTransaction().begin();
-				final Sensor stateSensor = window.getStateSensor();
-				final WindowState windowState = new WindowState();
 
-				state = (state != null) ? state.trim() : "";
+				state = getSanitizedState(state);
 
-				if (state.length() >= 4) {
-					state = state.substring(0, 4);
-				}
 
-				windowState.setWindow(window);
-				windowState.setState(("open".equals(state) ? 1 : 0));
-				windowState.setTimestamp(new Date());
-				em.persist(windowState);
+				saveWindowStateSensor(windowId, state, window);
+
+				final WindowState windowState = createWIndowState(state, em, window);
 				
-				if (stateSensor != null) {
-					final SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
-					sensorDataSaveRequest.setSensorId(stateSensor.getId());
-					final SensorData sensorData = new SensorData();
-					sensorData.setValue("" + ("open".equals(state) ? 1 : 0));
-					sensorData.setSensor(stateSensor);
-					sensorData.setDateTime(new Date());
-
-					sensorDataSaveRequest.setSensorData(sensorData);
-
-					try {
-						Sensors.getInstance().saveSensorData(sensorDataSaveRequest);
-					} catch (SensorDataLimitViolationException e) {
-						LogManager.getLogger(this.getClass()).error("window: " + windowId + " state: ---" + state + "---", e);
-					}
-				}
-
-				final WindowStateData windowStateData = new WindowStateData();
-
-				windowStateData.setState(windowState.getState());
-				windowStateData.setRoom(windowState.getWindow().getRoom());
-				windowStateData.setWindow(window);
-
-				final EventObject intervalEventObject = new EventObject(windowStateData);
-				EventBusService.getEventBus().post(intervalEventObject);
+				sendWindowStateEvent(window, windowState);
 
 				em.getTransaction().commit();
 
@@ -155,6 +117,74 @@ public class WindowStateService extends BaseService {
 		}
 
 		return new GenericStatus(true);
+	}
+
+	private String getSanitizedState(String state) {
+		state = (state != null) ? state.trim() : "";
+
+		if (state.length() >= 4) {
+			state = state.substring(0, 4);
+		}
+		return state;
+	}
+
+	private void saveWindowStateSensor(Long windowId, String state, final Window window) {
+		final Sensor stateSensor = window.getStateSensor();
+		if (stateSensor != null) {
+			final SensorDataSaveRequest sensorDataSaveRequest = createSensorDataSaveRequest(state, stateSensor);
+
+			try {
+				Sensors.getInstance().saveSensorData(sensorDataSaveRequest);
+			} catch (SensorDataLimitViolationException e) {
+				LogManager.getLogger(this.getClass()).error("window: " + windowId + " state: ---" + state + "---", e);
+			}
+		}
+	}
+
+	private void sendWindowStateEvent(final Window window, final WindowState windowState) {
+		final WindowStateData windowStateData = new WindowStateData();
+
+		windowStateData.setState(windowState.getState());
+		windowStateData.setRoom(windowState.getWindow().getRoom());
+		windowStateData.setWindow(window);
+
+		final EventObject intervalEventObject = new EventObject(windowStateData);
+		EventBusService.getEventBus().post(intervalEventObject);
+	}
+
+	private WindowState createWIndowState(String state, final EntityManager em, final Window window) {
+		final WindowState windowState = new WindowState();
+
+
+		windowState.setWindow(window);
+		windowState.setState(("open".equals(state) ? 1 : 0));
+		windowState.setTimestamp(new Date());
+		em.persist(windowState);
+		return windowState;
+	}
+
+	private SensorDataSaveRequest createSensorDataSaveRequest(String state, final Sensor stateSensor) {
+		final SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
+		sensorDataSaveRequest.setSensorId(stateSensor.getId());
+		final SensorData sensorData = new SensorData();
+		sensorData.setValue("" + ("open".equals(state) ? 1 : 0));
+		sensorData.setSensor(stateSensor);
+		sensorData.setDateTime(new Date());
+
+		sensorDataSaveRequest.setSensorData(sensorData);
+		return sensorDataSaveRequest;
+	}
+
+	private void addNewSensorToWindowIfMissing(final EntityManager em, final Window window) {
+		em.getTransaction().begin();
+		final Sensor stateSensor = new Sensor();
+		stateSensor.setRoom(window.getRoom());
+		stateSensor.setSensorName(window.getName());
+		stateSensor.setShowData(true);
+		window.setStateSensor(stateSensor);
+		em.persist(stateSensor);
+		em.merge(window);
+		em.getTransaction().commit();
 	}
 
 }
