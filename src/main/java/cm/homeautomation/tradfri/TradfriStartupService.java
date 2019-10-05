@@ -2,6 +2,7 @@ package cm.homeautomation.tradfri;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
@@ -12,10 +13,12 @@ import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DimmableLight;
 import cm.homeautomation.entities.RGBLight;
+import cm.homeautomation.entities.Switch;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.light.LightService;
+import de.eckey.tradfrj.item.device.Device;
 import de.eckey.tradfrj.item.device.light.Light;
 import de.eckey.tradfrj.request.TradfrjRequestExecutor;
 import de.eckey.tradfrj.request.TradfrjRequests;
@@ -40,7 +43,7 @@ public class TradfriStartupService {
 	private TradfrjRequestExecutor executor;
 
 	Collection<Light> lightList = null;
-    Collection<Device> deviceList = null;
+	Collection<Device> deviceList = null;
 
 	public static TradfriStartupService getInstance() {
 		return instance;
@@ -101,7 +104,7 @@ public class TradfriStartupService {
 				public void run() {
 					try {
 						TradfriStartupService.getInstance().updateLights();
-
+						TradfriStartupService.getInstance().updateDevices();
 						Thread.sleep(10000);
 					} catch (ServiceException | InterruptedException | RuntimeException e) {
 						LogManager.getLogger(this.getClass()).error("update devices failed", e);
@@ -115,13 +118,50 @@ public class TradfriStartupService {
 		}
 	}
 
-    private void updateDevices() throws ServiceException {
-        Collection<Double> deviceIds = executor.executeRequest(TradfrjRequests.lookupDeviceIDs());
+	/**
+	 * create switches based on device information from tradfri
+	 * 
+	 * @throws ServiceException
+	 */
+	private void updateDevices() throws ServiceException {
+		Collection<Double> deviceIds = executor.executeRequest(TradfrjRequests.lookupDeviceIDs());
 
-		deviceList = executor.executeRequest(TradfrjRequests.lookup(deviceIds));
+		deviceList = executor.executeRequest(TradfrjRequests.lookupDevices(deviceIds));
+
 		em = EntityManagerService.getNewManager();
+		em.getTransaction().begin();
+		
+		for (Device device : deviceList) {
+			if (device.getType() != 2) {
+				
+				Switch deviceSwitch=null;
+				
+				List<Switch> switchList = em.createQuery("select sw from Switch sw where sw.externalId=:externalId", Switch.class).setParameter("externalId", device.getId()).getResultList();
+				
+				if (switchList!=null && switchList.size()==1) {
+					deviceSwitch=switchList.get(0);
+					deviceSwitch.setDateLastSeen(new Date(device.getLastSeen()));
+					deviceSwitch.setSwitchState(device.getDeviceData().getPower()==1);
+					em.merge(deviceSwitch);
+				} else {
+					deviceSwitch=new Switch();
+					deviceSwitch.setName(device.getName());
+					deviceSwitch.setExternalId(Integer.toString(device.getId()));
+					deviceSwitch.setType("TRADFRI");
+					deviceSwitch.setManufacturer(device.getDeviceData().getManufacture());
+					deviceSwitch.setDateLastSeen(new Date(device.getLastSeen()));
+					deviceSwitch.setSwitchState(device.getDeviceData().getPower()==1);
+					em.persist(deviceSwitch);
+				}
+				
+				
+			}
+		}
+		em.getTransaction().commit();
+		em.flush();
+		em.close();
 
-    }
+	}
 
 	private void updateLights() throws ServiceException {
 		Collection<Double> deviceIds = executor.executeRequest(TradfrjRequests.lookupDeviceIDs());
@@ -132,8 +172,6 @@ public class TradfriStartupService {
 		for (Light deviceLight : lightList) {
 			LogManager.getLogger(this.getClass()).debug("Found {} name: {}", deviceLight.getId(),
 					deviceLight.getName());
-
-
 
 			LogManager.getLogger(this.getClass()).trace("Bulb event registered");
 
@@ -150,11 +188,11 @@ public class TradfriStartupService {
 
 				em.getTransaction().begin();
 
-                if (deviceLight.getName().contains("CWS")) {
-                    dimmableLight = new RGBLight();
-                } else {
-				    dimmableLight = new DimmableLight();
-                }
+				if (deviceLight.getName().contains("CWS")) {
+					dimmableLight = new RGBLight();
+				} else {
+					dimmableLight = new DimmableLight();
+				}
 
 				dimmableLight.setExternalId(Integer.toString(deviceLight.getId()));
 				dimmableLight.setLightType(TRADFRI);
@@ -171,19 +209,17 @@ public class TradfriStartupService {
 
 			em.getTransaction().begin();
 
-
 			dimmableLight.setFirmware(deviceLight.getDeviceData().getFirmwareVersion());
-
 
 			final int intensity = deviceLight.getLightData()[0].getDimmer();
 
 			if (deviceLight.getReachable() == 1) {
 				dimmableLight.setBrightnessLevel(intensity);
-                // set on or off
+				// set on or off
 				dimmableLight.setPowerState(deviceLight.getLightData()[0].getOnOff() == 1);
 			} else {
 				dimmableLight.setBrightnessLevel(dimmableLight.getMinimumValue());
-                dimmableLight.setPowerState(false);
+				dimmableLight.setPowerState(false);
 			}
 
 			if (dimmableLight instanceof RGBLight) {
@@ -195,7 +231,7 @@ public class TradfriStartupService {
 			em.flush();
 			em.getTransaction().commit();
 
-            // emit light changed event
+			// emit light changed event
 			EventBusService.getEventBus().post(new EventObject(new LightChangedEvent(light)));
 
 			LogManager.getLogger(this.getClass()).trace("Bulb event done");
@@ -237,5 +273,6 @@ public class TradfriStartupService {
 
 	public static void update(String[] args) throws ServiceException {
 		TradfriStartupService.getInstance().updateLights();
+		TradfriStartupService.getInstance().updateDevices();
 	}
 }
