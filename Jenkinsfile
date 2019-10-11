@@ -55,8 +55,9 @@ pipeline {
 			//	}
 				stage('Deploy Backend') {
 	        		steps {
-	        			sh 'rsync -auv --delete --exclude "*.java" target/HomeAutomation-0.0.1-SNAPSHOT/WEB-INF/* root@192.168.1.76:/var/lib/tomcat8/webapps/HomeAutomation/WEB-INF/'
-	   					sh 'ssh root@192.168.1.76 /etc/init.d/tomcat8 restart'
+	        			sh 'rsync -auv --delete --exclude "*.java" target/HomeAutomation-0.0.1-SNAPSHOT/WEB-INF/* root@192.168.1.36:/mnt/raid/tomcat/webapps/HomeAutomation/WEB-INF/'
+	   					sh 'ssh root@192.168.1.36 docker-compose stop tomcat'
+	   					sh 'ssh root@192.168.1.36 docker-compose start tomcat'
 	   				}
 	   			}
 //				stage('Archive') {
