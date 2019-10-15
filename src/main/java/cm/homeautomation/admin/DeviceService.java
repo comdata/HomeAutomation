@@ -14,7 +14,7 @@ import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 
 /**
- * device administration service
+ * device administration REST service
  * 
  * @author cmertins
  *
