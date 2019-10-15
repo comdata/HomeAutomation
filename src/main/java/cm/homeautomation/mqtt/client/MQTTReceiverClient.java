@@ -10,10 +10,8 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.greenrobot.eventbus.Subscribe;
 
 import cm.homeautomation.ebus.EBUSDataReceiver;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.fhem.FHEMDataReceiver;
 import cm.homeautomation.jeromq.server.JSONSensorDataReceiver;
 import cm.homeautomation.jeromq.server.NoClassInformationContainedException;
@@ -28,12 +26,10 @@ public class MQTTReceiverClient implements MqttCallback {
 	private MemoryPersistence memoryPersistence = new MemoryPersistence();
 
 	public MQTTReceiverClient() {
-		EventBusService.getEventBus().register(this);
 		runClient();
 	}
 
 	public void runClient() {
-		Thread.currentThread().setName(MQTTReceiverClient.class.getName());
 
 		try {
 			connect();
@@ -97,7 +93,7 @@ public class MQTTReceiverClient implements MqttCallback {
 		client.subscribe("/distanceSensor");
 		client.subscribe("/switch");
 		client.subscribe("/fhem/#");
-		client.subscribe("ebusd/#");
+		client.subscribe("/ebusd/#");
 		LogManager.getLogger(this.getClass()).info("Started MQTT client");
 	}
 
@@ -130,29 +126,15 @@ public class MQTTReceiverClient implements MqttCallback {
 
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
-	
 		byte[] payload = message.getPayload();
 		String messageContent = new String(payload);
-		LogManager.getLogger(this.getClass()).info("Got MQTT message: " + messageContent);
-		
-		EventBusService.getEventBus().post(new MQTTEventBusObject(topic, messageContent));
-		client.messageArrivedComplete(message.getId(), message.getQos());
-	}
-	
-	
-	@Subscribe
-	public void subscribe(MQTTEventBusObject eventObject) {
-		
-		String messageContent=eventObject.getMessageContent();
-		String topic=eventObject.getTopic();
-
 		LogManager.getLogger(this.getClass()).info("Got MQTT message: " + messageContent);
 		try {
 			Runnable receiver=null;
 			if (topic.startsWith("/fhem")) {
 				receiver = () -> FHEMDataReceiver.receiveFHEMData(topic, messageContent);
-			} else if (topic.startsWith("ebusd")) {
-				receiver = () -> EBUSDataReceiver.receiveEBUSData(topic, messageContent);
+			} else if (topic.startsWith("/ebus")) {
+					receiver = () -> EBUSDataReceiver.receiveEBUSData(topic, messageContent);
 			} else {
 				receiver = () -> {
 					try {
@@ -170,7 +152,7 @@ public class MQTTReceiverClient implements MqttCallback {
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass()).error("Got an exception while saving data.", e);
 		}
-
+		client.messageArrivedComplete(message.getId(), message.getQos());
 
 	}
 
