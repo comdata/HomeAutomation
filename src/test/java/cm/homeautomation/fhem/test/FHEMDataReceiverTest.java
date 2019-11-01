@@ -33,5 +33,10 @@ public class FHEMDataReceiverTest {
 	public void testReceiveFHEMData() throws Exception {
 		FHEMDataReceiver.receiveFHEMData("fhem/TestDataReceiver/testData", "testData");
 	}
+	
+	@Test
+	public void testReceiveFHEMDataForSensor() throws Exception {
+		FHEMDataReceiver.receiveFHEMData("/fhem/Thermostat_Wohnzimmer/room-temp", "23.5");
+	}
 
 }
