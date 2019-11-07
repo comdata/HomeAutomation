@@ -21,12 +21,12 @@ import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
 
-//@AutoCreateInstance
 public class TelegramBotService {
 
+	private static final String USER = "user";
+	private static final String TOKEN = "token";
+	private static final String TELEGRAM = "telegram";
 	private static TelegramBotService instance;
-	private static String token;
-	private static String user;
 
 	public static TelegramBotService getInstance() {
 		if (instance == null) {
@@ -35,31 +35,14 @@ public class TelegramBotService {
 		return instance;
 	}
 
-	public static String getToken() {
-		return token;
-	}
-
-	public static String getUser() {
-		return user;
-	}
-
-	public static void setToken(final String token) {
-		TelegramBotService.token = token;
-	}
-
-	public static void setUser(final String user) {
-		TelegramBotService.user = user;
-	}
-
 	private TelegramBotsApi telegramBotApi;
 
 	private CommandsHandler bot;
 	private final boolean enabled;
 
 	public TelegramBotService() {
-		token = ConfigurationService.getConfigurationProperty("telegram", "token");
-		user = ConfigurationService.getConfigurationProperty("telegram", "user");
-		this.enabled = Boolean.parseBoolean(ConfigurationService.getConfigurationProperty("telegram", "enabled"));
+
+		this.enabled = Boolean.parseBoolean(ConfigurationService.getConfigurationProperty(TELEGRAM, "enabled"));
 
 		instance = this;
 		init();
@@ -97,6 +80,8 @@ public class TelegramBotService {
 	private void registerBot() {
 
 		try {
+			String token = ConfigurationService.getConfigurationProperty(TELEGRAM, TOKEN);
+			String user = ConfigurationService.getConfigurationProperty(TELEGRAM, USER);
 			bot = new CommandsHandler(user, token);
 			telegramBotApi.registerBot(bot);
 
@@ -114,8 +99,8 @@ public class TelegramBotService {
 	 */
 	public void sendMessage(final String message) {
 		final EntityManager em = EntityManagerService.getNewManager();
-		@SuppressWarnings("unchecked")
-		final List<TelegramUser> resultList = em.createQuery("select t from TelegramUser t").getResultList();
+
+		final List<TelegramUser> resultList = em.createQuery("select t from TelegramUser t", TelegramUser.class).getResultList();
 
 		final String pattern = "yyyy-MM-dd HH:mm:ss";
 		final Date date = new Date();
