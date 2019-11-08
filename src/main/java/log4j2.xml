@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
+<Configuration status="ERROR">
 	<Appenders>
 		<JPA name="databaseAppender" persistenceUnitName="loggingPersistenceUnit"
 			entityClassName="cm.homeautomation.entities.LoggingEntity" />
@@ -11,7 +11,7 @@
 
 	<Loggers>
 		<Logger name="cm.homeautomation" additivity="false" level="ERROR">
-			<!-- <AppenderRef ref="STDOUT" /> -->
+			<AppenderRef ref="STDOUT" />
 			<AppenderRef ref="databaseAppender" />
 			<AppenderRef ref="WebSocketAppender" />
 		</Logger>
@@ -19,7 +19,7 @@
 		
 		
 		<Logger name="com.google.common.eventbus.EventBus" additivity="false" level="ERROR">
-			<!--<AppenderRef ref="STDOUT" /> -->
+			<AppenderRef ref="STDOUT" />
 			<AppenderRef ref="databaseAppender" />
 			<AppenderRef ref="WebSocketAppender" />
 		</Logger>
