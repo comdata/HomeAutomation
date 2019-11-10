@@ -93,7 +93,9 @@ public class CameraService extends BaseService {
 		if (resultList != null) {
 
 			for (Camera camera : resultList) {
-				singleCameraUpdate(args, em, camera);
+				if (camera.isEnabled()) {
+					singleCameraUpdate(args, em, camera);
+				}
 			}
 		}
 		cleanOldImages();
