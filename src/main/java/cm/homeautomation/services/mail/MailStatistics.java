@@ -28,7 +28,7 @@ public class MailStatistics extends BaseService {
 		return MailStatistics.mailDataList;
 	}
 
-	private static MailData findOrCreateMailEntryInList(String account) {
+	private static MailData findOrCreateMailEntryInList(@NonNull String account) {
 
 		for (MailData mailData : mailDataList) {
 
