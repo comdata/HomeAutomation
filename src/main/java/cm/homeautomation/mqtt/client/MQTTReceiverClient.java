@@ -11,6 +11,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.ebus.EBUSDataReceiver;
 import cm.homeautomation.fhem.FHEMDataReceiver;
 import cm.homeautomation.jeromq.server.JSONSensorDataReceiver;
@@ -76,8 +77,11 @@ public class MQTTReceiverClient implements MqttCallback {
 
 		UUID uuid = UUID.randomUUID();
 		String randomUUIDString = uuid.toString();
+		
+		String host=ConfigurationService.getConfigurationProperty("mqtt", "host");
+		String port=ConfigurationService.getConfigurationProperty("mqtt", "port");
 
-		client = new MqttClient("tcp://localhost:1883", "HomeAutomation/" + randomUUIDString, memoryPersistence);
+		client = new MqttClient("tcp://"+host+":"+port, "HomeAutomation/" + randomUUIDString, memoryPersistence);
 		client.setCallback(this);
 
 		MqttConnectOptions connOpt = new MqttConnectOptions();
