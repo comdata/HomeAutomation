@@ -16,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
+import lombok.NonNull;
 
 @Path("mail")
 public class MailStatistics extends BaseService {
