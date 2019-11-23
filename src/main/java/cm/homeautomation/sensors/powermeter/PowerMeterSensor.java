@@ -20,7 +20,10 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.PowerMeterPing;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
+import cm.homeautomation.jeromq.server.JSONSensorDataReceiver;
+import cm.homeautomation.jeromq.server.NoClassInformationContainedException;
 import cm.homeautomation.sensors.PowerMeterData;
+import cm.homeautomation.services.base.AutoCreateInstance;
 import es.moki.ratelimitj.core.limiter.request.RequestLimitRule;
 import es.moki.ratelimitj.core.limiter.request.RequestRateLimiter;
 import es.moki.ratelimitj.inmemory.request.InMemorySlidingWindowRequestRateLimiter;
@@ -31,6 +34,7 @@ import es.moki.ratelimitj.inmemory.request.InMemorySlidingWindowRequestRateLimit
  * @author christoph
  *
  */
+@AutoCreateInstance
 public class PowerMeterSensor {
 
 	/**
@@ -218,6 +222,11 @@ public class PowerMeterSensor {
 
 		final EventObject intervalEventObject = new EventObject(powerMeterIntervalData);
 		EventBusService.getEventBus().post(intervalEventObject);
+	}
+	
+	public static void main(String[] args) throws NoClassInformationContainedException {
+		PowerMeterSensor powerMeterSensor = new PowerMeterSensor();
+		JSONSensorDataReceiver.receiveSensorData("{\"@class\":\"cm.homeautomation.sensors.PowerMeterData\", \"powermeter\": 1024}");
 	}
 
 }
