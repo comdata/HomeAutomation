@@ -11,6 +11,7 @@ import cm.homeautomation.entities.GasMeterPing;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.GasmeterData;
+import cm.homeautomation.services.base.AutoCreateInstance;
 
 /**
  * receiver gas meter data and save it to the database
@@ -18,6 +19,7 @@ import cm.homeautomation.sensors.GasmeterData;
  * @author christoph
  *
  */
+@AutoCreateInstance
 public class GasMeterSensor {
 
 	private final EntityManager em;
