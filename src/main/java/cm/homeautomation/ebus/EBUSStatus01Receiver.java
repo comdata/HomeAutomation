@@ -7,6 +7,12 @@ import javax.persistence.NoResultException;
 import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.eventbus.EventBusService;
@@ -49,15 +55,23 @@ public class EBUSStatus01Receiver {
 			EBusMessageEvent messageEvent = (EBusMessageEvent) eventObject.getData();
 			Sensors sensorsInstance = Sensors.getInstance();
 
+			
+			
 			if (EBUSD_BAI_STATUS01.equals(messageEvent.getTopic())) {
 				String[] technicalNames = { HEATINGTEMP, RETURNTEMP, OUTSIDETEMP, WARMWATERTEMP, STORAGETEMP,
 						PUMPSTATE };
 				String messageString = messageEvent.getMessageContent();
 				messageString = messageString.replace(ON, "1").replace(OFF, "0");
+				
+				JsonArray jsonArray = JsonParser.parseString(messageString).getAsJsonArray();
 
 				String[] valueParts = messageString.split(SEMICOLON);
+				
+				
+				
 				for (int i = 0; i < 6; i++) {
-					String sensorValue = valueParts[i];
+					JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
+					String sensorValue = jsonObject.keySet();
 					SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
 					SensorData sensorData = new SensorData();
 					sensorData.setValue(sensorValue);

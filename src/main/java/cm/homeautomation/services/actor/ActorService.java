@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DimmableLight;
 import cm.homeautomation.entities.Light;
+import cm.homeautomation.entities.MQTTSwitch;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
@@ -64,7 +65,7 @@ public class ActorService extends BaseService implements MqttCallback {
 			EventBusService.getEventBus().post(new EventObject(actorMessage));
 
 		}
-		
+
 		private ActorMessage createActorMessage(final String targetStatus, final Switch singleSwitch) {
 			final ActorMessage actorMessage = new ActorMessage();
 			actorMessage.setId(singleSwitch.getId());
@@ -78,13 +79,35 @@ public class ActorService extends BaseService implements MqttCallback {
 		private void switchSockets(final Switch singleSwitch, final ActorMessage actorMessage) {
 			// standard lights
 			if ("SOCKET".equals(singleSwitch.getSwitchType()) || "LIGHT".equals(singleSwitch.getSwitchType())) {
-				
-				if (singleSwitch.getHouseCode() != null) {
-					sendMQTTMessage(actorMessage);
-				}
 
-				if (singleSwitch.getSwitchSetUrl() != null) {
-					sendHTTPMessage(singleSwitch, actorMessage);
+				if (singleSwitch instanceof MQTTSwitch) {
+					MQTTSwitch singleMqttSwitch=(MQTTSwitch)singleSwitch;
+					
+					String topic=null;
+					String message=null;
+					
+					if ("1".equals(actorMessage.getStatus())) {
+						topic=singleMqttSwitch.getMqttPowerOnTopic();
+						message=singleMqttSwitch.getMqttPowerOnMessage();
+						
+					} else {
+						topic=singleMqttSwitch.getMqttPowerOffTopic();
+						message=singleMqttSwitch.getMqttPowerOffMessage();
+					}
+
+						
+						
+					MQTTSender.sendMQTTMessage(topic, message);
+					
+				} else {
+
+					if (singleSwitch.getHouseCode() != null) {
+						sendMQTTMessage(actorMessage);
+					}
+
+					if (singleSwitch.getSwitchSetUrl() != null) {
+						sendHTTPMessage(singleSwitch, actorMessage);
+					}
 				}
 			} else if ("IR".equals(singleSwitch.getSwitchType())) {
 				try {
@@ -109,14 +132,13 @@ public class ActorService extends BaseService implements MqttCallback {
 				for (final Light light : lights) {
 					if (light instanceof DimmableLight) {
 						final DimmableLight dimmableLight = (DimmableLight) light;
-						final int dimValue = (on) ? dimmableLight.getMaximumValue()
-								: dimmableLight.getMinimumValue();
+						final int dimValue = (on) ? dimmableLight.getMaximumValue() : dimmableLight.getMinimumValue();
 						lightService.dimLight(light.getId(), dimValue);
 					}
 				}
 			}
 		}
-		
+
 		private void sendMQTTMessage(final ActorMessage actorMessage) {
 
 			try {
@@ -129,11 +151,11 @@ public class ActorService extends BaseService implements MqttCallback {
 				LogManager.getLogger(this.getClass()).error(e);
 			}
 		}
-		
+
 		private void sendHTTPMessage(final Switch singleSwitch, final ActorMessage actorMessage) {
 			String switchSetUrl = singleSwitch.getSwitchSetUrl();
-			switchSetUrl = switchSetUrl.replace("{STATE}", (( "0".equals(actorMessage.getStatus())) ? "off" : "on"));
-			
+			switchSetUrl = switchSetUrl.replace("{STATE}", (("0".equals(actorMessage.getStatus())) ? "off" : "on"));
+
 			LogManager.getLogger(this.getClass()).debug(switchSetUrl);
 
 			HTTPHelper.performHTTPRequest(switchSetUrl);
@@ -166,8 +188,7 @@ public class ActorService extends BaseService implements MqttCallback {
 	}
 
 	/**
-	 * @param instance
-	 *            the instance to set
+	 * @param instance the instance to set
 	 */
 	public static void setInstance(final ActorService instance) {
 		ActorService.instance = instance;
@@ -178,8 +199,6 @@ public class ActorService extends BaseService implements MqttCallback {
 		// do nothing
 
 	}
-
-
 
 	@Override
 	public void deliveryComplete(final IMqttDeliveryToken arg0) {
@@ -246,10 +265,8 @@ public class ActorService extends BaseService implements MqttCallback {
 	/**
 	 * press a switch
 	 *
-	 * @param switchId
-	 *            id of the switch
-	 * @param targetStatus
-	 *            status ON or OFF
+	 * @param switchId     id of the switch
+	 * @param targetStatus status ON or OFF
 	 * @return
 	 */
 	@GET
