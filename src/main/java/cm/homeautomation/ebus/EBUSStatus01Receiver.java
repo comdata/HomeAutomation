@@ -71,10 +71,10 @@ public class EBUSStatus01Receiver {
 				
 				for (int i = 0; i < 6; i++) {
 					JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
-					String sensorValue = jsonObject.keySet();
+//					String sensorValue = jsonObject.keySet();
 					SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
 					SensorData sensorData = new SensorData();
-					sensorData.setValue(sensorValue);
+//					sensorData.setValue(sensorValue);
 					sensorData.setDateTime(new Date());
 					Sensor sensor = new Sensor();
 					sensor.setSensorName(technicalNames[i]);
@@ -84,8 +84,8 @@ public class EBUSStatus01Receiver {
 
 					if (sensorsInstance != null) {
 						try {
-							LogManager.getLogger(EBUSStatus01Receiver.class)
-									.error(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
+//							LogManager.getLogger(EBUSStatus01Receiver.class)
+//									.error(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
 							sensorsInstance.saveSensorData(sensorDataSaveRequest);
 						} catch (NoResultException e) {
 							LogManager.getLogger(EBUSStatus01Receiver.class)
