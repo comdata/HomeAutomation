@@ -80,7 +80,10 @@ public class ActorService extends BaseService implements MqttCallback {
 			// standard lights
 			if ("SOCKET".equals(singleSwitch.getSwitchType()) || "LIGHT".equals(singleSwitch.getSwitchType())) {
 
+				System.out.println("Actor Switch Type: "+ singleSwitch.getClass().getSimpleName());
+				
 				if (singleSwitch instanceof MQTTSwitch) {
+					System.out.println("Switch is MQTTSwitch");
 					MQTTSwitch singleMqttSwitch=(MQTTSwitch)singleSwitch;
 					
 					String topic=null;
