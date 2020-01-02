@@ -8,12 +8,16 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import cm.homeautomation.configuration.ConfigurationService;
+import lombok.extern.log4j.Log4j2;
+
 /**
  * generic MQTT sender
  * 
  * @author christoph
  *
  */
+@Log4j2
 public class MQTTSender {
 	private static MqttClient client;
 
@@ -21,16 +25,21 @@ public class MQTTSender {
 		// nothing to be done
 	}
 
-	public static void sendMQTTMessage(String topic, String jsonMessage) {
+	public static void sendMQTTMessage(String topic, String messagePayload) {
 		try {
 
 			initClient();
 
+			log.debug("MQTT: sending message "+messagePayload+" to topic "+ topic);
+			
 			MqttMessage message = new MqttMessage();
-			message.setPayload(jsonMessage.getBytes());
+			message.setPayload(messagePayload.getBytes());
 			client.publish(topic, message);
+			log.debug("MQTT:  message sent "+messagePayload+" to topic "+ topic);
+			
+			
 		} catch (MqttException e) {
-			LogManager.getLogger(MqttClient.class).error("Sending MQTT message: "+jsonMessage+" failed.", e);
+			log.error("Sending MQTT message: "+messagePayload+" failed.", e);
 		}
 	}
 
@@ -39,8 +48,12 @@ public class MQTTSender {
 
 			UUID uuid = UUID.randomUUID();
 			String randomUUIDString = uuid.toString();
+			
+			String host = ConfigurationService.getConfigurationProperty("mqtt", "host");
+			String port = ConfigurationService.getConfigurationProperty("mqtt", "port");
+			
 
-			client = new MqttClient("tcp://localhost:1883", "HomeAutomation/" + randomUUIDString);
+			client = new MqttClient("tcp://"+host+":"+port, "HomeAutomation/" + randomUUIDString);
 
 			MqttConnectOptions connOpt = new MqttConnectOptions();
 			connOpt.setAutomaticReconnect(true);
