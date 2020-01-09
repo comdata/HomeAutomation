@@ -4,7 +4,6 @@ import java.util.Date;
 
 import javax.persistence.NoResultException;
 
-import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
 
 import cm.homeautomation.entities.Sensor;
@@ -13,7 +12,9 @@ import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.services.sensors.Sensors;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class EBUSStatus01Receiver {
 
 	private static final String SOLARPUMP = "SOLARPUMP";
@@ -58,6 +59,7 @@ public class EBUSStatus01Receiver {
 				String[] valueParts = messageString.split(SEMICOLON);
 				for (int i = 0; i < 6; i++) {
 					String sensorValue = valueParts[i];
+
 					SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
 					SensorData sensorData = new SensorData();
 					sensorData.setValue(sensorValue);
@@ -70,20 +72,17 @@ public class EBUSStatus01Receiver {
 
 					if (sensorsInstance != null) {
 						try {
-							LogManager.getLogger(EBUSStatus01Receiver.class)
-									.error(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
+							log.error(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
 							sensorsInstance.saveSensorData(sensorDataSaveRequest);
 						} catch (NoResultException e) {
-							LogManager.getLogger(EBUSStatus01Receiver.class)
-									.error(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
+							log.error(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
 
 						} catch (Exception e) {
-							LogManager.getLogger(EBUSStatus01Receiver.class).error(ERROR_SAVING_EBUS_DATA, e);
+							log.error(ERROR_SAVING_EBUS_DATA, e);
 
 						}
 					} else {
-						LogManager.getLogger(EBUSStatus01Receiver.class)
-								.error(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
+						log.error(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
 
 					}
 				}
@@ -109,20 +108,17 @@ public class EBUSStatus01Receiver {
 
 					if (sensorsInstance != null) {
 						try {
-							LogManager.getLogger(EBUSStatus01Receiver.class)
-									.error(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
+							log.error(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
 							sensorsInstance.saveSensorData(sensorDataSaveRequest);
 						} catch (NoResultException e) {
-							LogManager.getLogger(EBUSStatus01Receiver.class)
-									.error(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
+							log.error(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
 
 						} catch (Exception e) {
-							LogManager.getLogger(EBUSStatus01Receiver.class).error(ERROR_SAVING_EBUS_DATA, e);
+							log.error(ERROR_SAVING_EBUS_DATA, e);
 
 						}
 					} else {
-						LogManager.getLogger(EBUSStatus01Receiver.class)
-								.error(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
+						log.error(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
 
 					}
 				}
@@ -147,20 +143,17 @@ public class EBUSStatus01Receiver {
 
 					if (sensorsInstance != null) {
 						try {
-							LogManager.getLogger(EBUSStatus01Receiver.class)
-									.error(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
+							log.error(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
 							sensorsInstance.saveSensorData(sensorDataSaveRequest);
 						} catch (NoResultException e) {
-							LogManager.getLogger(EBUSStatus01Receiver.class)
-									.error(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
+							log.error(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
 
 						} catch (Exception e) {
-							LogManager.getLogger(EBUSStatus01Receiver.class).error(ERROR_SAVING_EBUS_DATA, e);
+							log.error(ERROR_SAVING_EBUS_DATA, e);
 
 						}
 					} else {
-						LogManager.getLogger(EBUSStatus01Receiver.class)
-								.error(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
+						log.error(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
 
 					}
 				}
@@ -185,24 +178,21 @@ public class EBUSStatus01Receiver {
 
 					if (sensorsInstance != null) {
 						try {
-							LogManager.getLogger(EBUSStatus01Receiver.class)
-									.error(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
+							log.error(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
 							sensorsInstance.saveSensorData(sensorDataSaveRequest);
 						} catch (NoResultException e) {
-							LogManager.getLogger(EBUSStatus01Receiver.class)
-									.error(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
+							log.error(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
 
 						} catch (Exception e) {
-							LogManager.getLogger(EBUSStatus01Receiver.class).error(ERROR_SAVING_EBUS_DATA, e);
+							log.error(ERROR_SAVING_EBUS_DATA, e);
 
 						}
 					} else {
-						LogManager.getLogger(EBUSStatus01Receiver.class)
-								.error(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
+						log.error(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
 
 					}
 				}
-			}else if ("ebusd/bai/Flame".equals(messageEvent.getTopic())) {
+			} else if ("ebusd/bai/Flame".equals(messageEvent.getTopic())) {
 				String[] technicalNames = { FLAME };
 				String messageString = messageEvent.getMessageContent();
 				messageString = messageString.replace(ON, "1").replace(OFF, "0");
@@ -223,26 +213,23 @@ public class EBUSStatus01Receiver {
 
 					if (sensorsInstance != null) {
 						try {
-							LogManager.getLogger(EBUSStatus01Receiver.class)
-									.error(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
+							log.error(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
 							sensorsInstance.saveSensorData(sensorDataSaveRequest);
 						} catch (NoResultException e) {
-							LogManager.getLogger(EBUSStatus01Receiver.class)
-									.error(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
+							log.error(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
 
 						} catch (Exception e) {
-							LogManager.getLogger(EBUSStatus01Receiver.class).error(ERROR_SAVING_EBUS_DATA, e);
+							log.error(ERROR_SAVING_EBUS_DATA, e);
 
 						}
 					} else {
-						LogManager.getLogger(EBUSStatus01Receiver.class)
-								.error(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
+						log.error(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
 
 					}
 				}
 			}
 		} else {
-			LogManager.getLogger(EBUSStatus01Receiver.class).error(EMPTY_EVENT_RECEIVED);
+			log.error(EMPTY_EVENT_RECEIVED);
 		}
 	}
 }

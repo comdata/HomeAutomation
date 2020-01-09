@@ -136,7 +136,7 @@ public class TradfriStartupService {
 				
 				Switch deviceSwitch=null;
 				
-				List<Switch> switchList = em.createQuery("select sw from Switch sw where sw.externalId=:externalId", Switch.class).setParameter("externalId", device.getId()).getResultList();
+				List<Switch> switchList = em.createQuery("select sw from Switch sw where sw.externalId=:externalId", Switch.class).setParameter("externalId", Integer.toString(device.getId())).getResultList();
 				
 				if (switchList!=null && switchList.size()==1) {
 					deviceSwitch=switchList.get(0);
