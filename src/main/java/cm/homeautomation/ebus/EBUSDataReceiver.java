@@ -1,10 +1,10 @@
 package cm.homeautomation.ebus;
 
-import org.apache.logging.log4j.LogManager;
-
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class EBUSDataReceiver {
 
 	private EBUSDataReceiver() {
@@ -12,7 +12,7 @@ public class EBUSDataReceiver {
 	}
 
 	public static void receiveEBUSData(String topic, String messageContent) {
-		LogManager.getLogger(EBUSDataReceiver.class).debug("EBUS. Topic: " + topic + " message: " + messageContent);
+		log.debug("EBUS. Topic: " + topic + " message: " + messageContent);
 
 		EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
 		EventBusService.getEventBus().post(new EventObject(ebusMessageEvent));

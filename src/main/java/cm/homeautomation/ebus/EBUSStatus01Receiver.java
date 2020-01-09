@@ -38,7 +38,7 @@ public class EBUSStatus01Receiver {
 	private static final String ERROR_SAVING_EBUS_DATA = "Error saving ebus data";
 	private static final String STORED_EBUS_VALUE_S_FOR_S = "Stored ebus value: {} for: {}";
 	private static final String SENSOR_NOT_DEFINED_FOR_S = "Sensor not defined for: {}";
-	private static final String EMPTY_EVENT_RECEIVED = "Empty event received.";
+	private static final String EMPTY_EVENT_RECEIVED = "EBUS Empty event received.";
 
 	public EBUSStatus01Receiver() {
 		EventBusService.getEventBus().register(this);
@@ -49,6 +49,9 @@ public class EBUSStatus01Receiver {
 		if (eventObject.getData() instanceof EBusMessageEvent) {
 			EBusMessageEvent messageEvent = (EBusMessageEvent) eventObject.getData();
 			Sensors sensorsInstance = Sensors.getInstance();
+			
+			System.out.println("EBUS topic "+ messageEvent.getTopic());
+			System.out.println("EBUS message content: "+messageEvent.getMessageContent());
 
 			if (EBUSD_BAI_STATUS01.equals(messageEvent.getTopic())) {
 				String[] technicalNames = { HEATINGTEMP, RETURNTEMP, OUTSIDETEMP, WARMWATERTEMP, STORAGETEMP,
