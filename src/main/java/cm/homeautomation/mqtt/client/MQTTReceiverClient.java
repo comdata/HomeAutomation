@@ -137,7 +137,7 @@ public class MQTTReceiverClient implements MqttCallback {
 			Runnable receiver=null;
 			if (topic.startsWith("/fhem")) {
 				receiver = () -> FHEMDataReceiver.receiveFHEMData(topic, messageContent);
-			} else if (topic.startsWith("/ebus")) {
+			} else if (topic.startsWith("ebusd/")) {
 					receiver = () -> EBUSDataReceiver.receiveEBUSData(topic, messageContent);
 			} else {
 				receiver = () -> {
