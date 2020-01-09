@@ -97,7 +97,9 @@ public class MQTTReceiverClient implements MqttCallback {
 		client.subscribe("/distanceSensor");
 		client.subscribe("/switch");
 		client.subscribe("/fhem/#");
-		client.subscribe("/ebusd/#");
+		client.subscribe("ebusd/#");
+		client.subscribe("shellies/#");
+		client.subscribe("tasmota/#");
 		LogManager.getLogger(this.getClass()).info("Started MQTT client");
 	}
 
