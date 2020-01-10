@@ -13,6 +13,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.ebus.EBUSDataReceiver;
+import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.fhem.FHEMDataReceiver;
 import cm.homeautomation.jeromq.server.JSONSensorDataReceiver;
 import cm.homeautomation.jeromq.server.NoClassInformationContainedException;
@@ -92,14 +93,7 @@ public class MQTTReceiverClient implements MqttCallback {
 
 		client.connect(connOpt);
 
-		client.subscribe("/sensordata");
-		client.subscribe("/sensorState");
-		client.subscribe("/distanceSensor");
-		client.subscribe("/switch");
-		client.subscribe("/fhem/#");
-		client.subscribe("ebusd/#");
-		client.subscribe("shellies/#");
-		client.subscribe("tasmota/#");
+		client.subscribe("#");
 		LogManager.getLogger(this.getClass()).info("Started MQTT client");
 	}
 
@@ -135,6 +129,9 @@ public class MQTTReceiverClient implements MqttCallback {
 		byte[] payload = message.getPayload();
 		String messageContent = new String(payload);
 		LogManager.getLogger(this.getClass()).info("Got MQTT message: " + messageContent);
+		
+		EventBusService.getEventBus().post(new MQTTTopicEvent(topic));
+		
 		try {
 			Runnable receiver=null;
 			if (topic.startsWith("/fhem")) {
