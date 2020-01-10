@@ -36,7 +36,7 @@ public class MQTTTopicRecorder {
 		String topic = event.getTopic();
 		log.debug(topic);
 
-		List<MQTTTopic> mqttTopicList = em.createQuery("select t from MQTTTopic t where topic=:topic", MQTTTopic.class)
+		List<MQTTTopic> mqttTopicList = em.createQuery("select t from MQTTTopic t where t.topic=:topic", MQTTTopic.class)
 				.setParameter("topic", topic).getResultList();
 
 		if (mqttTopicList == null || mqttTopicList.isEmpty()) {
