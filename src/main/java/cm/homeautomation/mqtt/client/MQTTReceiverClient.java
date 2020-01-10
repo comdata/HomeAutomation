@@ -17,6 +17,7 @@ import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.fhem.FHEMDataReceiver;
 import cm.homeautomation.jeromq.server.JSONSensorDataReceiver;
 import cm.homeautomation.jeromq.server.NoClassInformationContainedException;
+import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.services.base.AutoCreateInstance;
 
 @AutoCreateInstance

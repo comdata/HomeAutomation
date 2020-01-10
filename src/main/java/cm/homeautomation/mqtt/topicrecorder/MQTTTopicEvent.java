@@ -1,4 +1,4 @@
-package cm.homeautomation.mqtt.client;
+package cm.homeautomation.mqtt.topicrecorder;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
