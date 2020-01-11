@@ -16,6 +16,8 @@ import cm.homeautomation.entities.Device;
 import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.Window;
 import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
+import lombok.Getter;
+import lombok.Setter;
 
 public class WindowStateData implements HumanMessageGenerationInterface {
 	private int state;
@@ -45,6 +47,14 @@ public class WindowStateData implements HumanMessageGenerationInterface {
 	@EdmIgnore
 	private Device device;
 	private Date date;
+	
+	@Getter
+	@Setter
+	private String roomName;
+	
+	@Getter
+	@Setter
+	private String windowName;
 
 	public Date getDate() {
 		return date;

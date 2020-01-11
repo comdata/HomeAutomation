@@ -65,6 +65,9 @@ public class WindowStateService extends BaseService {
 			windowStateData.setMac(windowState.getMac());
 			windowStateData.setState(windowState.getState());
 			windowStateData.setWindow(windowState.getWindow());
+			
+			windowStateData.setRoomName(windowState.getWindow().getRoom().getRoomName());
+			windowStateData.setWindowName(windowState.getWindow().getName());
 
 			windowStateData.setRoom(windowState.getWindow().getRoom());
 			windowStateData.setDevice(DeviceService.getDeviceForMac(mac));
