@@ -79,11 +79,11 @@ public class MQTTReceiverClient implements MqttCallback {
 
 		UUID uuid = UUID.randomUUID();
 		String randomUUIDString = uuid.toString();
-		
-		String host=ConfigurationService.getConfigurationProperty("mqtt", "host");
-		String port=ConfigurationService.getConfigurationProperty("mqtt", "port");
 
-		client = new MqttClient("tcp://"+host+":"+port, "HomeAutomation/" + randomUUIDString, memoryPersistence);
+		String host = ConfigurationService.getConfigurationProperty("mqtt", "host");
+		String port = ConfigurationService.getConfigurationProperty("mqtt", "port");
+
+		client = new MqttClient("tcp://" + host + ":" + port, "HomeAutomation/" + randomUUIDString, memoryPersistence);
 		client.setCallback(this);
 
 		MqttConnectOptions connOpt = new MqttConnectOptions();
@@ -130,19 +130,21 @@ public class MQTTReceiverClient implements MqttCallback {
 		byte[] payload = message.getPayload();
 		String messageContent = new String(payload);
 		LogManager.getLogger(this.getClass()).info("Got MQTT message: " + messageContent);
-		
+
 		EventBusService.getEventBus().post(new MQTTTopicEvent(topic));
-		
+
 		try {
-			Runnable receiver=null;
+			Runnable receiver = null;
 			if (topic.startsWith("/fhem")) {
 				receiver = () -> FHEMDataReceiver.receiveFHEMData(topic, messageContent);
 			} else if (topic.startsWith("ebusd/")) {
-					receiver = () -> EBUSDataReceiver.receiveEBUSData(topic, messageContent);
+				receiver = () -> EBUSDataReceiver.receiveEBUSData(topic, messageContent);
 			} else {
 				receiver = () -> {
 					try {
-						JSONSensorDataReceiver.receiveSensorData(messageContent);
+						if (messageContent.startsWith("{")) {
+							JSONSensorDataReceiver.receiveSensorData(messageContent);
+						}
 					} catch (NoClassInformationContainedException e) {
 						LogManager.getLogger(this.getClass()).error("Got an exception while saving data.", e);
 					}
@@ -152,7 +154,7 @@ public class MQTTReceiverClient implements MqttCallback {
 			if (receiver != null) {
 				new Thread(receiver).start();
 			}
-			
+
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass()).error("Got an exception while saving data.", e);
 		}
