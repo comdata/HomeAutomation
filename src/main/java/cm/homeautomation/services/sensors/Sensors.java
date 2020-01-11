@@ -239,16 +239,20 @@ public class Sensors extends BaseService {
 					final double valueAsDouble = Double.parseDouble(sensorValue);
 					final double deadbandPercent = existingSensorData.getSensor().getDeadbandPercent();
 
-					final double existingValueAsDouble = Double
-							.parseDouble(existingSensorData.getValue().replace(",", "."));
+					String existingValue = existingSensorData.getValue().replace(",", ".");
 
-					final double difference = existingValueAsDouble * (deadbandPercent / 1000);
+					if (NumberUtils.isCreatable(existingValue)) {
 
-					final double lowerLimit = existingValueAsDouble - difference;
-					final double higherLimit = existingValueAsDouble + difference;
+						final double existingValueAsDouble = Double.parseDouble(existingValue);
 
-					if ((lowerLimit <= valueAsDouble) && (valueAsDouble <= higherLimit)) {
-						mergeExisting = true;
+						final double difference = existingValueAsDouble * (deadbandPercent / 1000);
+
+						final double lowerLimit = existingValueAsDouble - difference;
+						final double higherLimit = existingValueAsDouble + difference;
+
+						if ((lowerLimit <= valueAsDouble) && (valueAsDouble <= higherLimit)) {
+							mergeExisting = true;
+						}
 					}
 				}
 
@@ -418,24 +422,24 @@ public class Sensors extends BaseService {
 						.error("found no sensor for technical type: " + sensorTechnicalType);
 
 				em.getTransaction().begin();
-				
-				sensor=new Sensor();
+
+				sensor = new Sensor();
 				sensor.setSensorTechnicalType(sensorTechnicalType);
 				sensor.setSensorName(sensorTechnicalType);
 				sensor.setDeadbandPercent(0);
-				
+
 				em.persist(sensor);
-				
+
 				em.getTransaction().commit();
-				
+
 				List<Sensor> sensorsNew = em
 						.createQuery("select s from Sensor s where s.sensorTechnicalType=:sensorTechnicalType",
 								Sensor.class)
 						.setParameter("sensorTechnicalType", sensorTechnicalType).getResultList();
 				if (sensorsNew != null && !sensorsNew.isEmpty()) {
 					sensor = sensorsNew.get(0);
-					
-				} else  {
+
+				} else {
 					throw new NoResultException();
 				}
 			}
