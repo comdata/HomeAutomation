@@ -43,7 +43,7 @@ public class MQTTTopicSensorService extends BaseService {
 		MQTTTopic topic = em.find(MQTTTopic.class, topicId);
 		Room room = em.find(Room.class, roomId);
 
-		Sensor sensor = Sensor.builder().sensorTechnicalType("MQTT:" + topic.getTopic()).room(room)
+		Sensor sensor = Sensor.builder().sensorTechnicalType("mqtt://" + topic.getTopic()).room(room)
 				.sensorName(sensorName).showData(true).deadbandPercent(0).build();
 
 		em.persist(sensor);

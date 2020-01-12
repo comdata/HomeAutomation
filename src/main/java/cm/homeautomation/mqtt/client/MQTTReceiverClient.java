@@ -131,7 +131,7 @@ public class MQTTReceiverClient implements MqttCallback {
 		String messageContent = new String(payload);
 		LogManager.getLogger(this.getClass()).info("Got MQTT message: " + messageContent);
 
-		EventBusService.getEventBus().post(new MQTTTopicEvent(topic));
+		EventBusService.getEventBus().post(new MQTTTopicEvent(topic, messageContent));
 
 		try {
 			Runnable receiver = null;
