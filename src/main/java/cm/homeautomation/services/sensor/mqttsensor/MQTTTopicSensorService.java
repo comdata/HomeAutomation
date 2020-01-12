@@ -44,16 +44,27 @@ public class MQTTTopicSensorService extends BaseService {
 		MQTTTopic topic = em.find(MQTTTopic.class, topicId);
 		Room room = em.find(Room.class, roomId);
 
-		Sensor sensor = Sensor.builder().sensorTechnicalType("mqtt://" + topic.getTopic()).room(room)
-				.sensorName(sensorName).showData(true).deadbandPercent(0).build();
+		String sensorTechnicalType = "mqtt://" + topic.getTopic();
 
-		em.persist(sensor);
+		List<Sensor> existingSensors = em
+				.createQuery("select s from Sensor s where s.sensorTechnicalType=:technicalType and s.room=:room",
+						Sensor.class)
+				.setParameter("technicalType", sensorTechnicalType).setParameter("room", room).getResultList();
 
-		em.getTransaction().commit();
+		if (existingSensors == null || existingSensors.isEmpty()) {
+			Sensor sensor = Sensor.builder().sensorTechnicalType(sensorTechnicalType).room(room).sensorName(sensorName)
+					.showData(true).deadbandPercent(0).build();
 
-		GenericStatus genericStatus = new GenericStatus(true);
-		genericStatus.setObject(sensor);
-		return genericStatus;
+			em.persist(sensor);
+
+			em.getTransaction().commit();
+
+			GenericStatus genericStatus = new GenericStatus(true);
+			genericStatus.setObject(sensor);
+			return genericStatus;
+		} else {
+			return new GenericStatus(false);
+		}
 	}
 
 }
