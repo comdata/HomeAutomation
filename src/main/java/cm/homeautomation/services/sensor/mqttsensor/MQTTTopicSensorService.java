@@ -32,6 +32,7 @@ public class MQTTTopicSensorService extends BaseService {
 		return em.createQuery("select t from MQTTTopic t", MQTTTopic.class).getResultList();
 	}
 
+	@GET
 	@Path("createSensor/{topicId}/{roomId}/{sensorName}")
 	public GenericStatus createSensorForTopic(@PathParam("topicId") Long topicId, @PathParam("roomId") Long roomId,
 			@PathParam("sensorName") String sensorName) {
