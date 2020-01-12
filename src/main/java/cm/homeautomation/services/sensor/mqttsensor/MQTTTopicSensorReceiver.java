@@ -1,6 +1,7 @@
 package cm.homeautomation.services.sensor.mqttsensor;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -26,18 +27,24 @@ public class MQTTTopicSensorReceiver {
 		EntityManager em = EntityManagerService.getNewManager();
 
 		String technicalType = "mqtt://" + topicEvent.getTopic();
-		Sensor sensor = em
-				.createQuery("select s from Sensor s where s.sensorTechnicalType=:technicalType", Sensor.class)
-				.setParameter("technicalType", technicalType).getSingleResult();
+		try {
+			Sensor sensor = em
+					.createQuery("select s from Sensor s where s.sensorTechnicalType=:technicalType", Sensor.class)
+					.setParameter("technicalType", technicalType).getSingleResult();
 
-		if (sensor != null) {
+			if (sensor != null) {
 
-			try {
-				Sensors.getInstance().saveSensorData(sensor.getId(), topicEvent.getMessage());
-			} catch (SensorDataLimitViolationException e) {
-				log.error(e);
+				try {
+					Sensors.getInstance().saveSensorData(sensor.getId(), topicEvent.getMessage());
+				} catch (SensorDataLimitViolationException e) {
+					log.error(e);
+				}
 			}
+
+		} catch (NoResultException e) { // ignore since no result is a valid expectation here
+			log.debug(e);
 		}
+
 	}
 
 }
