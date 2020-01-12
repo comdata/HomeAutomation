@@ -26,7 +26,7 @@ pipeline {
 				
 				withMaven() {
 					//properties([pipelineTriggers([snapshotDependencies()])])
-					sh '$MVN_CMD -DskipTests=true -T 1C -B clean package'
+					sh '$MVN_CMD -DskipTests=true -T 1C -B clean deploy'
 					//sh 'mvn org.pitest:pitest-maven:mutationCoverage -DtimeoutConstant=8000'
             	}
             }
