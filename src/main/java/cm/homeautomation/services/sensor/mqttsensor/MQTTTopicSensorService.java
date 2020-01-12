@@ -51,7 +51,9 @@ public class MQTTTopicSensorService extends BaseService {
 
 		em.getTransaction().commit();
 
-		return new GenericStatus(true);
+		GenericStatus genericStatus = new GenericStatus(true);
+		genericStatus.setObject(sensor);
+		return genericStatus;
 	}
 
 }
