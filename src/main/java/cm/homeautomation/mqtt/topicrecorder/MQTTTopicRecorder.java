@@ -13,6 +13,8 @@ import cm.homeautomation.services.base.AutoCreateInstance;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * record a list of all seen MQTT topics
@@ -23,6 +25,8 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @AutoCreateInstance
 public class MQTTTopicRecorder {
+
+    private List<String> topicList=new ArrayList<>();
 
 	public MQTTTopicRecorder() {
 		EventBusService.getEventBus().register(this);
@@ -36,17 +40,24 @@ public class MQTTTopicRecorder {
 		String topic = event.getTopic();
 		log.debug(topic);
 
-		List<MQTTTopic> mqttTopicList = em.createQuery("select t from MQTTTopic t where t.topic=:topic", MQTTTopic.class)
-				.setParameter("topic", topic).getResultList();
+        if (!topicList.contains(topic)) {
+            List<MQTTTopic> mqttTopicList = em.createQuery("select t from MQTTTopic t where t.topic=:topic", MQTTTopic.class)
+                    .setParameter("topic", topic).getResultList();
 
-		if (mqttTopicList == null || mqttTopicList.isEmpty()) {
-			em.getTransaction().begin();
-			MQTTTopic mqttTopic = new MQTTTopic(topic);
+            if (mqttTopicList == null || mqttTopicList.isEmpty()) {
+                em.getTransaction().begin();
+                MQTTTopic mqttTopic = new MQTTTopic(topic);
 
-			em.persist(mqttTopic);
-			em.getTransaction().commit();
-			log.debug("MQTT topic created. Topic: " + topic);
-		}
+                em.persist(mqttTopic);
+                em.getTransaction().commit();
+                log.debug("MQTT topic created. Topic: " + topic);
+            }
+
+            topicList.add(topic);
+
+        }
+
+
 
 	}
 
