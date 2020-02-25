@@ -1,26 +1,13 @@
 pipeline {
     agent {
         docker {
-            image 'maven:3.6.1-jdk-8-alpine' 
+            image 'comdata456/alpine-mariadb-docker' 
             args '-v $HOME/.m2:/root/.m2 -v /root/.ssh:/root/.ssh' 
         }
     }
     triggers { upstream(upstreamProjects: 'comdata/HomeAutomationBase,comdata/olingo-jpa-processor-v4', threshold: hudson.model.Result.SUCCESS)}
     
     stages {
-		stage('Prepare') {
-		    steps {
-			sh 'apk update'
-			sh 'apk add nodejs rsync graphviz openssh mariadb mariadb-client openrc git'
-			sh 'mysql_install_db --user=root'
-			//sh 'rm /var/lib/mysql/ib_logfile0 /var/lib/mysql/ib_logfile1'
-			//sh 'rc-service mariadb start'
-			//sh '/usr/bin/mysqld_safe &'
-			//sh 'sleep 30' // for mysql to startup
-			//sh 'mysql -u root -e "CREATE DATABASE HA;"'
-			//sh 'mysql -u root HA < WebContent/WEB-INF/log4j.sql'
-		    } 
-		}
 		stage('Build Backend') {
 			steps {
 				
