@@ -3,7 +3,9 @@ package cm.homeautomation.services.sensors;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import javax.persistence.EntityManager;
@@ -76,6 +78,9 @@ public class Sensors extends BaseService {
 		}
 		return instance;
 	}
+
+	private static Map<Long, Sensor> sensorsList = new HashMap<>();
+	private static Map<Long, SensorData> sensorDataMap = new HashMap<>();
 
 	public Sensors() {
 		instance = this;
@@ -406,8 +411,17 @@ public class Sensors extends BaseService {
 
 		Sensor sensor = null;
 		if (request.getSensorId() != null) {
-			sensor = em.createQuery("select s from Sensor s where s.id=:sensorId", Sensor.class)
-					.setParameter("sensorId", request.getSensorId()).getSingleResult();
+			Long sensorId = request.getSensorId();
+			if (!sensorsList.containsKey(sensorId)) {
+				sensor = sensorsList.get(sensorId);
+			} else {
+
+				sensor = em.createQuery("select s from Sensor s where s.id=:sensorId", Sensor.class)
+						.setParameter("sensorId", sensorId).getSingleResult();
+
+				sensorsList.put(sensorId, sensor);
+			}
+
 		} else if (request.getSensorData() != null && request.getSensorData().getSensor() != null) {
 			String sensorTechnicalType = request.getSensorData().getSensor().getSensorTechnicalType();
 			List<Sensor> sensors = em
@@ -451,14 +465,21 @@ public class Sensors extends BaseService {
 			em.getTransaction().begin();
 
 			final SensorData sensorData;
-
-			final List<SensorData> existingSensorDataList = em.createQuery(
-					"select sd from SensorData sd where sd.sensor IN (select s from Sensor s where s.id=:sensorId) order by sd.dateTime desc",
-					SensorData.class).setMaxResults(1).setParameter("sensorId", sensor.getId()).getResultList();
-
+			Long sensorId = sensor.getId();
 			SensorData existingSensorData = null;
-			if (!existingSensorDataList.isEmpty()) {
-				existingSensorData = existingSensorDataList.get(0);
+
+			if (sensorDataMap.containsKey(sensorId)) {
+				existingSensorData=sensorDataMap.get(sensorId);
+			} else {
+
+				final List<SensorData> existingSensorDataList = em.createQuery(
+						"select sd from SensorData sd where sd.sensor IN (select s from Sensor s where s.id=:sensorId) order by sd.dateTime desc",
+						SensorData.class).setMaxResults(1).setParameter("sensorId", sensorId).getResultList();
+
+				
+				if (!existingSensorDataList.isEmpty()) {
+					existingSensorData = existingSensorDataList.get(0);
+				}
 			}
 
 			final SensorData requestSensorData = request.getSensorData();
@@ -510,10 +531,13 @@ public class Sensors extends BaseService {
 				sensorData = requestSensorData;
 				sensorData.setSensor(sensor);
 				em.persist(sensorData);
+				sensorDataMap.put(sensorId, sensorData);
 
 				EventBusService.getEventBus().post(new EventObject(sensorData));
 				LogManager.getLogger(this.getClass()).info("Committing data: " + sensorData.getValue());
 			}
+			
+			
 
 			em.getTransaction().commit();
 		}
