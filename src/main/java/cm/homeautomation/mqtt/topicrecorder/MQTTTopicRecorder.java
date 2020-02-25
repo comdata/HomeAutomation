@@ -26,7 +26,7 @@ import java.util.ArrayList;
 @AutoCreateInstance
 public class MQTTTopicRecorder {
 
-    private List<String> topicList=new ArrayList<>();
+    private static List<String> topicList=new ArrayList<>();
 
 	public MQTTTopicRecorder() {
 		EventBusService.getEventBus().register(this);
