@@ -1,29 +1,30 @@
+# code-with-quarkus project
 
-# HomeAutomation
+This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
-This is my approach to automate my home.
+If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
 
-Currently this is using the 433Utils for receiving/sending data and 
-the Adafruit DHT library to record temperature.
+## Running the application in dev mode
 
-The system currently supports reading:
+You can run your application in dev mode that enables live coding using:
+```
+./mvnw quarkus:dev
+```
 
-- temperature/humidity (DHT, HTU21D and DSB)
-- pressure (BMP180)
-- number of planes from dump1090
-- state of TV (Panasonic)
-- communication and control of Z-Wave Window Blinds using FHEM
-- Receive measurements via ZeroMQ and MQTT (using a local Moquette Broker)
- 
-Additionally it can proxy for a MJPEG camera.
+## Packaging and running the application
 
-The system is split in a webapp (currently tested on Tomcat8) and a client (for collecting the sensor data).
+The application is packageable using `./mvnw package`.
+It produces the executable `code-with-quarkus-1.0.0-SNAPSHOT-runner.jar` file in `/target` directory.
+Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/lib` directory.
 
-The UI is based on OpenUI5 http://openui5.org . The frontend gets 
-update via Websockets from the backend.
+The application is now runnable using `java -jar target/code-with-quarkus-1.0.0-SNAPSHOT-runner.jar`.
 
-Activities can be scheduled by an integrated scheduler.
+## Creating a native executable
 
-Any comments are welcome.
+You can create a native executable using: `./mvnw package -Pnative`.
 
-This is just a hobby... ;-)
+Or you can use Docker to build the native executable using: `./mvnw package -Pnative -Dquarkus.native.container-build=true`.
+
+You can then execute your binary: `./target/code-with-quarkus-1.0.0-SNAPSHOT-runner`
+
+If you want to learn more about building native executables, please consult https://quarkus.io/guides/building-native-image-guide .

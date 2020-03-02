@@ -1,1 +1,0 @@
-0 22 * * * java:cm.homeautomation.services.actor.ActorService#pressSwitch 1 OFF
