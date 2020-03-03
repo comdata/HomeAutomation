@@ -1,5 +1,6 @@
 package cm.homeautomation.db;
 
+import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -21,6 +22,7 @@ public class EntityManagerService {
 		return em;
 	}
 
+	@Produces
 	public static EntityManager getNewManager() {
 		EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
 		return factory.createEntityManager();

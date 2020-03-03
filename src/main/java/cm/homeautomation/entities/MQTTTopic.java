@@ -19,11 +19,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class MQTTTopic {
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
-
-        @NonNull
-        @Column(nullable = false)
-        private String topic;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	
+	@NonNull
+	@Column(nullable = false)
+	private String topic;
 }

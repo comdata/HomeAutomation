@@ -9,6 +9,47 @@
 
 		<jta-data-source>HA</jta-data-source>
 		<mapping-file>custom-orm.xml</mapping-file>
+		<class>cm.homeautomation.entities.NetworkDevice</class>
+		<class>cm.homeautomation.entities.Device</class>
+		<class>cm.homeautomation.entities.Room</class>
+		<class>cm.homeautomation.entities.Sensor</class>
+		<class>cm.homeautomation.entities.SensorData</class>
+		<class>cm.homeautomation.entities.Weather</class>
+		<class>cm.homeautomation.entities.Switch</class>
+		<class>cm.homeautomation.entities.Camera</class>
+		<class>cm.homeautomation.entities.CameraImageHistory</class>
+		<class>cm.homeautomation.entities.WindowBlind</class>
+		<class>cm.homeautomation.entities.Light</class>
+		<class>cm.homeautomation.entities.DimmableLight</class>
+		<class>cm.homeautomation.entities.DimmableColorLight</class>
+		<class>cm.homeautomation.entities.RGBLight</class>
+		<class>cm.homeautomation.entities.PowerMeterPing</class>
+		<class>cm.homeautomation.entities.GasMeterPing</class>
+		<class>cm.homeautomation.entities.WindowState</class>
+		<class>cm.homeautomation.entities.Window</class>
+		<class>cm.homeautomation.entities.Package</class>
+		<class>cm.homeautomation.entities.PackagePK</class>
+		<class>cm.homeautomation.entities.PackageHistory</class>
+		<class>cm.homeautomation.entities.PackageHistoryPK</class>
+		<class>cm.homeautomation.entities.TelegramUser</class>
+		<class>cm.homeautomation.entities.ConfigurationSetting</class>
+		<class>cm.homeautomation.entities.Person</class>
+		<class>cm.homeautomation.entities.PresenceState</class>
+		<class>cm.homeautomation.entities.UptimePing</class>
+		<class>cm.homeautomation.entities.PhoneCallEvent</class>
+		<class>cm.homeautomation.entities.CalendarEntry</class>
+		<class>cm.homeautomation.entities.RainPing</class>
+		<class>cm.homeautomation.entities.DashButtonRange</class>
+		<class>cm.homeautomation.entities.DashButton</class>
+		<class>cm.homeautomation.entities.ScriptingEntity</class>
+		<class>cm.homeautomation.entities.IRCommand</class>
+		<class>cm.homeautomation.entities.HAZWaveNode</class>
+		<class>cm.homeautomation.entities.SecurityZone</class>
+		<class>cm.homeautomation.entities.SecurityZoneMember</class>
+		<class>cm.homeautomation.entities.FHEMDevice</class>
+		<class>cm.homeautomation.entities.SchedulingEntity</class>
+		<class>cm.homeautomation.entities.RoomProperty</class>
+		<class>cm.homeautomation.entities.MQTTSwitch</class>
 		<class>cm.homeautomation.entities.MQTTTopic</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver"

@@ -6,7 +6,7 @@ import javax.ws.rs.core.MediaType;
 
 /**
  * Base REST Webservice
- *
+ * 
  * @author christoph
  *
  */
