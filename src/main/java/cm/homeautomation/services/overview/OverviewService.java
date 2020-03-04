@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
@@ -19,7 +20,8 @@ import cm.homeautomation.entities.Switch;
 import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.base.BaseService;
 
-@AutoCreateInstance
+@ApplicationScoped
+@Default
 @Path("overview")
 public class OverviewService extends BaseService {
 
@@ -170,6 +172,7 @@ public class OverviewService extends BaseService {
 	}
 
 	public OverviewTile updateOverviewTile(SensorData sensorData) {
+		init();
 		final OverviewTile tileForRoom = overviewTiles
 				.getTileForRoom(sensorData.getSensor().getRoom().getId().toString());
 

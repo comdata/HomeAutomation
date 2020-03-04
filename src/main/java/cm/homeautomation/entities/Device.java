@@ -3,7 +3,6 @@ package cm.homeautomation.entities;
 import java.util.Date;
 import java.util.Map;
 
-import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,7 +21,7 @@ public class Device {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	// Dates
 	private Date dateInstalled;
 
@@ -32,23 +31,23 @@ public class Device {
 	private String type;
 	private String firmware;
 	private String externalId;
-	
+
 	@JsonBackReference("room")
 	@ManyToOne
-	@JoinColumn(name = "ROOM_ID", nullable=true)
+	@JoinColumn(name = "ROOM_ID", nullable = true)
 	@EdmIgnore
-	@JsonbTransient
+
 	private Room room;
-	
-	@Column(name="MAC", nullable=false, unique=true)
+
+	@Column(name = "MAC", nullable = false, unique = true)
 	private String mac;
-	
-	@Column(name="NAME", nullable=false)
+
+	@Column(name = "NAME", nullable = false)
 	private String name;
-	
+
 	@OneToMany
 	@EdmIgnore
-	@JsonbTransient
+
 	private Map<String, Sensor> sensors;
 
 	public Long getId() {

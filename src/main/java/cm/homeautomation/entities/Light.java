@@ -2,7 +2,6 @@ package cm.homeautomation.entities;
 
 import java.util.Date;
 
-import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -41,7 +40,7 @@ public class Light {
 	@ManyToOne
 	@JoinColumn(name = "ROOM_ID")
 	@EdmIgnore
-	@JsonbTransient
+	
 	private Room room;
 
 	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")

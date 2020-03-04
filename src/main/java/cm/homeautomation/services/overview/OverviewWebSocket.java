@@ -5,6 +5,7 @@ import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -31,6 +32,9 @@ public class OverviewWebSocket {
 
 	private OverviewEndPointConfiguration overviewEndPointConfiguration;
 	private OverviewWebSocket overviewEndpoint;
+	
+	@Inject
+	OverviewService overviewService;
 
 	public OverviewWebSocket() {
 		super();
@@ -57,7 +61,7 @@ public class OverviewWebSocket {
 		if (eventData instanceof SensorData) {
 
 			final SensorData sensorData = (SensorData) eventData;
-			final OverviewTile overviewTileForRoom = new OverviewService().updateOverviewTile(sensorData);
+			final OverviewTile overviewTileForRoom = overviewService.updateOverviewTile(sensorData);
 
 			LogManager.getLogger(this.getClass())
 					.info("Got eventbus for room: " + sensorData.getSensor().getRoom().getRoomName());

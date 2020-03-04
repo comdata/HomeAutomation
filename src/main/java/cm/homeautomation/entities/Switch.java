@@ -3,7 +3,6 @@ package cm.homeautomation.entities;
 import java.util.Date;
 import java.util.List;
 
-import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -80,7 +79,6 @@ public class Switch {
 	@XmlTransient
 	@JsonIgnore
 	@EdmIgnore
-	@JsonbTransient
 	private Room room;
 
 	@Column(name = "VISIBLE", nullable = false)

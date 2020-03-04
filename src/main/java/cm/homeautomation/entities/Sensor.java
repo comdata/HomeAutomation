@@ -2,7 +2,6 @@ package cm.homeautomation.entities;
 
 import java.util.List;
 
-import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -87,13 +86,13 @@ public class Sensor {
 	@ManyToOne
 	@JoinColumn(name = "ROOM_ID")
 	@EdmIgnore
-	@JsonbTransient
+	
 	private Room room;
 
     @Getter
     @Setter    
     @OneToMany(mappedBy = "sensor", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonIgnore
 	private List<SensorData> sensorData;
 
 	@XmlTransient

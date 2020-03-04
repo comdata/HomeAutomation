@@ -1,6 +1,5 @@
 package cm.homeautomation.entities;
 
-import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -30,7 +29,6 @@ public class RoomProperty {
 	@ManyToOne
 	@JoinColumn(name = "ROOM_ID")
 	@EdmIgnore
-	@JsonbTransient
 	private Room room;
 	
 	private String name;
