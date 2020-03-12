@@ -16,42 +16,26 @@ pipeline {
             	}
             }
 		}
-	
-	    stage('Deploy') {
-	       parallel {
-//	       	    stage('CodeCoverage') {
-//	       	    	steps {
-//	       		 	   sh 'cd HomeAutomation && bash <(curl -s https://codecov.io/bash)'
-//	       			}
-//	       		}
-	       		//stage('Sonarqube' ) {
-	       		//	steps {
-	       		//		withMaven() {
-	       		//			// org.jacoco:jacoco-maven-plugin:prepare-agent
-	       		//    		sh 'MVN_CMD -DskipTests=true sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dsonar.organization=homeautomation'
-	       		//		}
-	       		//	}
-	       		//}
+		
+		 stage('Make Container') {
 
-	      		 //stage('JUnit') {
-			//		steps {
-						//junit '**/target/surefire-reports/**/*.xml'  
-		          //  }
-			//	}
-//				stage('Deploy Backend') {
-//	        		steps {
-//	   					sh 'ssh root@192.168.1.36 docker-compose stop ha-tomcat'
-//	        			sh 'rsync -auv --delete --exclude "*.java" target/HomeAutomation-0.0.1-SNAPSHOT/WEB-INF/* root@192.168.1.36:/mnt/raid/tomcat8/webapps/HomeAutomation/WEB-INF/'
-//	   					sh 'ssh root@192.168.1.36 docker-compose start ha-tomcat'
-//	   				}
-//	   			}
-//				stage('Archive') {
-//	   			    steps {
-//	   			        archiveArtifacts artifacts: '**/target/**/*.jar', fingerprint: true
-//	   			    	archiveArtifacts artifacts: '**/pom.xml', fingerprint: true
-//	   			    }	   			    
-//	   			}
-	   		}	
-	    }
+            steps {
+                sh "docker build -t comdata456/homeautomation:${env.BUILD_ID} ."
+                sh "docker tag comdata456/homeautomation:${env.BUILD_ID} comdata456/homeautomation:latest"
+            }
+        }
+	   
     }
+    post {
+        always {
+            archiveArtifacts artifacts: 'target/**/*.jar', fingerprint: true
+        }
+        success {
+            withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                sh "/usr/bin/docker login -u ${USERNAME} -p ${PASSWORD}"
+                sh "/usr/bin/docker push comdata456/homeautomation:${env.BUILD_ID}"
+                sh "/usr/bin/docker push comdata456/homeautomation"
+            }
+        }
+    }    
 }
