@@ -1,13 +1,19 @@
 pipeline {
     agent {
         docker {
-            image 'comdata456/maven-jdk-11-slim' 
+            image 'docker' 
             args '-v $HOME/.m2:/root/.m2 -v /root/.ssh:/root/.ssh -v /usr/bin/docker:/usr/bin/docker -v /run/docker.sock:/run/docker.sock' 
         }
     }
     triggers { upstream(upstreamProjects: 'comdata/olingo-jpa-processor-v4', threshold: hudson.model.Result.SUCCESS)}
     
     stages {
+     	stage('Prepare') {
+            steps {
+                sh 'apk update'
+                sh 'apk add make bash curl openjdk maven'
+            }
+        }
 		stage('Build Backend') {
 			steps {
 				withMaven() {
