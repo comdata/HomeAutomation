@@ -1,4 +1,9 @@
 pipeline {
+    environment {
+        registry = "comdata456/homeautomation"
+        registryCredential = 'docker-hub-credentials'
+    }
+
     agent {
         docker {
             image 'docker' 
@@ -11,7 +16,7 @@ pipeline {
      	stage('Prepare') {
             steps {
                 sh 'apk update'
-                sh 'apk add make bash curl openjdk8 maven'
+                sh 'apk add make bash curl openjdk8 maven docker'
             }
         }
 		stage('Build Backend') {
@@ -25,8 +30,8 @@ pipeline {
 		 stage('Make Container') {
 
             steps {
-            	sh "/usr/bin/docker build -t comdata456/homeautomation:${env.BUILD_ID} ."
-            	sh "/usr/bin/docker tag comdata456/homeautomation:${env.BUILD_ID} comdata456/homeautomation:latest"
+            	sh "docker build -t comdata456/homeautomation:${env.BUILD_ID} ."
+            	sh "docker tag comdata456/homeautomation:${env.BUILD_ID} comdata456/homeautomation:latest"
             }
         }
 	   
