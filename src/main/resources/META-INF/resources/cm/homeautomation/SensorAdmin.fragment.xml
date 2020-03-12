@@ -1,0 +1,35 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
+    <Dialog title="Sensor" afterClose="afterSensorAdminDialogClose" stretch="false">
+        <content>
+
+            <f:SimpleForm id="SensorAdminForm"
+                          editable="true"
+                          layout="ResponsiveGridLayout" >
+
+            <f:content>
+                <Label text="Sensor Name" />
+                <Input value="{sensorAdminDetail>/name}" />
+
+                <Label text="Sensor Type" />
+                <ComboBox>
+
+                    <core:Item key="TEMPERATURE" text="Temperature" />
+                    <core:Item key="HUMIDITY" text="Humidity" />
+                    <core:Item key="PRESSURE" text="Pressure" />
+                </ComboBox>
+            </f:content>
+            </f:SimpleForm>
+
+        </content>
+        <endButton>
+            <Button text="Ok" press="sensorAdminDialogOk"/>
+
+        </endButton>
+        <beginButton>
+
+            <Button text="Cancel" press="sensorAdminDialogCancel"/>
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>

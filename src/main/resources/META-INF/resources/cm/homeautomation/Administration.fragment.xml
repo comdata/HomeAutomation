@@ -1,0 +1,141 @@
+<core:FragmentDefinition
+        xmlns:core="sap.ui.core"
+        xmlns:m="sap.m"
+        xmlns="sap.m"
+        xmlns:custom="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+        xmlns:u="sap.ui.unified">
+
+    <m:Dialog title="Administration" afterClose="afterAdministrationDialogClose" stretch="true" horizontalScrolling="false" verticalScrolling="false" contentHeight="100%" contentWidth="100%">
+        <m:content>
+            <u:SplitContainer
+                    id="administrationSplitContainer"
+                    showSecondaryContent="true">
+                <u:secondaryContent>
+                    <ScrollContainer
+                            height="100%"
+                            width="100%"
+                            horizontal="true"
+                            vertical="true"
+                            focusable="true">
+                        <content>
+                    <List visible="true" id="adminRooms"
+                          items="{
+			                path: 'rooms>/rooms'
+		                    }"
+
+                          itemPress="administrationRoomPressed"
+
+                            >
+                        <!--  itemPress="administrationRoomPressed" mode="SingleSelect" selectionChange="handleRoomSelected" -->
+                        <items>
+                        <StandardListItem
+                                title="{rooms>roomName}" type="Navigation" custom:roomId="{rooms>id}"
+                                >
+                        </StandardListItem></items>
+                        <headerToolbar>
+                            <Toolbar>
+                                <Title text="Rooms" level="H2" />
+                                <ToolbarSpacer />
+                                <Button
+                                        icon="sap-icon://add"
+                                        press="handleAddRoomButtonPress" />
+                                <Button
+                                        icon="sap-icon://edit"
+                                        press="handleEditRoomButtonPress" />
+                            </Toolbar>
+                        </headerToolbar>
+                    </List></content></ScrollContainer>
+                </u:secondaryContent>
+                <u:content>
+                	<List visible="{= ${administrationRoomDetail>/id} === null ? false : true }" id="adminDevices"
+                          items="{
+			                path: 'administrationRoomDetail>/devices'
+		                    }"
+
+                          itemPress="administrationDevicePressed"
+
+                            >
+                        <!--  itemPress="administrationRoomPressed" mode="SingleSelect" selectionChange="handleRoomSelected" -->
+                        <items>
+                            <StandardListItem
+                                    title="{administrationRoomDetail>name}" type="Navigation" custom:mac="{administrationRoomDetail>mac}"
+                                    >
+                            </StandardListItem></items>
+                        <headerToolbar>
+                            <Toolbar>
+                                <Title text="Devices" level="H2" />
+                                <ToolbarSpacer />
+                                <Button
+                                        icon="sap-icon://add"
+                                        press="handleAddDeviceButtonPress" />
+                                <!--<Button
+                                        icon="sap-icon://edit"
+                                        press="handleEditDeviceButtonPress" />-->
+                            </Toolbar>
+                        </headerToolbar>
+                    </List>
+                    <List visible="true" id="adminSensor"
+                          items="{
+			                path: 'administrationRoomDetail>/sensors'
+		                    }"
+
+                          itemPress="administrationSensorPressed"
+
+                            >
+                        <!--  itemPress="administrationRoomPressed" mode="SingleSelect" selectionChange="handleRoomSelected" -->
+                        <items>
+                            <StandardListItem
+                                    title="{administrationRoomDetail>sensorName}" type="Navigation" custom:sensorId="{administrationRoomDetail>sensorid}"
+                                    >
+                            </StandardListItem></items>
+                        <headerToolbar>
+                            <Toolbar>
+                                <Title text="Sensors" level="H2" />
+                                <ToolbarSpacer />
+                                <Button
+                                        icon="sap-icon://add"
+                                        press="handleAddSensorButtonPress" />
+                                <!--<Button
+                                        icon="sap-icon://edit"
+                                        press="handleEditSensorButtonPress" />-->
+                            </Toolbar>
+                        </headerToolbar>
+                    </List>
+                    <List visible="true" id="adminSwitches"
+                          items="{
+			                path: 'administrationRoomDetail>/switches'
+		                    }"
+
+                          itemPress="administrationSwitchPressed"
+
+                            >
+                        <!--  itemPress="administrationRoomPressed" mode="SingleSelect" selectionChange="handleRoomSelected" -->
+                        <items>
+                            <StandardListItem
+                                    title="{administrationRoomDetail>name}" type="Navigation" custom:switchId="{administrationRoomDetail>id}"
+                                    >
+                            </StandardListItem></items>
+                        <headerToolbar>
+                            <Toolbar>
+                                <Title text="Switches" level="H2" />
+                                <ToolbarSpacer />
+                                <Button
+                                        icon="sap-icon://add"
+                                        press="handleAddSwitchButtonPress" />
+                                <!--<Button
+                                        icon="sap-icon://edit"
+                                        press="handleEditSensorButtonPress" />-->
+                            </Toolbar>
+                        </headerToolbar>
+                    </List>
+                </u:content>
+            </u:SplitContainer>
+
+
+        </m:content>
+        <m:beginButton>
+
+            <m:Button text="Schliessen" press="administrationDialogClose"/>
+        </m:beginButton>
+    </m:Dialog>
+</core:FragmentDefinition>
