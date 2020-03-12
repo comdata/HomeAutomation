@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'comdata456/alpine-mariadb-docker' 
+            image 'comdata456/maven-jdk-11-slim' 
             args '-v $HOME/.m2:/root/.m2 -v /root/.ssh:/root/.ssh -v /usr/bin/docker:/usr/bin/docker -v /run/docker.sock:/run/docker.sock' 
         }
     }
@@ -10,7 +10,6 @@ pipeline {
     stages {
 		stage('Build Backend') {
 			steps {
-				
 				withMaven() {
 					sh '$MVN_CMD -DskipTests -B package'
             	}
@@ -20,8 +19,8 @@ pipeline {
 		 stage('Make Container') {
 
             steps {
-                sh "/usr/bin/docker build -t comdata456/homeautomation:${env.BUILD_ID} ."
-                sh "/usr/bin/docker tag comdata456/homeautomation:${env.BUILD_ID} comdata456/homeautomation:latest"
+            	sh "/usr/bin/docker build -t comdata456/homeautomation:${env.BUILD_ID} ."
+            	sh "/usr/bin/docker tag comdata456/homeautomation:${env.BUILD_ID} comdata456/homeautomation:latest"
             }
         }
 	   
