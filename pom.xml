@@ -174,7 +174,7 @@
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-resteasy</artifactId>
 		</dependency>
-				<dependency>
+		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-arc</artifactId>
 		</dependency>
@@ -192,10 +192,12 @@
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-resteasy-jaxb</artifactId>
 		</dependency>
-		<!--  <dependency>
+		<!-- <dependency> <groupId>io.quarkus</groupId> <artifactId>quarkus-resteasy-jsonb</artifactId> 
+			</dependency> -->
+		<dependency>
 			<groupId>io.quarkus</groupId>
-			<artifactId>quarkus-resteasy-jsonb</artifactId>
-		</dependency>-->
+			<artifactId>quarkus-smallrye-health</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-jdbc-mariadb</artifactId>
@@ -203,7 +205,7 @@
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-resteasy-jackson</artifactId>
-		</dependency> 
+		</dependency>
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-smallrye-metrics</artifactId>
