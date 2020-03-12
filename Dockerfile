@@ -14,7 +14,7 @@
 # docker run -i --rm -p 8080:8080 quarkus/getting-started-jvm
 #
 ###
-FROM FROM maven:3.6.1-jdk-8-alpine
+FROM maven:3.6.1-jdk-8-alpine
 ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
 ENV AB_ENABLED=jmx_exporter
 COPY target/lib/* /lib/
