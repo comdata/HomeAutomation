@@ -20,8 +20,8 @@ pipeline {
 		 stage('Make Container') {
 
             steps {
-                sh "docker build -t comdata456/homeautomation:${env.BUILD_ID} ."
-                sh "docker tag comdata456/homeautomation:${env.BUILD_ID} comdata456/homeautomation:latest"
+                sh "/usr/bin/docker build -t comdata456/homeautomation:${env.BUILD_ID} ."
+                sh "/usr/bin/docker tag comdata456/homeautomation:${env.BUILD_ID} comdata456/homeautomation:latest"
             }
         }
 	   
