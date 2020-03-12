@@ -2,10 +2,10 @@ pipeline {
     agent {
         docker {
             image 'comdata456/alpine-mariadb-docker' 
-            args '-v $HOME/.m2:/root/.m2 -v /root/.ssh:/root/.ssh' 
+            args '-v $HOME/.m2:/root/.m2 -v /root/.ssh:/root/.ssh -v /usr/bin/docker:/usr/bin/docker' 
         }
     }
-    triggers { upstream(upstreamProjects: 'comdata/HomeAutomationBase,comdata/olingo-jpa-processor-v4', threshold: hudson.model.Result.SUCCESS)}
+    triggers { upstream(upstreamProjects: 'comdata/olingo-jpa-processor-v4', threshold: hudson.model.Result.SUCCESS)}
     
     stages {
 		stage('Build Backend') {
