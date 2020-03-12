@@ -22,7 +22,7 @@ import cm.homeautomation.services.base.BaseService;
 
 @ApplicationScoped
 @Default
-@Path("overview")
+@Path("overview/")
 public class OverviewService extends BaseService {
 
 	OverviewTiles overviewTiles;

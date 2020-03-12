@@ -6,7 +6,7 @@ import javax.ws.rs.Path;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.SchedulerThread;
 
-@Path("scheduler")
+@Path("scheduler/")
 public class SchedulerService extends BaseService {
 	
 	@GET

@@ -18,7 +18,7 @@ import cm.homeautomation.services.base.GenericStatus;
  * @author christoph
  *
  */
-@Path("configuration")
+@Path("configuration/")
 public class ConfigurationRESTService extends BaseService {
 
 	@GET

@@ -16,7 +16,7 @@ import cm.homeautomation.sensors.powermeter.PowerMeterSensor;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 
-@Path("power")
+@Path("power/")
 public class PowerMeterService extends BaseService {
 
 	@GET

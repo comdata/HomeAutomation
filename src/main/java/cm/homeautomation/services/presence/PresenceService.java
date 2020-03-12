@@ -17,7 +17,7 @@ import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 
-@Path("presence")
+@Path("presence/")
 public class PresenceService extends BaseService {
 
 	public GenericStatus purgeStates() {

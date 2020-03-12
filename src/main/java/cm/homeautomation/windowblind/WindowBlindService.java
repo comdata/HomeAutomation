@@ -15,7 +15,7 @@ import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.base.HTTPHelper;
 
-@Path("windowBlinds")
+@Path("windowBlinds/")
 public class WindowBlindService extends BaseService {
 
 	/**

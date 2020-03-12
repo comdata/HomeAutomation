@@ -30,7 +30,7 @@ import cm.homeautomation.services.base.GenericStatus;
  * @author christoph
  *
  */
-@Path("networkdevices")
+@Path("networkdevices/")
 public class NetworkDevicesService extends BaseService {
 
 	private static NetworkDevicesService instance = null;

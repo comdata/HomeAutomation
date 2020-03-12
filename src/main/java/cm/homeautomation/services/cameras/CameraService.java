@@ -30,7 +30,7 @@ import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
 
-@Path("camera")
+@Path("camera/")
 public class CameraService extends BaseService {
 
 	@Path("getAll")

@@ -13,7 +13,7 @@ import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.services.base.BaseService;
 
-@Path("led")
+@Path("led/")
 public class LEDService extends BaseService {
 
 	@GET

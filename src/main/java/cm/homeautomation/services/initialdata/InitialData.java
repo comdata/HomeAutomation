@@ -9,7 +9,7 @@ import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.services.base.BaseService;
 
-@Path("initialdata")
+@Path("initialdata/")
 public class InitialData extends BaseService{
 
 	@GET
