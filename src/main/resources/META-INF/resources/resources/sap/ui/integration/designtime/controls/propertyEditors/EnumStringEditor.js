@@ -1,0 +1,6 @@
+/*!
+ * OpenUI5
+ * (c) Copyright 2009-2019 SAP SE or an SAP affiliate company.
+ * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+ */
+sap.ui.define(["sap/ui/integration/designtime/controls/propertyEditors/BasePropertyEditor","sap/ui/core/Item","sap/ui/base/BindingParser"],function(B,I,a){"use strict";var E=B.extend("sap.ui.integration.designtime.controls.propertyEditors.EnumStringEditor",{constructor:function(){B.prototype.constructor.apply(this,arguments);this._oCombo=new sap.m.ComboBox({selectedKey:"{value}",value:"{value}",width:"100%"});this._oCombo.bindAggregation("items","enum",function(i,c){return new I({key:c.getObject(),text:c.getObject()});});this._oCombo.attachChange(function(){if(this._validate()){this.firePropertyChanged(this._oCombo.getSelectedKey()||this._oCombo.getValue());}}.bind(this));this.addContent(this._oCombo);},_validate:function(){var s=this._oCombo.getSelectedKey();var v=this._oCombo.getValue();if(!s&&v){var p;try{p=a.complexParser(v);}finally{if(!p){this._oCombo.setValueState("Error");this._oCombo.setValueStateText(this.getI18nProperty("CARD_EDITOR.ENUM.INVALID_SELECTION_OR_BINDING"));return false;}else{this._oCombo.setValueState("None");return true;}}}else{this._oCombo.setValueState("None");return true;}},renderer:B.getMetadata().getRenderer().render});return E;});

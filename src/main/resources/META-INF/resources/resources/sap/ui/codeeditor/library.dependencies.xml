@@ -1,0 +1,69 @@
+<?xml version="1.0" ?>
+<library  version="2.0" name="sap.ui.codeeditor">
+  <module name="sap/ui/codeeditor/CodeEditor.js" size="17541" compressedSize="6650">
+    <requires>
+      <module name="sap/ui/Device.js"/>
+      <module name="sap/ui/codeeditor/js/ace/ace.js"/>
+      <module name="sap/ui/codeeditor/js/ace/ext-beautify.js"/>
+      <module name="sap/ui/codeeditor/js/ace/ext-language_tools.js"/>
+      <module name="sap/ui/codeeditor/js/ace/mode-javascript.js"/>
+      <module name="sap/ui/codeeditor/js/ace/mode-json.js"/>
+      <module name="sap/ui/core/Control.js"/>
+      <module name="sap/ui/core/ResizeHandler.js"/>
+      <module name="sap/ui/thirdparty/jquery.js"/>
+      <module name="ui5loader-autoconfig.js"/>
+    </requires>
+  </module>
+  <module name="sap/ui/codeeditor/library-h2-preload.js" size="1796">
+    <requires>
+      <module name="sap/ui/Device.js"/>
+      <module name="sap/ui/codeeditor/js/ace/ace.js"/>
+      <module name="sap/ui/codeeditor/js/ace/ext-beautify.js"/>
+      <module name="sap/ui/codeeditor/js/ace/ext-language_tools.js"/>
+      <module name="sap/ui/codeeditor/js/ace/mode-javascript.js"/>
+      <module name="sap/ui/codeeditor/js/ace/mode-json.js"/>
+      <module name="sap/ui/core/Control.js"/>
+      <module name="sap/ui/core/Core.js"/>
+      <module name="sap/ui/core/ResizeHandler.js"/>
+      <module name="sap/ui/core/library.js"/>
+      <module name="sap/ui/thirdparty/jquery.js"/>
+      <module name="ui5loader-autoconfig.js"/>
+    </requires>
+    <includes>
+      <module name="sap/ui/codeeditor/library.js"/>
+      <module name="sap/ui/codeeditor/manifest.json"/>
+      <module name="sap/ui/codeeditor/CodeEditor.js"/>
+    </includes>
+  </module>
+  <module name="sap/ui/codeeditor/library-preload.js" size="7889">
+    <requires>
+      <module name="sap/ui/Device.js"/>
+      <module name="sap/ui/codeeditor/js/ace/ace.js"/>
+      <module name="sap/ui/codeeditor/js/ace/ext-beautify.js"/>
+      <module name="sap/ui/codeeditor/js/ace/ext-language_tools.js"/>
+      <module name="sap/ui/codeeditor/js/ace/mode-javascript.js"/>
+      <module name="sap/ui/codeeditor/js/ace/mode-json.js"/>
+      <module name="sap/ui/core/Control.js"/>
+      <module name="sap/ui/core/Core.js"/>
+      <module name="sap/ui/core/ResizeHandler.js"/>
+      <module name="sap/ui/core/library.js"/>
+      <module name="sap/ui/thirdparty/jquery.js"/>
+      <module name="ui5loader-autoconfig.js"/>
+    </requires>
+    <includes>
+      <module name="sap/ui/codeeditor/CodeEditor.js"/>
+      <module name="sap/ui/codeeditor/library.js"/>
+      <module name="sap/ui/codeeditor/manifest.json"/>
+    </includes>
+  </module>
+  <module name="sap/ui/codeeditor/library.js" size="800" compressedSize="461">
+    <description>Initialization Code and shared classes of library sap.ui.codeeditor.</description>
+    <requires>
+      <module name="sap/ui/core/Core.js"/>
+      <module name="sap/ui/core/library.js"/>
+      <module name="ui5loader-autoconfig.js"/>
+    </requires>
+  </module>
+  <module name="sap/ui/codeeditor/manifest.json" size="947">
+  </module>
+</library>
