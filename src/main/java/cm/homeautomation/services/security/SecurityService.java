@@ -27,7 +27,7 @@ import cm.homeautomation.services.base.GenericStatus;
  * @author christoph
  *
  */
-@Path("security")
+@Path("security/")
 @AutoCreateInstance
 public class SecurityService extends BaseService {
 

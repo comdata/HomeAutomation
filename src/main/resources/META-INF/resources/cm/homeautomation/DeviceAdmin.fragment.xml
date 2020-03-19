@@ -1,0 +1,42 @@
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
+	<Dialog title="Device" afterClose="afterDeviceAdminDialogClose"
+		stretch="false">
+		<content>
+
+			<f:SimpleForm id="DeviceAdminForm" editable="true"
+				layout="ResponsiveGridLayout">
+
+				<f:content>
+					<Label text="Device Name" required="true" />
+					<Input
+						value="{path: 'deviceAdminDetail>/name',
+                                  type : 'sap.ui.model.type.String', 
+                                  constraints : { 
+                                      minLength : 1, 
+                                      maxLength : 20 
+                                  }}" change="deviceAdminValidate" />
+
+					<Label text="MAC Address" required="true" />
+					<Input
+						value="{
+                 	path: 'deviceAdminDetail>/mac',
+                 	type: 'sap.ui.model.type.String',
+                 	constraints: {
+                 		search: '^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$'
+                 	}
+                 }"
+						change="deviceAdminValidate" />
+				</f:content>
+			</f:SimpleForm>
+
+		</content>
+		<buttons>
+
+			<Button text="Delete" visible="{=${deviceAdminDetail>/mode} === 'EDIT' ? true: false }" press="deviceAdminDialogDelete" />
+			<Button text="Cancel" press="deviceAdminDialogCancel" />
+			<Button text="Ok" press="deviceAdminDialogOk" />
+
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

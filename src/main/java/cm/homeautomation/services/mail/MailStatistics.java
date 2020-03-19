@@ -18,7 +18,7 @@ import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
 import lombok.NonNull;
 
-@Path("mail")
+@Path("mail/")
 public class MailStatistics extends BaseService {
 
 	private static List<MailData> mailDataList = new ArrayList<>();

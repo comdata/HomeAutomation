@@ -79,7 +79,7 @@ import cm.homeautomation.services.base.GenericStatus;
  * @author christoph
  *
  */
-@Path("lego")
+@Path("lego/")
 public class LEGOTrainService extends BaseService {
 
 

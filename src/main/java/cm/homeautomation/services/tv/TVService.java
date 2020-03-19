@@ -29,7 +29,7 @@ import cm.homeautomation.tv.panasonic.TVNotReachableException;
  * @author christoph
  *
  */
-@Path("tv")
+@Path("tv/")
 public class TVService extends BaseService {
 
 	private static TVService instance;

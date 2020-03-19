@@ -22,7 +22,7 @@ import cm.homeautomation.entities.Switch;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 
-@Path("thermostat")
+@Path("thermostat/")
 public class ThermostatService extends BaseService {
 
 	private static ThermostatService instance=null;

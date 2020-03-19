@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -13,6 +14,7 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.apache.logging.log4j.LogManager;
 
+@ApplicationScoped
 @ServerEndpoint(value = "/actor/{clientId}", configurator = ActorEndpointConfigurator.class, encoders = {
 		MessageTranscoder.class }, decoders = { MessageTranscoder.class })
 public class ActorEndpoint {

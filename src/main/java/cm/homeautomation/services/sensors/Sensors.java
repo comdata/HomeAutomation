@@ -18,7 +18,6 @@ import javax.ws.rs.PathParam;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.LogManager;
 
-import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.device.DeviceService;
 import cm.homeautomation.entities.Sensor;
@@ -36,14 +35,8 @@ import cm.homeautomation.services.actor.SwitchEvent;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 
-@AutoCreateInstance
 @Path("sensors")
 public class Sensors extends BaseService {
-
-    private static Map<Long, Sensor> sensorsList = new HashMap<>();
-    private static Map<Long, SensorData> sensorDataMap = new HashMap<>();
-    
-    private boolean enableMergeExisting=false;
 
 	class DataLoadThread extends Thread {
 		private SensorDatas sensorDatas;
@@ -86,7 +79,8 @@ public class Sensors extends BaseService {
 		return instance;
 	}
 
-
+	private static Map<Long, Sensor> sensorsList = new HashMap<>();
+	private static Map<Long, SensorData> sensorDataMap = new HashMap<>();
 
 	public Sensors() {
 		instance = this;
@@ -525,11 +519,9 @@ public class Sensors extends BaseService {
 			final boolean mergeExisting = mergeExistingData(existingSensorData, requestSensorData, isNumeric);
 
 			if (mergeExisting && existingSensorData != null) {
-                existingSensorData.setValidThru(new Date());
-                if (enableMergeExisting) {
-				    em.merge(existingSensorData);
-                    LogManager.getLogger(this.getClass()).info("Committing data: " + existingSensorData.getValue());
-                }
+				existingSensorData.setValidThru(new Date());
+				em.merge(existingSensorData);
+				LogManager.getLogger(this.getClass()).info("Committing data: " + existingSensorData.getValue());
 			} else {
 				if ((existingSensorData != null) && (requestSensorData.getDateTime() != null)) {
 					existingSensorData.setValidThru(new Date(requestSensorData.getDateTime().getTime() - 1000));
