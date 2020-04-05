@@ -2,7 +2,7 @@ package cm.homeautomation.fhem;
 
 import cm.homeautomation.entities.FHEMDevice;
 import cm.homeautomation.services.base.GenericStatus;
-import cm.homeautomation.windowblind.WindowBlindService;
+import cm.homeautomation.services.windowblind.WindowBlindService;
 
 public class FHEMWindowBlindDataReceiver {
 
