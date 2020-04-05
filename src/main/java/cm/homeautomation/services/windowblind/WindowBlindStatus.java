@@ -1,4 +1,4 @@
-package cm.homeautomation.windowblind;
+package cm.homeautomation.services.windowblind;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
