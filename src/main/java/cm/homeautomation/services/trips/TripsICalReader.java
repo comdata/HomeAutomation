@@ -47,7 +47,7 @@ public class TripsICalReader {
 
 		for (CalendarComponent calendarComponent : components) {
 			//System.out.println("===================================");
-			PropertyList<Property> properties = calendarComponent.getProperties();
+			PropertyList properties = calendarComponent.getProperties();
 
 			CalendarEntry calendarEntry = new CalendarEntry();
 
