@@ -1,4 +1,4 @@
-package cm.homeautomation.services;
+package cm.homeautomation.services.mqtt;
 
 import java.util.List;
 
