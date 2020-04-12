@@ -44,7 +44,7 @@ pipeline {
             withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                 sh "/usr/bin/docker login -u ${USERNAME} -p ${PASSWORD}"
                 sh "/usr/bin/docker push comdata456/homeautomation:${env.BUILD_ID}"
-                sh "/usr/bin/docker push comdata456/homeautomation"
+                sh "/usr/bin/docker push comdata456/homeautomation:latest"
             }
         }
     }    
