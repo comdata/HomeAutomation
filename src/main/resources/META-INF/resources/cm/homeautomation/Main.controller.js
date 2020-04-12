@@ -59,7 +59,7 @@ sap.ui.define([
     'sap/ui/core/mvc/Controller',
     'sap/ui/model/json/JSONModel',
     'cm/webservice/RESTService',
-    'cmValidator',
+    'cm/homeautomation/Validator',
     "sap/ui/model/resource/ResourceModel",
     "sap/ui/core/Fragment"
 ], function (jQuery, Controller, JSONModel, RESTService, Validator,ResourceModel, Fragment) {
