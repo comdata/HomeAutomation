@@ -4,8 +4,8 @@ var imageFullScreen = false;
 sap.ui.require(["sap/ui/core/UIComponent"]);
 sap.ui.require(["sap/m/Dialog"]);
 sap.ui.require(["sap/m/MessageToast"]);
-sap.ui.require(["cmScripting"]);
-sap.ui.require(["cmColorPicker"]);
+sap.ui.require(["cm/homeautomation/Scripting"]);
+sap.ui.require(["cm/homeautomation/ColorPicker"]);
 
 function resize(element) {
 
