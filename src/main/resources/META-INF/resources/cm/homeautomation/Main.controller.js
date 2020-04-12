@@ -4,8 +4,8 @@ var imageFullScreen = false;
 sap.ui.require(["sap/ui/core/UIComponent"]);
 sap.ui.require(["sap/m/Dialog"]);
 sap.ui.require(["sap/m/MessageToast"]);
-sap.ui.require(["cm/homeautomation/Scripting"]);
-sap.ui.require(["cm/homeautomation/ColorPicker"]);
+sap.ui.require(["cmScripting"]);
+sap.ui.require(["cmColorPicker"]);
 
 function resize(element) {
 
@@ -59,7 +59,7 @@ sap.ui.define([
     'sap/ui/core/mvc/Controller',
     'sap/ui/model/json/JSONModel',
     'cm/webservice/RESTService',
-    'cm/homeautomation/Validator',
+    'cmValidator',
     "sap/ui/model/resource/ResourceModel",
     "sap/ui/core/Fragment"
 ], function (jQuery, Controller, JSONModel, RESTService, Validator,ResourceModel, Fragment) {
@@ -71,8 +71,8 @@ sap.ui.define([
         currentRoomModel: null,
         messageToast: null,
         _networkDevicesList:[],
-        _wsOverviewUri: "ws://" + location.host + "/HomeAutomation/overview",
-        _wsEventBusUri: "ws://" + location.host + "/HomeAutomation/eventbus",
+        _wsOverviewUri: "ws://" + location.host + "overview",
+        _wsEventBusUri: "ws://" + location.host + "eventbus",
         _webEventBusSocket: null,
         _webOverviewSocket: null,
         _wsGuid: guid(),
@@ -206,7 +206,7 @@ sap.ui.define([
                 this.getView().getModel().refresh(false);
 
                 // this.getView().setModel(newTiles);
-                $(".sapMStdTileIconDiv > img[src='/HomeAutomation/cameraproxy']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
+                $(".sapMStdTileIconDiv > img[src='cameraproxy']").css("width", "200px").css("height", "112px").css("position", "relative").css("left", "-20px").css("top", "30px");
             }
         },
         handleActorMessage: function (data) {
@@ -299,7 +299,7 @@ sap.ui.define([
 
 
             var oModel = new RESTService();
-            oModel.loadDataAsync("/HomeAutomation/window/setState/" + singleSwitch.window.id + "/"
+            oModel.loadDataAsync("window/setState/" + singleSwitch.window.id + "/"
                 + newState, "", "GET", this.handleSwitchChanged, null, this);
         },
 
@@ -482,7 +482,7 @@ sap.ui.define([
             if (this.loadDataInProgress == false) {
                 this.loadDataInProgress = true;
                 var oModel = new RESTService();
-                oModel.loadDataAsync("/HomeAutomation/overview/get", "", "GET", this.handleDataLoaded, this._loadDataFailed, this);
+                oModel.loadDataAsync("overview/get", "", "GET", this.handleDataLoaded, this._loadDataFailed, this);
             }
         },
         _initNetworkTile: function () {
@@ -561,7 +561,7 @@ sap.ui.define([
         },
         _initCameraTiles: function() {
         	var oModel = new RESTService();
-            oModel.loadDataAsync("/HomeAutomation/camera/getAll", "", "GET", this._handleCamerasLoaded, null, this);
+            oModel.loadDataAsync("camera/getAll", "", "GET", this._handleCamerasLoaded, null, this);
 
         },
 
@@ -579,7 +579,7 @@ sap.ui.define([
                                title: element.cameraName,
                                info: element.cameraName,
                                eventHandler: "showCamera",
-                               icon: "/HomeAutomation/camera/getSnapshot/"+element.id,
+                               icon: "camera/getSnapshot/"+element.id,
                                stream: element.stream
                            }
                    	};
@@ -707,7 +707,7 @@ sap.ui.define([
         _updatePackageTile: function(subject, tile) {
 
         	if (tile!=null) {
-	            $.getJSON("/HomeAutomation/packages/getAllOpen", function (result) {
+	            $.getJSON("packages/getAllOpen", function (result) {
 
 	                console.log("Anzahl Packete" + result.length);
 	                tile.number = result.length;
@@ -840,7 +840,7 @@ sap.ui.define([
             $.ajax({
 
               type: "GET",
-              url: "/HomeAutomation/window/readAll",
+              url: "window/readAll",
               contentType: "application/json",
               dataType: "json",
 
@@ -882,7 +882,7 @@ sap.ui.define([
         	var subject=this;
 
         	this._mailTiles=[];
-            $.getJSON("/HomeAutomation/mail/get", function (result) {
+            $.getJSON("mail/get", function (result) {
 
             	$.each(result, function (index, mail) {
 	                var singleMailTile = {
@@ -904,7 +904,7 @@ sap.ui.define([
             });
         },
         updatePlanesTile: function (subject, planesTile) {
-            $.getJSON("/HomeAutomation/planesproxy", function (result) {
+            $.getJSON("planesproxy", function (result) {
 
                 console.log("Anzahl " + result.length);
                 planesTile.number = result.length;
@@ -1046,7 +1046,7 @@ sap.ui.define([
         networkDeviceWakeUp: function (event) {
             var networkDevice = sap.ui.getCore().getModel("networkDevices").getProperty(event.getSource().oPropagatedProperties.oBindingContexts.networkDevices.sPath);
             var oModel = new RESTService();
-            oModel.loadDataAsync("/HomeAutomation/networkdevices/wake/" + networkDevice.mac, "", "GET", null, null, this);
+            oModel.loadDataAsync("networkdevices/wake/" + networkDevice.mac, "", "GET", null, null, this);
         },
         handleLightRGBButton: function (event) {
             var singleLight = sap.ui.getCore().getModel("lights").getProperty(event.getSource().oPropagatedProperties.oBindingContexts.lights.sPath);
@@ -1078,7 +1078,7 @@ sap.ui.define([
             }
 
             var oModel = new RESTService();
-            oModel.loadDataAsync("/HomeAutomation/actor/press/" + singleSwitch.id + "/"
+            oModel.loadDataAsync("actor/press/" + singleSwitch.id + "/"
                 + newState, "", "GET", this.handleSwitchChanged, null, this);
         },
         handleBlindChange: function (event) {
@@ -1090,7 +1090,7 @@ sap.ui.define([
 
             var oModel = new RESTService();
             var windowBlindId=( windowBlind.id==null) ? 0 : windowBlind.id;
-            oModel.loadDataAsync("/HomeAutomation/windowBlinds/setDim/" + windowBlindId + "/"
+            oModel.loadDataAsync("windowBlinds/setDim/" + windowBlindId + "/"
                 + value+"/"+windowBlind.type+"/"+windowBlind.room, "", "GET", this.handleSwitchChanged, null, this);
 
             /**
@@ -1124,7 +1124,7 @@ sap.ui.define([
 
             var oModel = new RESTService();
             var lightId=( light.id==null) ? 0 : light.id;
-            oModel.loadDataAsync("/HomeAutomation/light/dim/" + lightId + "/"
+            oModel.loadDataAsync("light/dim/" + lightId + "/"
                 + value, "", "GET", this.handleSwitchChanged, null, this);
         },
 
@@ -1152,7 +1152,7 @@ sap.ui.define([
 
             var oModel = new RESTService();
             var lightId=( light.id==null) ? 0 : light.id;
-            oModel.loadDataAsync("/HomeAutomation/light/dim/" + lightId + "/"
+            oModel.loadDataAsync("light/dim/" + lightId + "/"
                 + value, "", "GET", this.handleSwitchChanged, null, this);
         },
 
@@ -1163,7 +1163,7 @@ sap.ui.define([
             console.log("new value: " + value);
 
             var oModel = new RESTService();
-            oModel.loadDataAsync("/HomeAutomation/thermostat/setValue/" + thermostat.id + "/"
+            oModel.loadDataAsync("thermostat/setValue/" + thermostat.id + "/"
                 + value, "", "GET", this.handleSwitchChanged, null, this);
         },
         handleColorPickerChange: function (oEvent) {
@@ -1174,7 +1174,7 @@ sap.ui.define([
 
         	var roomId=0;
         	 var oModel = new RESTService();
-             oModel.loadDataAsync("/HomeAutomation/led/set/" + roomId + "/"
+             oModel.loadDataAsync("led/set/" + roomId + "/"
                  + r+"/"+g+"/"+b, "", "GET", this.handleColorChanged, null, this);
         },
         handleColorChanged: function (event) {
@@ -1192,16 +1192,16 @@ sap.ui.define([
 
             var subject = this;
             var switchesModel = new RESTService();
-            switchesModel.loadDataAsync("/HomeAutomation/actor/forroom/" + subject.selectedRoom, "", "GET", subject.handleSwitchesLoaded, null, subject);
+            switchesModel.loadDataAsync("actor/forroom/" + subject.selectedRoom, "", "GET", subject.handleSwitchesLoaded, null, subject);
 
             var thermostatModel = new RESTService();
-            thermostatModel.loadDataAsync("/HomeAutomation/actor/thermostat/forroom/" + subject.selectedRoom, "", "GET", subject.handleThermostatsLoaded, null, subject);
+            thermostatModel.loadDataAsync("actor/thermostat/forroom/" + subject.selectedRoom, "", "GET", subject.handleThermostatsLoaded, null, subject);
 
             var windowBlindsModel = new RESTService();
-            windowBlindsModel.loadDataAsync("/HomeAutomation/windowBlinds/forRoom/" + subject.selectedRoom, "", "GET", subject.handleWindowBlindsLoaded, null, subject);
+            windowBlindsModel.loadDataAsync("windowBlinds/forRoom/" + subject.selectedRoom, "", "GET", subject.handleWindowBlindsLoaded, null, subject);
 
             var lightModel = new RESTService();
-            lightModel.loadDataAsync("/HomeAutomation/light/get/" + subject.selectedRoom, "", "GET", subject.handleLightsLoaded, null, subject);
+            lightModel.loadDataAsync("light/get/" + subject.selectedRoom, "", "GET", subject.handleLightsLoaded, null, subject);
         },
 
         /**
@@ -1270,14 +1270,14 @@ sap.ui.define([
 
           var subject=this;
           var trainRESTModel = new RESTService();
-          trainRESTModel.loadDataAsync("/HomeAutomation/lego/control/"+mode+"/"+train+"/"+value, "", "GET", null, null, subject);
+          trainRESTModel.loadDataAsync("lego/control/"+mode+"/"+train+"/"+value, "", "GET", null, null, subject);
 
         },
         trainStop: function(oEvent) {
             var train=this._trainModelData.train;
             var subject=this;
             var trainRESTModel = new RESTService();
-            trainRESTModel.loadDataAsync("/HomeAutomation/lego/control/speed/"+train+"/8", "", "GET", null, null, subject);
+            trainRESTModel.loadDataAsync("lego/control/speed/"+train+"/8", "", "GET", null, null, subject);
 
             this._resetTrainModel("speed");
         },
@@ -1285,7 +1285,7 @@ sap.ui.define([
             var train=this._trainModelData.train;
             var subject=this;
             var trainRESTModel = new RESTService();
-            trainRESTModel.loadDataAsync("/HomeAutomation/lego/control/light/"+train+"/8", "", "GET", null, null, subject);
+            trainRESTModel.loadDataAsync("lego/control/light/"+train+"/8", "", "GET", null, null, subject);
 
             this._resetTrainModel("light");
         },
@@ -1293,7 +1293,7 @@ sap.ui.define([
 
           var subject=this;
           var trainRESTModel = new RESTService();
-          trainRESTModel.loadDataAsync("/HomeAutomation/lego/emergencyStop", "", "GET", null, null, subject);
+          trainRESTModel.loadDataAsync("lego/emergencyStop", "", "GET", null, null, subject);
           this._resetTrainModel();
 
         },
@@ -1323,19 +1323,19 @@ sap.ui.define([
         networkDevicesLoad: function() {
           var subject = this;
           var networkDeviceModel = new RESTService();
-          networkDeviceModel.loadDataAsync("/HomeAutomation/networkdevices/getAll", "", "GET", subject.handleNetworkDevicesLoaded, null, subject);
+          networkDeviceModel.loadDataAsync("networkdevices/getAll", "", "GET", subject.handleNetworkDevicesLoaded, null, subject);
 
         },
         tripsLoad: function() {
             var subject = this;
             var tripsModel = new RESTService();
-            tripsModel.loadDataAsync("/HomeAutomation/trips/getUpcoming", "", "GET", subject.tripsLoaded, null, subject);
+            tripsModel.loadDataAsync("trips/getUpcoming", "", "GET", subject.tripsLoaded, null, subject);
 
           },
           presenceLoad: function() {
               var subject = this;
               var tripsModel = new RESTService();
-              tripsModel.loadDataAsync("/HomeAutomation/presence/getAll", "", "GET", subject.presenceLoaded, null, subject);
+              tripsModel.loadDataAsync("presence/getAll", "", "GET", subject.presenceLoaded, null, subject);
 
             },
           doorWindowLoad: function() {
@@ -1343,7 +1343,7 @@ sap.ui.define([
           var doorWindowModel = new RESTService();
 
           // this.handleDoorWindowLoaded();
-          doorWindowModel.loadDataAsync("/HomeAutomation/window/readAll", "", "GET", subject.handleDoorWindowLoaded, null, subject);
+          doorWindowModel.loadDataAsync("window/readAll", "", "GET", subject.handleDoorWindowLoaded, null, subject);
 
         },
         doorWindowDialogReload: function() {
@@ -1352,7 +1352,7 @@ sap.ui.define([
         packageListLoad: function() {
           var subject = this;
           var packageModel = new RESTService();
-          packageModel.loadDataAsync("/HomeAutomation/packages/getAllOpen", "", "GET", subject.handlePackageListLoaded, null, subject);
+          packageModel.loadDataAsync("packages/getAllOpen", "", "GET", subject.handlePackageListLoaded, null, subject);
 
         },
         /**
@@ -1531,7 +1531,7 @@ sap.ui.define([
 //        		sap.ui.getCore().setModel(new JSONModel(), "chartjsData");
 //        		var subject=this;
 //            var powerMeterModel = new RESTService();
-//            powerMeterModel.loadDataAsync("/HomeAutomation/power/readInterval", "", "GET", subject.powerDataLoaded, null, subject);
+//            powerMeterModel.loadDataAsync("power/readInterval", "", "GET", subject.powerDataLoaded, null, subject);
 
         },
         gasMeterLoad: function () {
@@ -1540,7 +1540,7 @@ sap.ui.define([
 //        	sap.ui.getCore().setModel(new JSONModel(), "chartjsData");
 //        		var subject=this;
 //            var gasMeterModel = new RESTService();
-//            gasMeterModel.loadDataAsync("/HomeAutomation/gas/readInterval", "", "GET", subject.gasDataLoaded, null, subject);
+//            gasMeterModel.loadDataAsync("gas/readInterval", "", "GET", subject.gasDataLoaded, null, subject);
 
         },
         powerDataLoaded: function(event, model, data) {
@@ -1883,7 +1883,7 @@ sap.ui.define([
         _reloadScheduler: function () {
             var subject = this;
             var oModel = new RESTService();
-            oModel.loadDataAsync("/HomeAutomation/scheduler/refresh", "", "GET", subject._handleSchedulerLoaded, null, subject);
+            oModel.loadDataAsync("scheduler/refresh", "", "GET", subject._handleSchedulerLoaded, null, subject);
         },
         /**
 		 * show a response when the scheduler has been reloaded
@@ -1904,7 +1904,7 @@ sap.ui.define([
         administrationDialogLoadRooms: function () {
             var subject = this;
             var roomModel = new RESTService();
-            roomModel.loadDataAsync("/HomeAutomation/admin/room/getAll", "", "GET", subject.handleAdminRoomsLoaded, null, subject);
+            roomModel.loadDataAsync("admin/room/getAll", "", "GET", subject.handleAdminRoomsLoaded, null, subject);
 
         },
         administrationDialogClose: function () {
@@ -1952,9 +1952,9 @@ sap.ui.define([
             var url = "";
 
             if (this.roomAdminMode == "ADD") {
-                url = "/HomeAutomation/admin/room/create/" + roomName;
+                url = "admin/room/create/" + roomName;
             } else if (this.roomAdminMode == "EDIT") {
-                url = "/HomeAutomation/admin/room/update/" + roomId + "/" + roomName;
+                url = "admin/room/update/" + roomId + "/" + roomName;
             }
 
             var roomUpdate = new RESTService();
@@ -1990,7 +1990,7 @@ sap.ui.define([
         	var subject = this;
             var roomModel = new RESTService();
 
-            roomModel.loadDataAsync("/HomeAutomation/admin/room/getAll", "", "GET", function (event, model) {
+            roomModel.loadDataAsync("admin/room/getAll", "", "GET", function (event, model) {
             		subject.handleAdminRoomsLoaded(event, model);
 
             		subject.administrationSelectedRoom=sap.ui.getCore().getModel("rooms").getProperty(subject.administrationSelectedRoomPath);
@@ -2064,10 +2064,10 @@ sap.ui.define([
 	            var url = "";
 
 	            if (this.deviceAdminMode == "ADD") {
-	                url = "/HomeAutomation/admin/device/create/"+roomId+ "/" + name+ "/" +mac;
+	                url = "admin/device/create/"+roomId+ "/" + name+ "/" +mac;
 	            } else if (this.deviceAdminMode == "EDIT") {
 	            	var oldMac=this.adminDeviceForEditMac
-	                url = "/HomeAutomation/admin/device/update/"+roomId+"/" + name + "/"+oldMac+"/"+mac;
+	                url = "admin/device/update/"+roomId+"/" + name + "/"+oldMac+"/"+mac;
 	            }
 
 	            var deviceUpdate = new RESTService();
@@ -2080,7 +2080,7 @@ sap.ui.define([
             var model = sap.ui.getCore().getModel("deviceAdminDetail");
 
             var mac = model.getProperty("/mac");
-            var url = "/HomeAutomation/admin/device/delete/" +mac;
+            var url = "admin/device/delete/" +mac;
 
             var deviceUpdate = new RESTService();
             var subject=this;
@@ -2131,9 +2131,9 @@ sap.ui.define([
             var url = "";
 
             if (this.sensorAdminMode == "ADD") {
-                url = "/HomeAutomation/admin/sensor/create/" + name;
+                url = "admin/sensor/create/" + name;
             } else if (this.switchAdminMode == "EDIT") {
-                url = "/HomeAutomation/admin/sensor/update/" + sensorId + "/" + name;
+                url = "admin/sensor/update/" + sensorId + "/" + name;
             }
 
             var sensorUpdate = new RESTService();
@@ -2151,9 +2151,9 @@ sap.ui.define([
             var url = "";
 
             if (this.switchAdminMode == "ADD") {
-                url = "/HomeAutomation/admin/switch/create/" + name;
+                url = "admin/switch/create/" + name;
             } else if (this.switchAdminMode == "EDIT") {
-                url = "/HomeAutomation/admin/switch/update/" + sensorId + "/" + name;
+                url = "admin/switch/update/" + sensorId + "/" + name;
             }
 
             var switchUpdate = new RESTService();
