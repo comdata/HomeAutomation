@@ -24,15 +24,14 @@ import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.eventbus.StringTranscoder;
 
 @ApplicationScoped
-@ServerEndpoint(value = "/overview/{clientId}", encoders = {
-		OverviewMessageTranscoder.class,
+@ServerEndpoint(value = "/overview/{clientId}", encoders = { OverviewMessageTranscoder.class,
 		StringTranscoder.class }, decoders = { OverviewMessageTranscoder.class, StringTranscoder.class })
 public class OverviewWebSocket {
 	private final ConcurrentHashMap<String, Session> userSessions = new ConcurrentHashMap<>();
 
 	private OverviewEndPointConfiguration overviewEndPointConfiguration;
 	private OverviewWebSocket overviewEndpoint;
-	
+
 	@Inject
 	OverviewService overviewService;
 
@@ -61,20 +60,25 @@ public class OverviewWebSocket {
 		if (eventData instanceof SensorData) {
 
 			final SensorData sensorData = (SensorData) eventData;
-			final OverviewTile overviewTileForRoom = overviewService.updateOverviewTile(sensorData);
 
-			LogManager.getLogger(this.getClass())
-					.info("Got eventbus for room: " + sensorData.getSensor().getRoom().getRoomName());
+			if (overviewService != null) {
+				final OverviewTile overviewTileForRoom = overviewService.updateOverviewTile(sensorData);
 
-			try {
+				LogManager.getLogger(this.getClass())
+						.info("Got eventbus for room: " + sensorData.getSensor().getRoom().getRoomName());
 
-				overviewEndPointConfiguration = new OverviewEndPointConfiguration();
-				overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
-				LogManager.getLogger(this.getClass()).info(
-						"Sending tile: " + overviewTileForRoom.getRoomName() + " - " + overviewTileForRoom.getNumber());
-				overviewEndpoint.sendTile(overviewTileForRoom);
-			} catch (final InstantiationException e) {
-				LogManager.getLogger(this.getClass()).error("Sending eventbus updates failed", e);
+				try {
+
+					overviewEndPointConfiguration = new OverviewEndPointConfiguration();
+					overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
+					LogManager.getLogger(this.getClass()).info("Sending tile: " + overviewTileForRoom.getRoomName()
+							+ " - " + overviewTileForRoom.getNumber());
+					overviewEndpoint.sendTile(overviewTileForRoom);
+				} catch (final InstantiationException e) {
+					LogManager.getLogger(this.getClass()).error("Sending eventbus updates failed", e);
+				}
+			} else {
+				// overview not initialized
 			}
 		} else {
 			LogManager.getLogger(this.getClass()).info("Eventdata not SensorData: " + eventData.getClass().getName());
@@ -145,8 +149,7 @@ public class OverviewWebSocket {
 						userSessions.remove(key);
 					}
 				} catch (final Exception e) {
-					LogManager.getLogger(this.getClass())
-					.error("remove of key failed: " + key, e); //
+					LogManager.getLogger(this.getClass()).error("remove of key failed: " + key, e); //
 				}
 			}
 		}
