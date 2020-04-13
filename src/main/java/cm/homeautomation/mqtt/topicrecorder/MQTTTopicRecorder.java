@@ -1,5 +1,6 @@
 package cm.homeautomation.mqtt.topicrecorder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -10,11 +11,8 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.MQTTTopic;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.services.base.AutoCreateInstance;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * record a list of all seen MQTT topics
