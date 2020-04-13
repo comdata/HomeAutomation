@@ -62,7 +62,8 @@ public class FHEMDeviceDataReceiver {
 						topicLastPart, messageContent);
 			}
 		} else {
-			LogManager.getLogger(FHEMDeviceDataReceiver.class).error("referenced id is null for FHEM device: "+fhemDevice.getId());
+			LogManager.getLogger(FHEMDeviceDataReceiver.class)
+					.error("referenced id is null for FHEM device: " + fhemDevice.getId());
 		}
 
 	}
@@ -75,9 +76,13 @@ public class FHEMDeviceDataReceiver {
 	 * @return
 	 */
 	public static Sensor getSensorForTopic(Device device, String topicLastPart) {
-		Map<String, Sensor> sensors = device.getSensors();
+		if (device != null) {
+			Map<String, Sensor> sensors = device.getSensors();
 
-		return sensors.get(topicLastPart);
+			return sensors.get(topicLastPart);
+		} else {
+			return null;
+		}
 	}
 
 }
