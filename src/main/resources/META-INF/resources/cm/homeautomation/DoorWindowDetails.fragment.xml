@@ -42,7 +42,7 @@
 									<Text
 										text="{= ${doorWindow>state} > 0 ? 'offen': 'geschlossen' }" />
 									<Switch
-										text="{= ${doorWindow>state} > 0 ? 'true' : 'false }"
+										state="{= ${doorWindow>state} > 0 ? 'true' : 'false }"
 										customTextOn="O" customTextOff="G"
 										change="doorWindowStateChange" />
 									<Text
