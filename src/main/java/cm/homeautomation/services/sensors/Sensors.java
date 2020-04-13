@@ -414,6 +414,7 @@ public class Sensors extends BaseService {
 			Long sensorId = request.getSensorId();
 			if (!sensorsList.containsKey(sensorId)) {
 				sensor = sensorsList.get(sensorId);
+				LogManager.getLogger(this.getClass()).error("got sensor from cache");
 			} else {
 				LogManager.getLogger(this.getClass()).error("looking for sensorId: "+sensorId);
 
@@ -463,6 +464,7 @@ public class Sensors extends BaseService {
 		}
 
 		if (sensor != null) {
+			LogManager.getLogger(this.getClass()).error("found a sensor. id: "+ sensor.getId());
 			em.getTransaction().begin();
 
 			final SensorData sensorData;
@@ -522,7 +524,7 @@ public class Sensors extends BaseService {
 			if (mergeExisting && existingSensorData != null) {
 				existingSensorData.setValidThru(new Date());
 				em.merge(existingSensorData);
-				LogManager.getLogger(this.getClass()).info("Committing data: " + existingSensorData.getValue());
+				LogManager.getLogger(this.getClass()).error("Committing data: " + existingSensorData.getValue());
 			} else {
 				if ((existingSensorData != null) && (requestSensorData.getDateTime() != null)) {
 					existingSensorData.setValidThru(new Date(requestSensorData.getDateTime().getTime() - 1000));
@@ -535,7 +537,7 @@ public class Sensors extends BaseService {
 				sensorDataMap.put(sensorId, sensorData);
 
 				EventBusService.getEventBus().post(new EventObject(sensorData));
-				LogManager.getLogger(this.getClass()).info("Committing data: " + sensorData.getValue());
+				LogManager.getLogger(this.getClass()).error("Committing data: " + sensorData.getValue());
 			}
 			
 			
