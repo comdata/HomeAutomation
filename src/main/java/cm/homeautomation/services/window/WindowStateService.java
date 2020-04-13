@@ -54,7 +54,7 @@ public class WindowStateService extends BaseService {
 		final EntityManager em = EntityManagerService.getNewManager();
 
 		final List<WindowState> results = em.createQuery(
-				"select ws from WindowState ws where ws.id in (select max(w.id) from WindowState w group by w.window)", WindowState.class)
+				"select ws from WindowState ws where ws.id in (select max(w.id) from WindowState w group by w.window) order by ws.timestamp desc", WindowState.class)
 				.getResultList();
 
 		for (final WindowState windowState : results) {
