@@ -1,8 +1,11 @@
 package cm.homeautomation.services.sensor.mqttsensor;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
+import org.apache.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
 
 import cm.homeautomation.db.EntityManagerService;
@@ -28,17 +31,24 @@ public class MQTTTopicSensorReceiver {
 
 		String technicalType = "mqtt://" + topicEvent.getTopic();
 		try {
-			Sensor sensor = em
-					.createQuery("select s from Sensor s where s.sensorTechnicalType=:technicalType", Sensor.class)
-					.setParameter("technicalType", technicalType).getSingleResult();
+			
+			LogManager.getLogger(this.getClass()).error("looking for technicaltype: "+technicalType);
 
-			if (sensor != null) {
+			List<Sensor> sensors = em
+					.createQuery("select s from Sensor s where s.sensorTechnicalType=:technicalType", Sensor.class)
+					.setParameter("technicalType", technicalType).getResultList();
+
+			if (sensors != null && !sensors.isEmpty()) {
 
 				try {
+					Sensor sensor=sensors.get(0);
 					Sensors.getInstance().saveSensorData(sensor.getId(), topicEvent.getMessage());
 				} catch (SensorDataLimitViolationException e) {
 					log.error(e);
 				}
+			} else {
+				LogManager.getLogger(this.getClass()).error("list is empty for technicaltype: "+technicalType);
+
 			}
 
 		} catch (NoResultException e) { // ignore since no result is a valid expectation here
