@@ -415,6 +415,7 @@ public class Sensors extends BaseService {
 			if (!sensorsList.containsKey(sensorId)) {
 				sensor = sensorsList.get(sensorId);
 			} else {
+				LogManager.getLogger(this.getClass()).error("looking for sensorId: "+sensorId);
 
 				sensor = em.createQuery("select s from Sensor s where s.id=:sensorId", Sensor.class)
 						.setParameter("sensorId", sensorId).getSingleResult();
@@ -454,11 +455,11 @@ public class Sensors extends BaseService {
 					sensor = sensorsNew.get(0);
 
 				} else {
-					throw new NoResultException();
+					throw new NoResultException("No sensor found for technicalType: "+sensorTechnicalType);
 				}
 			}
 		} else {
-			throw new NoResultException();
+			throw new NoResultException("sensor id not set and no sensor provided");
 		}
 
 		if (sensor != null) {
