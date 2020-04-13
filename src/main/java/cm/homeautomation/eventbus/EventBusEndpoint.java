@@ -24,7 +24,7 @@ import cm.homeautomation.logging.WebSocketEvent;
         
 @ApplicationScoped
 
-@ServerEndpoint(value = "/eventbus/{clientId}", configurator = EventBusEndpointConfigurator.class, encoders = {
+@ServerEndpoint(value = "/eventbus/{clientId}", encoders = {
 		EventTranscoder.class, WebSocketEventTranscoder.class, StringTranscoder.class }, decoders = {
 				EventTranscoder.class, WebSocketEventTranscoder.class, StringTranscoder.class })
 public class EventBusEndpoint {

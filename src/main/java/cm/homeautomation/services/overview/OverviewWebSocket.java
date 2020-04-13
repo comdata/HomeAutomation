@@ -24,7 +24,7 @@ import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.eventbus.StringTranscoder;
 
 @ApplicationScoped
-@ServerEndpoint(value = "/overview/{clientId}", configurator = OverviewEndPointConfiguration.class, encoders = {
+@ServerEndpoint(value = "/overview/{clientId}", encoders = {
 		OverviewMessageTranscoder.class,
 		StringTranscoder.class }, decoders = { OverviewMessageTranscoder.class, StringTranscoder.class })
 public class OverviewWebSocket {
