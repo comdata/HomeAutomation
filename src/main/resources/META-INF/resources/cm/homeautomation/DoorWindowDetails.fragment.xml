@@ -40,9 +40,9 @@
 									<Text text="{doorWindow>roomName}" />
 									<Text text="{doorWindow>windowName}" />
 									<Text
-										text="{=${doorWindow>state} == 0 ? 'geschlossen': 'offen' }" />
+										text="{= ${doorWindow>state} > 0 ? 'offen': 'geschlossen' }" />
 									<Switch
-										text="{=${doorWindow>state} == 0 ? false: true }"
+										text="{= ${doorWindow>state} > 0 ? 'true' : 'false }"
 										customTextOn="O" customTextOff="G"
 										change="doorWindowStateChange" />
 									<Text
