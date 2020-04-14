@@ -29,11 +29,6 @@
 	</context-param>
 
 	<servlet>
-		<servlet-name>startup</servlet-name>
-		<servlet-class>cm.homeautomation.services.base.StartupServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet>
 		<servlet-name>cameraproxy2</servlet-name>
 		<servlet-class>cm.homeautomation.web.HttpProxyServlet</servlet-class>
 		<init-param>
