@@ -36,7 +36,7 @@ sap.ui.define([
 			
 			 var oModel = new RESTService();
 	         var lightId=( this._light.id==null) ? 0 : this._light.id;
-	         oModel.loadDataAsync("/HomeAutomation/light/color/" + lightId + "/"
+	         oModel.loadDataAsync("light/color/" + lightId + "/"
 	                + hex, "", "GET", null, null, this);
 		},
 		dialogClose: function() {
