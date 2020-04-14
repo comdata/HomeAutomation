@@ -2,6 +2,7 @@ package cm.homeautomation.services.sensor.mqttsensor;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
@@ -16,6 +17,7 @@ import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
 import lombok.extern.log4j.Log4j2;
 
+@ApplicationScoped
 @Log4j2
 public class MQTTTopicSensorReceiver {
 
