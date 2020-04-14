@@ -24,7 +24,7 @@ sap.ui.define([
 		loadData: function() {
 	        var subject = this;
 	        var scriptingModel = new RESTService();
-	        scriptingModel.loadDataAsync("/HomeAutomation/admin/nashorn/getAll", "", "GET", function(event, model) {
+	        scriptingModel.loadDataAsync("admin/nashorn/getAll", "", "GET", function(event, model) {
 	            sap.ui.getCore().setModel(model, "scriptingEntities");
 	        }, null, subject);
 		},
