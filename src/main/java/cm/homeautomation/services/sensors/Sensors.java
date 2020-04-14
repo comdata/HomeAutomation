@@ -496,6 +496,7 @@ public class Sensors extends BaseService {
 
 				requestSensorData.setValue(df.format(valueAsDouble));
 
+				// checking minimum value limit
 				if (sensor.getMinValue() != null) {
 					double minValue = Double.parseDouble(sensor.getMinValue());
 					if (valueAsDouble < minValue) {
@@ -506,6 +507,7 @@ public class Sensors extends BaseService {
 					}
 				}
 
+				// checking maximum value limit
 				if (sensor.getMaxValue() != null) {
 					double maxValue = Double.parseDouble(sensor.getMaxValue());
 					if (valueAsDouble > maxValue) {
@@ -522,6 +524,7 @@ public class Sensors extends BaseService {
 			final boolean mergeExisting = mergeExistingData(existingSensorData, requestSensorData, isNumeric);
 
 			if (mergeExisting && existingSensorData != null) {
+				LogManager.getLogger(this.getClass()).error("merging data");
 				existingSensorData.setValidThru(new Date());
 				em.merge(existingSensorData);
 				LogManager.getLogger(this.getClass()).error("Committing data: " + existingSensorData.getValue());
@@ -531,6 +534,7 @@ public class Sensors extends BaseService {
 					em.merge(existingSensorData);
 				}
 
+				LogManager.getLogger(this.getClass()).error("saving new data point");
 				sensorData = requestSensorData;
 				sensorData.setSensor(sensor);
 				em.persist(sensorData);
@@ -543,6 +547,8 @@ public class Sensors extends BaseService {
 			
 
 			em.getTransaction().commit();
+		} else {
+			LogManager.getLogger(this.getClass()).error("sensor is null");
 		}
 		em.close();
 	}
