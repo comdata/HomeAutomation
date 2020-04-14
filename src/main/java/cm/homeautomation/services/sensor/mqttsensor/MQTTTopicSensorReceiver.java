@@ -43,9 +43,13 @@ public class MQTTTopicSensorReceiver {
 			if (sensors != null && !sensors.isEmpty()) {
 
 				try {
+					
 					Sensor sensor=sensors.get(0);
+					LogManager.getLogger(this.getClass()).error("got sensors: "+sensor.getId()+" name:"+sensor.getSensorName());
+					
 					Sensors.getInstance().saveSensorData(sensor.getId(), topicEvent.getMessage());
 				} catch (SensorDataLimitViolationException e) {
+					LogManager.getLogger(this.getClass()).error(e);
 					log.error(e);
 				}
 			} else {
