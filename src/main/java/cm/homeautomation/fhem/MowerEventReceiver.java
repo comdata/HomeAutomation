@@ -21,7 +21,7 @@ public class MowerEventReceiver {
 		String messageContent = eventObject.getMessageContent();
 		String topic = eventObject.getTopic();
 
-		LogManager.getLogger(this.getClass()).info("Got MQTT message: {}", messageContent);
+		LogManager.getLogger(this.getClass()).info("MowerEventReceiver: Got MQTT message: {}", messageContent);
 
 		// check if it is an error message
 		if (topic.startsWith("/fhem/SILENO/mower-error")) {
