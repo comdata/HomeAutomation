@@ -412,7 +412,7 @@ public class Sensors extends BaseService {
 		Sensor sensor = null;
 		if (request.getSensorId() != null) {
 			Long sensorId = request.getSensorId();
-			if (!sensorsList.containsKey(sensorId)) {
+			if (sensorsList.containsKey(sensorId)) {
 				sensor = sensorsList.get(sensorId);
 				LogManager.getLogger(this.getClass()).error("got sensor from cache");
 			} else {
