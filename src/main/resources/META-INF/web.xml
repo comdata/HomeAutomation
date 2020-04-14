@@ -124,34 +124,7 @@
 		<url-pattern>/newCameraProxy/*</url-pattern>
 	</servlet-mapping>
 
-	<servlet>
-		<servlet-name>jersey</servlet-name>
-		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-		<init-param>
-			<param-name>jersey.config.server.provider.packages</param-name>
-			<param-value>cm.homeautomation</param-value>
-		</init-param>
 
-		<init-param>
-			<param-name>javax.ws.rs.Application</param-name>
-			<param-value>cm.homeautomation.services.base.JerseyApplication</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-
-	<servlet>
-		<servlet-name>vminspect</servlet-name>
-		<servlet-class>com.purej.vminspect.http.servlet.VmInspectionServlet</servlet-class>
-		<init-param>
-			<param-name>vminspect.statistics.storage.dir</param-name>
-			<param-value>/home/hap</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>vminspect</servlet-name>
-		<url-pattern>/inspect/*</url-pattern>
-	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>jersey</servlet-name>
