@@ -107,7 +107,7 @@ public class JPAODataServlet extends HttpServlet {
 			
 			ODataRequest request = new ODataRequest();
 			request.setMethod(HttpMethod.GET);
-			request.setRawBaseUri("http://localhost/HomeAutomation/JPAOData.svc/Rooms");
+			request.setRawBaseUri("http://localhost/JPAOData.svc/Rooms");
 			request.setRawODataPath("Rooms");
 			request.setProtocol("HTTP/1.1");
 			
