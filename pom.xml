@@ -227,10 +227,10 @@
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-cache</artifactId>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-undertow</artifactId>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>org.eclipse.persistence.jpa</artifactId>
