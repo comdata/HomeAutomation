@@ -57,7 +57,7 @@ public class JPAODataServlet extends HttpServlet {
 			ServiceMetadata edm = odata.createServiceMetadata(metadataProvider, new ArrayList<EdmxReference>());
 			metaDataHandler = odata.createHandler(edm);
 			
-			MariaDbDataSource ds = new MariaDbDataSource("jdbc:mariadb://localhost:3306/HA?characterEncoding=utf8");
+			MariaDbDataSource ds = new MariaDbDataSource("jdbc:mariadb://ha-mariadb:3306/HA?characterEncoding=utf8");
 			ds.setUser("root");
 			
 			getHandler = new JPAODataGetHandler(PUNIT_NAME, ds);
