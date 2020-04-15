@@ -21,3 +21,5 @@ COPY target/lib/* /lib/
 COPY target/*-runner.jar /app.jar
 
 ENTRYPOINT ["sh", "-c", "java -jar /app.jar" ]
+
+HEALTHCHECK &{["CMD-SHELL" "curl --fail http://127.0.0.1:80/|| exit 1"] "10s" "5s" "20s" '\x00'}
