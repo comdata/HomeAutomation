@@ -167,7 +167,7 @@
 	</servlet-mapping>
 
 	<!-- odata -->
-	<servlet>
+	<!-- <servlet>
 		<servlet-name>JPAOData</servlet-name>
 		<servlet-class>cm.homeautomation.odata.JPAODataServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
@@ -175,5 +175,5 @@
 	<servlet-mapping>
 		<servlet-name>JPAOData</servlet-name>
 		<url-pattern>/JPAOData.svc/*</url-pattern>
-	</servlet-mapping>
+	</servlet-mapping> -->
 </web-app>
