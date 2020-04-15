@@ -20,6 +20,7 @@ ENV AB_ENABLED=jmx_exporter
 COPY target/lib/* /lib/
 COPY target/*-runner.jar /app.jar
 
+HEALTHCHECK CMD curl --fail http://127.0.0.1:80/|| exit 1
+
 ENTRYPOINT ["sh", "-c", "java -jar /app.jar" ]
 
-HEALTHCHECK CMD curl --fail http://127.0.0.1:80/|| exit 1
