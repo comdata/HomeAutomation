@@ -22,6 +22,15 @@ public class ZigBeeDevice {
 	String ieeeAddr;
 	String type;
 	int networkAddress;
+	String model;
+	String vendor;
+	String description;
+	String manufacturerID;
+	String manufacturerName;
+	String powerSource;
+	String modelID;
+	int hardwareVersion;
+	
 
 	@JsonAlias("friendly_name")
 	String friendlyName;
