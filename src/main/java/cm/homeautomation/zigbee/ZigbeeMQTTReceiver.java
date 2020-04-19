@@ -1,6 +1,5 @@
 package cm.homeautomation.zigbee;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -10,17 +9,14 @@ import org.greenrobot.eventbus.Subscribe;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
-import cm.homeautomation.entities.MQTTTopic;
 import cm.homeautomation.entities.ZigBeeDevice;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
-import cm.homeautomation.mqtt.topicrecorder.MQTTTopicRecorder;
 import cm.homeautomation.services.base.AutoCreateInstance;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
@@ -29,7 +25,6 @@ import lombok.extern.log4j.Log4j2;
 @AutoCreateInstance
 public class ZigbeeMQTTReceiver {
 
-	private static List<String> topicList = new ArrayList<>();
 	private String zigbeeMqttTopic;
 
 	public ZigbeeMQTTReceiver() {
@@ -46,8 +41,6 @@ public class ZigbeeMQTTReceiver {
 
 	@Subscribe
 	public void receiverMQTTTopicEvents(MQTTTopicEvent event) {
-		EntityManager em = EntityManagerService.getNewManager();
-
 		@NonNull
 		String topic = event.getTopic();
 		log.debug(topic);
@@ -80,7 +73,7 @@ public class ZigbeeMQTTReceiver {
 					em.persist(zigBeeDevice);
 					em.getTransaction().commit();
 				} catch (Exception e) {
-					
+
 				}
 			}
 
