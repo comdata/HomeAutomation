@@ -16,7 +16,7 @@ pipeline {
      	stage('Prepare') {
             steps {
                 sh 'apk update'
-                sh 'apk add make bash curl openjdk8 maven docker'
+                sh 'apk add make bash curl openjdk14 maven docker'
             }
         }
 		stage('Build Backend') {
