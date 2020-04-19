@@ -51,6 +51,7 @@
 		<class>cm.homeautomation.entities.RoomProperty</class>
 		<class>cm.homeautomation.entities.MQTTSwitch</class>
 		<class>cm.homeautomation.entities.MQTTTopic</class>
+		<class>cm.homeautomation.entities.ZigBeeDevice</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver"
 				value="org.mariadb.jdbc.Driver" />
