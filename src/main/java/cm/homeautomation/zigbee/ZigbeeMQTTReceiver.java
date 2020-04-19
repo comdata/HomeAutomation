@@ -49,9 +49,42 @@ public class ZigbeeMQTTReceiver {
 
 			if (topic.equals(zigbeeMqttTopic + "/bridge/config/devices")) {
 				handleDeviceMessage(message);
+			} else if (topic.startsWith(zigbeeMqttTopic + "/bridge")) {
 
+			} else {
+				String[] topicSplit = topic.split("/");
+
+				if (topicSplit.length > 1) {
+					String device = topicSplit[1];
+
+					ZigBeeDevice zigbeeDevice = getZigbeeDevice(device);
+					String modelID = zigbeeDevice.getModelID();
+
+					if (zigbeeDevice.getManufacturerID().equals("4476")) {
+
+						if (modelID.equals("TRADFRI remote control")) {
+							System.out.println("found tradfri control. " + message);
+						} else if (modelID.equals("TRADFRI bulb E14 W op/ch 400lm")) {
+							System.out.println("E14. " + message);
+						} else if (modelID.equals("FLOALT panel WS 60x60")) {
+							System.out.println("FLOALT. " + message);
+						}
+					}
+
+				}
 			}
 		}
+	}
+
+	private ZigBeeDevice getZigbeeDevice(String device) {
+		EntityManager em = EntityManagerService.getManager();
+		List<ZigBeeDevice> resultList = em
+				.createQuery("select zb from ZigBeeDevice zb where zb.friendlyName=:friendlyName", ZigBeeDevice.class)
+				.setParameter("friendlyName", device).getResultList();
+
+		ZigBeeDevice zigBeeDevice = resultList.get(0);
+
+		return zigBeeDevice;
 	}
 
 	private void handleDeviceMessage(String message) {
