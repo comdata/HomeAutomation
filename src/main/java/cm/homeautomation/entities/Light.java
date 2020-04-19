@@ -20,6 +20,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.sap.olingo.jpa.metadata.core.edm.annotation.EdmIgnore;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes({ @JsonSubTypes.Type(value = DimmableLight.class, name = "DimmableLight"),
 		@JsonSubTypes.Type(value = DimmableColorLight.class, name = "DimmableColorLight") })
@@ -40,7 +45,7 @@ public class Light {
 	@ManyToOne
 	@JoinColumn(name = "ROOM_ID")
 	@EdmIgnore
-	
+
 	private Room room;
 
 	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -74,56 +79,17 @@ public class Light {
 	@Column(name = "COLOR")
 	private String color;
 
+	private String mqttPowerOnTopic;
+	private String mqttPowerOffTopic;
+	private String mqttPowerOnMessage;
+	private String mqttPowerOffMessage;
+
 	// Status
 	private boolean online;
-
-	public String getColor() {
-		return color;
-	}
-
-	public String getColorUrl() {
-		return colorUrl;
-	}
-
-	public Date getDateInstalled() {
-		return dateInstalled;
-	}
-
-	public Date getDateLastSeen() {
-		return dateLastSeen;
-	}
 
 	@JsonIgnore
 	public String getDimUrl() {
 		return dimUrl;
-	}
-
-	public String getExternalId() {
-		return externalId;
-	}
-
-	public String getFirmware() {
-		return firmware;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public String getLightGroup() {
-		return lightGroup;
-	}
-
-	public String getLightType() {
-		return lightType;
-	}
-
-	public String getManufacturer() {
-		return manufacturer;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	@XmlTransient
@@ -140,83 +106,4 @@ public class Light {
 		return room;
 	}
 
-	public String getType() {
-		return type;
-	}
-
-	public boolean isOnline() {
-		return online;
-	}
-
-	public boolean isPowerState() {
-		return powerState;
-	}
-
-	public void setColor(final String color) {
-		this.color = color;
-	}
-
-	public void setColorUrl(final String colorUrl) {
-		this.colorUrl = colorUrl;
-	}
-
-	public void setDateInstalled(final Date dateInstalled) {
-		this.dateInstalled = dateInstalled;
-	}
-
-	public void setDateLastSeen(final Date dateLastSeen) {
-		this.dateLastSeen = dateLastSeen;
-	}
-
-	public void setDimUrl(final String dimUrl) {
-		this.dimUrl = dimUrl;
-	}
-
-	public void setExternalId(final String externalId) {
-		this.externalId = externalId;
-	}
-
-	public void setFirmware(final String firmware) {
-		this.firmware = firmware;
-	}
-
-	public void setId(final Long id) {
-		this.id = id;
-	}
-
-	public void setLightGroup(String lightGroup) {
-		this.lightGroup = lightGroup;
-	}
-
-	public void setLightType(final String lightType) {
-		this.lightType = lightType;
-	}
-
-	public void setManufacturer(final String manufacturer) {
-		this.manufacturer = manufacturer;
-	}
-
-	public void setName(final String name) {
-		this.name = name;
-	}
-
-	public void setOnline(final boolean online) {
-		this.online = online;
-	}
-
-	public void setPowerState(final boolean powerState) {
-		this.powerState = powerState;
-	}
-
-	public void setReferencedSwitch(final Switch referencedSwitch) {
-		this.referencedSwitch = referencedSwitch;
-	}
-
-	public void setRoom(final Room room) {
-		this.room = room;
-	}
-
-	public void setType(final String type) {
-		this.type = type;
-	}
 }

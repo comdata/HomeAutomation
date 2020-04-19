@@ -22,6 +22,8 @@ public class LightService extends BaseService {
 
 	private static final String LIGHT_ID = "lightId";
 	private static final String TRADFRI = "TRADFRI";
+	private static final String MQTT = "MQTT";
+
 	private static LightService instance;
 
 	public static LightService getInstance() {
@@ -134,7 +136,7 @@ public class LightService extends BaseService {
 
 				if ((lightGroup != null) && !lightGroup.isEmpty()) {
 					@SuppressWarnings("unchecked")
-					final List<Light> resultList = (List<Light>)em
+					final List<Light> resultList = (List<Light>) em
 							.createQuery("select l from Light l where l.id!=:lightId and l.lightGroup=:lightGroup")
 							.setParameter(LIGHT_ID, lightId).setParameter("lightGroup", lightGroup).getResultList();
 
@@ -167,6 +169,9 @@ public class LightService extends BaseService {
 
 			if (TRADFRI.equals(light.getLightType())) {
 				TradfriStartupService.getInstance().dimBulb(light.getExternalId(), dimValue);
+			}
+			if (MQTT.equals(light.getLightType())) {
+				// TODO MQTT Light
 			} else {
 
 				dimUrl = dimUrl.replace("{DIMVALUE}", Integer.toString(dimValue));
