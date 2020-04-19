@@ -19,9 +19,7 @@ import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.services.base.AutoCreateInstance;
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @AutoCreateInstance
 public class ZigbeeMQTTReceiver {
 
@@ -43,7 +41,6 @@ public class ZigbeeMQTTReceiver {
 	public void receiverMQTTTopicEvents(MQTTTopicEvent event) {
 		@NonNull
 		String topic = event.getTopic();
-		log.debug(topic);
 
 		if (topic.startsWith(zigbeeMqttTopic)) {
 
