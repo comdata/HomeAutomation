@@ -12,9 +12,11 @@ import cm.homeautomation.entities.RemoteControlGroup;
 import cm.homeautomation.entities.RemoteControlGroupMember;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.events.RemoteControlEvent;
+import cm.homeautomation.services.actor.ActorService;
 import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.light.LightService;
 import cm.homeautomation.services.light.LightStates;
+import cm.homeautomation.services.windowblind.WindowBlindService;
 
 @AutoCreateInstance
 public class RemoveControlEventListener {
@@ -27,37 +29,52 @@ public class RemoveControlEventListener {
 
 		EntityManager em = EntityManagerService.getManager();
 
-		RemoteControl remoteControl = em.find(RemoteControl.class, event.getName());
+		List<RemoteControl> remoteList = em
+				.createQuery("select rc from RemoteControl rc where rc.technicalId=:technicalId",
+						RemoteControl.class)
+				.setParameter("technicalId", event.getName()).getResultList();
 
-		if (remoteControl != null) {
-			List<RemoteControlGroup> remoteControlGroups = em
-					.createQuery("select cg from RemoteControlGroup cg where cg.remote=:remote",
-							RemoteControlGroup.class)
-					.setParameter("remote", remoteControl).getResultList();
-			for (RemoteControlGroup remoteControlGroup : remoteControlGroups) {
-				List<RemoteControlGroupMember> members = remoteControlGroup.getMembers();
+		for (RemoteControl remoteControl : remoteList) {
 
-				for (RemoteControlGroupMember remoteControlGroupMember : members) {
+			if (remoteControl != null) {
+				List<RemoteControlGroup> remoteControlGroups = em
+						.createQuery("select cg from RemoteControlGroup cg where cg.remote=:remote",
+								RemoteControlGroup.class)
+						.setParameter("remote", remoteControl).getResultList();
+				for (RemoteControlGroup remoteControlGroup : remoteControlGroups) {
+					List<RemoteControlGroupMember> members = remoteControlGroup.getMembers();
 
-					switch (remoteControlGroupMember.getType()) {
-					case LIGHT:
-						LightService.getInstance().setLightState(remoteControlGroupMember.getExternalId(),
-								(event.isPoweredOnState() ? LightStates.ON : LightStates.OFF));
-						break;
-					case SWITCH:
-						break;
-					case WINDOWBLIND:
-						break;
-					default:
-						break;
+					for (RemoteControlGroupMember remoteControlGroupMember : members) {
 
+						switch (remoteControlGroupMember.getType()) {
+						case LIGHT:
+							LightService.getInstance().setLightState(remoteControlGroupMember.getExternalId(),
+									(event.isPoweredOnState() ? LightStates.ON : LightStates.OFF));
+							break;
+						case SWITCH:
+							ActorService.getInstance().pressSwitch(Long.toString(
+									remoteControlGroupMember
+									.getExternalId()),
+									(event.isPoweredOnState() ? "ON" : "OFF"));
+							break;
+						case WINDOWBLIND:
+							new WindowBlindService()
+									.setDim(
+											remoteControlGroupMember
+													.getExternalId(),
+											(event.isPoweredOnState() ? "99" : "0"));
+							break;
+						default:
+							break;
+
+						}
 					}
+
 				}
 
+			} else {
+				// control not found
 			}
-
-		} else {
-			// control not found
 		}
 	}
 }
