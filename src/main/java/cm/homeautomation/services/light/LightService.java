@@ -86,6 +86,37 @@ public class LightService extends BaseService {
 		return internalDimLight(lightId, dimValue, false);
 	}
 
+	public GenericStatus setLightState(long lightId, LightStates state) {
+		final EntityManager em = EntityManagerService.getManager();
+
+		Light light = em.find(Light.class, lightId);
+
+		int newDimValue = 0;
+
+		if (light instanceof DimmableLight) {
+			DimmableLight dimLight = (DimmableLight) light;
+			switch (state) {
+			case OFF:
+				newDimValue = dimLight.getMinimumValue();
+				break;
+			case ON:
+				newDimValue = dimLight.getMaximumValue();
+				break;
+			}
+		} else {
+			switch (state) {
+			case OFF:
+				newDimValue = 0;
+				break;
+			case ON:
+				newDimValue = 100;
+				break;
+			}
+		}
+
+		return internalDimLight(lightId, newDimValue, false);
+	}
+
 	public Light getLightForTypeAndExternalId(final String type, final String externalId) {
 		final EntityManager em = EntityManagerService.getNewManager();
 
@@ -136,7 +167,7 @@ public class LightService extends BaseService {
 
 				if ((lightGroup != null) && !lightGroup.isEmpty()) {
 					@SuppressWarnings("unchecked")
-					final List<Light> resultList = (List<Light>) em
+					final List<Light> resultList = em
 							.createQuery("select l from Light l where l.id!=:lightId and l.lightGroup=:lightGroup")
 							.setParameter(LIGHT_ID, lightId).setParameter("lightGroup", lightGroup).getResultList();
 

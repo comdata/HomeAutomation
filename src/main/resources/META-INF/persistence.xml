@@ -53,6 +53,9 @@
 		<class>cm.homeautomation.entities.MQTTTopic</class>
 		<class>cm.homeautomation.entities.ZigBeeDevice</class>
 		<class>cm.homeautomation.zigbee.entities.ZigBeeTradfriRemoteControl</class>
+		<class>cm.homeautomation.entities.RemoteControl</class>
+		<class>cm.homeautomation.entities.RemoteControlGroup</class>
+		<class>cm.homeautomation.entities.RemoteControlGroupMember</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver"
 				value="org.mariadb.jdbc.Driver" />

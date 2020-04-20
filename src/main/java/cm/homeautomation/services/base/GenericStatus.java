@@ -2,6 +2,11 @@ package cm.homeautomation.services.base;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * Generic REST status response
  * 
@@ -9,33 +14,19 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  */
 @XmlRootElement
-public class GenericStatus {
-	
-	private Object object;
-	private boolean success;
+@AllArgsConstructor
+@NoArgsConstructor
 
-	public GenericStatus() {
-		success=false;
-	}
-	
+@Getter
+@Setter
+public class GenericStatus {
+
+	private Object object;
+
+	private boolean success = false;
+
 	public GenericStatus(boolean success) {
 		this.success = success;
-		
-	}
-	
-	public boolean isSuccess() {
-		return success;
-	}
 
-	public void setSuccess(boolean success) {
-		this.success = success;
-	}
-
-	public Object getObject() {
-		return object;
-	}
-
-	public void setObject(Object object) {
-		this.object = object;
 	}
 }

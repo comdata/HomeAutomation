@@ -1,0 +1,63 @@
+package cm.homeautomation.remotecontrol;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+
+import org.greenrobot.eventbus.Subscribe;
+
+import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.entities.RemoteControl;
+import cm.homeautomation.entities.RemoteControlGroup;
+import cm.homeautomation.entities.RemoteControlGroupMember;
+import cm.homeautomation.eventbus.EventBusService;
+import cm.homeautomation.events.RemoteControlEvent;
+import cm.homeautomation.services.base.AutoCreateInstance;
+import cm.homeautomation.services.light.LightService;
+import cm.homeautomation.services.light.LightStates;
+
+@AutoCreateInstance
+public class RemoveControlEventListener {
+	public RemoveControlEventListener() {
+		EventBusService.getEventBus().register(this);
+	}
+
+	@Subscribe
+	public void subscribe(RemoteControlEvent event) {
+
+		EntityManager em = EntityManagerService.getManager();
+
+		RemoteControl remoteControl = em.find(RemoteControl.class, event.getName());
+
+		if (remoteControl != null) {
+			List<RemoteControlGroup> remoteControlGroups = em
+					.createQuery("select cg from RemoteControlGroup cg where cg.remote=:remote",
+							RemoteControlGroup.class)
+					.setParameter("remote", remoteControl).getResultList();
+			for (RemoteControlGroup remoteControlGroup : remoteControlGroups) {
+				List<RemoteControlGroupMember> members = remoteControlGroup.getMembers();
+
+				for (RemoteControlGroupMember remoteControlGroupMember : members) {
+
+					switch (remoteControlGroupMember.getType()) {
+					case LIGHT:
+						LightService.getInstance().setLightState(remoteControlGroupMember.getExternalId(),
+								(event.isPoweredOnState() ? LightStates.ON : LightStates.OFF));
+						break;
+					case SWITCH:
+						break;
+					case WINDOWBLIND:
+						break;
+					default:
+						break;
+
+					}
+				}
+
+			}
+
+		} else {
+			// control not found
+		}
+	}
+}
