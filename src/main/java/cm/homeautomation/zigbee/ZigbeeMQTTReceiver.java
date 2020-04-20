@@ -9,6 +9,8 @@ import org.greenrobot.eventbus.Subscribe;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cm.homeautomation.configuration.ConfigurationService;
@@ -18,6 +20,7 @@ import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.services.base.AutoCreateInstance;
+import cm.homeautomation.zigbee.entities.ZigBeeTradfriRemoteControl;
 import lombok.NonNull;
 
 @AutoCreateInstance
@@ -37,7 +40,7 @@ public class ZigbeeMQTTReceiver {
 	}
 
 	@Subscribe
-	public void receiverMQTTTopicEvents(MQTTTopicEvent event) {
+	public void receiverMQTTTopicEvents(MQTTTopicEvent event) throws JsonMappingException, JsonProcessingException {
 		@NonNull
 		String topic = event.getTopic();
 
@@ -60,10 +63,19 @@ public class ZigbeeMQTTReceiver {
 					ZigBeeDevice zigbeeDevice = getZigbeeDevice(device);
 					String modelID = zigbeeDevice.getModelID();
 
+				    ObjectMapper mapper = new ObjectMapper();
+				    JsonNode messageObject = mapper.readTree(message);
+					
 					if (zigbeeDevice.getManufacturerID().equals("4476")) {
 
 						if (modelID.equals("TRADFRI remote control")) {
 							System.out.println("found tradfri control. " + message);
+							
+							messageObject.get("action").asText();
+							
+							boolean newState=true;
+							
+							new ZigBeeTradfriRemoteControl(zigbeeDevice.getIeeeAddr(), newState);
 						} else if (modelID.equals("TRADFRI bulb E14 W op/ch 400lm")) {
 							System.out.println("E14. " + message);
 						} else if (modelID.equals("FLOALT panel WS 60x60")) {
@@ -118,7 +130,7 @@ public class ZigbeeMQTTReceiver {
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws JsonMappingException, JsonProcessingException {
 		ZigbeeMQTTReceiver zigbeeMQTTReceiver = new ZigbeeMQTTReceiver();
 
 		MQTTTopicEvent zigbeeDeviceEvent = new MQTTTopicEvent();
