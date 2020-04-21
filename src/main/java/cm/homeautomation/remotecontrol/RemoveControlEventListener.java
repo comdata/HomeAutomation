@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.apache.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
 
 import cm.homeautomation.db.EntityManagerService;
@@ -45,7 +46,7 @@ public class RemoveControlEventListener {
 					List<RemoteControlGroupMember> members = remoteControlGroup.getMembers();
 
 					for (RemoteControlGroupMember remoteControlGroupMember : members) {
-
+						LogManager.getLogger(this.getClass()).error("found remote member: " + remoteControl.getName());
 						switch (remoteControlGroupMember.getType()) {
 						case LIGHT:
 							LightService.getInstance().setLightState(remoteControlGroupMember.getExternalId(),
