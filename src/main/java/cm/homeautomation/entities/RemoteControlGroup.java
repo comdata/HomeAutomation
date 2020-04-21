@@ -3,7 +3,6 @@ package cm.homeautomation.entities;
 import java.util.List;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -30,6 +29,6 @@ public class RemoteControlGroup {
 	@ManyToOne
 	RemoteControl remote;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "remoteControlGroup")
+	@OneToMany(mappedBy = "remoteControlGroup")
 	List<RemoteControlGroupMember> members;
 }
