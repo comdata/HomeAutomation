@@ -20,7 +20,7 @@ import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
-import cm.homeautomation.remotecontrol.RemoveControlEventListener;
+import cm.homeautomation.remotecontrol.RemoteControlEventListener;
 import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.zigbee.entities.ZigBeeTradfriRemoteControl;
 import lombok.NonNull;
@@ -185,7 +185,7 @@ public class ZigbeeMQTTReceiver {
 	public static void main(String[] args) throws JsonMappingException, JsonProcessingException {
 		ZigbeeMQTTReceiver zigbeeMQTTReceiver = new ZigbeeMQTTReceiver();
 
-		new RemoveControlEventListener();
+		new RemoteControlEventListener();
 
 		MQTTTopicEvent zigbeeDeviceEvent = new MQTTTopicEvent();
 		zigbeeDeviceEvent.setTopic("zigbee2mqtt" + "/bridge/config/devices");

@@ -20,8 +20,8 @@ import cm.homeautomation.services.light.LightStates;
 import cm.homeautomation.services.windowblind.WindowBlindService;
 
 @AutoCreateInstance
-public class RemoveControlEventListener {
-	public RemoveControlEventListener() {
+public class RemoteControlEventListener {
+	public RemoteControlEventListener() {
 		EventBusService.getEventBus().register(this);
 	}
 
@@ -56,17 +56,13 @@ public class RemoveControlEventListener {
 									(event.isPoweredOnState() ? LightStates.ON : LightStates.OFF));
 							break;
 						case SWITCH:
-							ActorService.getInstance().pressSwitch(Long.toString(
-									remoteControlGroupMember
+							ActorService.getInstance().pressSwitch(Long.toString(remoteControlGroupMember
 									.getExternalId()),
 									(event.isPoweredOnState() ? "ON" : "OFF"));
 							break;
 						case WINDOWBLIND:
-							new WindowBlindService()
-									.setDim(
-											remoteControlGroupMember
-													.getExternalId(),
-											(event.isPoweredOnState() ? "99" : "0"));
+							new WindowBlindService().setDim(remoteControlGroupMember.getExternalId(),
+									(event.isPoweredOnState() ? "99" : "0"));
 							break;
 						default:
 							break;
