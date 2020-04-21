@@ -27,13 +27,15 @@ public class RemoveControlEventListener {
 
 	@Subscribe
 	public void subscribe(RemoteControlEvent event) {
-
+		String name = event.getName();
 		EntityManager em = EntityManagerService.getManager();
+
+		LogManager.getLogger(this.getClass()).error("got remote event: " + name);
 
 		List<RemoteControl> remoteList = em
 				.createQuery("select rc from RemoteControl rc where rc.technicalId=:technicalId",
 						RemoteControl.class)
-				.setParameter("technicalId", event.getName()).getResultList();
+				.setParameter("technicalId", name).getResultList();
 
 		for (RemoteControl remoteControl : remoteList) {
 
