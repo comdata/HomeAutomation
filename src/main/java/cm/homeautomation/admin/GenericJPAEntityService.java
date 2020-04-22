@@ -16,6 +16,7 @@ import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
+import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.services.base.BaseService;
 
 @Path("admin/entityservice")
@@ -47,6 +48,12 @@ public class GenericJPAEntityService extends BaseService {
 		}
 		
 		return classes;
+	}
+
+	@GET
+	@Path("flushCache")
+	public void flushCache() {|
+		EntityManagerService.getManager().getEntityManagerFactory().getCache().evictAll();
 	}
 
 	
