@@ -24,6 +24,8 @@ public class HueEmulatorMessage {
 	@JsonAlias("on_off_command")
 	boolean onOffCommand;
 
+	boolean on;
+
 	String payload;
 
 	@JsonAlias("bri")
@@ -32,6 +34,6 @@ public class HueEmulatorMessage {
 	@JsonAlias("device_name")
 	String deviceName;
 
-	@JsonAlias("lightId")
+	@JsonAlias("light_id")
 	String lightId;
 }
