@@ -90,6 +90,8 @@ public class ZigbeeMQTTReceiver {
 								handleTradfriLight(message, zigbeeDevice, messageObject);
 							} else if (modelID.startsWith("TRADFRI motion")) {
 								handleMotionSensor(message, zigbeeDevice, messageObject);
+							} else if (modelID.startsWith("TRADFRI control")) {
+								handlePowerSocket(message, zigbeeDevice, messageObject);
 							}
 						}
 
@@ -97,19 +99,18 @@ public class ZigbeeMQTTReceiver {
 							if (modelID.equals("lumi.sensor_motion.aq2")) {
 								handleMotionSensor(message, zigbeeDevice, messageObject);
 							}
-
 						}
 
 						if (zigbeeDevice.getManufacturerID().equals("48042")) {
 							if (modelID.equals("Plug 01")) {
 								handlePowerSocket(message, zigbeeDevice, messageObject);
 							}
-
 						}
 					}
 				}
 			}
 		}
+
 	}
 
 	private void handlePowerSocket(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
