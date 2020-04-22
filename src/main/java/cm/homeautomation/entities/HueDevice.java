@@ -30,4 +30,6 @@ public class HueDevice {
 	HueDeviceType type;
 
 	long externalId;
+	boolean groupDevice;
+
 }

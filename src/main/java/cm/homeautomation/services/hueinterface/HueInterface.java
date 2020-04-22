@@ -8,6 +8,7 @@ import javax.ws.rs.Path;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.HueDevice;
+import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.services.actor.ActorService;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
@@ -63,13 +64,14 @@ public class HueInterface extends BaseService {
 				
 				new WindowBlindService()
 						.setDim(hueDevice.getExternalId(),
-						("on".equals(message.getPayload()) ? dimValue : "0"));
+								("on".equals(message.getPayload()) ? dimValue : "0"),
+								hueDevice.isGroupDevice() ? WindowBlind.ALL_AT_ONCE : WindowBlind.SINGLE, null);
 				break;
 			default:
 				break;
 			}
 		}
 
-		return null;
+		return new GenericStatus(true);
 	}
 }
