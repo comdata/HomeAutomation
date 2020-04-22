@@ -68,38 +68,43 @@ public class ZigbeeMQTTReceiver {
 					String device = topicSplit[1];
 
 					ZigBeeDevice zigbeeDevice = getZigbeeDevice(device);
-					String modelID = zigbeeDevice.getModelID();
 
-					ObjectMapper mapper = new ObjectMapper();
-					JsonNode messageObject = mapper.readTree(message);
+					if (zigbeeDevice != null) {
+						String modelID = zigbeeDevice.getModelID();
 
-					if (zigbeeDevice.getManufacturerID().equals("4476")) {
+						ObjectMapper mapper = new ObjectMapper();
+						JsonNode messageObject = mapper.readTree(message);
 
-						if (modelID.equals("TRADFRI remote control")) {
-							handleTradfriRemoteControl(message, zigbeeDevice, messageObject);
-						} else if (modelID.startsWith("TRADFRI bulb")) {
-							System.out.println("E14. " + message);
-							handleTradfriLight(message, zigbeeDevice, messageObject);
-						} else if (modelID.startsWith("FLOALT panel")) {
-							System.out.println("FLOALT. " + message);
-							handleTradfriLight(message, zigbeeDevice, messageObject);
-						} else if (modelID.startsWith("TRADFRI Driver")) {
-							handleTradfriLight(message, zigbeeDevice, messageObject);
-						}
-					}
+						if (zigbeeDevice.getManufacturerID().equals("4476")) {
 
-					if (zigbeeDevice.getManufacturerID().equals("4151")) {
-						if (modelID.equals("lumi.sensor_motion.aq2")) {
-							handleXiaomiMotionSensor(message, zigbeeDevice, messageObject);
-						}
-
-					}
-
-					if (zigbeeDevice.getManufacturerID().equals("48042")) {
-						if (modelID.equals("Plug 01")) {
-							handlePowerSocket(message, zigbeeDevice, messageObject);
+							if (modelID.equals("TRADFRI remote control")) {
+								handleTradfriRemoteControl(message, zigbeeDevice, messageObject);
+							} else if (modelID.startsWith("TRADFRI bulb")) {
+								System.out.println("E14. " + message);
+								handleTradfriLight(message, zigbeeDevice, messageObject);
+							} else if (modelID.startsWith("FLOALT panel")) {
+								System.out.println("FLOALT. " + message);
+								handleTradfriLight(message, zigbeeDevice, messageObject);
+							} else if (modelID.startsWith("TRADFRI Driver")) {
+								handleTradfriLight(message, zigbeeDevice, messageObject);
+							} else if (modelID.startsWith("TRADFRI Motion")) {
+								handleMotionSensor(message, zigbeeDevice, messageObject);
+							}
 						}
 
+						if (zigbeeDevice.getManufacturerID().equals("4151")) {
+							if (modelID.equals("lumi.sensor_motion.aq2")) {
+								handleMotionSensor(message, zigbeeDevice, messageObject);
+							}
+
+						}
+
+						if (zigbeeDevice.getManufacturerID().equals("48042")) {
+							if (modelID.equals("Plug 01")) {
+								handlePowerSocket(message, zigbeeDevice, messageObject);
+							}
+
+						}
 					}
 				}
 			}
@@ -126,7 +131,7 @@ public class ZigbeeMQTTReceiver {
 			zigbeeSwitch.setMqttPowerOffMessage("{\"state\": \"OFF\"}");
 			zigbeeSwitch.setName(zigbeeDevice.getFriendlyName());
 			zigbeeSwitch.setSwitchType("SOCKET");
-			
+
 			em.getTransaction().begin();
 			em.persist(zigbeeSwitch);
 
@@ -148,7 +153,7 @@ public class ZigbeeMQTTReceiver {
 		em.getTransaction().commit();
 	}
 
-	private void handleXiaomiMotionSensor(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
+	private void handleMotionSensor(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
 
 		// {"battery":100,"voltage":3015,"illuminance":558,"illuminance_lux":558,"linkquality":18,"occupancy":false}
 
