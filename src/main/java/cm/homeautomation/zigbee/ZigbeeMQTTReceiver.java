@@ -107,13 +107,15 @@ public class ZigbeeMQTTReceiver {
 
 			dimmableLight.setName(zigbeeDevice.getFriendlyName());
 			dimmableLight.setExternalId(zigbeeDevice.getIeeeAddr());
-			dimmableLight.setType("ZIGBEE");
+			dimmableLight.setLightType("ZIGBEE");
+			dimmableLight.setMaximumValue(254);
+			dimmableLight.setMinimumValue(0);
 			dimmableLight.setMqttPowerOnTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
 
 			dimmableLight.setMqttPowerOffTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
 
-			dimmableLight.setMqttPowerOnMessage("{\"state\": \"on\"}");
-			dimmableLight.setMqttPowerOffMessage("{\"state\": \"off\"}");
+			dimmableLight.setMqttPowerOnMessage("{\"state\": \"ON\"}");
+			dimmableLight.setMqttPowerOffMessage("{\"state\": \"OFF\"}");
 
 			em.getTransaction().begin();
 			em.persist(dimmableLight);
