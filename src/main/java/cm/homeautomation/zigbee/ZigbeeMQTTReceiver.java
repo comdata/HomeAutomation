@@ -87,7 +87,7 @@ public class ZigbeeMQTTReceiver {
 								handleTradfriLight(message, zigbeeDevice, messageObject);
 							} else if (modelID.startsWith("TRADFRI Driver")) {
 								handleTradfriLight(message, zigbeeDevice, messageObject);
-							} else if (modelID.startsWith("TRADFRI Motion")) {
+							} else if (modelID.startsWith("TRADFRI motion")) {
 								handleMotionSensor(message, zigbeeDevice, messageObject);
 							}
 						}
