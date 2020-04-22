@@ -218,7 +218,6 @@ public class LightService extends BaseService {
 				}
 
 				MQTTSender.sendMQTTMessage(topic, messagePayload);
-
 			} else {
 
 				dimUrl = dimUrl.replace("{DIMVALUE}", Integer.toString(dimValue));
