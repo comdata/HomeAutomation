@@ -165,7 +165,8 @@ public class ZigbeeMQTTReceiver {
 
 			boolean occupancyNodeBoolean = occupancyNode.asBoolean();
 
-			ZigbeeMotionSensor existingSensor = em.find(ZigbeeMotionSensor.class, zigbeeDevice.getIeeeAddr());
+			String ieeeAddr = zigbeeDevice.getIeeeAddr();
+			ZigbeeMotionSensor existingSensor = em.find(ZigbeeMotionSensor.class, ieeeAddr);
 
 			if (existingSensor == null) {
 				existingSensor = new ZigbeeMotionSensor(zigbeeDevice.getIeeeAddr(), occupancyNodeBoolean);
@@ -181,6 +182,11 @@ public class ZigbeeMQTTReceiver {
 
 			em.merge(existingSensor);
 			em.getTransaction().commit();
+
+			RemoteControlEvent remoteControlEvent = new RemoteControlEvent(zigbeeDevice.getFriendlyName(), ieeeAddr,
+					occupancyNodeBoolean);
+
+			EventBusService.getEventBus().post(remoteControlEvent);
 
 		}
 	}

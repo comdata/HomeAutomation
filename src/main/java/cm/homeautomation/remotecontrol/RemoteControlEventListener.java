@@ -1,5 +1,6 @@
 package cm.homeautomation.remotecontrol;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -38,43 +39,63 @@ public class RemoteControlEventListener {
 						RemoteControl.class)
 				.setParameter("technicalId", technicalId).getResultList();
 
-		for (RemoteControl remoteControl : remoteList) {
+		if (remoteList != null && !remoteList.isEmpty()) {
+			for (RemoteControl remoteControl : remoteList) {
 
-			if (remoteControl != null) {
-				List<RemoteControlGroup> remoteControlGroups = em
-						.createQuery("select cg from RemoteControlGroup cg where cg.remote=:remote",
-								RemoteControlGroup.class)
-						.setParameter("remote", remoteControl).getResultList();
-				for (RemoteControlGroup remoteControlGroup : remoteControlGroups) {
-					List<RemoteControlGroupMember> members = remoteControlGroup.getMembers();
+				if (remoteControl != null) {
+					List<RemoteControlGroup> remoteControlGroups = em
+							.createQuery("select cg from RemoteControlGroup cg where cg.remote=:remote",
+									RemoteControlGroup.class)
+							.setParameter("remote", remoteControl).getResultList();
+					for (RemoteControlGroup remoteControlGroup : remoteControlGroups) {
+						List<RemoteControlGroupMember> members = remoteControlGroup.getMembers();
 
-					for (RemoteControlGroupMember remoteControlGroupMember : members) {
-						LogManager.getLogger(this.getClass()).error("found remote member: " + remoteControl.getName());
-						switch (remoteControlGroupMember.getType()) {
-						case LIGHT:
-							LightService.getInstance().setLightState(remoteControlGroupMember.getExternalId(),
-									(event.isPoweredOnState() ? LightStates.ON : LightStates.OFF));
-							break;
-						case SWITCH:
-							ActorService.getInstance().pressSwitch(Long.toString(remoteControlGroupMember
-									.getExternalId()),
-									(event.isPoweredOnState() ? "ON" : "OFF"));
-							break;
-						case WINDOWBLIND:
-							new WindowBlindService().setDim(remoteControlGroupMember.getExternalId(),
-									(event.isPoweredOnState() ? "99" : "0"));
-							break;
-						default:
-							break;
+						for (RemoteControlGroupMember remoteControlGroupMember : members) {
+							LogManager.getLogger(this.getClass())
+									.error("found remote member: " + remoteControl.getName());
+							switch (remoteControlGroupMember.getType()) {
+							case LIGHT:
+								LightService.getInstance().setLightState(remoteControlGroupMember.getExternalId(),
+										(event.isPoweredOnState() ? LightStates.ON : LightStates.OFF));
+								break;
+							case SWITCH:
+								ActorService.getInstance().pressSwitch(
+										Long.toString(remoteControlGroupMember.getExternalId()),
+										(event.isPoweredOnState() ? "ON" : "OFF"));
+								break;
+							case WINDOWBLIND:
+								new WindowBlindService().setDim(remoteControlGroupMember.getExternalId(),
+										(event.isPoweredOnState() ? "99" : "0"));
+								break;
+							default:
+								break;
 
+							}
 						}
+
 					}
 
+				} else {
+					// control not found
 				}
-
-			} else {
-				// control not found
 			}
+		} else {
+			// remote not found let's create it
+
+			em.getTransaction().begin();
+			
+			RemoteControl remoteControl = new RemoteControl();
+			
+			remoteControl.setTechnicalId(technicalId);
+			remoteControl.setName(name);
+			List<RemoteControlGroup> groups = new ArrayList<>();
+			RemoteControlGroup group = new RemoteControlGroup();
+			group.setName(name);
+			group.setRemote(remoteControl);
+			groups.add(group);
+			remoteControl.setGroups(groups);
+			em.persist(remoteControl);
+			em.getTransaction().commit();
 		}
 	}
 }
