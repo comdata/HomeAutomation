@@ -46,8 +46,7 @@ public class HueInterface extends BaseService {
 						("on".equals(message.getPayload()) ? LightStates.ON : LightStates.OFF));
 
 				if (!message.isOnOffCommand()) {
-					LightService.getInstance().dimLight(hueDevice
-							.getExternalId(), message.getBrightness());
+					LightService.getInstance().dimLight(hueDevice.getExternalId(), message.getBrightness());
 				}
 
 				break;
@@ -62,11 +61,11 @@ public class HueInterface extends BaseService {
 					dimValue = Integer.toString(message.getBrightness());
 				}
 				System.out.println("Window Blind dim: " + dimValue);
-				
-				new WindowBlindService()
-						.setDim(hueDevice.getExternalId(),
-								("on".equals(message.getPayload()) ? dimValue : "0"),
-								hueDevice.isGroupDevice() ? WindowBlind.ALL_AT_ONCE : WindowBlind.SINGLE, null);
+
+				new WindowBlindService().setDim(hueDevice.getExternalId(),
+						("on".equals(message.getPayload()) ? dimValue : "0"),
+						hueDevice.isGroupDevice() ? WindowBlind.ALL_AT_ONCE : WindowBlind.SINGLE,
+						(hueDevice.isGroupDevice() ? hueDevice.getRoom().getId() : null));
 				break;
 			default:
 				break;

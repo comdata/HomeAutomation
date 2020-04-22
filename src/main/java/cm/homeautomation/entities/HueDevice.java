@@ -29,6 +29,8 @@ public class HueDevice {
 	@Enumerated(EnumType.STRING)
 	HueDeviceType type;
 
+	Room room;
+
 	long externalId;
 	boolean groupDevice;
 
