@@ -57,6 +57,7 @@
 		<class>cm.homeautomation.entities.RemoteControlGroup</class>
 		<class>cm.homeautomation.entities.RemoteControlGroupMember</class>
 		<class>cm.homeautomation.entities.HueDevice</class>
+		<class>cm.homeautomation.entities.ZigbeeLight</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver"
 				value="org.mariadb.jdbc.Driver" />

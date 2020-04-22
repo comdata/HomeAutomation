@@ -15,7 +15,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.entities.DimmableLight;
 import cm.homeautomation.entities.ZigBeeDevice;
+import cm.homeautomation.entities.ZigbeeLight;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.mqtt.client.MQTTSender;
@@ -72,15 +74,49 @@ public class ZigbeeMQTTReceiver {
 
 						if (modelID.equals("TRADFRI remote control")) {
 							handleTradfriRemoteControl(message, zigbeeDevice, messageObject);
-						} else if (modelID.equals("TRADFRI bulb E14 W op/ch 400lm")) {
+						} else if (modelID.startsWith("TRADFRI bulb E14")) {
 							System.out.println("E14. " + message);
-						} else if (modelID.equals("FLOALT panel WS 60x60")) {
+							handleTradfriLight(message, zigbeeDevice, messageObject);
+						} else if (modelID.startsWith("FLOALT panel")) {
 							System.out.println("FLOALT. " + message);
+							handleTradfriLight(message, zigbeeDevice, messageObject);
+						} else if (modelID.startsWith("TRADFRI Driver")) {
+							handleTradfriLight(message, zigbeeDevice, messageObject);
 						}
 					}
 
 				}
 			}
+		}
+	}
+
+	private void handleTradfriLight(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
+		String action = messageObject.get("action").asText();
+
+		System.out.println("Zigbee Action for tradfri light. " + action);
+
+		EntityManager em = EntityManagerService.getManager();
+
+		ZigbeeLight existingLight = em.find(ZigbeeLight.class, zigbeeDevice.getIeeeAddr());
+		// create new light if not existing
+		if (existingLight == null) {
+			existingLight = new ZigbeeLight(zigbeeDevice.getIeeeAddr(), false);
+			DimmableLight dimmableLight = new DimmableLight();
+
+			dimmableLight.setName(zigbeeDevice.getFriendlyName());
+			dimmableLight.setExternalId(zigbeeDevice.getIeeeAddr());
+			dimmableLight.setType("ZIGBEE");
+			dimmableLight.setMqttPowerOnTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
+
+			dimmableLight.setMqttPowerOffTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
+
+			dimmableLight.setMqttPowerOnMessage("{\"state\": \"on\"}");
+			dimmableLight.setMqttPowerOffMessage("{\"state\": \"off\"}");
+
+			em.getTransaction().begin();
+			em.persist(dimmableLight);
+			em.persist(existingLight);
+			em.getTransaction().commit();
 		}
 	}
 
@@ -90,8 +126,7 @@ public class ZigbeeMQTTReceiver {
 		EntityManager em = EntityManagerService.getManager();
 
 		String ieeeAddr = zigbeeDevice.getIeeeAddr();
-		ZigBeeTradfriRemoteControl existingRemote = em.find(ZigBeeTradfriRemoteControl.class,
-				ieeeAddr);
+		ZigBeeTradfriRemoteControl existingRemote = em.find(ZigBeeTradfriRemoteControl.class, ieeeAddr);
 
 		// create new remote if not existing
 		if (existingRemote == null) {
@@ -106,23 +141,21 @@ public class ZigbeeMQTTReceiver {
 		if ("toggle".equals(action)) {
 			existingRemote.setPowerOnState(existingRemote.isPowerOnState() ? false : true);
 		}
-		
-		
-		
+
 		if ("arrow_right_click".equals(action)) {
-			
+
 		}
-		
+
 		if ("arrow_left_click".equals(action)) {
-			
+
 		}
-		
+
 		if ("brightness_up_click".equals(action)) {
-			
+
 		}
-		
+
 		if ("brightness_down_click".equals(action)) {
-			
+
 		}
 
 		// TODO hold events
@@ -130,7 +163,7 @@ public class ZigbeeMQTTReceiver {
 				existingRemote.isPowerOnState());
 
 		EventBusService.getEventBus().post(remoteControlEvent);
-		
+
 		// update changed object in database
 		em.getTransaction().begin();
 
