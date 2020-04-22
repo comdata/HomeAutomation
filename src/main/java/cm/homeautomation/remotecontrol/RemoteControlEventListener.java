@@ -95,6 +95,7 @@ public class RemoteControlEventListener {
 			groups.add(group);
 			remoteControl.setGroups(groups);
 			em.persist(remoteControl);
+			em.persist(group);
 			em.getTransaction().commit();
 		}
 	}
