@@ -12,6 +12,7 @@ import cm.homeautomation.entities.DimmableLight;
 import cm.homeautomation.entities.Light;
 import cm.homeautomation.entities.RGBLight;
 import cm.homeautomation.entities.Room;
+import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.base.HTTPHelper;
@@ -20,6 +21,7 @@ import cm.homeautomation.tradfri.TradfriStartupService;
 @Path("light")
 public class LightService extends BaseService {
 
+	private static final String ZIGBEE = "ZIGBEE";
 	private static final String LIGHT_ID = "lightId";
 	private static final String TRADFRI = "TRADFRI";
 	private static final String MQTT = "MQTT";
@@ -201,8 +203,22 @@ public class LightService extends BaseService {
 			if (TRADFRI.equals(light.getLightType())) {
 				TradfriStartupService.getInstance().dimBulb(light.getExternalId(), dimValue);
 			}
-			if (MQTT.equals(light.getLightType())) {
-				// TODO MQTT Light
+			if (MQTT.equals(light.getLightType()) || ZIGBEE.equals(light.getLightType())) {
+				// TODO MQTT Dimming
+
+				String topic;
+				String messagePayload;
+
+				if ("off".equals(powerState)) {
+					topic = light.getMqttPowerOffTopic();
+					messagePayload = light.getMqttPowerOffMessage();
+				} else {
+					topic = light.getMqttPowerOnTopic();
+					messagePayload = light.getMqttPowerOnMessage();
+				}
+
+				MQTTSender.sendMQTTMessage(topic, messagePayload);
+
 			} else {
 
 				dimUrl = dimUrl.replace("{DIMVALUE}", Integer.toString(dimValue));
