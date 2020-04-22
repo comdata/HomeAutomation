@@ -215,6 +215,8 @@ public class LightService extends BaseService {
 				} else {
 					topic = light.getMqttPowerOnTopic();
 					messagePayload = light.getMqttPowerOnMessage();
+					
+					messagePayload = messagePayload.replace("{DIMVALUE}", Integer.toString(dimValue));
 				}
 
 				MQTTSender.sendMQTTMessage(topic, messagePayload);

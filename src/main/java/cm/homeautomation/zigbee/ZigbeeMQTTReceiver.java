@@ -114,7 +114,7 @@ public class ZigbeeMQTTReceiver {
 
 			dimmableLight.setMqttPowerOffTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
 
-			dimmableLight.setMqttPowerOnMessage("{\"state\": \"ON\"}");
+			dimmableLight.setMqttPowerOnMessage("{\"state\": \"ON\", \"brightness\": {DIMVALUE}");
 			dimmableLight.setMqttPowerOffMessage("{\"state\": \"OFF\"}");
 
 			em.getTransaction().begin();
