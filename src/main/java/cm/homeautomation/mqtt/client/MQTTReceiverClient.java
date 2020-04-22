@@ -129,7 +129,7 @@ public class MQTTReceiverClient implements MqttCallback {
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		byte[] payload = message.getPayload();
 		String messageContent = new String(payload);
-		LogManager.getLogger(this.getClass()).info("Got MQTT message: " + messageContent);
+		LogManager.getLogger(this.getClass()).info("Got MQTT message: " + message.getId() + "/" + messageContent);
 
 		EventBusService.getEventBus().post(new MQTTTopicEvent(topic, messageContent));
 
@@ -158,6 +158,7 @@ public class MQTTReceiverClient implements MqttCallback {
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass()).error("Got an exception while saving data.", e);
 		}
+
 		client.messageArrivedComplete(message.getId(), message.getQos());
 
 	}
