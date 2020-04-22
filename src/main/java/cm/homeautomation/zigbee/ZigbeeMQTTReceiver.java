@@ -74,7 +74,7 @@ public class ZigbeeMQTTReceiver {
 
 						if (modelID.equals("TRADFRI remote control")) {
 							handleTradfriRemoteControl(message, zigbeeDevice, messageObject);
-						} else if (modelID.startsWith("TRADFRI bulb E14")) {
+						} else if (modelID.startsWith("TRADFRI bulb")) {
 							System.out.println("E14. " + message);
 							handleTradfriLight(message, zigbeeDevice, messageObject);
 						} else if (modelID.startsWith("FLOALT panel")) {
