@@ -17,7 +17,6 @@ import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.Switch;
-import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.base.BaseService;
 
 @ApplicationScoped
@@ -32,7 +31,7 @@ public class OverviewService extends BaseService {
 
 	public OverviewService() {
 		super();
-		
+
 	}
 
 	private void decorateRoomTile(OverviewTile roomTile) {
@@ -143,11 +142,11 @@ public class OverviewService extends BaseService {
 	@Path("get")
 	@GET
 	public OverviewTiles getOverviewTiles() {
-		
-		if (overviewTiles==null) {
+
+		if (overviewTiles == null) {
 			init();
 		}
-		
+
 		return overviewTiles;
 	}
 
@@ -176,10 +175,13 @@ public class OverviewService extends BaseService {
 		final OverviewTile tileForRoom = overviewTiles
 				.getTileForRoom(sensorData.getSensor().getRoom().getId().toString());
 
-		tileForRoom.getSensorData().put(sensorData.getSensor(), sensorData);
+		if (tileForRoom != null && sensorData != null) {
 
-		decorateRoomTile(tileForRoom);
+			tileForRoom.getSensorData().put(sensorData.getSensor(), sensorData);
 
+			decorateRoomTile(tileForRoom);
+
+		}
 		return tileForRoom;
 	}
 }
