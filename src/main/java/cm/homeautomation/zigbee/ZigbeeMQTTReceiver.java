@@ -91,7 +91,6 @@ public class ZigbeeMQTTReceiver {
 	}
 
 	private void handleTradfriLight(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
-		JsonNode actionNode = messageObject.get("action");
 		int brightness = 0;
 
 		JsonNode brightnessNode = messageObject.get("brightness");
@@ -122,7 +121,7 @@ public class ZigbeeMQTTReceiver {
 
 			dimmableLight.setMqttPowerOffTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
 
-			dimmableLight.setMqttPowerOnMessage("{\"state\": \"ON\", \"brightness\": {DIMVALUE}");
+			dimmableLight.setMqttPowerOnMessage("{\"state\": \"ON\", \"brightness\": {DIMVALUE}}");
 			dimmableLight.setMqttPowerOffMessage("{\"state\": \"OFF\"}");
 
 			em.getTransaction().begin();
