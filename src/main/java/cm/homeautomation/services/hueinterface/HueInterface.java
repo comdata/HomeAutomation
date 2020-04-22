@@ -61,6 +61,7 @@ public class HueInterface extends BaseService {
 				if (!message.isOnOffCommand()) {
 					dimValue = Integer.toString(message.getBrightness());
 				}
+				System.out.println("Window Blind dim: " + dimValue);
 				
 				new WindowBlindService()
 						.setDim(hueDevice.getExternalId(),
