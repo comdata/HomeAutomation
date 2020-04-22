@@ -18,6 +18,7 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DimmableLight;
 import cm.homeautomation.entities.ZigBeeDevice;
 import cm.homeautomation.entities.ZigbeeLight;
+import cm.homeautomation.entities.ZigbeeMotionSensor;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.mqtt.client.MQTTSender;
@@ -85,8 +86,47 @@ public class ZigbeeMQTTReceiver {
 						}
 					}
 
+					if (zigbeeDevice.getManufacturerID().equals("4151")) {
+						if (modelID.equals("lumi.sensor_motion.aq2")) {
+							handleXiaomiMotionSensor(message, zigbeeDevice, messageObject);
+						}
+
+					}
+
 				}
 			}
+		}
+	}
+
+	private void handleXiaomiMotionSensor(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
+
+		// {"battery":100,"voltage":3015,"illuminance":558,"illuminance_lux":558,"linkquality":18,"occupancy":false}
+
+		JsonNode occupancyNode = messageObject.get("occupancy");
+
+		EntityManager em = EntityManagerService.getManager();
+
+		if (occupancyNode != null) {
+
+			boolean occupancyNodeBoolean = occupancyNode.asBoolean();
+
+			ZigbeeMotionSensor existingSensor = em.find(ZigbeeMotionSensor.class, zigbeeDevice.getIeeeAddr());
+
+			if (existingSensor == null) {
+				existingSensor = new ZigbeeMotionSensor(zigbeeDevice.getIeeeAddr(), occupancyNodeBoolean);
+
+				em.getTransaction().begin();
+
+				em.persist(existingSensor);
+				em.getTransaction().commit();
+			}
+
+			existingSensor.setMotionDetected(occupancyNodeBoolean);
+			em.getTransaction().begin();
+
+			em.merge(existingSensor);
+			em.getTransaction().commit();
+
 		}
 	}
 
@@ -129,11 +169,11 @@ public class ZigbeeMQTTReceiver {
 			em.persist(existingLight);
 			em.getTransaction().commit();
 		}
-		
+
 		existingLight.setBrightness(brightness);
-		
+
 		em.getTransaction().begin();
-		
+
 		em.merge(existingLight);
 		em.getTransaction().commit();
 	}
