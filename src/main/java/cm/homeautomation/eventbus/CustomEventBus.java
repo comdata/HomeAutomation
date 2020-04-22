@@ -15,7 +15,7 @@ import org.greenrobot.eventbus.EventBusException;
  */
 public class CustomEventBus {
 
-	private final Map<String, Class<? extends Object>> classes = new HashMap<>();
+	private static final Map<String, Class<? extends Object>> classes = new HashMap<>();
 
 	public CustomEventBus() {
 		// do nothing
