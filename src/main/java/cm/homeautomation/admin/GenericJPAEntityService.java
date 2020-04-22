@@ -52,7 +52,7 @@ public class GenericJPAEntityService extends BaseService {
 
 	@GET
 	@Path("flushCache")
-	public void flushCache() {|
+	public void flushCache() {
 		EntityManagerService.getManager().getEntityManagerFactory().getCache().evictAll();
 	}
 
