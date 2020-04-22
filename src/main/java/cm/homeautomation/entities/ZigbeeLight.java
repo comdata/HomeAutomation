@@ -20,4 +20,6 @@ public class ZigbeeLight {
 	// powered on?
 	boolean powerOnState = false;
 
+	int brightness = 0;
+
 }

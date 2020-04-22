@@ -92,6 +92,13 @@ public class ZigbeeMQTTReceiver {
 
 	private void handleTradfriLight(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
 		JsonNode actionNode = messageObject.get("action");
+		int brightness = 0;
+
+		JsonNode brightnessNode = messageObject.get("brightness");
+
+		if (brightnessNode != null) {
+			brightness = brightnessNode.intValue();
+		}
 
 		// String action = actionNode.asText();
 
@@ -102,7 +109,8 @@ public class ZigbeeMQTTReceiver {
 		ZigbeeLight existingLight = em.find(ZigbeeLight.class, zigbeeDevice.getIeeeAddr());
 		// create new light if not existing
 		if (existingLight == null) {
-			existingLight = new ZigbeeLight(zigbeeDevice.getIeeeAddr(), false);
+			existingLight = new ZigbeeLight(zigbeeDevice.getIeeeAddr(), false, brightness);
+
 			DimmableLight dimmableLight = new DimmableLight();
 
 			dimmableLight.setName(zigbeeDevice.getFriendlyName());
@@ -122,6 +130,13 @@ public class ZigbeeMQTTReceiver {
 			em.persist(existingLight);
 			em.getTransaction().commit();
 		}
+		
+		existingLight.setBrightness(brightness);
+		
+		em.getTransaction().begin();
+		
+		em.merge(existingLight);
+		em.getTransaction().commit();
 	}
 
 	private void handleTradfriRemoteControl(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
