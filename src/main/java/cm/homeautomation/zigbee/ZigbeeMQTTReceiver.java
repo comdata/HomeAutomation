@@ -91,9 +91,11 @@ public class ZigbeeMQTTReceiver {
 	}
 
 	private void handleTradfriLight(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
-		String action = messageObject.get("action").asText();
+		JsonNode actionNode = messageObject.get("action");
 
-		System.out.println("Zigbee Action for tradfri light. " + action);
+		// String action = actionNode.asText();
+
+		System.out.println("Zigbee Action for tradfri light. ");
 
 		EntityManager em = EntityManagerService.getManager();
 
