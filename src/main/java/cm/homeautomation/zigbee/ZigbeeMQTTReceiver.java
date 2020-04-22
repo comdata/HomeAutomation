@@ -27,6 +27,7 @@ import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.remotecontrol.RemoteControlEventListener;
 import cm.homeautomation.services.base.AutoCreateInstance;
+import cm.homeautomation.services.motion.MotionEvent;
 import cm.homeautomation.zigbee.entities.ZigBeeTradfriRemoteControl;
 import lombok.NonNull;
 
@@ -188,6 +189,11 @@ public class ZigbeeMQTTReceiver {
 
 			EventBusService.getEventBus().post(remoteControlEvent);
 
+			MotionEvent motionDetectionEvent = new MotionEvent();
+			motionDetectionEvent.setMac(ieeeAddr);
+			motionDetectionEvent.setState(occupancyNodeBoolean);
+
+			EventBusService.getEventBus().post(motionDetectionEvent);
 		}
 	}
 
