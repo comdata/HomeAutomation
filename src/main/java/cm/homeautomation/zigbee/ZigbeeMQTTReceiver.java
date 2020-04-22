@@ -1,5 +1,6 @@
 package cm.homeautomation.zigbee;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DimmableLight;
+import cm.homeautomation.entities.MQTTSwitch;
 import cm.homeautomation.entities.ZigBeeDevice;
 import cm.homeautomation.entities.ZigbeeLight;
 import cm.homeautomation.entities.ZigbeeMotionSensor;
@@ -93,9 +95,57 @@ public class ZigbeeMQTTReceiver {
 
 					}
 
+					if (zigbeeDevice.getManufacturerID().equals("48042")) {
+						if (modelID.equals("Plug 01")) {
+							handlePowerSocket(message, zigbeeDevice, messageObject);
+						}
+
+					}
 				}
 			}
 		}
+	}
+
+	private void handlePowerSocket(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
+
+		EntityManager em = EntityManagerService.getManager();
+
+		List<MQTTSwitch> existingDeviceList = em
+				.createQuery("select sw from MQTTSwitch sw where sw.externalId=:externalId", MQTTSwitch.class)
+				.setParameter("externalId", zigbeeDevice.getIeeeAddr()).getResultList();
+
+		MQTTSwitch zigbeeSwitch = null;
+		if (existingDeviceList == null || existingDeviceList.isEmpty()) {
+			zigbeeSwitch = new MQTTSwitch();
+			zigbeeSwitch.setExternalId(zigbeeDevice.getIeeeAddr());
+			zigbeeSwitch.setMqttPowerOnTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
+
+			zigbeeSwitch.setMqttPowerOffTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
+
+			zigbeeSwitch.setMqttPowerOnMessage("{\"state\": \"ON\"}");
+			zigbeeSwitch.setMqttPowerOffMessage("{\"state\": \"OFF\"}");
+			zigbeeSwitch.setName(zigbeeDevice.getFriendlyName());
+			zigbeeSwitch.setSwitchType("SOCKET");
+			
+			em.getTransaction().begin();
+			em.persist(zigbeeSwitch);
+
+			em.getTransaction().commit();
+		} else {
+			zigbeeSwitch = existingDeviceList.get(0);
+		}
+
+		JsonNode stateNode = messageObject.get("state");
+
+		if (stateNode != null) {
+			zigbeeSwitch.setLatestStatus(stateNode.asText());
+			zigbeeSwitch.setLatestStatusFrom(new Date());
+		}
+
+		em.getTransaction().begin();
+		em.persist(zigbeeSwitch);
+
+		em.getTransaction().commit();
 	}
 
 	private void handleXiaomiMotionSensor(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
