@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.sap.olingo.jpa.metadata.core.edm.annotation.EdmIgnore;
 
@@ -28,55 +27,37 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
 public class Sensor {
 
-    @Getter
-    @Setter    
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-    @Getter
-    @Setter    
 	@Column(name = "SENSORNAME", nullable = false)
-    private String sensorName;
-    
-    @Getter
-    @Setter
-    private String sensorType;
-    
-    @Getter
-    @Setter    
-    private String sensorPin;
-    
-    @Getter
-    @Setter    
-    private String sensorTechnicalType;
-    
-    @Getter
-    @Setter    
-    private String sensorPosition = "LOCAL";
+	private String sensorName;
 
-    @Getter
-    @Setter
+	private String sensorType;
+
+	private String sensorPin;
+
+	private String sensorTechnicalType;
+
+	private String sensorPosition = "LOCAL";
+
 	private int deadbandPercent = 0;
-    
-    @Getter
-    @Setter    
-	@Column(name = "MIN_VALUE", nullable = true)
-    private String minValue;
 
-    @Getter
-    @Setter
+	@Column(name = "MIN_VALUE", nullable = true)
+	private String minValue;
+
 	@Column(name = "MAX_VALUE", nullable = true)
 	private String maxValue;
 
-    @Getter
-    @Setter    
 	@Column(name = "SHOWDATA")
 	private boolean showData;
 
@@ -86,13 +67,12 @@ public class Sensor {
 	@ManyToOne
 	@JoinColumn(name = "ROOM_ID")
 	@EdmIgnore
-	
 	private Room room;
 
-    @Getter
-    @Setter    
-    @OneToMany(mappedBy = "sensor", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
+	String externalId;
+
+	@OneToMany(mappedBy = "sensor", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JsonIgnore
 	private List<SensorData> sensorData;
 
 	@XmlTransient
@@ -100,9 +80,5 @@ public class Sensor {
 	@JsonBackReference("room")
 	public Room getRoom() {
 		return room;
-	}
-	
-	public void setRoom(Room room) {
-		this.room = room;
 	}
 }
