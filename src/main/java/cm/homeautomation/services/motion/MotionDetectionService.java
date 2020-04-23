@@ -20,7 +20,7 @@ public class MotionDetectionService extends BaseService {
 		if (eventData instanceof MotionEvent) {
 			final MotionEvent motionEvent = (MotionEvent) eventData;
 
-			final boolean state = motionEvent.getState();
+			final boolean state = motionEvent.isState();
 
 			// TODO refactor this. add suppression and flip detection logic
 			// add

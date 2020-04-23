@@ -192,6 +192,7 @@ public class ZigbeeMQTTReceiver {
 
 			MotionEvent motionDetectionEvent = new MotionEvent();
 			motionDetectionEvent.setMac(ieeeAddr);
+			motionDetectionEvent.setName(zigbeeDevice.getFriendlyName());
 			motionDetectionEvent.setState(occupancyNodeBoolean);
 
 			EventBusService.getEventBus().post(motionDetectionEvent);
