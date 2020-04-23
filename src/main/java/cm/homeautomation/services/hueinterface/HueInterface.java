@@ -8,6 +8,9 @@ import javax.ws.rs.Path;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.HueDevice;
+import cm.homeautomation.entities.HueDeviceType;
+import cm.homeautomation.entities.Light;
+import cm.homeautomation.entities.Switch;
 import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.services.actor.ActorService;
 import cm.homeautomation.services.base.BaseService;
@@ -30,11 +33,39 @@ public class HueInterface extends BaseService {
 				.setParameter("lightId", lightId).getResultList();
 
 		if (hueDeviceList == null || hueDeviceList.isEmpty()) {
+
+			// try to find existing device
+			long externalId = 0;
+			HueDeviceType type = null;
+
+			List<Switch> switchList = em.createQuery("select sw from Switch sw where sw.name=:name", Switch.class)
+					.setParameter("name", message.getDeviceName()).getResultList();
+
+			if (switchList != null && !switchList.isEmpty()) {
+				Switch singleSwitch = switchList.get(0);
+				externalId = singleSwitch.getId();
+				type = HueDeviceType.SWITCH;
+			} else {
+				List<Light> lightList = em.createQuery("select l from Light l where l.name=:name", Light.class)
+						.setParameter("name", message.getDeviceName()).getResultList();
+				if (lightList != null && !lightList.isEmpty()) {
+					Light singleLight = lightList.get(0);
+					externalId = singleLight.getId();
+					type = HueDeviceType.SWITCH;
+				}
+			}
 			em.getTransaction().begin();
 
 			HueDevice hueDevice = new HueDevice();
 			hueDevice.setName(message.getDeviceName());
 			hueDevice.setLightId(message.getLightId());
+
+			if (externalId > 0 && type != null) {
+				hueDevice.setExternalId(externalId);
+				hueDevice.setType(type);
+
+			}
+
 			em.persist(hueDevice);
 			em.getTransaction().commit();
 		} else {
