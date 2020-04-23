@@ -45,11 +45,18 @@ public class EventBusAnnotationInitializer {
 	public void initializeEventBus() {
 		final Set<Method> resources = getEventBusClasses();
 
+		Map<Class<?>, Object> startupInstances = StartupAnnotationInitializer.getInstances();
+
+		Map<Class<?>, Object> startedInstances = new HashMap<Class<?>, Object>();
+
 		for (final Method method : resources) {
 			final Class<?> declaringClass = method.getDeclaringClass();
 
 			// check if the class has already been initialized
-			if (!instances.containsKey(declaringClass)) {
+			if (!startedInstances.containsKey(declaringClass) && !instances.containsKey(declaringClass)
+					&& !startupInstances.containsKey(declaringClass)) {
+
+				startedInstances.put(declaringClass, "started");
 
 				LogManager.getLogger(this.getClass()).info("Creating class: " + declaringClass.getName());
 

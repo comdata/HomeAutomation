@@ -16,17 +16,20 @@ import org.reflections.util.FilterBuilder;
 
 import com.google.common.base.Predicate;
 
+import lombok.Getter;
+
 /**
- * initialize services annotated with {@link AutoCreateInstance} by calling the constructor
- * each service is created in an own thread therefore no need to spawn additional threads in
- * the service itself.
+ * initialize services annotated with {@link AutoCreateInstance} by calling the
+ * constructor each service is created in an own thread therefore no need to
+ * spawn additional threads in the service itself.
  * 
  * @author christoph
  *
  */
+@Getter
 public class StartupAnnotationInitializer extends Thread {
 
-	private Map<Class<?>, Object> instances = new HashMap<>();
+	private static Map<Class<?>, Object> instances = new HashMap<>();
 
 	public StartupAnnotationInitializer() {
 		// nothing special to be done
@@ -43,6 +46,7 @@ public class StartupAnnotationInitializer extends Thread {
 			LogManager.getLogger(this.getClass()).info(message);
 
 			Runnable singleInstanceCreator = new Runnable() {
+				@Override
 				public void run() {
 					try {
 						Object classInstance = declaringClass.newInstance();
@@ -60,14 +64,15 @@ public class StartupAnnotationInitializer extends Thread {
 
 	public Set<Class<?>> getClassesWithAutoCreateInstance() {
 		LogManager.getLogger(this.getClass()).info("Scanning classes");
-	
-		Predicate<String> filter = new FilterBuilder().includePackage("cm.homeautomation").include(".*class").exclude(".*java").exclude(".*properties").exclude(".*xml");
-		
-		Reflections reflections = new Reflections(
-				new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage("cm.homeautomation")).filterInputsBy(filter).setScanners(
-						new TypeElementsScanner(), new TypeAnnotationsScanner(), 
-						new MethodAnnotationsScanner()).useParallelExecutor());
-		
+
+		Predicate<String> filter = new FilterBuilder().includePackage("cm.homeautomation").include(".*class")
+				.exclude(".*java").exclude(".*properties").exclude(".*xml");
+
+		Reflections reflections = new Reflections(new ConfigurationBuilder()
+				.setUrls(ClasspathHelper.forPackage("cm.homeautomation")).filterInputsBy(filter)
+				.setScanners(new TypeElementsScanner(), new TypeAnnotationsScanner(), new MethodAnnotationsScanner())
+				.useParallelExecutor());
+
 		// MethodAnnotationsScanner
 		Set<Method> resources = reflections.getMethodsAnnotatedWith(AutoCreateInstance.class);
 		Set<Class<?>> typesAnnotatedWith = reflections.getTypesAnnotatedWith(AutoCreateInstance.class, true);
@@ -76,17 +81,21 @@ public class StartupAnnotationInitializer extends Thread {
 			Class<?> declaringClass = method.getDeclaringClass();
 			String message = "Adding class: " + declaringClass.getName();
 			LogManager.getLogger(this.getClass()).info(message);
-			typesAnnotatedWith.add(declaringClass);
+
+			if (!typesAnnotatedWith.contains(declaringClass)) {
+
+				typesAnnotatedWith.add(declaringClass);
+			}
 		}
 		return typesAnnotatedWith;
 	}
 
-	public Map<Class<?>, Object> getInstances() {
+	public static Map<Class<?>, Object> getInstances() {
 		return instances;
 	}
 
 	public void disposeInstances() {
-		synchronized(this) {
+		synchronized (this) {
 			Set<Class<?>> keySet = instances.keySet();
 
 			for (Class<?> clazz : keySet) {
