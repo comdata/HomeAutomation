@@ -44,6 +44,7 @@ public class RemoteControlEventListener {
 
 				if (remoteControl != null) {
 					List<RemoteControlGroup> remoteControlGroups = remoteControl.getGroups();
+
 					for (RemoteControlGroup remoteControlGroup : remoteControlGroups) {
 						List<RemoteControlGroupMember> members = remoteControlGroup.getMembers();
 
