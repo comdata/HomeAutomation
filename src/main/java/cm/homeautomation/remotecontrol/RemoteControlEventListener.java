@@ -43,12 +43,12 @@ public class RemoteControlEventListener {
 			for (RemoteControl remoteControl : remoteList) {
 
 				if (remoteControl != null) {
-					List<RemoteControlGroup> remoteControlGroups = em
-							.createQuery("select cg from RemoteControlGroup cg where cg.remote=:remote",
-									RemoteControlGroup.class)
-							.setParameter("remote", remoteControl).getResultList();
+					List<RemoteControlGroup> remoteControlGroups = remoteControl.getGroups();
 					for (RemoteControlGroup remoteControlGroup : remoteControlGroups) {
 						List<RemoteControlGroupMember> members = remoteControlGroup.getMembers();
+
+						LogManager.getLogger(this.getClass())
+								.error("found remote group: " + remoteControlGroup.getName());
 
 						for (RemoteControlGroupMember remoteControlGroupMember : members) {
 							LogManager.getLogger(this.getClass())
