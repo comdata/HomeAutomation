@@ -274,7 +274,10 @@ public class ZigbeeMQTTReceiver {
 		}
 
 		if ("toggle".equals(action)) {
-			existingRemote.setPowerOnState(existingRemote.isPowerOnState() ? false : true);
+			boolean sourcePowerState = existingRemote.isPowerOnState();
+			boolean targetPowerState = sourcePowerState ? false : true;
+			existingRemote.setPowerOnState(targetPowerState);
+			existingRemote.setBrightness(targetPowerState ? 254 : 0);
 			// TODO hold events
 			RemoteControlEvent remoteControlEvent = new RemoteControlEvent(zigbeeDevice.getFriendlyName(), ieeeAddr,
 					existingRemote.isPowerOnState());
