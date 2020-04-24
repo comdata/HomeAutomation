@@ -26,12 +26,10 @@ import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.remotecontrol.RemoteControlEventListener;
-import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.motion.MotionEvent;
 import cm.homeautomation.zigbee.entities.ZigBeeTradfriRemoteControl;
 import lombok.NonNull;
 
-@AutoCreateInstance
 public class ZigbeeMQTTReceiver {
 
 	@NonNull
