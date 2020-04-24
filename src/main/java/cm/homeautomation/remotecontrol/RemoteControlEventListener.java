@@ -19,11 +19,54 @@ import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.light.LightService;
 import cm.homeautomation.services.light.LightStates;
 import cm.homeautomation.services.windowblind.WindowBlindService;
+import cm.homeautomation.zigbee.RemoteControlBrightnessChangeEvent;
 
 @AutoCreateInstance
 public class RemoteControlEventListener {
 	public RemoteControlEventListener() {
 		EventBusService.getEventBus().register(this);
+	}
+
+	@Subscribe
+	public void subscribe(RemoteControlBrightnessChangeEvent event) {
+		String name = event.getName();
+		String technicalId = event.getTechnicalId();
+		EntityManager em = EntityManagerService.getManager();
+
+		LogManager.getLogger(this.getClass()).error("got remote event: " + name + "/" + technicalId);
+
+		List<RemoteControl> remoteList = em
+				.createQuery("select rc from RemoteControl rc where rc.technicalId=:technicalId",
+						RemoteControl.class)
+				.setParameter("technicalId", technicalId).getResultList();
+
+		if (remoteList != null && !remoteList.isEmpty()) {
+			for (RemoteControl remoteControl : remoteList) {
+
+				if (remoteControl != null) {
+					List<RemoteControlGroup> remoteControlGroups = remoteControl.getGroups();
+
+					for (RemoteControlGroup remoteControlGroup : remoteControlGroups) {
+						List<RemoteControlGroupMember> members = remoteControlGroup.getMembers();
+
+						LogManager.getLogger(this.getClass())
+								.error("found remote group: " + remoteControlGroup.getName());
+
+						for (RemoteControlGroupMember remoteControlGroupMember : members) {
+							LogManager.getLogger(this.getClass())
+									.error("found remote member: " + remoteControl.getName());
+							switch (remoteControlGroupMember.getType()) {
+							case LIGHT:
+								LightService.getInstance().dimLight(remoteControlGroupMember.getExternalId(),
+										event.getBrightness());
+
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	@Subscribe
@@ -84,9 +127,9 @@ public class RemoteControlEventListener {
 			// remote not found let's create it
 
 			em.getTransaction().begin();
-			
+
 			RemoteControl remoteControl = new RemoteControl();
-			
+
 			remoteControl.setTechnicalId(technicalId);
 			remoteControl.setName(name);
 			List<RemoteControlGroup> groups = new ArrayList<>();

@@ -20,5 +20,6 @@ public class ZigBeeTradfriRemoteControl {
 	// powered on?
 	boolean powerOnState=false;
 	
+	int brightness;
 	
 }
