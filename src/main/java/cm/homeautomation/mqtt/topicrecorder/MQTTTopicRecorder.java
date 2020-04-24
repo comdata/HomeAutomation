@@ -10,7 +10,6 @@ import org.greenrobot.eventbus.Subscribe;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.MQTTTopic;
 import cm.homeautomation.eventbus.EventBusService;
-import cm.homeautomation.services.base.AutoCreateInstance;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 
@@ -21,7 +20,6 @@ import lombok.extern.log4j.Log4j2;
  *
  */
 @Log4j2
-@AutoCreateInstance
 public class MQTTTopicRecorder {
 
     private static List<String> topicList=new ArrayList<>();
