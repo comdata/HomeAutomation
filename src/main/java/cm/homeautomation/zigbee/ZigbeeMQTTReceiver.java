@@ -246,6 +246,7 @@ public class ZigbeeMQTTReceiver {
 			em.getTransaction().commit();
 		}
 
+		// TODO map generic light
 		existingLight.setBrightness(brightness);
 
 		em.getTransaction().begin();
