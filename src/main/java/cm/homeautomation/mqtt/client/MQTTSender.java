@@ -26,21 +26,20 @@ public class MQTTSender {
 
 	public static void sendMQTTMessage(String topic, String messagePayload) {
 		final Runnable mqttSendThread = () -> {
-		try {
-			
-			initClient();
+			try {
 
-			log.debug("MQTT: sending message "+messagePayload+" to topic "+ topic);
-			
-			MqttMessage message = new MqttMessage();
-			message.setPayload(messagePayload.getBytes());
-			client.publish(topic, message);
-			log.debug("MQTT:  message sent "+messagePayload+" to topic "+ topic);
-			
-			
-		} catch (MqttException e) {
-			log.error("Sending MQTT message: "+messagePayload+" failed.", e);
-		}
+				initClient();
+
+				log.debug("MQTT: sending message " + messagePayload + " to topic " + topic);
+
+				MqttMessage message = new MqttMessage();
+				message.setPayload(messagePayload.getBytes());
+				client.publish(topic, message);
+				log.debug("MQTT:  message sent " + messagePayload + " to topic " + topic);
+
+			} catch (MqttException e) {
+				log.error("Sending MQTT message: " + messagePayload + " failed.", e);
+			}
 		};
 		new Thread(mqttSendThread).start();
 	}
