@@ -100,30 +100,27 @@ public class RemoteControlEventListener {
 								.error("found remote group: " + remoteControlGroup.getName());
 
 						for (RemoteControlGroupMember remoteControlGroupMember : members) {
-							final Runnable controlMemberThread = () -> {
-								LogManager.getLogger(this.getClass())
-										.error("found remote member: " + remoteControl.getName());
-								switch (remoteControlGroupMember.getType()) {
-								case LIGHT:
-									LightService.getInstance().setLightState(remoteControlGroupMember.getExternalId(),
-											(event.isPoweredOnState() ? LightStates.ON : LightStates.OFF));
-									break;
-								case SWITCH:
-									ActorService.getInstance().pressSwitch(
-											Long.toString(remoteControlGroupMember.getExternalId()),
-											(event.isPoweredOnState() ? "ON" : "OFF"));
-									break;
-								case WINDOWBLIND:
-									new WindowBlindService().setDim(remoteControlGroupMember.getExternalId(),
-											(event.isPoweredOnState() ? "99" : "0"));
-									break;
-								default:
-									break;
+							LogManager.getLogger(this.getClass())
+									.error("found remote member: " + remoteControl.getName());
+							switch (remoteControlGroupMember.getType()) {
+							case LIGHT:
+								LightService.getInstance().setLightState(remoteControlGroupMember.getExternalId(),
+										(event.isPoweredOnState() ? LightStates.ON : LightStates.OFF));
+								break;
+							case SWITCH:
+								ActorService.getInstance().pressSwitch(
+										Long.toString(remoteControlGroupMember.getExternalId()),
+										(event.isPoweredOnState() ? "ON" : "OFF"));
+								break;
+							case WINDOWBLIND:
+								new WindowBlindService().setDim(remoteControlGroupMember.getExternalId(),
+										(event.isPoweredOnState() ? "99" : "0"));
+								break;
+							default:
+								break;
 
-								}
-							};
+							}
 
-							new Thread(controlMemberThread).start();
 						}
 
 					}
