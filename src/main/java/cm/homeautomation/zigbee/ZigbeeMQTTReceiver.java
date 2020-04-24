@@ -32,6 +32,7 @@ import lombok.NonNull;
 
 public class ZigbeeMQTTReceiver {
 
+	private static final int brightnessChangeIncrement = 10;
 	@NonNull
 	private String zigbeeMqttTopic = ConfigurationService.getConfigurationProperty("zigbee", "mqttTopic");
 
@@ -303,7 +304,7 @@ public class ZigbeeMQTTReceiver {
 			remoteControlBrightnessChangeEvent.setTechnicalId(existingRemote.getIeeeAddr());
 			remoteControlBrightnessChangeEvent.setName(zigbeeDevice.getFriendlyName());
 			remoteControlBrightnessChangeEvent.setPoweredOnState(existingRemote.isPowerOnState());
-			int newBrightness = brightnessChange(existingRemote, 20);
+			int newBrightness = brightnessChange(existingRemote, brightnessChangeIncrement);
 
 			remoteControlBrightnessChangeEvent.setBrightness(newBrightness);
 			EventBusService.getEventBus().post(remoteControlBrightnessChangeEvent);
@@ -324,7 +325,7 @@ public class ZigbeeMQTTReceiver {
 				remoteControlBrightnessChangeEvent.setName(zigbeeDevice.getFriendlyName());
 				remoteControlBrightnessChangeEvent.setPoweredOnState(existingRemote.isPowerOnState());
 
-				int newBrightness = brightnessChange(existingRemote, -20);
+				int newBrightness = brightnessChange(existingRemote, -1 * brightnessChangeIncrement);
 
 				remoteControlBrightnessChangeEvent.setBrightness(newBrightness);
 				EventBusService.getEventBus().post(remoteControlBrightnessChangeEvent);
