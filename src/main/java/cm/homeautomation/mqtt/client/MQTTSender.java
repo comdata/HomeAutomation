@@ -2,7 +2,6 @@ package cm.homeautomation.mqtt.client;
 
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -26,8 +25,9 @@ public class MQTTSender {
 	}
 
 	public static void sendMQTTMessage(String topic, String messagePayload) {
+		final Runnable mqttSendThread = () -> {
 		try {
-
+			
 			initClient();
 
 			log.debug("MQTT: sending message "+messagePayload+" to topic "+ topic);
@@ -41,6 +41,8 @@ public class MQTTSender {
 		} catch (MqttException e) {
 			log.error("Sending MQTT message: "+messagePayload+" failed.", e);
 		}
+		};
+		new Thread(mqttSendThread).start();
 	}
 
 	private static void initClient() throws MqttException {
@@ -48,12 +50,11 @@ public class MQTTSender {
 
 			UUID uuid = UUID.randomUUID();
 			String randomUUIDString = uuid.toString();
-			
+
 			String host = ConfigurationService.getConfigurationProperty("mqtt", "host");
 			String port = ConfigurationService.getConfigurationProperty("mqtt", "port");
-			
 
-			client = new MqttClient("tcp://"+host+":"+port, "HomeAutomation/" + randomUUIDString);
+			client = new MqttClient("tcp://" + host + ":" + port, "HomeAutomation/" + randomUUIDString);
 
 			MqttConnectOptions connOpt = new MqttConnectOptions();
 			connOpt.setAutomaticReconnect(true);
