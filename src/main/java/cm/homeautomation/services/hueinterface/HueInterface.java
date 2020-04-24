@@ -51,7 +51,7 @@ public class HueInterface extends BaseService {
 				if (lightList != null && !lightList.isEmpty()) {
 					Light singleLight = lightList.get(0);
 					externalId = singleLight.getId();
-					type = HueDeviceType.SWITCH;
+					type = HueDeviceType.LIGHT;
 				}
 			}
 			em.getTransaction().begin();
