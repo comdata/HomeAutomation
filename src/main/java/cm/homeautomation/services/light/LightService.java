@@ -102,7 +102,7 @@ public class LightService extends BaseService {
 				newDimValue = dimLight.getMinimumValue();
 				break;
 			case ON:
-				newDimValue = dimLight.getMaximumValue();
+				newDimValue = dimLight.getBrightnessLevel();
 				break;
 			}
 		} else {
