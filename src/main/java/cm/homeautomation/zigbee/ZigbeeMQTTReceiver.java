@@ -312,6 +312,7 @@ public class ZigbeeMQTTReceiver {
 			// update changed object in database
 			em.getTransaction().begin();
 			existingRemote.setBrightness(newBrightness);
+			existingRemote.setPowerOnState((newBrightness > 0));
 			em.merge(existingRemote);
 			em.getTransaction().commit();
 
@@ -333,6 +334,7 @@ public class ZigbeeMQTTReceiver {
 				// update changed object in database
 				em.getTransaction().begin();
 				existingRemote.setBrightness(newBrightness);
+				existingRemote.setPowerOnState((newBrightness > 0));
 				em.merge(existingRemote);
 				em.getTransaction().commit();
 			}
