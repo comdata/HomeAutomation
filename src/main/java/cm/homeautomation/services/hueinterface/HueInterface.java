@@ -68,6 +68,11 @@ public class HueInterface extends BaseService {
 
 			em.persist(hueDevice);
 			em.getTransaction().commit();
+
+			if (externalId > 0 && type != null) {
+				// do it again, since device is now created
+				handleMessage(message);
+			}
 		} else {
 			HueDevice hueDevice = hueDeviceList.get(0);
 
