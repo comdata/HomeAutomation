@@ -75,6 +75,9 @@ public class Sensor {
 	@JsonIgnore
 	private List<SensorData> sensorData;
 
+	private float reportingFactor = 1;
+	private String reportingUoM = "";
+
 	@XmlTransient
 	@JsonIgnore
 	@JsonBackReference("room")
