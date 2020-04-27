@@ -78,6 +78,11 @@ public class HueInterface extends BaseService {
 
 			if (hueDevice != null) {
 
+				if (message.getColor()!=null) {
+					System.out.println("Color infos:" + message.getColor().getX() + " - " + message.getColor().getY());
+				}
+				
+				
 				switch (hueDevice.getType()) {
 				case LIGHT:
 					LightService.getInstance().setLightState(hueDevice.getExternalId(),
