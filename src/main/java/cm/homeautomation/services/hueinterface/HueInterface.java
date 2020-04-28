@@ -6,6 +6,10 @@ import javax.persistence.EntityManager;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.HueDevice;
 import cm.homeautomation.entities.HueDeviceType;
@@ -92,8 +96,8 @@ public class HueInterface extends BaseService {
 
 			if (hueDevice != null) {
 
-				if (message.getColor() != null) {
-					System.out.println("Color infos:" + message.getColor().getX() + " - " + message.getColor().getY());
+				if (message.getXy() != null) {
+					System.out.println("Color infos:" + message.getXy()[0] + " - " + message.getXy()[1]);
 				}
 
 				HueDeviceType type = hueDevice.getType();
@@ -134,5 +138,15 @@ public class HueInterface extends BaseService {
 		}
 
 		return new GenericStatus(true);
+	}
+
+	public static void main(String[] args) throws JsonMappingException, JsonProcessingException {
+		 ObjectMapper mapper = new ObjectMapper();
+		 
+			String message = "{\"xy\": [0.24224, 0.4444]}";
+		 
+			HueEmulatorMessage readValue = mapper.readValue(message, HueEmulatorMessage.class);
+		 
+			System.out.println(readValue.getXy()[1]);
 	}
 }

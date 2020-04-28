@@ -39,5 +39,5 @@ public class HueEmulatorMessage {
 	@JsonAlias("light_id")
 	String lightId;
 
-	HueColor color;
+	Float[] xy;
 }
