@@ -81,10 +81,12 @@ public class ZigbeeMQTTReceiver {
 						JsonNode messageObject = mapper.readTree(message);
 
 						if ("Battery".equals(zigbeeDevice.getPowerSource())) {
-							JsonNode batteryNode = messageObject.findValue("battery");
+							System.out.println("Device is battery powered");
+							JsonNode batteryNode = messageObject.get("battery");
 
 							if (batteryNode != null) {
 								int batteryLevel = batteryNode.asInt();
+								System.out.println("Device is battery powered - level: " + batteryLevel);
 								
 								recordBatteryLevelForDevice(zigbeeDevice, batteryLevel);
 							}
