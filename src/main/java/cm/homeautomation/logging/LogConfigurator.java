@@ -27,7 +27,12 @@ public class LogConfigurator {
 		final LoggerContext context = (org.apache.logging.log4j.core.LoggerContext) LogManager.getContext(false);
 		final File file = new File(loggingFile);
 
-		// this will force a reconfiguration
-		context.setConfigLocation(file.toURI());
+		if (file.exists()) {
+
+			// this will force a reconfiguration
+			context.setConfigLocation(file.toURI());
+		}
+
 	}
+
 }
