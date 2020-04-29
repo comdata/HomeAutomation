@@ -22,4 +22,13 @@ public class ZigbeeLight {
 
 	int brightness = 0;
 
+	float x;
+	float y;
+
+	public ZigbeeLight(String ieeeAddr, boolean powerOnState, int brightness) {
+		this.ieeeAddr = ieeeAddr;
+		this.powerOnState = powerOnState;
+		this.brightness = brightness;
+
+	}
 }

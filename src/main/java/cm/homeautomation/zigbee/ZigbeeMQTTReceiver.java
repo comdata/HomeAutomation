@@ -1,5 +1,6 @@
 package cm.homeautomation.zigbee;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -310,6 +311,15 @@ public class ZigbeeMQTTReceiver {
 
 		// TODO map generic light
 		existingLight.setBrightness(brightness);
+		
+		JsonNode xyNode = messageObject.get("xy");
+		
+		if (xyNode != null && xyNode.isArray()) {
+			List<JsonNode> xyNodeList = Arrays.asList(xyNode);
+
+			existingLight.setX(Float.parseFloat(Double.toString(xyNodeList.get(0).asDouble())));
+			existingLight.setY(Float.parseFloat(Double.toString(xyNodeList.get(1).asDouble())));
+		}
 
 		em.getTransaction().begin();
 
