@@ -61,7 +61,7 @@ public class ZigbeeMQTTReceiver {
 
 			// do zigbee magic
 			String message = event.getMessage();
-			LogManager.getLogger(this.getClass()).error("Got Zigbee message: " + message);
+			LogManager.getLogger(this.getClass()).debug("Got Zigbee message: " + message);
 
 			if (topic.equals(zigbeeMqttTopic + "/bridge/config/devices")) {
 				handleDeviceMessage(message);
@@ -82,13 +82,13 @@ public class ZigbeeMQTTReceiver {
 						JsonNode messageObject = mapper.readTree(message);
 
 						if ("Battery".equals(zigbeeDevice.getPowerSource())) {
-							LogManager.getLogger(this.getClass()).error("Device is battery powered");
+							LogManager.getLogger(this.getClass()).debug("Device is battery powered");
 							JsonNode batteryNode = messageObject.get("battery");
 
 							if (batteryNode != null) {
 								int batteryLevel = batteryNode.asInt();
 								LogManager.getLogger(this.getClass())
-										.error("Device is battery powered - level: " + batteryLevel);
+										.debug("Device is battery powered - level: " + batteryLevel);
 								
 								recordBatteryLevelForDevice(zigbeeDevice, batteryLevel);
 							}
@@ -362,7 +362,7 @@ public class ZigbeeMQTTReceiver {
 			em.merge(existingRemote);
 			em.getTransaction().commit();
 
-			LogManager.getLogger(this.getClass()).error("remote control: " + message);
+			LogManager.getLogger(this.getClass()).debug("remote control: " + message);
 
 		}
 

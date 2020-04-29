@@ -63,7 +63,7 @@ public class FHEMDeviceDataReceiver {
 			}
 		} else {
 			LogManager.getLogger(FHEMDeviceDataReceiver.class)
-					.error("referenced id is null for FHEM device: " + fhemDevice.getId());
+					.debug("referenced id is null for FHEM device: " + fhemDevice.getId());
 		}
 
 	}

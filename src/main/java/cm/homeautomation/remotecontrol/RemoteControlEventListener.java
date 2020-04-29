@@ -33,7 +33,7 @@ public class RemoteControlEventListener {
 		String technicalId = event.getTechnicalId();
 		EntityManager em = EntityManagerService.getManager();
 
-		LogManager.getLogger(this.getClass()).error("got remote event: " + name + "/" + technicalId);
+		LogManager.getLogger(this.getClass()).debug("got remote event: " + name + "/" + technicalId);
 
 		List<RemoteControl> remoteList = em
 				.createQuery("select rc from RemoteControl rc where rc.technicalId=:technicalId",
@@ -50,13 +50,13 @@ public class RemoteControlEventListener {
 						List<RemoteControlGroupMember> members = remoteControlGroup.getMembers();
 
 						LogManager.getLogger(this.getClass())
-								.error("found remote group: " + remoteControlGroup.getName());
+								.debug("found remote group: " + remoteControlGroup.getName());
 
 						for (RemoteControlGroupMember remoteControlGroupMember : members) {
 
 							final Runnable controlMemberThread = () -> {
 								LogManager.getLogger(this.getClass())
-										.error("found remote member: " + remoteControl.getName());
+										.debug("found remote member: " + remoteControl.getName());
 								switch (remoteControlGroupMember.getType()) {
 								case LIGHT:
 									LightService.getInstance().dimLight(remoteControlGroupMember.getExternalId(),
@@ -97,11 +97,11 @@ public class RemoteControlEventListener {
 						List<RemoteControlGroupMember> members = remoteControlGroup.getMembers();
 
 						LogManager.getLogger(this.getClass())
-								.error("found remote group: " + remoteControlGroup.getName());
+								.debug("found remote group: " + remoteControlGroup.getName());
 
 						for (RemoteControlGroupMember remoteControlGroupMember : members) {
 							LogManager.getLogger(this.getClass())
-									.error("found remote member: " + remoteControl.getName());
+									.debug("found remote member: " + remoteControl.getName());
 							switch (remoteControlGroupMember.getType()) {
 							case LIGHT:
 								LightService.getInstance().setLightState(remoteControlGroupMember.getExternalId(),

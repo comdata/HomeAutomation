@@ -34,7 +34,7 @@ public class MQTTTopicSensorReceiver {
 		String technicalType = "mqtt://" + topicEvent.getTopic();
 		try {
 			
-			LogManager.getLogger(this.getClass()).error("looking for technicaltype: "+technicalType);
+			LogManager.getLogger(this.getClass()).debug("looking for technicaltype: " + technicalType);
 
 			List<Sensor> sensors = em
 					.createQuery("select s from Sensor s where s.sensorTechnicalType=:technicalType", Sensor.class)
@@ -45,7 +45,8 @@ public class MQTTTopicSensorReceiver {
 				try {
 					
 					Sensor sensor=sensors.get(0);
-					LogManager.getLogger(this.getClass()).error("got sensors: "+sensor.getId()+" name:"+sensor.getSensorName());
+					LogManager.getLogger(this.getClass())
+							.debug("got sensors: " + sensor.getId() + " name:" + sensor.getSensorName());
 					
 					Sensors.getInstance().saveSensorData(sensor.getId(), topicEvent.getMessage());
 				} catch (SensorDataLimitViolationException e) {
@@ -53,7 +54,7 @@ public class MQTTTopicSensorReceiver {
 					log.error(e);
 				}
 			} else {
-				LogManager.getLogger(this.getClass()).error("list is empty for technicaltype: "+technicalType);
+				LogManager.getLogger(this.getClass()).debug("list is empty for technicaltype: " + technicalType);
 
 			}
 

@@ -414,9 +414,9 @@ public class Sensors extends BaseService {
 			Long sensorId = request.getSensorId();
 			if (sensorsList.containsKey(sensorId)) {
 				sensor = sensorsList.get(sensorId);
-				LogManager.getLogger(this.getClass()).error("got sensor from cache");
+				LogManager.getLogger(this.getClass()).debug("got sensor from cache");
 			} else {
-				LogManager.getLogger(this.getClass()).error("looking for sensorId: "+sensorId);
+				LogManager.getLogger(this.getClass()).debug("looking for sensorId: " + sensorId);
 
 				sensor = em.createQuery("select s from Sensor s where s.id=:sensorId", Sensor.class)
 						.setParameter("sensorId", sensorId).getSingleResult();
@@ -435,7 +435,7 @@ public class Sensors extends BaseService {
 				sensor = sensors.get(0);
 			} else {
 				LogManager.getLogger(this.getClass())
-						.error("found no sensor for technical type: " + sensorTechnicalType);
+						.debug("found no sensor for technical type: " + sensorTechnicalType);
 
 				em.getTransaction().begin();
 
@@ -464,7 +464,7 @@ public class Sensors extends BaseService {
 		}
 
 		if (sensor != null) {
-			LogManager.getLogger(this.getClass()).error("found a sensor. id: "+ sensor.getId());
+			LogManager.getLogger(this.getClass()).debug("found a sensor. id: " + sensor.getId());
 			em.getTransaction().begin();
 
 			final SensorData sensorData;
@@ -501,7 +501,8 @@ public class Sensors extends BaseService {
 					double minValue = Double.parseDouble(sensor.getMinValue());
 					if (valueAsDouble < minValue) {
 						LogManager.getLogger(this.getClass())
-								.error("Sensor ID: " + sensor.getId() + " Name: " + sensor.getSensorName() + " Value: "
+								.debug("Sensor ID: " + sensor.getId() + " Name: " + sensor.getSensorName()
+										+ " Value: "
 										+ valueAsDouble + " less than minimum: " + minValue);
 						throw new SensorDataLimitViolationException();
 					}
@@ -512,7 +513,8 @@ public class Sensors extends BaseService {
 					double maxValue = Double.parseDouble(sensor.getMaxValue());
 					if (valueAsDouble > maxValue) {
 						LogManager.getLogger(this.getClass())
-								.error("Sensor ID: " + sensor.getId() + " Name: " + sensor.getSensorName() + " Value: "
+								.debug("Sensor ID: " + sensor.getId() + " Name: " + sensor.getSensorName()
+										+ " Value: "
 										+ valueAsDouble + " more than maxmum: " + maxValue);
 						throw new SensorDataLimitViolationException();
 					}
