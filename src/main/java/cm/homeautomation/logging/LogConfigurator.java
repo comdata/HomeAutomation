@@ -28,11 +28,11 @@ public class LogConfigurator {
 		final File file = new File(loggingFile);
 
 		if (file.exists()) {
-
 			// this will force a reconfiguration
 			context.setConfigLocation(file.toURI());
+		} else {
+			System.out.println();
 		}
-
 	}
 
 }
