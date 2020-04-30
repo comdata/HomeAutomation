@@ -12,13 +12,13 @@
 		<Logger name="cm.homeautomation" additivity="false"
 			level="error">
 			<priority value="ERROR" />
-			<AppenderRef ref="databaseAppender" />
+			<!-- <AppenderRef ref="databaseAppender" /> -->
 			<AppenderRef ref="STDOUT" />
 		</Logger>
 
 		<Root level="error">
 			<priority value="ERROR" />
-			<AppenderRef ref="databaseAppender" />
+			<!--<AppenderRef ref="databaseAppender" />-->
 			<AppenderRef ref="STDOUT" />
 		</Root>
 	</Loggers>
