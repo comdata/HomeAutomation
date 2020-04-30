@@ -1,7 +1,9 @@
 package cm.homeautomation.logging;
 
 import java.io.File;
+import java.net.URI;
 
+import org.apache.log4j.xml.DOMConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 
@@ -29,7 +31,11 @@ public class LogConfigurator {
 
 		if (file.exists()) {
 			// this will force a reconfiguration
-			context.setConfigLocation(file.toURI());
+			URI log4jURI = file.toURI();
+			context.setConfigLocation(log4jURI);
+			
+			DOMConfigurator.configureAndWatch(loggingFile, 60 * 1000);
+			
 		} else {
 			System.out.println();
 		}

@@ -59,6 +59,7 @@
 		<class>cm.homeautomation.entities.HueDevice</class>
 		<class>cm.homeautomation.entities.ZigbeeLight</class>
 		<class>cm.homeautomation.entities.ZigbeeMotionSensor</class>
+		<class>cm.homeautomation.entities.LoggingEntity</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver"
 				value="org.mariadb.jdbc.Driver" />
