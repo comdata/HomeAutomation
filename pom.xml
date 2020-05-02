@@ -35,7 +35,7 @@
 		<ratelimitj-inmemory.version>0.6.0</ratelimitj-inmemory.version>
 		<surefire-plugin.version>2.4.3</surefire-plugin.version>
 		<telegrambots.version>2.4.2</telegrambots.version>
-		<log4j.version>2.13.1</log4j.version>
+		<log4j.version>2.13.2</log4j.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
