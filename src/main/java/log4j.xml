@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
 	<Appenders>
-		<JPA name="databaseAppender" persistenceUnitName="HA"
-			entityClassName="cm.homeautomation.entities.LoggingEntity" />
+<!-- 		<JPA name="databaseAppender" persistenceUnitName="HA"
+			entityClassName="cm.homeautomation.entities.LoggingEntity" /> -->
 		<Console name="STDOUT">
 			<PatternLayout pattern="%m MDC%X%n" />
 		</Console>
