@@ -48,14 +48,20 @@ public class OverviewService extends BaseService {
 				if (sensor.isShowData()) {
 					final SensorData data = sensorData.get(sensor);
 
-					if ("TEMPERATURE".equals(sensor.getSensorType()) && data.getValue() != null
-							&& Float.parseFloat(data.getValue().replace(',', '.')) <= 50) {
-						temperature = data.getValue();
+					String value = data.getValue();
+
+					if (value != null && value.contains(" ")) {
+						value = value.split(" ")[0];
+					}
+
+					if ("TEMPERATURE".equals(sensor.getSensorType()) && value != null
+							&& Float.parseFloat(value.replace(',', '.')) <= 50) {
+						temperature = value;
 						sensorDate = data.getValidThru();
 					}
-					if ("HUMIDITY".equals(sensor.getSensorType()) && data.getValue() != null
-							&& Float.parseFloat(data.getValue().replace(',', '.')) <= 100) {
-						humidity = data.getValue();
+					if ("HUMIDITY".equals(sensor.getSensorType()) && value != null
+							&& Float.parseFloat(value.replace(',', '.')) <= 100) {
+						humidity = value;
 						sensorDate = data.getValidThru();
 					}
 				}
