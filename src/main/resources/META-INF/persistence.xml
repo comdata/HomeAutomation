@@ -88,7 +88,6 @@
 			<property name="eclipselink.jdbc.timeout" value="60" />
 			<property name="eclipselink.target-database" value="MySQL" />
 		</properties>
-
 	</persistence-unit>
 </persistence>
 
