@@ -96,19 +96,33 @@ public class HueInterface extends BaseService {
 
 			if (hueDevice != null) {
 
-				if (message.getXy() != null) {
-					System.out.println("Color infos:" + message.getXy()[0] + " - " + message.getXy()[1]);
-				}
 
 				HueDeviceType type = hueDevice.getType();
 				if (type != null) {
 					switch (type) {
 					case LIGHT:
-						LightService.getInstance().setLightState(hueDevice.getExternalId(),
-								("on".equals(message.getPayload()) ? LightStates.ON : LightStates.OFF));
 
 						if (!message.isOnOffCommand()) {
 							LightService.getInstance().dimLight(hueDevice.getExternalId(), message.getBrightness());
+						} else {
+							boolean isColor = false;
+							Float x = 0f;
+							Float y = 0f;
+							if (message.getXy() != null) {
+								x = message.getXy()[0];
+								y = message.getXy()[1];
+								System.out.println("Color infos:" + x + " - " + y);
+								isColor = true;
+							}
+
+							if (isColor) {
+								LightService.getInstance().setColor(hueDevice.getExternalId(), message.getBrightness(),
+										x, y);
+							} else {
+
+								LightService.getInstance().setLightState(hueDevice.getExternalId(),
+										("on".equals(message.getPayload()) ? LightStates.ON : LightStates.OFF));
+							}
 						}
 
 						break;
@@ -141,12 +155,12 @@ public class HueInterface extends BaseService {
 	}
 
 	public static void main(String[] args) throws JsonMappingException, JsonProcessingException {
-		 ObjectMapper mapper = new ObjectMapper();
-		 
-			String message = "{\"xy\": [0.24224, 0.4444]}";
-		 
-			HueEmulatorMessage readValue = mapper.readValue(message, HueEmulatorMessage.class);
-		 
-			System.out.println(readValue.getXy()[1]);
+		ObjectMapper mapper = new ObjectMapper();
+
+		String message = "{\"xy\": [0.24224, 0.4444]}";
+
+		HueEmulatorMessage readValue = mapper.readValue(message, HueEmulatorMessage.class);
+
+		System.out.println(readValue.getXy()[1]);
 	}
 }

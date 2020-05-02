@@ -19,6 +19,7 @@ import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DimmableLight;
 import cm.homeautomation.entities.MQTTSwitch;
+import cm.homeautomation.entities.RGBLight;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.ZigBeeDevice;
@@ -89,7 +90,7 @@ public class ZigbeeMQTTReceiver {
 								int batteryLevel = batteryNode.asInt();
 								LogManager.getLogger(this.getClass())
 										.debug("Device is battery powered - level: " + batteryLevel);
-								
+
 								recordBatteryLevelForDevice(zigbeeDevice, batteryLevel);
 							}
 						}
@@ -100,12 +101,16 @@ public class ZigbeeMQTTReceiver {
 								handleTradfriRemoteControl(message, zigbeeDevice, messageObject);
 							} else if (modelID.startsWith("TRADFRI bulb")) {
 								System.out.println("E14. " + message);
-								handleTradfriLight(message, zigbeeDevice, messageObject);
+								if ("TRADFRI bulb E27 CWS opal 600lm".equals(modelID)) {
+									handleTradfriLight(message, zigbeeDevice, messageObject, true);
+								} else {
+									handleTradfriLight(message, zigbeeDevice, messageObject, false);
+								}
 							} else if (modelID.startsWith("FLOALT panel")) {
 								System.out.println("FLOALT. " + message);
-								handleTradfriLight(message, zigbeeDevice, messageObject);
+								handleTradfriLight(message, zigbeeDevice, messageObject, false);
 							} else if (modelID.startsWith("TRADFRI Driver")) {
-								handleTradfriLight(message, zigbeeDevice, messageObject);
+								handleTradfriLight(message, zigbeeDevice, messageObject, false);
 							} else if (modelID.startsWith("TRADFRI motion")) {
 								handleMotionSensor(message, zigbeeDevice, messageObject);
 							} else if (modelID.startsWith("TRADFRI control")) {
@@ -116,7 +121,7 @@ public class ZigbeeMQTTReceiver {
 
 						if (zigbeeDevice.getManufacturerID().equals("4416")) {
 							if (modelID.equals("LWB006")) {
-								handleTradfriLight(message, zigbeeDevice, messageObject);
+								handleTradfriLight(message, zigbeeDevice, messageObject, false);
 							}
 						}
 
@@ -146,12 +151,12 @@ public class ZigbeeMQTTReceiver {
 		EntityManager em = EntityManagerService.getManager();
 
 		List<Sensor> sensorList = em
-				.createQuery(
-				"select s from Sensor s where s.externalId=:externalId and s.sensorType=:sensorType",
-				Sensor.class).setParameter("externalId", zigbeeDevice.getIeeeAddr())
-				.setParameter("sensorType", "battery").getResultList();
-		
-		if (sensorList==null || sensorList.isEmpty()) {
+				.createQuery("select s from Sensor s where s.externalId=:externalId and s.sensorType=:sensorType",
+						Sensor.class)
+				.setParameter("externalId", zigbeeDevice.getIeeeAddr()).setParameter("sensorType", "battery")
+				.getResultList();
+
+		if (sensorList == null || sensorList.isEmpty()) {
 			Sensor sensor = new Sensor();
 
 			sensor.setExternalId(zigbeeDevice.getIeeeAddr());
@@ -269,7 +274,7 @@ public class ZigbeeMQTTReceiver {
 		}
 	}
 
-	private void handleTradfriLight(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
+	private void handleTradfriLight(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject, boolean color) {
 		int brightness = 0;
 
 		JsonNode brightnessNode = messageObject.get("brightness");
@@ -289,31 +294,42 @@ public class ZigbeeMQTTReceiver {
 		if (existingLight == null) {
 			existingLight = new ZigbeeLight(zigbeeDevice.getIeeeAddr(), false, brightness);
 
-			DimmableLight dimmableLight = new DimmableLight();
+			DimmableLight newLight = null;
 
-			dimmableLight.setName(zigbeeDevice.getFriendlyName());
-			dimmableLight.setExternalId(zigbeeDevice.getIeeeAddr());
-			dimmableLight.setLightType("ZIGBEE");
-			dimmableLight.setMaximumValue(254);
-			dimmableLight.setMinimumValue(0);
-			dimmableLight.setMqttPowerOnTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
+			if (color) {
+				RGBLight rgbLight = new RGBLight();
+				newLight = rgbLight;
 
-			dimmableLight.setMqttPowerOffTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
+				rgbLight.setMqttColorTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
+				rgbLight.setMqttColorMessage(
+						"{\"state\": \"ON\", \"brightness\": {DIMVALUE}, \"xy\": [{colorX}, {colorY}]}");
+			} else {
+				newLight = new DimmableLight();
+			}
 
-			dimmableLight.setMqttPowerOnMessage("{\"state\": \"ON\", \"brightness\": {DIMVALUE}}");
-			dimmableLight.setMqttPowerOffMessage("{\"state\": \"OFF\"}");
+			newLight.setName(zigbeeDevice.getFriendlyName());
+			newLight.setExternalId(zigbeeDevice.getIeeeAddr());
+			newLight.setLightType("ZIGBEE");
+			newLight.setMaximumValue(254);
+			newLight.setMinimumValue(0);
+			newLight.setMqttPowerOnTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
+
+			newLight.setMqttPowerOffTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
+
+			newLight.setMqttPowerOnMessage("{\"state\": \"ON\", \"brightness\": {DIMVALUE}}");
+			newLight.setMqttPowerOffMessage("{\"state\": \"OFF\"}");
 
 			em.getTransaction().begin();
-			em.persist(dimmableLight);
+			em.persist(newLight);
 			em.persist(existingLight);
 			em.getTransaction().commit();
 		}
 
 		// TODO map generic light
 		existingLight.setBrightness(brightness);
-		
+
 		JsonNode xyNode = messageObject.get("xy");
-		
+
 		if (xyNode != null && xyNode.isArray()) {
 			List<JsonNode> xyNodeList = Arrays.asList(xyNode);
 

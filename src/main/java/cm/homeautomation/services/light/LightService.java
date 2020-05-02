@@ -235,7 +235,7 @@ public class LightService extends BaseService {
 	@GET
 	@Path("color/{lightId}/{hex}")
 	public GenericStatus setColor(@PathParam(LIGHT_ID) final long lightId, @PathParam("hex") final String hex) {
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 		em.getTransaction().begin();
 		final Light light = (Light) em.createQuery("select l from Light l where l.id=:lightId")
 				.setParameter(LIGHT_ID, lightId).getSingleResult();
@@ -263,6 +263,24 @@ public class LightService extends BaseService {
 		em.getTransaction().commit();
 
 		return new GenericStatus(true);
+	}
+
+	public void setColor(long lightId, int dimValue, Float x, Float y) {
+		final EntityManager em = EntityManagerService.getManager();
+
+		RGBLight rgbLight = em.find(RGBLight.class, lightId);
+
+		if (rgbLight != null) {
+
+			if (rgbLight.getMqttColorMessage() != null && rgbLight.getMqttColorTopic() != null) {
+
+				String topic = rgbLight.getMqttColorTopic();
+				String messagePayload = rgbLight.getMqttColorMessage().replace("{DIMVALUE}",
+						Integer.toString(dimValue)).replace("{colorX}", x.toString()).replace("{colorY}", y.toString());
+				MQTTSender.sendMQTTMessage(topic, messagePayload);
+			}
+		}
+
 	}
 
 }
