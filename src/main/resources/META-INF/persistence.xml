@@ -9,6 +9,14 @@
 
 		<jta-data-source>HA</jta-data-source>
 		<mapping-file>custom-orm.xml</mapping-file>
+		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.ContextMapAttributeConverter</class>
+		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.ContextMapJsonAttributeConverter</class>
+		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.ContextStackAttributeConverter</class>
+		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.ContextStackJsonAttributeConverter</class>
+		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.MarkerAttributeConverter</class>
+		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.MessageAttributeConverter</class>
+		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.StackTraceElementAttributeConverter</class>
+		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.ThrowableAttributeConverter</class>
 		<class>cm.homeautomation.entities.NetworkDevice</class>
 		<class>cm.homeautomation.entities.Device</class>
 		<class>cm.homeautomation.entities.Room</class>
