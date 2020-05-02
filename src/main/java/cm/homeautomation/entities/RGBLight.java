@@ -2,6 +2,8 @@ package cm.homeautomation.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,6 +26,9 @@ public class RGBLight extends DimmableColorLight {
 
 	@Column(name = "WHITE")
 	private int white;
+
+	@Enumerated(EnumType.STRING)
+	private RGBLightType rgbLightType;
 
 	private Float x;
 	private Float y;
