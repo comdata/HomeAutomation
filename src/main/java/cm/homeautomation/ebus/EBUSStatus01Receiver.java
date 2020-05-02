@@ -50,9 +50,6 @@ public class EBUSStatus01Receiver {
 			EBusMessageEvent messageEvent = (EBusMessageEvent) eventObject.getData();
 			Sensors sensorsInstance = Sensors.getInstance();
 			
-			System.out.println("EBUS topic "+ messageEvent.getTopic());
-			System.out.println("EBUS message content: "+messageEvent.getMessageContent());
-
 			if (EBUSD_BAI_STATUS01.equals(messageEvent.getTopic())) {
 				String[] technicalNames = { HEATINGTEMP, RETURNTEMP, OUTSIDETEMP, WARMWATERTEMP, STORAGETEMP,
 						PUMPSTATE };
@@ -75,17 +72,17 @@ public class EBUSStatus01Receiver {
 
 					if (sensorsInstance != null) {
 						try {
-							log.error(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
+							log.debug(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
 							sensorsInstance.saveSensorData(sensorDataSaveRequest);
 						} catch (NoResultException e) {
-							log.error(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
+							log.debug(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
 
 						} catch (Exception e) {
 							log.error(ERROR_SAVING_EBUS_DATA, e);
 
 						}
 					} else {
-						log.error(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
+						log.debug(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
 
 					}
 				}
@@ -111,17 +108,17 @@ public class EBUSStatus01Receiver {
 
 					if (sensorsInstance != null) {
 						try {
-							log.error(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
+							log.debug(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
 							sensorsInstance.saveSensorData(sensorDataSaveRequest);
 						} catch (NoResultException e) {
-							log.error(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
+							log.debug(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
 
 						} catch (Exception e) {
 							log.error(ERROR_SAVING_EBUS_DATA, e);
 
 						}
 					} else {
-						log.error(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
+						log.debug(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
 
 					}
 				}
@@ -146,17 +143,17 @@ public class EBUSStatus01Receiver {
 
 					if (sensorsInstance != null) {
 						try {
-							log.error(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
+							log.debug(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
 							sensorsInstance.saveSensorData(sensorDataSaveRequest);
 						} catch (NoResultException e) {
-							log.error(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
+							log.debug(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
 
 						} catch (Exception e) {
 							log.error(ERROR_SAVING_EBUS_DATA, e);
 
 						}
 					} else {
-						log.error(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
+						log.debug(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
 
 					}
 				}
@@ -181,17 +178,17 @@ public class EBUSStatus01Receiver {
 
 					if (sensorsInstance != null) {
 						try {
-							log.error(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
+							log.debug(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
 							sensorsInstance.saveSensorData(sensorDataSaveRequest);
 						} catch (NoResultException e) {
-							log.error(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
+							log.debug(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
 
 						} catch (Exception e) {
 							log.error(ERROR_SAVING_EBUS_DATA, e);
 
 						}
 					} else {
-						log.error(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
+						log.debug(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
 
 					}
 				}
@@ -216,23 +213,23 @@ public class EBUSStatus01Receiver {
 
 					if (sensorsInstance != null) {
 						try {
-							log.error(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
+							log.debug(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
 							sensorsInstance.saveSensorData(sensorDataSaveRequest);
 						} catch (NoResultException e) {
-							log.error(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
+							log.debug(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
 
 						} catch (Exception e) {
 							log.error(ERROR_SAVING_EBUS_DATA, e);
 
 						}
 					} else {
-						log.error(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
+						log.debug(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
 
 					}
 				}
 			}
 		} else {
-			log.error(EMPTY_EVENT_RECEIVED);
+			log.debug(EMPTY_EVENT_RECEIVED);
 		}
 	}
 }

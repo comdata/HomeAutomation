@@ -526,24 +526,24 @@ public class Sensors extends BaseService {
 			final boolean mergeExisting = mergeExistingData(existingSensorData, requestSensorData, isNumeric);
 
 			if (mergeExisting && existingSensorData != null) {
-				LogManager.getLogger(this.getClass()).error("merging data");
+				LogManager.getLogger(this.getClass()).debug("merging data");
 				existingSensorData.setValidThru(new Date());
 				em.merge(existingSensorData);
-				LogManager.getLogger(this.getClass()).error("Committing data: " + existingSensorData.getValue());
+				LogManager.getLogger(this.getClass()).debug("Committing data: " + existingSensorData.getValue());
 			} else {
 				if ((existingSensorData != null) && (requestSensorData.getDateTime() != null)) {
 					existingSensorData.setValidThru(new Date(requestSensorData.getDateTime().getTime() - 1000));
 					em.merge(existingSensorData);
 				}
 
-				LogManager.getLogger(this.getClass()).error("saving new data point");
+				LogManager.getLogger(this.getClass()).debug("saving new data point");
 				sensorData = requestSensorData;
 				sensorData.setSensor(sensor);
 				em.persist(sensorData);
 				sensorDataMap.put(sensorId, sensorData);
 
 				EventBusService.getEventBus().post(new EventObject(sensorData));
-				LogManager.getLogger(this.getClass()).error("Committing data: " + sensorData.getValue());
+				LogManager.getLogger(this.getClass()).debug("Committing data: " + sensorData.getValue());
 			}
 			
 			

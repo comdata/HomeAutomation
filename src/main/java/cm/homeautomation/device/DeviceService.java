@@ -36,7 +36,7 @@ public class DeviceService {
 			}
 			return null;
 		} catch (final NoResultException e) {
-			LogManager.getLogger(DeviceService.class).error(MAC + mac, e);
+			LogManager.getLogger(DeviceService.class).debug(MAC + mac, e);
 			return null;
 		}
 	}
@@ -46,7 +46,7 @@ public class DeviceService {
 			final Device device = getDeviceForMac(mac);
 
 			if (device == null) {
-				LogManager.getLogger(DeviceService.class).error("No Device for mac found: {}",  mac);
+				LogManager.getLogger(DeviceService.class).debug("No Device for mac found: {}", mac);
 				return null;
 			}
 
