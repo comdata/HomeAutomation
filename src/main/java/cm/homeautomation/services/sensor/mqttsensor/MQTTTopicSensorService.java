@@ -53,7 +53,7 @@ public class MQTTTopicSensorService extends BaseService {
 
 		if (existingSensors == null || existingSensors.isEmpty()) {
 			Sensor sensor = Sensor.builder().sensorTechnicalType(sensorTechnicalType).room(room).sensorName(sensorName)
-					.showData(true).deadbandPercent(0).build();
+					.showData(true).deadbandPercent(0).withReportingFactor(1).build();
 
 			em.persist(sensor);
 
