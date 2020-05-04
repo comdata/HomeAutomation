@@ -124,6 +124,7 @@ public class PowerMeterSensor {
 				final PowerMeterPing powerMeterPing = new PowerMeterPing();
 
 				powerMeterPing.setPowermeter(powerData.getPowermeter());
+				powerMeterPing.setPowerCounter(powerData.getPowermeter());
 				powerMeterPing.setTimestamp(new Date());
 
 				em.getTransaction().begin();
@@ -176,31 +177,31 @@ public class PowerMeterSensor {
 		final EntityManager em = EntityManagerService.getNewManager();
 
 		final BigDecimal oneMinute = runQueryForBigDecimal(em,
-				"select sum(POWERCOUNTER)/1000*60 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 1 MINUTE;");
+				"select sum(POWERCOUNTER)/10000*60 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 1 MINUTE;");
 
 		final BigDecimal oneMinuteTrend = runQueryForBigDecimal(em,
-				"select sum(POWERCOUNTER)/1000*60 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 2 MINUTE and TIMESTAMP <= now() - INTERVAL 1 MINUTE;");
+				"select sum(POWERCOUNTER)/10000*60 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 2 MINUTE and TIMESTAMP <= now() - INTERVAL 1 MINUTE;");
 
 		final BigDecimal fiveMinute = runQueryForBigDecimal(em,
-				"select sum(POWERCOUNTER)/1000*12 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 5 MINUTE;");
+				"select sum(POWERCOUNTER)/10000*12 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 5 MINUTE;");
 
 		final BigDecimal fiveMinuteTrend = runQueryForBigDecimal(em,
-				"select sum(POWERCOUNTER)/1000*12 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 6 MINUTE and TIMESTAMP <= now() - INTERVAL 1 MINUTE;");
+				"select sum(POWERCOUNTER)/10000*12 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 6 MINUTE and TIMESTAMP <= now() - INTERVAL 1 MINUTE;");
 
 		final BigDecimal sixtyMinute = runQueryForBigDecimal(em,
-				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 60 MINUTE;");
+				"select sum(POWERCOUNTER)/10000 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 60 MINUTE;");
 
 		final BigDecimal sixtyMinuteTrend = runQueryForBigDecimal(em,
-				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 61 MINUTE and TIMESTAMP <= now() - INTERVAL 1 MINUTE;;");
+				"select sum(POWERCOUNTER)/10000 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 61 MINUTE and TIMESTAMP <= now() - INTERVAL 1 MINUTE;;");
 
 		final BigDecimal today = runQueryForBigDecimal(em,
-				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where date(TIMESTAMP)=CURDATE() ;");
+				"select sum(POWERCOUNTER)/10000 from POWERMETERPING where date(TIMESTAMP)=CURDATE() ;");
 
 		final BigDecimal yesterday = runQueryForBigDecimal(em,
-				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where date(TIMESTAMP)=date(now()- interval 1 day);");
+				"select sum(POWERCOUNTER)/10000 from POWERMETERPING where date(TIMESTAMP)=date(now()- interval 1 day);");
 
 		final BigDecimal lastSevenDays = runQueryForBigDecimal(em,
-				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 8 day) and date(TIMESTAMP)<=date(now()- interval 1 day);");
+				"select sum(POWERCOUNTER)/10000 from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 8 day) and date(TIMESTAMP)<=date(now()- interval 1 day);");
 
 		final BigDecimal lastEightDaysBeforeTillYesterday = runQueryForBigDecimal(em,
 				"select sum(POWERCOUNTER)/1000 from POWERMETERPING where date(TIMESTAMP)>=date(now()- interval 8 day) and date(TIMESTAMP)<CURDATE();");
@@ -226,7 +227,7 @@ public class PowerMeterSensor {
 	
 	public static void main(String[] args) throws NoClassInformationContainedException {
 		PowerMeterSensor powerMeterSensor = new PowerMeterSensor();
-		JSONSensorDataReceiver.receiveSensorData("{\"@class\":\"cm.homeautomation.sensors.PowerMeterData\", \"powermeter\": 1024}");
+		JSONSensorDataReceiver.receiveSensorData("{\"@c\":\".PowerMeterData\", \"powermeter\": 122.00}");
 	}
 
 }
