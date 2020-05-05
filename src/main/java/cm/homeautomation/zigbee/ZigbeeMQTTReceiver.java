@@ -128,6 +128,8 @@ public class ZigbeeMQTTReceiver {
 						if (zigbeeDevice.getManufacturerID().equals("4151")) {
 							if (modelID.equals("lumi.sensor_motion.aq2")) {
 								handleMotionSensor(message, zigbeeDevice, messageObject);
+							} else if (modelID.equals("lumi.sensor_wleak.aq1")) {
+								handleWaterSensor(message, zigbeeDevice, messageObject);
 							}
 						}
 
@@ -140,6 +142,42 @@ public class ZigbeeMQTTReceiver {
 						updateDeviceList();
 					}
 				}
+			}
+		}
+
+	}
+
+	private void handleWaterSensor(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
+		JsonNode leakNode = messageObject.get("leak");
+
+		EntityManager em = EntityManagerService.getManager();
+
+		if (leakNode != null) {
+
+			boolean leakNodeBoolean = leakNode.asBoolean();
+
+			String ieeeAddr = zigbeeDevice.getIeeeAddr();
+			ZigbeeWaterSensor existingSensor = em.find(ZigbeeWaterSensor.class, ieeeAddr);
+
+			if (existingSensor == null) {
+				existingSensor = new ZigbeeWaterSensor(zigbeeDevice.getIeeeAddr(), leakNodeBoolean);
+
+				em.getTransaction().begin();
+
+				em.persist(existingSensor);
+				em.getTransaction().commit();
+			}
+
+			existingSensor.setLeakDetected(leakNodeBoolean);
+
+			em.getTransaction().begin();
+
+			em.merge(existingSensor);
+			em.getTransaction().commit();
+
+			if (leakNodeBoolean) {
+				WaterLeakEvent waterLeakEvent = WaterLeakEvent.builder().device(zigbeeDevice.getFriendlyName()).build();
+				EventBusService.getEventBus().post(waterLeakEvent);
 			}
 		}
 
