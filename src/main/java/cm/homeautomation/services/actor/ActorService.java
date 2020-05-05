@@ -105,7 +105,11 @@ public class ActorService extends BaseService implements MqttCallback {
 				} else {
 
 					if (singleSwitch.getHouseCode() != null) {
-						sendMQTTMessage(actorMessage);
+						// sendMQTTMessage(actorMessage);
+
+						MQTTSender.sendMQTTMessage("ESP_RC/cmd",
+								"RC," + ("1".equals(actorMessage.getStatus()) ? "ON" : "OFF") + "="
+										+ actorMessage.getHouseCode().trim() + actorMessage.getSwitchNo().trim());
 					}
 
 					if (singleSwitch.getSwitchSetUrl() != null) {
