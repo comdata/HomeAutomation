@@ -12,16 +12,18 @@ import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sap.olingo.jpa.metadata.core.edm.annotation.EdmIgnore;
+
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 public class Camera {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    @Setter
+
     private Long id;
 
     @JsonBackReference("room")
@@ -33,19 +35,16 @@ public class Camera {
     @Column(nullable = false, unique = true)
     private String cameraName;
 
-    @Getter
-    @Setter
     private String icon;
 
-    @Getter
-    @Setter
     private String stream;
+
+	private String internalStream;
+
     @XmlTransient
     @JsonIgnore
     private byte[] imageSnapshot;
 
-    @Getter
-    @Setter
     private boolean enabled = true;
 
     public String getCameraName() {

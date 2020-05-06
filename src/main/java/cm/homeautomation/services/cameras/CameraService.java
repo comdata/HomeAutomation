@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Date;
@@ -17,9 +18,15 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.LogManager;
 
 import cm.homeautomation.configuration.ConfigurationService;
@@ -39,8 +46,7 @@ public class CameraService extends BaseService {
 		EntityManager em = EntityManagerService.getManager();
 
 		@SuppressWarnings("unchecked")
-		List<Camera> resultList = (List<Camera>) em.createQuery("select c from Camera c where c.enabled=true")
-				.getResultList();
+		List<Camera> resultList = em.createQuery("select c from Camera c where c.enabled=true").getResultList();
 		return resultList;
 	}
 
@@ -172,6 +178,44 @@ public class CameraService extends BaseService {
 		} catch (IOException | RuntimeException e) {
 			LogManager.getLogger(CameraService.class).error("loading the 'no image' image failed.", e);
 		}
+	}
+
+	@GET
+	@Produces(MediaType.WILDCARD)
+	@Path("/stream/{id}")
+	public StreamingOutput getStream(@PathParam("id") Long id) {
+		return new StreamingOutput() {
+			@Override
+			public void write(OutputStream output) throws IOException, WebApplicationException {
+
+				EntityManager em = EntityManagerService.getManager();
+
+				Camera camera = em.find(Camera.class, id);
+
+				if (camera != null && camera.getInternalStream() != null && !camera.getInternalStream().isEmpty()) {
+					String uri = camera.getInternalStream();
+
+					HttpClient proxy = HttpClientBuilder.create().build();
+
+					HttpGet proxyMethod = new HttpGet(uri);
+
+					HttpResponse httpResponse = proxy.execute(proxyMethod);
+
+					write(httpResponse.getEntity().getContent(), output);
+
+				}
+			}
+
+			private void write(final InputStream inputStream, final OutputStream outputStream) throws IOException {
+				int b;
+				while ((b = inputStream.read()) != -1) {
+					outputStream.write(b);
+				}
+
+				outputStream.flush();
+			}
+
+		};
 	}
 
 }
