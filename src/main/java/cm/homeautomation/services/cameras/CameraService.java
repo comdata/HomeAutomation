@@ -181,8 +181,8 @@ public class CameraService extends BaseService {
 	}
 
 	@GET
-	@Produces(MediaType.WILDCARD)
-	@Path("/stream/{id}")
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("stream/{id}")
 	public StreamingOutput getStream(@PathParam("id") Long id) {
 		return new StreamingOutput() {
 			@Override
