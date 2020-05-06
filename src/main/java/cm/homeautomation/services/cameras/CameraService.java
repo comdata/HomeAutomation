@@ -181,10 +181,9 @@ public class CameraService extends BaseService {
 	}
 
 	@GET
-	@Produces(MediaType.TEXT_PLAIN)
 	@Path("stream/{id}")
-	public StreamingOutput getStream(@PathParam("id") Long id) {
-		return new StreamingOutput() {
+	public Response getStream(@PathParam("id") Long id) {
+		StreamingOutput streamingOutput = new StreamingOutput() {
 			@Override
 			public void write(OutputStream output) throws IOException, WebApplicationException {
 
@@ -204,6 +203,8 @@ public class CameraService extends BaseService {
 					write(httpResponse.getEntity().getContent(), output);
 
 				}
+
+
 			}
 
 			private void write(final InputStream inputStream, final OutputStream outputStream) throws IOException {
@@ -216,6 +217,11 @@ public class CameraService extends BaseService {
 			}
 
 		};
+		return Response.ok(streamingOutput, MediaType
+				.valueOf(
+						"video/x-motion-jpeg"))
+				// .header("content-disposition", "attachment; filename = myfile.pdf")
+				.build();
 	}
 
 }
