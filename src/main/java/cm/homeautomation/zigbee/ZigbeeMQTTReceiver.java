@@ -226,6 +226,49 @@ public class ZigbeeMQTTReceiver {
 		}
 	}
 
+	private void recordIlluminanceLevelForDevice(ZigBeeDevice zigbeeDevice, int illuminance) {
+		// TODO Auto-generated method stub
+
+		EntityManager em = EntityManagerService.getManager();
+
+		List<Sensor> sensorList = em
+				.createQuery("select s from Sensor s where s.externalId=:externalId and s.sensorType=:sensorType",
+						Sensor.class)
+				.setParameter("externalId", zigbeeDevice.getIeeeAddr()).setParameter("sensorType", "illuminance")
+				.getResultList();
+
+		if (sensorList == null || sensorList.isEmpty()) {
+			Sensor sensor = new Sensor();
+
+			sensor.setExternalId(zigbeeDevice.getIeeeAddr());
+			sensor.setSensorName(zigbeeDevice.getFriendlyName() + " illuminance");
+			sensor.setSensorType("illuminance");
+			sensor.setShowData(true);
+
+			em.getTransaction().begin();
+			em.persist(sensor);
+			em.getTransaction().commit();
+
+			recordIlluminanceLevelForDevice(zigbeeDevice, illuminance);
+		} else {
+
+			SensorDataSaveRequest saveRequest = new SensorDataSaveRequest();
+
+			saveRequest.setSensorId(sensorList.get(0).getId());
+			SensorData sensorData = new SensorData();
+			sensorData.setSensor(sensorList.get(0));
+			sensorData.setValue(Integer.toString(illuminance));
+			sensorData.setDateTime(new Date());
+			saveRequest.setSensorData(sensorData);
+			try {
+				Sensors.getInstance().saveSensorData(saveRequest);
+			} catch (SensorDataLimitViolationException e) {
+				LogManager.getLogger(this.getClass()).error(e);
+			}
+
+		}
+	}
+
 	private void handlePowerSocket(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
 
 		EntityManager em = EntityManagerService.getManager();
@@ -309,6 +352,15 @@ public class ZigbeeMQTTReceiver {
 			motionDetectionEvent.setState(occupancyNodeBoolean);
 
 			EventBusService.getEventBus().post(motionDetectionEvent);
+		}
+
+		JsonNode illuminanceNode = messageObject.get("illuminance");
+
+		if (illuminanceNode != null) {
+			int illuminanceLevel = illuminanceNode.asInt();
+			LogManager.getLogger(this.getClass()).debug("illuminance level: " + illuminanceLevel);
+
+			recordIlluminanceLevelForDevice(zigbeeDevice, illuminanceLevel);
 		}
 	}
 
