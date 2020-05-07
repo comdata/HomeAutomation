@@ -16,6 +16,8 @@ import cm.homeautomation.entities.HueDeviceType;
 import cm.homeautomation.entities.Light;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.entities.WindowBlind;
+import cm.homeautomation.eventbus.EventBusService;
+import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.services.actor.ActorService;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
@@ -102,45 +104,17 @@ public class HueInterface extends BaseService {
 					switch (type) {
 					case LIGHT:
 
-						if (!message.isOnOffCommand()) {
-							LightService.getInstance().dimLight(hueDevice.getExternalId(), message.getBrightness());
-						} else {
-							boolean isColor = false;
-							Float x = 0f;
-							Float y = 0f;
-							if (message.getXy() != null) {
-								x = message.getXy()[0];
-								y = message.getXy()[1];
-								System.out.println("Color infos:" + x + " - " + y);
-								isColor = true;
-							}
-
-							if (isColor) {
-								LightService.getInstance().setColor(hueDevice.getExternalId(), message.getBrightness(),
-										x, y);
-							} else {
-
-								LightService.getInstance().setLightState(hueDevice.getExternalId(),
-										("on".equals(message.getPayload()) ? LightStates.ON : LightStates.OFF));
-							}
-						}
+						handleLight(message, hueDevice);
 
 						break;
 					case SWITCH:
-						ActorService.getInstance().pressSwitch(Long.toString(hueDevice.getExternalId()),
-								("on".equals(message.getPayload()) ? "ON" : "OFF"));
+						handleSwitch(message, hueDevice);
 						break;
 					case WINDOWBLIND:
-						String dimValue = "99";
-						if (!message.isOnOffCommand()) {
-							dimValue = Integer.toString(message.getBrightness());
-						}
-						System.out.println("Window Blind dim: " + dimValue);
-
-						new WindowBlindService().setDim(hueDevice.getExternalId(),
-								("on".equals(message.getPayload()) ? dimValue : "0"),
-								hueDevice.isGroupDevice() ? WindowBlind.ALL_AT_ONCE : WindowBlind.SINGLE,
-								(hueDevice.isGroupDevice() ? hueDevice.getRoom().getId() : null));
+						handleWindowBlind(message, hueDevice);
+						break;
+					case REMOTE:
+						handleRemote(message, hueDevice);
 						break;
 					default:
 						break;
@@ -152,6 +126,55 @@ public class HueInterface extends BaseService {
 		}
 
 		return new GenericStatus(true);
+	}
+
+	private void handleRemote(HueEmulatorMessage message, HueDevice hueDevice) {
+		RemoteControlEvent remoteControlEvent = new RemoteControlEvent(hueDevice.getName(), hueDevice.getId().toString(),
+				"on".equals(message.getPayload()));
+
+		EventBusService.getEventBus().post(remoteControlEvent);
+	}
+
+	private void handleWindowBlind(HueEmulatorMessage message, HueDevice hueDevice) {
+		String dimValue = "99";
+		if (!message.isOnOffCommand()) {
+			dimValue = Integer.toString(message.getBrightness());
+		}
+		System.out.println("Window Blind dim: " + dimValue);
+
+		new WindowBlindService().setDim(hueDevice.getExternalId(), ("on".equals(message.getPayload()) ? dimValue : "0"),
+				hueDevice.isGroupDevice() ? WindowBlind.ALL_AT_ONCE : WindowBlind.SINGLE,
+				(hueDevice.isGroupDevice() ? hueDevice.getRoom().getId() : null));
+	}
+
+	private void handleSwitch(HueEmulatorMessage message, HueDevice hueDevice) {
+		ActorService.getInstance().pressSwitch(Long.toString(hueDevice.getExternalId()),
+				("on".equals(message.getPayload()) ? "ON" : "OFF"));
+	}
+
+	private void handleLight(HueEmulatorMessage message, HueDevice hueDevice) {
+		if (!message.isOnOffCommand()) {
+			LightService.getInstance().dimLight(hueDevice.getExternalId(), message.getBrightness());
+		} else {
+			boolean isColor = false;
+			Float x = 0f;
+			Float y = 0f;
+			if (message.getXy() != null) {
+				x = message.getXy()[0];
+				y = message.getXy()[1];
+				System.out.println("Color infos:" + x + " - " + y);
+				isColor = true;
+			}
+
+			if (isColor) {
+				LightService.getInstance().setColor(hueDevice.getExternalId(), message.getBrightness(),
+						x, y);
+			} else {
+
+				LightService.getInstance().setLightState(hueDevice.getExternalId(),
+						("on".equals(message.getPayload()) ? LightStates.ON : LightStates.OFF));
+			}
+		}
 	}
 
 	public static void main(String[] args) throws JsonMappingException, JsonProcessingException {

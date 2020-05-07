@@ -1,5 +1,5 @@
 package cm.homeautomation.entities;
 
 public enum HueDeviceType {
-	SWITCH, LIGHT, WINDOWBLIND
+	SWITCH, LIGHT, WINDOWBLIND, REMOTE
 }
