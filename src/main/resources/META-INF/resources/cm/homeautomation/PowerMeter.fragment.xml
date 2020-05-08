@@ -10,7 +10,7 @@
 			<Panel expandable="true" expanded="true"
 				headerText="Grafana Data" expand="expandGrafana">
 				<content>
-					<html:iframe id="grafanaData_power" width="95%" height="400"></html:iframe>
+					<html:iframe id="grafanaData_power" width="95%" height="400" frameborder="0"></html:iframe>
 				</content>
 			</Panel>
 
