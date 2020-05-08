@@ -1,14 +1,17 @@
 <core:FragmentDefinition xmlns="sap.m"
-	xmlns:core="sap.ui.core" xmlns:commons="sap.ui.commons">
-	<Dialog title="{i18n>powerMeterTitle}" afterClose="afterPowerMeterDialogClose"
-		stretch="true" verticalScrolling="true" horizontalScrolling="false" contentHeight="100%">
+	xmlns:core="sap.ui.core" xmlns:commons="sap.ui.commons" xmlns:html="http://www.w3.org/1999/xhtml">
+	<Dialog title="{i18n>powerMeterTitle}"
+		afterClose="afterPowerMeterDialogClose" stretch="true"
+		verticalScrolling="true" horizontalScrolling="false"
+		contentHeight="100%">
 		<content>
 
 
-					<Panel expandable="true" expanded="true" headerText="Grafana Data" expand="expandGrafana">
+			<Panel expandable="true" expanded="true"
+				headerText="Grafana Data" expand="expandGrafana">
 				<content>
-					<core:HTML id="grafanaData" content="">
-					</core:HTML> </content>
+					<html:iframe id="grafanaData_power" width="95%" height="400"></html:iframe>
+				</content>
 			</Panel>
 
 

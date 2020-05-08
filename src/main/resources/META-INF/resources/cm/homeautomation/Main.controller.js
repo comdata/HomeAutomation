@@ -426,7 +426,7 @@ sap.ui.define([
 
         /**
 		 * initialize
-		 *
+		 * 
 		 * @param evt
 		 */
         onInit: function (evt) {
@@ -475,7 +475,7 @@ sap.ui.define([
 
         /**
 		 * perform data loading
-		 *
+		 * 
 		 */
         loadData: function () {
 
@@ -853,7 +853,7 @@ sap.ui.define([
         },
         /**
 		 * handle successful data loading for overview tiles
-		 *
+		 * 
 		 * @param event
 		 * @param model
 		 */
@@ -1095,7 +1095,7 @@ sap.ui.define([
 
             /**
 			 * set value directly to all other window blinds
-			 *
+			 * 
 			 */
             if (windowBlind.type=="ALL_AT_ONCE") {
 
@@ -1206,7 +1206,7 @@ sap.ui.define([
 
         /**
 		 * trigger a reload if something goes wrong
-		 *
+		 * 
 		 */
         _loadDataFailed: function (event) {
         	console.log("Over loading failed. "+e)
@@ -1230,10 +1230,17 @@ sap.ui.define([
         	this.grafanMode=mode;
 
         	if (mode=="room") {
-
-        		sap.ui.getCore().byId("grafanaData").setContent("<iframe src='http://"+location.hostname+":3000/d-solo/UZ8CT7Zgk/messwerte?orgId=1&panelId=2&from=now-2d&to=now&var-ROOMID="+this.selectedRoom+"' width='100%' height='400' frameborder='0'></iframe>");
+            	var oFrame=sap.ui.getCore().byId("grafanaData");
+        		var oFrameContent =oFrame.$()[0];
+                console.log(oFrameContent);
+        		
+                oFrameContent.setAttribute("src", "http://"+location.hostname+":3000/d-solo/UZ8CT7Zgk/messwerte?orgId=1&panelId=2&from=now-2d&to=now&var-ROOMID="+this.selectedRoom);
         	} else if (mode="power") {
-        		sap.ui.getCore().byId("grafanaData").setContent("<iframe src='http://"+location.hostname+":3000/d-solo/uf0FOlZRk/power-1h-intervals?orgId=1?orgId=1&panelId=2&from=now-2d&to=now' width='100%' height='400' frameborder='0'></iframe>");
+        		
+            	var oFrame=sap.ui.getCore().byId("grafanaData_power");
+        		var oFrameContent =oFrame.$()[0];
+                console.log(oFrameContent);
+        		 oFrameContent.setAttribute("src", "http://"+location.hostname+":3000/d-solo/uf0FOlZRk/power-1h-intervals?orgId=1?orgId=1&panelId=2&from=now-2d&to=now");
         	}
         },
         handleTrainSpeedChange:function(event){
@@ -1357,7 +1364,7 @@ sap.ui.define([
         },
         /**
 		 * handle selection, triggering navigation
-		 *
+		 * 
 		 * @param event
 		 */
         handleSelect: function (event) {
@@ -1463,7 +1470,7 @@ sap.ui.define([
                   this._dialogs["presence"].open();
                 }
             else if (tileType == "camera") {
-//                if (!this.camera) {
+// if (!this.camera) {
                 	var oView = this.getView();
                 	var stream = selectedElement.stream;
 
@@ -1474,7 +1481,8 @@ sap.ui.define([
 	    					name: "cm.homeautomation.Camera",
 	    					controller: this
 	    				}).then(function (oDialog) {
-	    					// connect dialog to the root view of this component (models, lifecycle)
+	    					// connect dialog to the root view of this component
+							// (models, lifecycle)
 	    					oView.addDependent(oDialog);
 	    					jQuery.sap.syncStyleClass("sapUiSizeCompact", oView, oDialog);
 	    					oDialog.open();
@@ -1528,19 +1536,21 @@ sap.ui.define([
         	},
         powerMeterLoad: function () {
         	this.loadGrafanaData("power");
-//        		sap.ui.getCore().setModel(new JSONModel(), "chartjsData");
-//        		var subject=this;
-//            var powerMeterModel = new RESTService();
-//            powerMeterModel.loadDataAsync("power/readInterval", "", "GET", subject.powerDataLoaded, null, subject);
+// sap.ui.getCore().setModel(new JSONModel(), "chartjsData");
+// var subject=this;
+// var powerMeterModel = new RESTService();
+// powerMeterModel.loadDataAsync("power/readInterval", "", "GET",
+// subject.powerDataLoaded, null, subject);
 
         },
         gasMeterLoad: function () {
         	this.loadGrafanaData("gas");
 
-//        	sap.ui.getCore().setModel(new JSONModel(), "chartjsData");
-//        		var subject=this;
-//            var gasMeterModel = new RESTService();
-//            gasMeterModel.loadDataAsync("gas/readInterval", "", "GET", subject.gasDataLoaded, null, subject);
+// sap.ui.getCore().setModel(new JSONModel(), "chartjsData");
+// var subject=this;
+// var gasMeterModel = new RESTService();
+// gasMeterModel.loadDataAsync("gas/readInterval", "", "GET",
+// subject.gasDataLoaded, null, subject);
 
         },
         powerDataLoaded: function(event, model, data) {
@@ -1599,7 +1609,7 @@ sap.ui.define([
         				  }
         				};
 			/*
-			 *
+			 * 
 			 */
 
             var chartJSModel = new JSONModel();
@@ -1663,7 +1673,7 @@ sap.ui.define([
         				  }
         				};
 			/*
-			 *
+			 * 
 			 */
 
             var chartJSModel = new JSONModel();
@@ -1746,7 +1756,7 @@ sap.ui.define([
         afterCameraDialogClose: function () {
         	if (this.byId("Camera")) {
         		this.byId("Camera").destroy();
-//        		this.camera = null;
+// this.camera = null;
         	}
         },
         afterNetworkDialogClose: function () {
@@ -1817,7 +1827,7 @@ sap.ui.define([
         },
         /**
 		 * menu open pressed
-		 *
+		 * 
 		 */
         handlePressOpenMenu: function (oEvent) {
             var oButton = oEvent.getSource();
