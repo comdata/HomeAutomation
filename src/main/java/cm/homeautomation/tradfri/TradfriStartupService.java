@@ -284,7 +284,12 @@ public class TradfriStartupService {
 	}
 
 	public static void update(String[] args) throws ServiceException {
-		TradfriStartupService.getInstance().updateLights();
-		TradfriStartupService.getInstance().updateDevices();
+
+		TradfriStartupService serviceInstance = TradfriStartupService.getInstance();
+
+		if (serviceInstance != null) {
+			serviceInstance.updateLights();
+			serviceInstance.updateDevices();
+		}
 	}
 }
