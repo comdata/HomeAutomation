@@ -38,4 +38,6 @@ public class ZigBeeDevice {
 	String dateCode;
 	Date lastSeen;
 
+	boolean updateAvailable;
+
 }

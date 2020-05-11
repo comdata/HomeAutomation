@@ -82,18 +82,9 @@ public class ZigbeeMQTTReceiver {
 						ObjectMapper mapper = new ObjectMapper();
 						JsonNode messageObject = mapper.readTree(message);
 
-						if ("Battery".equals(zigbeeDevice.getPowerSource())) {
-							LogManager.getLogger(this.getClass()).debug("Device is battery powered");
-							JsonNode batteryNode = messageObject.get("battery");
+						recordBatteryLevel(zigbeeDevice, messageObject);
 
-							if (batteryNode != null) {
-								int batteryLevel = batteryNode.asInt();
-								LogManager.getLogger(this.getClass())
-										.debug("Device is battery powered - level: " + batteryLevel);
-
-								recordBatteryLevelForDevice(zigbeeDevice, batteryLevel);
-							}
-						}
+						saveUpdateAvailableInformation(zigbeeDevice, messageObject);
 
 						if (zigbeeDevice.getManufacturerID().equals("4476")) {
 
@@ -139,12 +130,45 @@ public class ZigbeeMQTTReceiver {
 							}
 						}
 					} else {
+						// we did not find the device so update the device list
 						updateDeviceList();
 					}
 				}
 			}
 		}
 
+	}
+
+	private void saveUpdateAvailableInformation(ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
+		JsonNode updateNode = messageObject.get("update_available");
+
+		if (updateNode != null) {
+			boolean updateAvailable = updateNode.asBoolean();
+
+			EntityManager em = EntityManagerService.getManager();
+
+			em.getTransaction().begin();
+
+			zigbeeDevice.setUpdateAvailable(updateAvailable);
+			em.merge(zigbeeDevice);
+
+			em.getTransaction().commit();
+
+		}
+	}
+
+	private void recordBatteryLevel(ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
+		if ("Battery".equals(zigbeeDevice.getPowerSource())) {
+			LogManager.getLogger(this.getClass()).debug("Device is battery powered");
+			JsonNode batteryNode = messageObject.get("battery");
+
+			if (batteryNode != null) {
+				int batteryLevel = batteryNode.asInt();
+				LogManager.getLogger(this.getClass()).debug("Device is battery powered - level: " + batteryLevel);
+
+				recordBatteryLevelForDevice(zigbeeDevice, batteryLevel);
+			}
+		}
 	}
 
 	private void handleWaterSensor(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
