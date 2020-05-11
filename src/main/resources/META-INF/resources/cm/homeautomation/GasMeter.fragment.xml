@@ -1,13 +1,19 @@
 <core:FragmentDefinition xmlns="sap.m"
-	xmlns:core="sap.ui.core" xmlns:commons="sap.ui.commons" xmlns:html="http://www.w3.org/1999/xhtml">
-	<Dialog title="{i18n>GasMeterTitle}" afterClose="afterGasMeterDialogClose"
-		stretch="true" verticalScrolling="true" horizontalScrolling="false" contentHeight="100%">
+	xmlns:core="sap.ui.core" xmlns:commons="sap.ui.commons"
+	xmlns:html="http://www.w3.org/1999/xhtml">
+	<Dialog title="{i18n>GasMeterTitle}"
+		afterClose="afterGasMeterDialogClose" stretch="true"
+		verticalScrolling="true" horizontalScrolling="false"
+		contentHeight="100%">
 		<content>
 
 
-				<Panel expandable="true" expanded="true" headerText="Grafana Data" expand="expandGrafana">
+			<Panel expandable="true" expanded="true"
+				headerText="Grafana Data" expand="expandGrafana">
 				<content>
-					<html:iframe id="grafanaData" width="95%" height="400" frameborder="0"></html:iframe>
+
+					<html:iframe id="grafanaData" width="95%" height="400"
+						frameborder="0"></html:iframe>
 				</content>
 			</Panel>
 
