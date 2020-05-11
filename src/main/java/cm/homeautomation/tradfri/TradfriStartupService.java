@@ -31,6 +31,7 @@ import de.eckey.tradfrj.service.security.SimpleUserPskStore;
 @AutoCreateInstance
 public class TradfriStartupService {
 
+	private static final String ENABLED = "enabled";
 	private static final String USER = "user";
 	private static final String TOKEN = "token";
 	private static final String SECRET = "secret";
@@ -54,9 +55,18 @@ public class TradfriStartupService {
 	}
 
 	public TradfriStartupService() {
-		instance = this;
-		init();
 
+		String enabled = ConfigurationService.getConfigurationProperty(TRADFRI_GROUP, ENABLED);
+
+		if (enabled != null && "true".equalsIgnoreCase(enabled)) {
+			instance = this;
+			init();
+		} else {
+			// let's create the missing entry with false => service is not active
+			if (enabled == null) {
+				ConfigurationService.createOrUpdate(TRADFRI_GROUP, ENABLED, "false");
+			}
+		}
 	}
 
 	public void dimBulb(final String id, final int dimValue) {
@@ -101,6 +111,7 @@ public class TradfriStartupService {
 			updateLights();
 
 			Runnable tradfriUpdateRunnable = new Runnable() {
+				@Override
 				public void run() {
 					try {
 						TradfriStartupService.getInstance().updateLights();
@@ -130,31 +141,32 @@ public class TradfriStartupService {
 
 		em = EntityManagerService.getNewManager();
 		em.getTransaction().begin();
-		
+
 		for (Device device : deviceList) {
 			if (device.getType() != 2) {
-				
-				Switch deviceSwitch=null;
-				
-				List<Switch> switchList = em.createQuery("select sw from Switch sw where sw.externalId=:externalId", Switch.class).setParameter("externalId", Integer.toString(device.getId())).getResultList();
-				
-				if (switchList!=null && switchList.size()==1) {
-					deviceSwitch=switchList.get(0);
+
+				Switch deviceSwitch = null;
+
+				List<Switch> switchList = em
+						.createQuery("select sw from Switch sw where sw.externalId=:externalId", Switch.class)
+						.setParameter("externalId", Integer.toString(device.getId())).getResultList();
+
+				if (switchList != null && switchList.size() == 1) {
+					deviceSwitch = switchList.get(0);
 					deviceSwitch.setDateLastSeen(new Date(device.getLastSeen()));
-					deviceSwitch.setSwitchState(device.getDeviceData().getPower()==1);
+					deviceSwitch.setSwitchState(device.getDeviceData().getPower() == 1);
 					em.merge(deviceSwitch);
 				} else {
-					deviceSwitch=new Switch();
+					deviceSwitch = new Switch();
 					deviceSwitch.setName(device.getName());
 					deviceSwitch.setExternalId(Integer.toString(device.getId()));
 					deviceSwitch.setType("TRADFRI");
 					deviceSwitch.setManufacturer(device.getDeviceData().getManufacture());
 					deviceSwitch.setDateLastSeen(new Date(device.getLastSeen()));
-					deviceSwitch.setSwitchState(device.getDeviceData().getPower()==1);
+					deviceSwitch.setSwitchState(device.getDeviceData().getPower() == 1);
 					em.persist(deviceSwitch);
 				}
-				
-				
+
 			}
 		}
 		em.getTransaction().commit();
