@@ -37,7 +37,5 @@ public class ZigBeeDevice {
 	String softwareBuildID;
 	String dateCode;
 	Date lastSeen;
-
 	boolean updateAvailable;
-
 }
