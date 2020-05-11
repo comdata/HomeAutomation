@@ -178,17 +178,22 @@ public class OverviewService extends BaseService {
 
 	public OverviewTile updateOverviewTile(SensorData sensorData) {
 		init();
-		final OverviewTile tileForRoom = overviewTiles
-				.getTileForRoom(sensorData.getSensor().getRoom().getId().toString());
+		Room room = sensorData.getSensor().getRoom();
 
-		if (tileForRoom != null) {
+		if (room != null) {
+			final OverviewTile tileForRoom = overviewTiles.getTileForRoom(room.getId().toString());
 
-			if (sensorData != null) {
-				tileForRoom.getSensorData().put(sensorData.getSensor(), sensorData);
+			if (tileForRoom != null) {
+
+				if (sensorData != null) {
+					tileForRoom.getSensorData().put(sensorData.getSensor(), sensorData);
+				}
+				decorateRoomTile(tileForRoom);
+
 			}
-			decorateRoomTile(tileForRoom);
-
+			return tileForRoom;
+		} else {
+			return null;
 		}
-		return tileForRoom;
 	}
 }
