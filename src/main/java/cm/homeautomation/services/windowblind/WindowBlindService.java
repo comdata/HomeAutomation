@@ -11,6 +11,7 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
+import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.base.HTTPHelper;
@@ -134,9 +135,17 @@ public class WindowBlindService extends BaseService {
 				final WindowBlind singleWindowBlind1 = (WindowBlind) em
 						.createQuery("select w from WindowBlind w where w.id=:id").setParameter("id", windowBlindId)
 						.getSingleResult();
-				final String dimUrl1 = singleWindowBlind1.getDimUrl().replace("{DIMVALUE}", newValue);
 
-				HTTPHelper.performHTTPRequest(dimUrl1);
+				if (!singleWindowBlind1.getMqttDimTopic().isEmpty()) {
+					String dimMessage = singleWindowBlind1.getMqttDimMessage().replace("{DIMVALUE}", newValue);
+
+					MQTTSender.sendMQTTMessage(singleWindowBlind1.getMqttDimTopic(), dimMessage);
+				} else {
+
+					final String dimUrl1 = singleWindowBlind1.getDimUrl().replace("{DIMVALUE}", newValue);
+
+					HTTPHelper.performHTTPRequest(dimUrl1);
+				}
 
 				singleWindowBlind1.setCurrentValue(Float.parseFloat(newValue));
 
@@ -194,7 +203,7 @@ public class WindowBlindService extends BaseService {
 		em.merge(singleWindowBlind);
 		em.getTransaction().commit();
 		em.close();
-		
+
 		return new GenericStatus(true);
 	}
 

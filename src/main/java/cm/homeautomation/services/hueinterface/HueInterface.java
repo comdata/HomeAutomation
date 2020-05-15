@@ -71,6 +71,16 @@ public class HueInterface extends BaseService {
 						Light singleLight = lightList.get(0);
 						externalId = singleLight.getId();
 						type = HueDeviceType.LIGHT;
+					} else {
+						List<WindowBlind> windowBlindList = em
+								.createQuery("select w from WindowBlind w where l.name=:name", WindowBlind.class)
+								.setParameter("name", message.getDeviceName()).getResultList();
+
+						if (windowBlindList != null && !windowBlindList.isEmpty()) {
+							WindowBlind windowBlind = windowBlindList.get(0);
+							externalId = windowBlind.getId();
+							type = HueDeviceType.WINDOWBLIND;
+						}
 					}
 				}
 				em.getTransaction().begin();

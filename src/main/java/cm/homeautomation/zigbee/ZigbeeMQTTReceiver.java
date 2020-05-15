@@ -22,6 +22,7 @@ import cm.homeautomation.entities.MQTTSwitch;
 import cm.homeautomation.entities.RGBLight;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
+import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.entities.ZigBeeDevice;
 import cm.homeautomation.entities.ZigbeeLight;
 import cm.homeautomation.entities.ZigbeeMotionSensor;
@@ -34,12 +35,15 @@ import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.services.motion.MotionEvent;
 import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
+import cm.homeautomation.services.windowblind.WindowBlindService;
 import cm.homeautomation.zigbee.entities.ZigBeeTradfriRemoteControl;
 import lombok.NonNull;
 
 public class ZigbeeMQTTReceiver {
 
+	private static final String SELECT_S_FROM_SENSOR_S_WHERE_S_EXTERNAL_ID_EXTERNAL_ID_AND_S_SENSOR_TYPE_SENSOR_TYPE = "select s from Sensor s where s.externalId=:externalId and s.sensorType=:sensorType";
 	private static final int brightnessChangeIncrement = 10;
+	private static final int BRIGHTNESSCHANGEINCREMENT2 = brightnessChangeIncrement;
 	@NonNull
 	private String zigbeeMqttTopic = ConfigurationService.getConfigurationProperty("zigbee", "mqttTopic");
 
@@ -92,14 +96,14 @@ public class ZigbeeMQTTReceiver {
 							if (modelID.equals("TRADFRI remote control")) {
 								handleTradfriRemoteControl(message, zigbeeDevice, messageObject);
 							} else if (modelID.startsWith("TRADFRI bulb")) {
-								System.out.println("E14. " + message);
+
 								if ("TRADFRI bulb E27 CWS opal 600lm".equals(modelID)) {
 									handleTradfriLight(message, zigbeeDevice, messageObject, true);
 								} else {
 									handleTradfriLight(message, zigbeeDevice, messageObject, false);
 								}
 							} else if (modelID.startsWith("FLOALT panel")) {
-								System.out.println("FLOALT. " + message);
+
 								handleTradfriLight(message, zigbeeDevice, messageObject, false);
 							} else if (modelID.startsWith("TRADFRI Driver")) {
 								handleTradfriLight(message, zigbeeDevice, messageObject, false);
@@ -107,6 +111,8 @@ public class ZigbeeMQTTReceiver {
 								handleMotionSensor(message, zigbeeDevice, messageObject);
 							} else if (modelID.startsWith("TRADFRI control")) {
 								handlePowerSocket(message, zigbeeDevice, messageObject);
+							} else if (modelID.startsWith("FYRTUR block-out roller blind")) {
+								handleWindowBlind(message, zigbeeDevice, messageObject);
 							}
 
 						}
@@ -136,6 +142,41 @@ public class ZigbeeMQTTReceiver {
 					}
 				}
 			}
+		}
+
+	}
+
+	private void handleWindowBlind(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
+
+		EntityManager em = EntityManagerService.getManager();
+
+		List<WindowBlind> resultList = em
+				.createQuery("select w from WindowBlind w where w.externalId=:externalId", WindowBlind.class)
+				.setParameter("externalId", zigbeeDevice.getIeeeAddr()).getResultList();
+
+		if (resultList != null && !resultList.isEmpty()) {
+
+			JsonNode positionNode = messageObject.get("position");
+
+			if (positionNode != null) {
+				WindowBlind windowBlind = resultList.get(0);
+				WindowBlindService windowBlindService = new WindowBlindService();
+				windowBlindService.setPosition(windowBlind.getId(), positionNode.asText());
+			}
+		} else {
+			WindowBlind windowBlind = new WindowBlind();
+
+			windowBlind.setName(zigbeeDevice.getFriendlyName());
+			windowBlind.setExternalId(zigbeeDevice.getIeeeAddr());
+			windowBlind.setMqttDimTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
+			windowBlind.setMqttDimMessage("{\"position\": {DIMVALUE}}");
+
+			em.getTransaction().begin();
+
+			em.persist(windowBlind);
+			em.getTransaction().commit();
+
+			handleWindowBlind(message, zigbeeDevice, messageObject);
 		}
 
 	}
@@ -225,7 +266,7 @@ public class ZigbeeMQTTReceiver {
 		EntityManager em = EntityManagerService.getManager();
 
 		List<Sensor> sensorList = em
-				.createQuery("select s from Sensor s where s.externalId=:externalId and s.sensorType=:sensorType",
+				.createQuery(SELECT_S_FROM_SENSOR_S_WHERE_S_EXTERNAL_ID_EXTERNAL_ID_AND_S_SENSOR_TYPE_SENSOR_TYPE,
 						Sensor.class)
 				.setParameter("externalId", zigbeeDevice.getIeeeAddr()).setParameter("sensorType", "battery")
 				.getResultList();
@@ -267,10 +308,9 @@ public class ZigbeeMQTTReceiver {
 
 		String linkQualityType = "linkquality";
 		List<Sensor> sensorList = em
-				.createQuery("select s from Sensor s where s.externalId=:externalId and s.sensorType=:sensorType",
+				.createQuery(SELECT_S_FROM_SENSOR_S_WHERE_S_EXTERNAL_ID_EXTERNAL_ID_AND_S_SENSOR_TYPE_SENSOR_TYPE,
 						Sensor.class)
-				.setParameter("externalId", zigbeeDevice.getIeeeAddr()).setParameter("sensorType",
-						linkQualityType)
+				.setParameter("externalId", zigbeeDevice.getIeeeAddr()).setParameter("sensorType", linkQualityType)
 				.getResultList();
 
 		if (sensorList == null || sensorList.isEmpty()) {
@@ -311,7 +351,7 @@ public class ZigbeeMQTTReceiver {
 		EntityManager em = EntityManagerService.getManager();
 
 		List<Sensor> sensorList = em
-				.createQuery("select s from Sensor s where s.externalId=:externalId and s.sensorType=:sensorType",
+				.createQuery(SELECT_S_FROM_SENSOR_S_WHERE_S_EXTERNAL_ID_EXTERNAL_ID_AND_S_SENSOR_TYPE_SENSOR_TYPE,
 						Sensor.class)
 				.setParameter("externalId", zigbeeDevice.getIeeeAddr()).setParameter("sensorType", "illuminance")
 				.getResultList();
@@ -452,10 +492,6 @@ public class ZigbeeMQTTReceiver {
 			brightness = brightnessNode.intValue();
 		}
 
-		// String action = actionNode.asText();
-
-		System.out.println("Zigbee Action for tradfri light. ");
-
 		EntityManager em = EntityManagerService.getManager();
 
 		ZigbeeLight existingLight = em.find(ZigbeeLight.class, zigbeeDevice.getIeeeAddr());
@@ -565,7 +601,7 @@ public class ZigbeeMQTTReceiver {
 			remoteControlBrightnessChangeEvent.setTechnicalId(existingRemote.getIeeeAddr());
 			remoteControlBrightnessChangeEvent.setName(zigbeeDevice.getFriendlyName());
 			remoteControlBrightnessChangeEvent.setPoweredOnState(existingRemote.isPowerOnState());
-			int newBrightness = brightnessChange(existingRemote, brightnessChangeIncrement);
+			int newBrightness = brightnessChange(existingRemote, BRIGHTNESSCHANGEINCREMENT2);
 
 			remoteControlBrightnessChangeEvent.setBrightness(newBrightness);
 			EventBusService.getEventBus().post(remoteControlBrightnessChangeEvent);
@@ -587,7 +623,7 @@ public class ZigbeeMQTTReceiver {
 				remoteControlBrightnessChangeEvent.setName(zigbeeDevice.getFriendlyName());
 				remoteControlBrightnessChangeEvent.setPoweredOnState(existingRemote.isPowerOnState());
 
-				int newBrightness = brightnessChange(existingRemote, -1 * brightnessChangeIncrement);
+				int newBrightness = brightnessChange(existingRemote, -1 * BRIGHTNESSCHANGEINCREMENT2);
 
 				remoteControlBrightnessChangeEvent.setBrightness(newBrightness);
 				EventBusService.getEventBus().post(remoteControlBrightnessChangeEvent);

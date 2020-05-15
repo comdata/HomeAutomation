@@ -13,6 +13,11 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.sap.olingo.jpa.metadata.core.edm.annotation.EdmIgnore;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 @Entity
 public class WindowBlind {
 	public static final String ALL_AT_ONCE = "ALL_AT_ONCE";
@@ -36,6 +41,11 @@ public class WindowBlind {
 	private String dimUrl;
 	private String calibrationUrl;
 	private float currentValue;
+
+	String externalId;
+
+	private String mqttDimTopic;
+	private String mqttDimMessage;
 
 	@Transient
 	private String windowBlindType = WindowBlind.SINGLE;
