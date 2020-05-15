@@ -73,7 +73,7 @@ public class HueInterface extends BaseService {
 						type = HueDeviceType.LIGHT;
 					} else {
 						List<WindowBlind> windowBlindList = em
-								.createQuery("select w from WindowBlind w where l.name=:name", WindowBlind.class)
+								.createQuery("select w from WindowBlind w where w.name=:name", WindowBlind.class)
 								.setParameter("name", message.getDeviceName()).getResultList();
 
 						if (windowBlindList != null && !windowBlindList.isEmpty()) {
