@@ -148,13 +148,15 @@ public class WindowBlindService extends BaseService {
 					final String dimUrl1 = singleWindowBlind1.getDimUrl().replace("{DIMVALUE}", newValue);
 
 					HTTPHelper.performHTTPRequest(dimUrl1);
+					singleWindowBlind1.setCurrentValue(Float.parseFloat(newValue));
+
+					em.getTransaction().begin();
+					em.merge(singleWindowBlind1);
+					em.getTransaction().commit();
 				}
 
-				singleWindowBlind1.setCurrentValue(Float.parseFloat(newValue));
 
-				em.getTransaction().begin();
-				em.merge(singleWindowBlind1);
-				em.getTransaction().commit();
+
 
 				final WindowBlindStatus eventData1 = new WindowBlindStatus();
 				eventData1.setWindowBlind(singleWindowBlind1);
@@ -179,13 +181,14 @@ public class WindowBlindService extends BaseService {
 						final String dimUrl1 = singleWindowBlind2.getDimUrl().replace("{DIMVALUE}", newValue);
 
 						HTTPHelper.performHTTPRequest(dimUrl1);
+
+						singleWindowBlind2.setCurrentValue(Float.parseFloat(newValue));
+
+						em.getTransaction().begin();
+						em.merge(singleWindowBlind2);
+						em.getTransaction().commit();
 					}
 
-					singleWindowBlind2.setCurrentValue(Float.parseFloat(newValue));
-
-					em.getTransaction().begin();
-					em.merge(singleWindowBlind2);
-					em.getTransaction().commit();
 
 					final WindowBlindStatus eventData2 = new WindowBlindStatus();
 					eventData2.setWindowBlind(singleWindowBlind2);
