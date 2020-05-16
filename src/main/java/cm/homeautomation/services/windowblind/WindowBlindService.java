@@ -236,7 +236,7 @@ public class WindowBlindService extends BaseService {
 				newPosition = currentValue - 10;
 			}
 
-			if (newPosition > 0 && newPosition < 100) {
+			if (newPosition >= 0 && newPosition <= 100) {
 				setDim(singleWindowBlind.getId(), Float.toString(newPosition));
 			}
 		}
