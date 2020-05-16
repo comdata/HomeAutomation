@@ -223,7 +223,7 @@ public class WindowBlindService extends BaseService {
 
 		final WindowBlind singleWindowBlind = (WindowBlind) em
 				.createQuery("select w from WindowBlind w where w.externalId=:externalId")
-				.setParameter("externalId", externalId).getSingleResult();
+				.setParameter("externalId", Long.toString(externalId)).getSingleResult();
 
 		if (singleWindowBlind != null) {
 
