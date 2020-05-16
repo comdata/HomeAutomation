@@ -222,7 +222,7 @@ public class WindowBlindService extends BaseService {
 		final EntityManager em = EntityManagerService.getManager();
 
 		final WindowBlind singleWindowBlind = (WindowBlind) em
-				.createQuery("select w from WindowBlind w where w.id=:id").setParameter("id", Long.toString(externalId))
+				.createQuery("select w from WindowBlind w where w.id=:id").setParameter("id", externalId)
 				.getSingleResult();
 
 		if (singleWindowBlind != null) {
