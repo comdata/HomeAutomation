@@ -136,7 +136,8 @@ public class WindowBlindService extends BaseService {
 						.createQuery("select w from WindowBlind w where w.id=:id").setParameter("id", windowBlindId)
 						.getSingleResult();
 
-				if (!singleWindowBlind1.getMqttDimTopic().isEmpty()) {
+				String mqttDimTopic = singleWindowBlind1.getMqttDimTopic();
+				if (mqttDimTopic != null && !mqttDimTopic.isEmpty()) {
 					String dimMessage = singleWindowBlind1.getMqttDimMessage().replace("{DIMVALUE}", newValue);
 
 					MQTTSender.sendMQTTMessage(singleWindowBlind1.getMqttDimTopic(), dimMessage);
@@ -165,9 +166,18 @@ public class WindowBlindService extends BaseService {
 						.setParameter("roomId", roomId).getResultList();
 
 				for (final WindowBlind singleWindowBlind2 : windowBlinds) {
-					final String dimUrl2 = singleWindowBlind2.getDimUrl().replace("{DIMVALUE}", newValue);
 
-					HTTPHelper.performHTTPRequest(dimUrl2);
+					String mqttDimTopic = singleWindowBlind2.getMqttDimTopic();
+					if (mqttDimTopic != null && !mqttDimTopic.isEmpty()) {
+						String dimMessage = singleWindowBlind2.getMqttDimMessage().replace("{DIMVALUE}", newValue);
+
+						MQTTSender.sendMQTTMessage(singleWindowBlind2.getMqttDimTopic(), dimMessage);
+					} else {
+
+						final String dimUrl1 = singleWindowBlind2.getDimUrl().replace("{DIMVALUE}", newValue);
+
+						HTTPHelper.performHTTPRequest(dimUrl1);
+					}
 
 					singleWindowBlind2.setCurrentValue(Float.parseFloat(newValue));
 
