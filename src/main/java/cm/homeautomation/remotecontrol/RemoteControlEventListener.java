@@ -19,6 +19,7 @@ import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.light.LightService;
 import cm.homeautomation.services.light.LightStates;
 import cm.homeautomation.services.windowblind.WindowBlindService;
+import cm.homeautomation.services.windowblind.WindowBlindService.DimDirection;
 import cm.homeautomation.zigbee.RemoteControlBrightnessChangeEvent;
 
 @AutoCreateInstance
@@ -36,8 +37,7 @@ public class RemoteControlEventListener {
 		LogManager.getLogger(this.getClass()).debug("got remote event: " + name + "/" + technicalId);
 
 		List<RemoteControl> remoteList = em
-				.createQuery("select rc from RemoteControl rc where rc.technicalId=:technicalId",
-						RemoteControl.class)
+				.createQuery("select rc from RemoteControl rc where rc.technicalId=:technicalId", RemoteControl.class)
 				.setParameter("technicalId", technicalId).getResultList();
 
 		if (remoteList != null && !remoteList.isEmpty()) {
@@ -83,8 +83,7 @@ public class RemoteControlEventListener {
 		LogManager.getLogger(this.getClass()).error("got remote event: " + name + "/" + technicalId);
 
 		List<RemoteControl> remoteList = em
-				.createQuery("select rc from RemoteControl rc where rc.technicalId=:technicalId",
-						RemoteControl.class)
+				.createQuery("select rc from RemoteControl rc where rc.technicalId=:technicalId", RemoteControl.class)
 				.setParameter("technicalId", technicalId).getResultList();
 
 		if (remoteList != null && !remoteList.isEmpty()) {
@@ -113,8 +112,30 @@ public class RemoteControlEventListener {
 										(event.isPoweredOnState() ? "ON" : "OFF"));
 								break;
 							case WINDOWBLIND:
-								new WindowBlindService().setDim(remoteControlGroupMember.getExternalId(),
-										(event.isPoweredOnState() ? "99" : "0"));
+
+								switch (event.getEventType()) {
+
+								case ON_OFF:
+									
+									DimDirection dimDirection;
+									if (event.getClick().equals("open")) {
+										dimDirection = DimDirection.UP;
+									} else {
+										dimDirection = DimDirection.DOWN;
+									}
+
+									new WindowBlindService().dim(dimDirection,
+											remoteControlGroupMember.getExternalId());
+									
+									break;
+
+								case REMOTE:
+
+									new WindowBlindService().setDim(remoteControlGroupMember.getExternalId(),
+											(event.isPoweredOnState() ? "99" : "0"));
+									break;
+								}
+
 								break;
 							default:
 								break;

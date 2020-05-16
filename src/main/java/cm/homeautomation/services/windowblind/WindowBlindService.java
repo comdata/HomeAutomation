@@ -19,6 +19,10 @@ import cm.homeautomation.services.base.HTTPHelper;
 @Path("windowBlinds/")
 public class WindowBlindService extends BaseService {
 
+	public enum DimDirection {
+		UP, DOWN
+	}
+
 	/**
 	 * call this method to perform a calibration of the window blind
 	 *
@@ -45,7 +49,7 @@ public class WindowBlindService extends BaseService {
 	public WindowBlindsList getAll() {
 		final WindowBlindsList windowBlindsList = new WindowBlindsList();
 
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 		em.getTransaction().begin();
 
 		@SuppressWarnings("unchecked")
@@ -67,7 +71,7 @@ public class WindowBlindService extends BaseService {
 	public WindowBlindsList getAllForRoom(@PathParam("roomId") Long roomId) {
 		final WindowBlindsList windowBlindsList = new WindowBlindsList();
 
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 		em.getTransaction().begin();
 
 		@SuppressWarnings("unchecked")
@@ -95,7 +99,7 @@ public class WindowBlindService extends BaseService {
 	}
 
 	public void performCalibration(Long windowBlindId) {
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 		final WindowBlind windowBlind = em.find(WindowBlind.class, windowBlindId);
 
 		if (windowBlind != null) {
@@ -120,7 +124,7 @@ public class WindowBlindService extends BaseService {
 	@Path("setDim/{windowBlind}/{value}/{type}/{roomId}")
 	public GenericStatus setDim(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value,
 			@PathParam("type") String type, @PathParam("roomId") Long roomId) {
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 
 		if (Float.parseFloat(value) > 99) {
 			value = "99";
@@ -202,7 +206,7 @@ public class WindowBlindService extends BaseService {
 	@GET
 	@Path("setPosition/{windowBlind}/{value}")
 	public GenericStatus setPosition(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value) {
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 
 		em.getTransaction().begin();
 
@@ -215,6 +219,31 @@ public class WindowBlindService extends BaseService {
 		em.close();
 
 		return new GenericStatus(true);
+	}
+
+	public void dim(DimDirection dimDirection, long externalId) {
+		final EntityManager em = EntityManagerService.getManager();
+
+		final WindowBlind singleWindowBlind = (WindowBlind) em
+				.createQuery("select w from WindowBlind w where w.externalId=:externalId")
+				.setParameter("externalId", externalId).getSingleResult();
+
+		if (singleWindowBlind != null) {
+
+			float newPosition;
+			float currentValue = singleWindowBlind.getCurrentValue();
+
+			if (dimDirection.equals(DimDirection.UP)) {
+				newPosition = currentValue + 10;
+			} else {
+				newPosition = currentValue - 10;
+			}
+
+			if (newPosition > 0 && newPosition < 100) {
+				setDim(singleWindowBlind.getId(), Float.toString(newPosition));
+			}
+		}
+
 	}
 
 }

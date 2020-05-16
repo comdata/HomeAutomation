@@ -28,6 +28,7 @@ import cm.homeautomation.entities.ZigbeeLight;
 import cm.homeautomation.entities.ZigbeeMotionSensor;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.events.RemoteControlEvent;
+import cm.homeautomation.events.RemoteControlEvent.EventType;
 import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.remotecontrol.RemoteControlEventListener;
@@ -95,6 +96,8 @@ public class ZigbeeMQTTReceiver {
 
 							if (modelID.equals("TRADFRI remote control")) {
 								handleTradfriRemoteControl(message, zigbeeDevice, messageObject);
+							} else if (modelID.equals("TRADFRI open/close remote")) {
+								handleOpenCloseRemote(message, zigbeeDevice, messageObject);
 							} else if (modelID.startsWith("TRADFRI bulb")) {
 
 								if ("TRADFRI bulb E27 CWS opal 600lm".equals(modelID)) {
@@ -143,6 +146,26 @@ public class ZigbeeMQTTReceiver {
 				}
 			}
 		}
+
+	}
+
+	private void handleOpenCloseRemote(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
+
+		String click = messageObject.get("click").asText();
+
+		EntityManager em = EntityManagerService.getManager();
+
+		String ieeeAddr = zigbeeDevice.getIeeeAddr();
+		ZigBeeTradfriRemoteControl existingRemote = getOrCreateRemote(zigbeeDevice, em, ieeeAddr);
+
+		RemoteControlEvent remoteControlEvent = new RemoteControlEvent();
+		remoteControlEvent.setName(zigbeeDevice.getFriendlyName());
+		remoteControlEvent.setTechnicalId(ieeeAddr);
+		remoteControlEvent.setEventType(EventType.ON_OFF);
+		remoteControlEvent.setClick(click);
+
+
+		EventBusService.getEventBus().post(remoteControlEvent);
 
 	}
 
@@ -461,7 +484,9 @@ public class ZigbeeMQTTReceiver {
 			em.getTransaction().commit();
 
 			RemoteControlEvent remoteControlEvent = new RemoteControlEvent(zigbeeDevice.getFriendlyName(), ieeeAddr,
-					occupancyNodeBoolean);
+					RemoteControlEvent.EventType.REMOTE);
+
+			remoteControlEvent.setPoweredOnState(occupancyNodeBoolean);
 
 			EventBusService.getEventBus().post(remoteControlEvent);
 
@@ -554,17 +579,7 @@ public class ZigbeeMQTTReceiver {
 		EntityManager em = EntityManagerService.getManager();
 
 		String ieeeAddr = zigbeeDevice.getIeeeAddr();
-		ZigBeeTradfriRemoteControl existingRemote = em.find(ZigBeeTradfriRemoteControl.class, ieeeAddr);
-
-		// create new remote if not existing
-		if (existingRemote == null) {
-			existingRemote = new ZigBeeTradfriRemoteControl(zigbeeDevice.getIeeeAddr(), false, 0);
-
-			em.getTransaction().begin();
-
-			em.persist(existingRemote);
-			em.getTransaction().commit();
-		}
+		ZigBeeTradfriRemoteControl existingRemote = getOrCreateRemote(zigbeeDevice, em, ieeeAddr);
 
 		if ("toggle".equals(action)) {
 			boolean sourcePowerState = existingRemote.isPowerOnState();
@@ -573,7 +588,9 @@ public class ZigbeeMQTTReceiver {
 			existingRemote.setBrightness(targetPowerState ? 254 : 0);
 			// TODO hold events
 			RemoteControlEvent remoteControlEvent = new RemoteControlEvent(zigbeeDevice.getFriendlyName(), ieeeAddr,
-					existingRemote.isPowerOnState());
+					RemoteControlEvent.EventType.REMOTE);
+
+			remoteControlEvent.setPoweredOnState(existingRemote.isPowerOnState());
 
 			EventBusService.getEventBus().post(remoteControlEvent);
 
@@ -637,6 +654,21 @@ public class ZigbeeMQTTReceiver {
 			}
 		}
 
+	}
+
+	private ZigBeeTradfriRemoteControl getOrCreateRemote(ZigBeeDevice zigbeeDevice, EntityManager em, String ieeeAddr) {
+		ZigBeeTradfriRemoteControl existingRemote = em.find(ZigBeeTradfriRemoteControl.class, ieeeAddr);
+
+		// create new remote if not existing
+		if (existingRemote == null) {
+			existingRemote = new ZigBeeTradfriRemoteControl(zigbeeDevice.getIeeeAddr(), false, 0);
+
+			em.getTransaction().begin();
+
+			em.persist(existingRemote);
+			em.getTransaction().commit();
+		}
+		return existingRemote;
 	}
 
 	private int brightnessChange(ZigBeeTradfriRemoteControl existingRemote, int change) {
