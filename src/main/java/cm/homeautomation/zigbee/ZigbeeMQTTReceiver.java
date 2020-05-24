@@ -1,3 +1,4 @@
+
 package cm.homeautomation.zigbee;
 
 import java.util.Arrays;
@@ -164,7 +165,6 @@ public class ZigbeeMQTTReceiver {
 		remoteControlEvent.setTechnicalId(ieeeAddr);
 		remoteControlEvent.setEventType(EventType.ON_OFF);
 		remoteControlEvent.setClick(click);
-
 
 		EventBusService.getEventBus().post(remoteControlEvent);
 
@@ -692,9 +692,14 @@ public class ZigbeeMQTTReceiver {
 				.createQuery("select zb from ZigBeeDevice zb where zb.friendlyName=:friendlyName", ZigBeeDevice.class)
 				.setParameter("friendlyName", device).getResultList();
 
-		ZigBeeDevice zigBeeDevice = resultList.get(0);
+		if (resultList != null && !resultList.isEmpty()) {
 
-		return zigBeeDevice;
+			ZigBeeDevice zigBeeDevice = resultList.get(0);
+
+			return zigBeeDevice;
+		} else {
+			return null;
+		}
 	}
 
 	private void handleDeviceMessage(String message) {
