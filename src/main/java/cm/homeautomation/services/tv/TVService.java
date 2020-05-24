@@ -11,6 +11,7 @@ import javax.ws.rs.PathParam;
 
 import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
@@ -86,7 +87,7 @@ public class TVService extends BaseService {
 		return tvBinding.checkAlive(tvIp);
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void phoneEventHandler(final EventObject eventObject) {
 
 		final Object eventData = eventObject.getData();

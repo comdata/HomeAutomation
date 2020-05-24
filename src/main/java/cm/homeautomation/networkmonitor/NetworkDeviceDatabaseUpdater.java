@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.NetworkDevice;
@@ -20,7 +21,7 @@ public class NetworkDeviceDatabaseUpdater {
 		LogManager.getLogger(this.getClass()).debug("registered NetworkDeviceDatabaseUpdater");
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void handleNetworkDeviceFound(EventObject eventObject) {
 		final Object data = eventObject.getData();
 		if (data instanceof NetworkScannerHostFoundMessage) {

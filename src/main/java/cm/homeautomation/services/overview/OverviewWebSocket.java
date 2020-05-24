@@ -17,6 +17,7 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.eventbus.EventBusService;
@@ -52,7 +53,7 @@ public class OverviewWebSocket {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void handleSensorDataChanged(final EventObject eventObject) {
 
 		LogManager.getLogger(this.getClass()).info("Overview got event");
@@ -61,21 +62,23 @@ public class OverviewWebSocket {
 
 			final SensorData sensorData = (SensorData) eventData;
 
-			if (overviewService != null) {
+			if (overviewService != null && sensorData != null) {
 				final OverviewTile overviewTileForRoom = overviewService.updateOverviewTile(sensorData);
 
-				LogManager.getLogger(this.getClass())
-						.info("Got eventbus for room: " + sensorData.getSensor().getRoom().getRoomName());
+				if (sensorData.getSensor() != null && sensorData.getSensor().getRoom() != null) {
+					LogManager.getLogger(this.getClass())
+							.info("Got eventbus for room: " + sensorData.getSensor().getRoom().getRoomName());
 
-				try {
+					try {
 
-					overviewEndPointConfiguration = new OverviewEndPointConfiguration();
-					overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
-					LogManager.getLogger(this.getClass()).info("Sending tile: " + overviewTileForRoom.getRoomName()
-							+ " - " + overviewTileForRoom.getNumber());
-					overviewEndpoint.sendTile(overviewTileForRoom);
-				} catch (final InstantiationException e) {
-					LogManager.getLogger(this.getClass()).error("Sending eventbus updates failed", e);
+						overviewEndPointConfiguration = new OverviewEndPointConfiguration();
+						overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
+						LogManager.getLogger(this.getClass()).info("Sending tile: " + overviewTileForRoom.getRoomName()
+								+ " - " + overviewTileForRoom.getNumber());
+						overviewEndpoint.sendTile(overviewTileForRoom);
+					} catch (final InstantiationException e) {
+						LogManager.getLogger(this.getClass()).error("Sending eventbus updates failed", e);
+					}
 				}
 			} else {
 				// overview not initialized

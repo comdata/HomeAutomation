@@ -3,6 +3,7 @@ package cm.homeautomation.eventbus;
 import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.NoSubscriberEvent;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.services.base.AutoCreateInstance;
 
@@ -13,7 +14,7 @@ public class NoSubscriberEventListener {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void subscribe(NoSubscriberEvent event) {
 
 		LogManager.getLogger(this.getClass())

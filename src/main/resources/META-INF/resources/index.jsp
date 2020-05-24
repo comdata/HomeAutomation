@@ -6,7 +6,7 @@
     <title>Apache Tomcat</title>
 </head>
 
-<body onload="location.href='/HomeAutomationUI/index.html';">
+<body onload="location.href='index.html';">
 
 </body>
 </html>

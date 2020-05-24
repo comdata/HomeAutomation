@@ -1,6 +1,7 @@
 package cm.homeautomation.services.messaging;
 
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.eventbus.EventBusHumanMessageIgnore;
 import cm.homeautomation.eventbus.EventBusService;
@@ -13,7 +14,7 @@ public class HumanMessageEventTranslator {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void handleEvent(final EventObject eventObject) {
 
 		final Object eventData = eventObject.getData();

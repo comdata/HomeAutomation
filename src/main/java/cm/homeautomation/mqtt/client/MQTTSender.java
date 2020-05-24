@@ -24,6 +24,10 @@ public class MQTTSender {
 		// nothing to be done
 	}
 
+	public static MqttClient getClient() {
+		return client;
+	}
+
 	public static void sendMQTTMessage(String topic, String messagePayload) {
 		final Runnable mqttSendThread = () -> {
 			try {
@@ -44,7 +48,24 @@ public class MQTTSender {
 		new Thread(mqttSendThread).start();
 	}
 
-	private static void initClient() throws MqttException {
+	public static void sendSyncMQTTMessage(String topic, String messagePayload) {
+
+		try {
+			initClient();
+
+			log.debug("MQTT: sending message " + messagePayload + " to topic " + topic);
+
+			MqttMessage message = new MqttMessage();
+			message.setPayload(messagePayload.getBytes());
+			client.publish(topic, message);
+			log.debug("MQTT:  message sent " + messagePayload + " to topic " + topic);
+
+		} catch (MqttException e) {
+			log.error("Sending MQTT message: " + messagePayload + " failed.", e);
+		}
+	}
+
+	public static void initClient() throws MqttException {
 		if (client == null || !client.isConnected()) {
 
 			UUID uuid = UUID.randomUUID();
