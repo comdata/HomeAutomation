@@ -7,7 +7,6 @@ import javax.persistence.Persistence;
 
 public class EntityManagerService {
 
-	private static EntityManager em;
 	private static final String PERSISTENCE_UNIT_NAME = "HA";
 
 	private EntityManagerService() {
@@ -15,11 +14,8 @@ public class EntityManagerService {
 	}
 
 	public static EntityManager getManager() {
-		if (em == null) {
 
-			em = getNewManager();
-		}
-		return em;
+		return getNewManager();
 	}
 
 	@Produces
