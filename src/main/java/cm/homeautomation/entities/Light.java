@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.sap.olingo.jpa.metadata.core.edm.annotation.EdmIgnore;
+
 
 import lombok.Getter;
 import lombok.Setter;
@@ -44,7 +44,7 @@ public class Light {
 	@JsonBackReference("room")
 	@ManyToOne
 	@JoinColumn(name = "ROOM_ID")
-	@EdmIgnore
+	
 
 	private Room room;
 
@@ -53,7 +53,7 @@ public class Light {
 	@JsonBackReference("referencedSwitch")
 	@ManyToOne
 	@JoinColumn(name = "SWITCH_ID")
-	@EdmIgnore
+	
 	private Switch referencedSwitch;
 
 	private String lightGroup;

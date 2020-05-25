@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.sap.olingo.jpa.metadata.core.edm.annotation.EdmIgnore;
+
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes({ @JsonSubTypes.Type(value = MQTTSwitch.class, name = "MQTTSwitch"),
@@ -60,7 +60,7 @@ public class Switch {
 
 	@JoinColumn(nullable = true, referencedColumnName="ID")
 	@OneToOne(optional=true)
-	@EdmIgnore
+	
 	private IRCommand irCommand;
 
 	@Column(name = "SWITCH_SET_URL")
@@ -71,14 +71,14 @@ public class Switch {
 
 	@OneToOne
 	@JoinColumn(name = "SENSOR_ID")
-	@EdmIgnore
+	
 	private Sensor sensor;
 
 	@ManyToOne
 	@JoinColumn(name = "ROOM_ID")
 	@XmlTransient
 	@JsonIgnore
-	@EdmIgnore
+	
 	private Room room;
 
 	@Column(name = "VISIBLE", nullable = false)

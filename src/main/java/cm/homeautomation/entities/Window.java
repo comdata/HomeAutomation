@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.sap.olingo.jpa.metadata.core.edm.annotation.EdmIgnore;
+
 
 @Entity
 @Table(name = "WINDOWS")
@@ -29,12 +29,12 @@ public class Window {
 	@JsonBackReference("room")
 	@ManyToOne
 	@JoinColumn(name = "ROOM_ID")
-	@EdmIgnore
+	
 	private Room room;
 
 	@OneToOne
 	@JoinColumn(nullable = true)
-	@EdmIgnore
+	
 	private Sensor stateSensor;
 
 	@Column(name = "NAME")

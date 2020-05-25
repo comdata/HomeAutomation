@@ -14,7 +14,7 @@ import javax.persistence.TableGenerator;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.sap.olingo.jpa.metadata.core.edm.annotation.EdmIgnore;
+
 
 @Entity
 @Table(indexes = { @Index(name = "sensorId", columnList = "SENSOR_ID, VALIDTHRU") })
@@ -28,7 +28,7 @@ public class SensorData {
 
 	@ManyToOne
 	@JoinColumn(name = "SENSOR_ID", nullable = false)
-	@EdmIgnore
+	
 	@JsonIdentityReference
 	@JsonBackReference
 	private Sensor sensor;

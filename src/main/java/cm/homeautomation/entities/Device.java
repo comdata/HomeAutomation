@@ -13,7 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.sap.olingo.jpa.metadata.core.edm.annotation.EdmIgnore;
+
 
 @Entity
 public class Device {
@@ -35,7 +35,7 @@ public class Device {
 	@JsonBackReference("room")
 	@ManyToOne
 	@JoinColumn(name = "ROOM_ID", nullable = true)
-	@EdmIgnore
+	
 
 	private Room room;
 
@@ -46,7 +46,7 @@ public class Device {
 	private String name;
 
 	@OneToMany
-	@EdmIgnore
+	
 
 	private Map<String, Sensor> sensors;
 
