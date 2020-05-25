@@ -35,7 +35,7 @@ public class TripsICalReader {
 		System.setProperty("net.fortuna.ical4j.timezone.cache.impl", MapTimeZoneCache.class.getName());
 		CalendarBuilder calendarBuilder = new CalendarBuilder();
 
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 		em.getTransaction().begin();
 		// em.createQuery("delete from CalendarEntry").executeUpdate();
 

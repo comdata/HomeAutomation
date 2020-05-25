@@ -31,12 +31,10 @@ public class DeviceService extends BaseService {
 	@Path("getAll")
 	public List<Device> getAll() {
 
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		@SuppressWarnings("unchecked")
 		List<Device> resultList = em.createQuery("select d from Device d").getResultList();
-
-		em.close();
 		
 		return resultList;
 	}
@@ -54,7 +52,7 @@ public class DeviceService extends BaseService {
 	public GenericStatus createDevice(@PathParam("roomId") Long roomId, @PathParam("name") String name,
 			@PathParam("mac") String mac) {
 
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		Room room = (Room) em.createQuery("select r from Room r where r.id=:roomId").setParameter("roomId", roomId)
 				.getSingleResult();
@@ -71,7 +69,6 @@ public class DeviceService extends BaseService {
 		em.persist(room);
 
 		em.getTransaction().commit();
-		em.close();
 
 		return new GenericStatus(true);
 	}
@@ -89,7 +86,7 @@ public class DeviceService extends BaseService {
 	public GenericStatus update(@PathParam("roomId") String roomId, @PathParam("name") String name,
 			@PathParam("oldMac") String mac, @PathParam("newMac") String newMac) {
 
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		Device device = (Device) em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac)
 				.getSingleResult();
@@ -101,7 +98,7 @@ public class DeviceService extends BaseService {
 		em.merge(device);
 
 		em.getTransaction().commit();
-		em.close();
+
 		return new GenericStatus(true);
 	}
 
@@ -114,10 +111,10 @@ public class DeviceService extends BaseService {
 	@GET
 	@Path("delete/{mac}")
 	public GenericStatus delete(@PathParam("mac") String mac) {
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		@SuppressWarnings("unchecked")
-		List<Device> devices = (List<Device>)em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac)
+		List<Device> devices = em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac)
 				.getResultList();
 
 		em.getTransaction().begin();
@@ -132,7 +129,7 @@ public class DeviceService extends BaseService {
 
 		}
 		em.getTransaction().commit();
-		em.close();
+
 		return new GenericStatus(true);
 	}
 }

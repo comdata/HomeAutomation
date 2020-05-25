@@ -62,7 +62,7 @@ public class NetworkDevicesService extends BaseService {
 	public GenericStatus delete(@PathParam("name") final String name, @PathParam("ip") final String ip,
 			@PathParam("mac") final String mac) {
 
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		em.getTransaction().begin();
 
@@ -107,7 +107,7 @@ public class NetworkDevicesService extends BaseService {
 
 		if (data instanceof DashButtonEvent) {
 
-			EntityManager em = EntityManagerService.getNewManager();
+			EntityManager em = EntityManagerService.getManager();
 
 			final DashButtonEvent dbEvent = (DashButtonEvent) data;
 
@@ -138,14 +138,13 @@ public class NetworkDevicesService extends BaseService {
 	@Path("getAll")
 	@GET
 	public List<NetworkDevice> readAll() {
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 		@SuppressWarnings("unchecked")
 		List<NetworkDevice> resultList = em.createQuery("select n from NetworkDevice n").getResultList();
 
 		if (resultList == null) {
 			resultList = new ArrayList<>();
 		}
-		em.close();
 		return resultList;
 	}
 

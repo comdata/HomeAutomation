@@ -22,7 +22,7 @@ public class PowerMeterService extends BaseService {
 	@GET
 	@Path("readInterval")
 	public List<PowerIntervalData> getPowerDataForIntervals() {
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 		String minutes = "60";
 
 		List<Object[]> rawResultList = em.createNativeQuery(
@@ -39,7 +39,7 @@ public class PowerMeterService extends BaseService {
 					(Timestamp) resultElement[1]);
 			results.add(powerIntervalData);
 		}
-		em.close();
+
 
 		return results;
 	}

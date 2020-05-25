@@ -32,7 +32,7 @@ public class WeatherDataThread {
 	}
 
 	private Sensor getSensorType(String sensorType) {
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 		Object sensorResultObj = em.createQuery(
 				"select s from Sensor s where s.sensorType=:sensorType and s.room=(select r from Room r where r.roomName='Draussen')")
 				.setParameter("sensorType", sensorType).getSingleResult();
@@ -40,7 +40,7 @@ public class WeatherDataThread {
 		if (sensorResultObj instanceof Sensor) {
 			return (Sensor) sensorResultObj;
 		}
-		em.close();
+
 		return null;
 	}
 
@@ -58,7 +58,7 @@ public class WeatherDataThread {
 
 	public void loadAndStoreWeather() {
 		init();
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 		try {
 			WeatherData weatherData = WeatherService.getWeather();
 			em.getTransaction().begin();
@@ -116,6 +116,5 @@ public class WeatherDataThread {
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass()).error(e);
 		}
-		em.close();
 	}
 }

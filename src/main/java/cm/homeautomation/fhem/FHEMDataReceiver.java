@@ -87,7 +87,7 @@ public class FHEMDataReceiver {
 	}
 
 	private static void createNewFHEMDevices(String device) {
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 		
 		em.getTransaction().begin();
 		

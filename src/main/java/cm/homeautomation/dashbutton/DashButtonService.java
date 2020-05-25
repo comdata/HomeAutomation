@@ -95,7 +95,7 @@ public class DashButtonService {
 			}
 			final String vendorCode = mac.substring(0, 6);
 
-			final EntityManager em = EntityManagerService.getNewManager();
+			final EntityManager em = EntityManagerService.getManager();
 
 			try {
 				final DashButtonRange singleResult = (DashButtonRange) em

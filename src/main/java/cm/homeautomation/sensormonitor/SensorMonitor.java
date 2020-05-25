@@ -11,7 +11,7 @@ public class SensorMonitor {
 
 	public static void checkSensors() {
 		
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 		
 		String qlString = "select (select max(sd.validThru) from SensorData sd where sd.sensor=s) from Sensor s";
 		System.out.println("SQL: "+qlString);
@@ -24,8 +24,7 @@ public class SensorMonitor {
 				System.out.println("Date is null");
 			}
 		}
-		
-		em.close();
+
 	}
 	
 	public static void main(String[] args) {

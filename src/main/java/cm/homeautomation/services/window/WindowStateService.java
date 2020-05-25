@@ -51,7 +51,7 @@ public class WindowStateService extends BaseService {
 
 		final List<WindowStateData> windowStateList = new ArrayList<>();
 
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 
 		final List<WindowState> results = em.createQuery(
 				"select ws from WindowState ws where ws.id in (select max(w.id) from WindowState w group by w.window) order by ws.timestamp desc", WindowState.class)
@@ -76,8 +76,6 @@ public class WindowStateService extends BaseService {
 			windowStateList.add(windowStateData);
 		}
 
-		em.close();
-
 		return windowStateList;
 	}
 
@@ -89,7 +87,7 @@ public class WindowStateService extends BaseService {
 
 			LogManager.getLogger(this.getClass()).debug("window: " + windowId + " state: ---" + state + "---");
 
-			final EntityManager em = EntityManagerService.getNewManager();
+			final EntityManager em = EntityManagerService.getManager();
 
 			final List<Window> resultList = em.createQuery("select w from Window w where w.id=:id", Window.class).setParameter("id", windowId)
 					.getResultList();

@@ -18,7 +18,7 @@ public class TripsService extends BaseService{
 	@GET
 	public List<CalendarEntry> getUpcomingTrips() {
 		
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 		
 		@SuppressWarnings("unchecked")
 		List<CalendarEntry> resultList = em.createQuery("select c from CalendarEntry c where c.end >= :currentDate order by c.start ASC").setParameter("currentDate",new Date()).getResultList();

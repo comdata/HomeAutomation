@@ -99,7 +99,7 @@ public class TelegramBotService {
 	 * @param message
 	 */
 	public void sendMessage(final String message) {
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 
 		final List<TelegramUser> resultList = em.createQuery("select t from TelegramUser t", TelegramUser.class).getResultList();
 
@@ -127,6 +127,5 @@ public class TelegramBotService {
 			}
 		}
 
-		em.close();
 	}
 }

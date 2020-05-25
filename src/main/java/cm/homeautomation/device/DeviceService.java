@@ -25,7 +25,7 @@ public class DeviceService {
 		}
 
 		try {
-			final EntityManager em = EntityManagerService.getNewManager();
+			final EntityManager em = EntityManagerService.getManager();
 			mac = mac.toLowerCase();
 			LogManager.getLogger(DeviceService.class).info(MAC, mac);
 			final List<Device> devices = em.createQuery("select d from Device d where d.mac=:mac", Device.class)

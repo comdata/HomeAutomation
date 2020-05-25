@@ -31,7 +31,7 @@ public class MQTTTopicRecorder {
 
 	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void receiverMQTTTopicEvents(MQTTTopicEvent event) {
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		@NonNull
 		String topic = event.getTopic();

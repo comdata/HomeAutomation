@@ -42,7 +42,7 @@ public class DashButtonEventListener {
 
 		if (data instanceof DashButtonEvent) {
 
-			EntityManager em = EntityManagerService.getNewManager();
+			EntityManager em = EntityManagerService.getManager();
 
 			final DashButtonEvent dbEvent = (DashButtonEvent) data;
 

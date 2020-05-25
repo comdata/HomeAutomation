@@ -59,7 +59,7 @@ public class InfraredService extends BaseService {
 	@GET
 	@Path("get")
 	public List<IRCommand> getIRCommands() {
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 		return em.createQuery("select ic from IRCommand ic", IRCommand.class).getResultList();
 	}
 
@@ -76,7 +76,7 @@ public class InfraredService extends BaseService {
 		if (data instanceof IRData) {
 			final IRData irData = (IRData) data;
 
-			final EntityManager em = EntityManagerService.getNewManager();
+			final EntityManager em = EntityManagerService.getManager();
 
 			final String typeClear = irData.getTypeClear();
 			final String address = irData.getAddress();
@@ -127,7 +127,7 @@ public class InfraredService extends BaseService {
 	@GET
 	@Path("sendCommand/{id}")
 	public GenericStatus sendCommand(@PathParam("id") final Long id) throws JsonProcessingException {
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 		final List<IRCommand> resultList = em.createQuery("select ic from IRCommand ic where ic.id=:id", IRCommand.class)
 				.setParameter("id", id).getResultList();
 

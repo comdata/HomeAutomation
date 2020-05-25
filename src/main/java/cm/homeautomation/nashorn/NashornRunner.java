@@ -55,7 +55,7 @@ public class NashornRunner {
 		Logger logger = LogManager.getLogger(this.getClass());
 		if (engine != null) {
 
-			final EntityManager em = EntityManagerService.getNewManager();
+			final EntityManager em = EntityManagerService.getManager();
 
 			final List<ScriptingEntity> resultList = em
 					.createQuery("select se from ScriptingEntity se where se.scriptType=:scriptType",
@@ -82,7 +82,6 @@ public class NashornRunner {
 
 			}
 
-			em.close();
 		} else {
 			logger.debug("nashorn engine not enabled");
 		}

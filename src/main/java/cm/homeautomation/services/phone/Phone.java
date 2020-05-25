@@ -53,7 +53,7 @@ public class Phone extends BaseService {
 
 		PhoneCallEvent phoneCallEvent = new PhoneCallEvent(event, mode, internalNumber, externalNumber);
 
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 		em.getTransaction().begin();
 
 		em.persist(phoneCallEvent);
@@ -74,7 +74,7 @@ public class Phone extends BaseService {
 	@Path("getCallList")
 	public List<PhoneCallEvent> getCallList() {
 
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		return em.createQuery("select p from PhoneCallEvent p order by p.timestamp desc").getResultList();
 

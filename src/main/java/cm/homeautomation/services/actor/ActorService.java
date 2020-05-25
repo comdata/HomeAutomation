@@ -222,7 +222,7 @@ public class ActorService extends BaseService implements MqttCallback {
 	@GET
 	@Path("forroom/{room}")
 	public SwitchStatuses getSwitchStatusesForRoom(@PathParam("room") final String room) {
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 		final SwitchStatuses switchStatuses = new SwitchStatuses();
 
 		@SuppressWarnings("unchecked")
@@ -236,7 +236,6 @@ public class ActorService extends BaseService implements MqttCallback {
 
 			switchStatuses.getSwitchStatuses().add(singleSwitch);
 		}
-		em.close();
 
 		return switchStatuses;
 	}
@@ -250,7 +249,7 @@ public class ActorService extends BaseService implements MqttCallback {
 	@GET
 	@Path("thermostat/forroom/{room}")
 	public SwitchStatuses getThermostatStatusesForRoom(@PathParam("room") final String room) {
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 		final SwitchStatuses switchStatuses = new SwitchStatuses();
 
 		@SuppressWarnings("unchecked")
@@ -259,7 +258,6 @@ public class ActorService extends BaseService implements MqttCallback {
 				.setParameter("room", Long.parseLong(room)).getResultList();
 
 		switchStatuses.getSwitchStatuses().addAll(switchList);
-		em.close();
 		return switchStatuses;
 	}
 
@@ -313,7 +311,7 @@ public class ActorService extends BaseService implements MqttCallback {
 
 		targetStatus = targetStatus.toUpperCase();
 
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 
 		final Switch singleSwitch = (Switch) em.createQuery("select sw from Switch sw where sw.id=:switchId")
 				.setParameter("switchId", Float.parseFloat(switchId)).getSingleResult();
@@ -332,7 +330,6 @@ public class ActorService extends BaseService implements MqttCallback {
 		switchEvent.setSwitchId(switchId);
 		switchEvent.setUsedSwitch(singleSwitch);
 		EventBusService.getEventBus().post(new EventObject(switchEvent));
-		em.close();
 		return singleSwitch;
 	}
 

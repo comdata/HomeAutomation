@@ -63,12 +63,12 @@ public class CameraService extends BaseService {
 	@Produces("image/jpeg")
 	@GET
 	public Response getSnapshot(@PathParam("id") Long id) {
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		List<Camera> resultList = em.createQuery("select c from Camera c where c.id=:id", Camera.class)
 				.setParameter("id", id).getResultList();
 
-		em.close();
+
 
 		if (resultList != null && !resultList.isEmpty()) {
 			Camera camera = resultList.get(0);
@@ -92,7 +92,7 @@ public class CameraService extends BaseService {
 	}
 
 	public static void prepareCameraImage(String[] args) {
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 		@SuppressWarnings("unchecked")
 		List<Camera> resultList = em.createQuery("select c from Camera c where c.id=:id")
 				.setParameter("id", Long.parseLong(args[0])).getResultList();
@@ -146,12 +146,11 @@ public class CameraService extends BaseService {
 			em.getTransaction().rollback();
 			loadNoImage(args, em, camera);
 		} finally {
-			em.close();
 		}
 	}
 
 	private static void cleanOldImages() {
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		em.getTransaction().begin();
 
@@ -159,8 +158,6 @@ public class CameraService extends BaseService {
 				.setParameter("deleteDate", new Date((new Date()).getTime() - (3 * 86400 * 1000))).executeUpdate();
 
 		em.getTransaction().commit();
-		em.close();
-
 	}
 
 	private static void loadNoImage(String[] args, EntityManager em, Camera camera) {

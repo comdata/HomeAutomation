@@ -97,7 +97,7 @@ public class Sensors extends BaseService {
 	public SensorDatas getDataForRoom(@PathParam("room") final String room) {
 		final SensorDatas sensorDatas = new SensorDatas();
 
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 		final List<Sensor> sensors = em.createQuery(
 				"select s FROM Sensor s where s.showData=true and s.room=(select r from Room r where r.id=:room)",
 				Sensor.class).setParameter("room", Long.parseLong(room)).getResultList();
@@ -116,11 +116,6 @@ public class Sensors extends BaseService {
 		} catch (final InterruptedException e) {
 			LogManager.getLogger(this.getClass()).error(e);
 		}
-		try {
-			em.close();
-		} catch (final IllegalStateException e) {
-			// do nothing
-		}
 		return sensorDatas;
 	}
 
@@ -135,7 +130,7 @@ public class Sensors extends BaseService {
 	public void loadSensorData(final SensorDatas sensorDatas, final EntityManager em, final Date now,
 			final Sensor sensor) {
 
-		final EntityManager emSensor = EntityManagerService.getNewManager();
+		final EntityManager emSensor = EntityManagerService.getManager();
 
 		emSensor.getTransaction().begin();
 
@@ -215,11 +210,6 @@ public class Sensors extends BaseService {
 
 		emSensor.getTransaction().commit();
 
-		try {
-			em.close();
-		} catch (final IllegalStateException e) {
-			LogManager.getLogger(this.getClass()).error(e);
-		}
 	}
 
 	/**
@@ -272,7 +262,7 @@ public class Sensors extends BaseService {
 	public void registerRFEvent(final RFEvent event) throws SensorDataLimitViolationException {
 		final String code = Integer.toString(event.getCode());
 		LogManager.getLogger(this.getClass()).info("RF Event: " + code);
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 
 		try {
 			final Switch sw = em
@@ -323,7 +313,6 @@ public class Sensors extends BaseService {
 			LogManager.getLogger(this.getClass()).error(e);
 		}
 
-		em.close();
 	}
 
 	@POST
@@ -337,7 +326,7 @@ public class Sensors extends BaseService {
 
 		Long roomID = request.getRoomID();
 
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 
 		final String mac = request.getMac();
 		if ((roomID == null) && (mac != null)) {
@@ -362,7 +351,6 @@ public class Sensors extends BaseService {
 		}
 
 		saveSensorData(request, roomID, sensorList);
-		em.close();
 		return new GenericStatus(true);
 	}
 
@@ -407,7 +395,7 @@ public class Sensors extends BaseService {
 	@POST
 	@Path("forroom/save")
 	public void saveSensorData(final SensorDataSaveRequest request) throws SensorDataLimitViolationException {
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 
 		Sensor sensor = null;
 		if (request.getSensorId() != null) {
@@ -552,7 +540,6 @@ public class Sensors extends BaseService {
 		} else {
 			LogManager.getLogger(this.getClass()).error("sensor is null");
 		}
-		em.close();
 	}
 
 	private boolean saveSensorDataWithTime(final Long sensorId, final String value, final Date timestamp)

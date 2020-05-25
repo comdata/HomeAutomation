@@ -42,7 +42,7 @@ public class TVService extends BaseService {
 		LogManager.getLogger(TVService.class).debug("TVService got arguments: {}", Arrays.toString(args));
 		LogManager.getLogger(TVService.class).debug("TV status: {}", aliveStatus);
 		
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 
 		@SuppressWarnings("unchecked")
 		final List<Switch> resultList = (em

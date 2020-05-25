@@ -29,15 +29,14 @@ public class ConfigurationService {
 	 */
 	public static String getConfigurationProperty(String settingsGroup, String property) {
 
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		@SuppressWarnings("unchecked")
-		List<ConfigurationSetting> resultList = ((List<ConfigurationSetting>) em
+		List<ConfigurationSetting> resultList = (em
 				.createQuery(
 						"select c from ConfigurationSetting c where c.settingsGroup=:settingsGroup and c.property=:property")
 				.setParameter("settingsGroup", settingsGroup).setParameter("property", property).getResultList());
 
-		em.close();
 
 		if (resultList != null && !resultList.isEmpty()) {
 			return resultList.get(0).getValue();
@@ -55,10 +54,10 @@ public class ConfigurationService {
 	 * @param value
 	 */
 	public static void createOrUpdate(String settingsGroup, String property, String value) {
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		@SuppressWarnings("unchecked")
-		List<ConfigurationSetting> resultList = ((List<ConfigurationSetting>) em
+		List<ConfigurationSetting> resultList = (em
 				.createQuery(
 						"select c from ConfigurationSetting c where c.settingsGroup=:settingsGroup and c.property=:property")
 				.setParameter("settingsGroup", settingsGroup).setParameter("property", property).getResultList());
@@ -79,12 +78,12 @@ public class ConfigurationService {
 		}
 
 		em.getTransaction().commit();
-		em.close();
+
 	}
 
 
 	public static void purgeAllSettings() {
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		em.getTransaction().begin();
 		
@@ -95,7 +94,7 @@ public class ConfigurationService {
 
 
 	public static List<ConfigurationSetting> getAllSettings() {
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		@SuppressWarnings("unchecked")
 		List<ConfigurationSetting> resultList = em.createQuery("select c from ConfigurationSetting c").getResultList();

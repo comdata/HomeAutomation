@@ -28,7 +28,7 @@ public class AuthenticateCommand extends BotCommand {
 
 		authSecret = ConfigurationService.getConfigurationProperty("telegram", "auth-secret");
 
-		em = EntityManagerService.getNewManager();
+		em = EntityManagerService.getManager();
 	}
 
 	@Override

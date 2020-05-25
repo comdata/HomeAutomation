@@ -30,7 +30,7 @@ public class MQTTTopicSensorReceiver {
 	public void receiveMQTTTopic(MQTTTopicEvent topicEvent) {
 		log.debug("got topic: " + topicEvent.getTopic() + " -  message: " + topicEvent.getMessage());
 
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		String technicalType = "mqtt://" + topicEvent.getTopic();
 		try {

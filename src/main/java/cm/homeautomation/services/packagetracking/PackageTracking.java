@@ -373,15 +373,18 @@ public class PackageTracking {
 
 		// set up a TrustManager that trusts everything
 		sslContext.init(null, new TrustManager[] { new X509TrustManager() {
+			@Override
 			public X509Certificate[] getAcceptedIssuers() {
 				LogManager.getLogger(this.getClass()).info("getAcceptedIssuers =============");
 				return null;
 			}
 
+			@Override
 			public void checkClientTrusted(X509Certificate[] certs, String authType) {
 				LogManager.getLogger(this.getClass()).info("checkClientTrusted =============");
 			}
 
+			@Override
 			public void checkServerTrusted(X509Certificate[] certs, String authType) {
 				LogManager.getLogger(this.getClass()).info("checkServerTrusted =============");
 			}
@@ -511,7 +514,7 @@ public class PackageTracking {
 		}
 		
 		List<Package> allOpenPackages = new PackageTracking().getAllOpen();
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 		
 		em.getTransaction().begin();
 		for (Package openPackage : allOpenPackages) {
@@ -524,7 +527,7 @@ public class PackageTracking {
 			}
 		}
 		em.getTransaction().commit();
-		em.close();
+
 	}
 
 	private static boolean isPackageTracked(Package openPackage, List<Package> trackedPackages) {
@@ -540,7 +543,7 @@ public class PackageTracking {
 	@Path("getAllOpen")
 	@GET
 	public List<Package> getAllOpen() {
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 		
 		Map<String, String> createCarrierMap = createCarrierMap();
 
@@ -563,12 +566,12 @@ public class PackageTracking {
 			
 			newPackageList.add(singlePackage);
 		}
-		em.close();
+
 		return newPackageList;
 	}
 
 	private static void mergeTrackedPackage(Package trackedPackage) {
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		List<Package> results =  em
 				.createQuery(
@@ -604,7 +607,6 @@ public class PackageTracking {
 			em.merge(existingPackage);
 			em.getTransaction().commit();
 		}
-		em.close();
 
 	}
 

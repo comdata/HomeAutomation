@@ -19,7 +19,7 @@ public class GasMeterService extends BaseService {
 	@GET
 	@Path("readInterval")
 	public List<GasIntervalData> getPowerDataForIntervals() {
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 		String minutes="60";
 
 		List<Object[]> rawResultList = em.createNativeQuery(
@@ -31,7 +31,6 @@ public class GasMeterService extends BaseService {
 	    	GasIntervalData gasIntervalData = new GasIntervalData( (BigDecimal)resultElement[0], (Timestamp)resultElement[1]);
 	    	results.add(gasIntervalData);
 	    }
-		em.close();
 	    
 		return results;
 	}

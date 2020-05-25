@@ -17,7 +17,7 @@ public class CustomTaskCollector implements TaskCollector {
 	public TaskTable getTasks() {
 		TaskTable taskTable = new TaskTable();
 
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		List<SchedulingEntity> resultList = em
 				.createQuery("select s from SchedulingEntity s", SchedulingEntity.class).getResultList();

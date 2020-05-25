@@ -66,7 +66,7 @@ public class LightService extends BaseService {
 
 		light.setName(name);
 
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 		em.getTransaction().begin();
 
 		final Room room = (Room) em.createQuery("select r from Room r where r.id=:roomId")
@@ -78,7 +78,7 @@ public class LightService extends BaseService {
 		em.persist(light);
 
 		em.getTransaction().commit();
-		em.close();
+
 		return light;
 	}
 
@@ -120,7 +120,7 @@ public class LightService extends BaseService {
 	}
 
 	public Light getLightForTypeAndExternalId(final String type, final String externalId) {
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 
 		@SuppressWarnings("unchecked")
 		final List<Light> lights = em
@@ -138,7 +138,7 @@ public class LightService extends BaseService {
 	@Path("get/{roomId}")
 	public List<Light> getLights(@PathParam("roomId") final Long roomId) {
 
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 		@SuppressWarnings("unchecked")
 		final List<Light> resultList = em
 				.createQuery("select l from Light l where l.room=(select r from Room r where r.id=:roomId)")
@@ -158,7 +158,7 @@ public class LightService extends BaseService {
 				powerState = "on";
 			}
 
-			final EntityManager em = EntityManagerService.getNewManager();
+			final EntityManager em = EntityManagerService.getManager();
 			em.getTransaction().begin();
 			final Light light = (Light) em.createQuery("select l from Light l where l.id=:lightId")
 					.setParameter(LIGHT_ID, lightId).getSingleResult();

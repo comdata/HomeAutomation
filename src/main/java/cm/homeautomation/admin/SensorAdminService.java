@@ -20,10 +20,10 @@ public class SensorAdminService {
 	public GenericStatus createSensor(@PathParam("roomId") Long roomId, @PathParam("name") String name,
 			@PathParam("type") String type) {
 		GenericStatus genericStatus = new GenericStatus(true);
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		@SuppressWarnings("unchecked")
-		List<Room> rooms = (List<Room>) em.createQuery("select r from Room r where r.id=:roomId")
+		List<Room> rooms = em.createQuery("select r from Room r where r.id=:roomId")
 				.setParameter("roomId", roomId).getResultList();
 
 		for (Room room : rooms) {
@@ -41,7 +41,7 @@ public class SensorAdminService {
 
 			genericStatus.setObject(sensor);
 		}
-		em.close();
+
 		
 		return genericStatus;
 	}
@@ -51,10 +51,10 @@ public class SensorAdminService {
 	public GenericStatus updateSensor(@PathParam("sensorId") Long sensorId, @PathParam("name") String name,
 			@PathParam("type") String type) {
 
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		@SuppressWarnings("unchecked")
-		List<Sensor> sensors = (List<Sensor>) em.createQuery("select s from Sensor s where s.id=:sensorId")
+		List<Sensor> sensors = em.createQuery("select s from Sensor s where s.id=:sensorId")
 				.setParameter("sensorId", sensorId).getResultList();
 
 		if (sensors != null) {
@@ -67,8 +67,6 @@ public class SensorAdminService {
 			
 			em.getTransaction().commit();
 		}
-		
-		em.close();
 		return new GenericStatus(true);
 	}
 
@@ -76,10 +74,10 @@ public class SensorAdminService {
 	@Path("delete/{sensorId}")
 	public GenericStatus deleteSensor(@PathParam("sensorId") Long sensorId) {
 
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		@SuppressWarnings("unchecked")
-		List<Sensor> sensors = (List<Sensor>) em.createQuery("select s from Sensor s where s.id=:sensorId")
+		List<Sensor> sensors = em.createQuery("select s from Sensor s where s.id=:sensorId")
 				.setParameter("sensorId", sensorId).getResultList();
 
 		if (sensors != null) {
@@ -94,7 +92,7 @@ public class SensorAdminService {
 			em.getTransaction().commit();
 		}
 		
-		em.close();
+
 
 		return new GenericStatus(true);
 	}

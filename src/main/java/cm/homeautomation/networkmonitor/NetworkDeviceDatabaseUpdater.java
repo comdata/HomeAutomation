@@ -29,7 +29,7 @@ public class NetworkDeviceDatabaseUpdater {
 
 			final NetworkDevice networkDevice = foundHostMessage.getHost();
 
-			final EntityManager em = EntityManagerService.getNewManager();
+			final EntityManager em = EntityManagerService.getManager();
 			List<NetworkDevice> resultList = null;
 
 			final String mac = networkDevice.getMac();
@@ -67,8 +67,6 @@ public class NetworkDeviceDatabaseUpdater {
 				em.getTransaction().commit();
 				LogManager.getLogger(this.getClass()).debug("done creating new entry: "+networkDevice.getIp());
 			}
-
-			em.close();
 
 		}
 	}

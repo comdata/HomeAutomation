@@ -139,7 +139,7 @@ public class TradfriStartupService {
 
 		deviceList = executor.executeRequest(TradfrjRequests.lookupDevices(deviceIds));
 
-		em = EntityManagerService.getNewManager();
+		em = EntityManagerService.getManager();
 		em.getTransaction().begin();
 
 		for (Device device : deviceList) {
@@ -170,16 +170,13 @@ public class TradfriStartupService {
 			}
 		}
 		em.getTransaction().commit();
-		em.flush();
-		em.close();
-
 	}
 
 	private void updateLights() throws ServiceException {
 		Collection<Double> deviceIds = executor.executeRequest(TradfrjRequests.lookupDeviceIDs());
 
 		lightList = executor.executeRequest(TradfrjRequests.lookupLights(deviceIds));
-		em = EntityManagerService.getNewManager();
+		em = EntityManagerService.getManager();
 
 		for (Light deviceLight : lightList) {
 			LogManager.getLogger(this.getClass()).debug("Found {} name: {}", deviceLight.getId(),
@@ -215,7 +212,6 @@ public class TradfriStartupService {
 
 				em.persist(dimmableLight);
 
-				em.flush();
 				em.getTransaction().commit();
 			}
 
@@ -240,7 +236,7 @@ public class TradfriStartupService {
 			}
 
 			em.merge(dimmableLight);
-			em.flush();
+
 			em.getTransaction().commit();
 
 			// emit light changed event
@@ -248,8 +244,6 @@ public class TradfriStartupService {
 
 			LogManager.getLogger(this.getClass()).trace("Bulb event done");
 		}
-		em.close();
-
 	}
 
 	private String createToken(TradfrjService service, String secret, String user) throws ServiceException {

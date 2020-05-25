@@ -21,7 +21,7 @@ import cm.homeautomation.services.base.GenericStatus;
 public class PresenceService extends BaseService {
 
 	public GenericStatus purgeStates() {
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 		
 		em.getTransaction().begin();
 		
@@ -36,12 +36,12 @@ public class PresenceService extends BaseService {
 	@Path("setPresence/{id}/{state}")
 	public GenericStatus setPresence(@PathParam("id") Long id, @PathParam("state") String state) {
 
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		Person person = null;
 
 		@SuppressWarnings("unchecked")
-		List<Person> resultList = (List<Person>) em.createQuery("select p from Person p where p.id=:id")
+		List<Person> resultList = em.createQuery("select p from Person p where p.id=:id")
 				.setParameter("id", id).getResultList();
 
 		if (resultList != null && !resultList.isEmpty()) {
@@ -51,7 +51,7 @@ public class PresenceService extends BaseService {
 		if (person != null) {
 			PresenceState presenceState = null;
 			@SuppressWarnings("unchecked")
-			List<PresenceState> result = (List<PresenceState>) em
+			List<PresenceState> result = em
 					.createQuery("select p from PresenceState p where p.person=:person order by p.date desc")
 					.setParameter("person", person).getResultList();
 
@@ -77,7 +77,6 @@ public class PresenceService extends BaseService {
 			}
 		}
 		
-		em.close();
 		
 		return new GenericStatus(true);
 	}
@@ -88,11 +87,11 @@ public class PresenceService extends BaseService {
 		
 		List<PresenceState> foundPresenceStates=new ArrayList<>();
 		
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 
 		@SuppressWarnings("unchecked")
-		List<Person> personList = (List<Person>) em.createQuery("select p from Person p").getResultList();
+		List<Person> personList = em.createQuery("select p from Person p").getResultList();
 		
 		for (Person person: personList) {
 			

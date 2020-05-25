@@ -72,7 +72,7 @@ public class ThermostatService extends BaseService {
 	@Path("setValue/{id}/{value}")
 	public GenericStatus setValue(@PathParam("id") final Long id, @PathParam("value") final String value) {
 
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 		em.getTransaction().begin();
 		final Switch singleSwitch = (Switch) em.createQuery("select s from Switch s where s.id=:id")
 				.setParameter("id", id).getSingleResult();
@@ -89,7 +89,6 @@ public class ThermostatService extends BaseService {
 		em.getTransaction().commit();
 
 		LogManager.getLogger(this.getClass()).info("Set " + id + " to value: " + value);
-		em.close();
 		return new GenericStatus(true);
 	}
 

@@ -10,7 +10,7 @@ import cm.homeautomation.entities.UptimePing;
 public class UptimeRecording {
 
 	public static void recordUptime(String[] args) {
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 		
 		em.getTransaction().begin();
 		
@@ -21,7 +21,6 @@ public class UptimeRecording {
 		em.persist(uptimePing);
 		
 		em.getTransaction().commit();
-		em.close();
 	}
 	
 }

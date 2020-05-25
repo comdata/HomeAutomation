@@ -117,7 +117,7 @@ public class PowerMeterSensor {
 		if (data instanceof PowerMeterData) {
 
 			try {
-				final EntityManager em = EntityManagerService.getNewManager();
+				final EntityManager em = EntityManagerService.getManager();
 
 				final PowerMeterData powerData = (PowerMeterData) data;
 
@@ -131,7 +131,6 @@ public class PowerMeterSensor {
 
 				em.persist(powerMeterPing);
 				em.getTransaction().commit();
-				em.close();
 
 			} catch (final Exception e) {
 				LogManager.getLogger(PowerMeterSensor.class).error("error persisting power data", e);
@@ -174,7 +173,7 @@ public class PowerMeterSensor {
 	}
 
 	private void sendNewData() {
-		final EntityManager em = EntityManagerService.getNewManager();
+		final EntityManager em = EntityManagerService.getManager();
 
 		final BigDecimal oneMinute = runQueryForBigDecimal(em,
 				"select sum(POWERCOUNTER)/10000*60 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 1 MINUTE;");
@@ -217,9 +216,6 @@ public class PowerMeterSensor {
 		powerMeterIntervalData.setYesterday(yesterday.floatValue());
 		powerMeterIntervalData.setLastSevenDays(lastSevenDays.floatValue());
 		powerMeterIntervalData.setLastSevenDaysTrend(lastSevenDays.compareTo(lastEightDaysBeforeTillYesterday));
-
-		em.clear();
-		em.close();
 
 		final EventObject intervalEventObject = new EventObject(powerMeterIntervalData);
 		EventBusService.getEventBus().post(intervalEventObject);

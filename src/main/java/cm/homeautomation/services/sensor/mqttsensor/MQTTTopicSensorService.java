@@ -27,7 +27,7 @@ public class MQTTTopicSensorService extends BaseService {
 	@Path("getAll")
 	public List<MQTTTopic> getAllTopics() {
 
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		return em.createQuery("select t from MQTTTopic t", MQTTTopic.class).getResultList();
 	}
@@ -37,7 +37,7 @@ public class MQTTTopicSensorService extends BaseService {
 	public GenericStatus createSensorForTopic(@PathParam("topicId") Long topicId, @PathParam("roomId") Long roomId,
 			@PathParam("sensorName") String sensorName) {
 
-		EntityManager em = EntityManagerService.getNewManager();
+		EntityManager em = EntityManagerService.getManager();
 
 		em.getTransaction().begin();
 

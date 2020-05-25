@@ -35,7 +35,7 @@ public class SecurityService extends BaseService {
 	private final EntityManager em;
 
 	public SecurityService() {
-		em = EntityManagerService.getNewManager();
+		em = EntityManagerService.getManager();
 		EventBusService.getEventBus().register(this);
 	}
 
