@@ -13,21 +13,15 @@ import lombok.Setter;
 @JsonSubTypes({ @JsonSubTypes.Type(value = RGBLight.class, name = "RGBLight"),
 		@JsonSubTypes.Type(value = DimmableColorLight.class, name = "DimmableColorLight") })
 @Entity
+@Getter
+@Setter
 public class DimmableLight extends Light {
-
-    @Getter
-    @Setter    
 	@Column(name = "BRIGHTNESS")
 	private int brightnessLevel = 0;
 
-    @Getter
-    @Setter
 	@Column(name = "MINIMUM_VALUE")
 	private int minimumValue = 0;
 
-    @Getter
-    @Setter
 	@Column(name = "MAXIMUM_VALUE")
 	private int maximumValue = 0;
-
 }

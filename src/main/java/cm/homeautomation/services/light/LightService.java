@@ -21,6 +21,7 @@ import cm.homeautomation.tradfri.TradfriStartupService;
 @Path("light")
 public class LightService extends BaseService {
 
+	private static final String DIMVALUE_CONST = "{DIMVALUE}";
 	private static final String ZIGBEE = "ZIGBEE";
 	private static final String LIGHT_ID = "lightId";
 	private static final String TRADFRI = "TRADFRI";
@@ -204,8 +205,6 @@ public class LightService extends BaseService {
 				TradfriStartupService.getInstance().dimBulb(light.getExternalId(), dimValue);
 			}
 			if (MQTT.equals(light.getLightType()) || ZIGBEE.equals(light.getLightType())) {
-				// TODO MQTT Dimming
-
 				String topic;
 				String messagePayload;
 
@@ -216,13 +215,13 @@ public class LightService extends BaseService {
 					topic = light.getMqttPowerOnTopic();
 					messagePayload = light.getMqttPowerOnMessage();
 					
-					messagePayload = messagePayload.replace("{DIMVALUE}", Integer.toString(dimValue));
+					messagePayload = messagePayload.replace(DIMVALUE_CONST, Integer.toString(dimValue));
 				}
 
 				MQTTSender.sendMQTTMessage(topic, messagePayload);
 			} else {
 
-				dimUrl = dimUrl.replace("{DIMVALUE}", Integer.toString(dimValue));
+				dimUrl = dimUrl.replace(DIMVALUE_CONST, Integer.toString(dimValue));
 				dimUrl = dimUrl.replace("{STATE}", powerState);
 
 				HTTPHelper.performHTTPRequest(dimUrl);
@@ -235,32 +234,37 @@ public class LightService extends BaseService {
 	@GET
 	@Path("color/{lightId}/{hex}")
 	public GenericStatus setColor(@PathParam(LIGHT_ID) final long lightId, @PathParam("hex") final String hex) {
+		final String shortHex = hex.substring(1);
 		final EntityManager em = EntityManagerService.getManager();
-		em.getTransaction().begin();
-		final Light light = (Light) em.createQuery("select l from Light l where l.id=:lightId")
-				.setParameter(LIGHT_ID, lightId).getSingleResult();
 
-		if (light instanceof RGBLight) {
-			final RGBLight colorLight = (RGBLight) light;
+		RGBLight rgbLight = em.find(RGBLight.class, lightId);
 
-			colorLight.setColor(hex);
+		if (rgbLight != null) {
 
-			final String shortHex = hex.substring(1);
+			rgbLight.setColor(hex);
 
-			em.persist(colorLight);
+			em.getTransaction().begin();
+			em.persist(rgbLight);
+			em.getTransaction().commit();
 
-			String colorUrl = colorLight.getColorUrl();
-
-			if (TRADFRI.equals(colorLight.getLightType())) {
-				TradfriStartupService.getInstance().setColor(light.getExternalId(), shortHex);
+			if (TRADFRI.equals(rgbLight.getLightType())) {
+				TradfriStartupService.getInstance().setColor(rgbLight.getExternalId(), shortHex);
+			} else if (MQTT.equals(rgbLight.getLightType()) || ZIGBEE.equals(rgbLight.getLightType())) {
+				if (rgbLight.getMqttColorMessage() != null
+						&& rgbLight.getMqttColorTopic() != null) {
+					String topic = rgbLight.getMqttColorTopic();
+					String messagePayload = rgbLight.getMqttColorMessage().replace("{HEXVALUE}", shortHex);
+					MQTTSender.sendMQTTMessage(topic, messagePayload);
+				}
 			} else {
+				String colorUrl = rgbLight.getColorUrl();
 				if (colorUrl != null) {
 					colorUrl = colorUrl.replace("{HEXVALUE}", shortHex);
 					HTTPHelper.performHTTPRequest(colorUrl);
 				}
 			}
 		}
-		em.getTransaction().commit();
+
 
 		return new GenericStatus(true);
 	}
@@ -270,15 +274,12 @@ public class LightService extends BaseService {
 
 		RGBLight rgbLight = em.find(RGBLight.class, lightId);
 
-		if (rgbLight != null) {
+		if (rgbLight != null && rgbLight.getMqttColorMessage() != null && rgbLight.getMqttColorTopic() != null) {
 
-			if (rgbLight.getMqttColorMessage() != null && rgbLight.getMqttColorTopic() != null) {
-
-				String topic = rgbLight.getMqttColorTopic();
-				String messagePayload = rgbLight.getMqttColorMessage().replace("{DIMVALUE}",
-						Integer.toString(dimValue)).replace("{colorX}", x.toString()).replace("{colorY}", y.toString());
-				MQTTSender.sendMQTTMessage(topic, messagePayload);
-			}
+			String topic = rgbLight.getMqttColorTopic();
+			String messagePayload = rgbLight.getMqttColorMessage().replace(DIMVALUE_CONST, Integer.toString(dimValue))
+					.replace("{colorX}", x.toString()).replace("{colorY}", y.toString());
+			MQTTSender.sendMQTTMessage(topic, messagePayload);
 		}
 
 	}
