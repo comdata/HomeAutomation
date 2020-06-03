@@ -105,7 +105,7 @@ public class RemoteControlEventListener {
 							switch (remoteControlGroupMember.getType()) {
 							case LIGHT:
 								LightService.getInstance().setLightState(remoteControlGroupMember.getExternalId(),
-										(event.isPoweredOnState() ? LightStates.ON : LightStates.OFF));
+										(event.isPoweredOnState() ? LightStates.ON : LightStates.OFF), false);
 								break;
 							case SWITCH:
 								ActorService.getInstance().pressSwitch(

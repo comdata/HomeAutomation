@@ -88,10 +88,10 @@ public class LightService extends BaseService {
 	@GET
 	@Path("dim/{lightId}/{dimValue}")
 	public GenericStatus dimLight(@PathParam(LIGHT_ID) final long lightId, @PathParam("dimValue") int dimValue) {
-		return internalDimLight(lightId, dimValue, false);
+		return internalDimLight(lightId, dimValue, false, true);
 	}
 
-	public GenericStatus setLightState(long lightId, LightStates state) {
+	public GenericStatus setLightState(long lightId, LightStates state, boolean isAbsoluteValue) {
 		final EntityManager em = EntityManagerService.getManager();
 
 		Light light = em.find(Light.class, lightId);
@@ -119,7 +119,7 @@ public class LightService extends BaseService {
 			}
 		}
 
-		return internalDimLight(lightId, newDimValue, false);
+		return internalDimLight(lightId, newDimValue, false, isAbsoluteValue);
 	}
 
 	public Light getLightForTypeAndExternalId(final String type, final String externalId) {
@@ -150,7 +150,8 @@ public class LightService extends BaseService {
 		return resultList;
 	}
 
-	private GenericStatus internalDimLight(final long lightId, final int dimPercentValue, boolean calledForGroup) {
+	private GenericStatus internalDimLight(final long lightId, final int dimPercentValue, boolean calledForGroup,
+			boolean isAbsoluteValue) {
 
 		final Runnable httpRequestThread = () -> {
 			String powerState = "off";
@@ -170,18 +171,19 @@ public class LightService extends BaseService {
 
 			LogManager.getLogger(this.getClass()).error("dimPercentValue: " + dimPercentValue);
 
-			if (light instanceof DimmableLight) {
-				DimmableLight dimLight = (DimmableLight) light;
+			if (!isAbsoluteValue) {
+				if (light instanceof DimmableLight) {
+					DimmableLight dimLight = (DimmableLight) light;
 
-				if (dimLight.getMaximumValue() > 0 && dimLight.getMinimumValue() >= 0) {
-					int range = dimLight.getMaximumValue() - dimLight.getMinimumValue();
+					if (dimLight.getMaximumValue() > 0 && dimLight.getMinimumValue() >= 0) {
+						int range = dimLight.getMaximumValue() - dimLight.getMinimumValue();
 
-					if (range > 0) {
-						dimValue = dimLight.getMinimumValue()
-								+ ((range * dimPercentValue) / 100);
+						if (range > 0) {
+							dimValue = dimLight.getMinimumValue() + ((range * dimPercentValue) / 100);
+						}
 					}
-				}
 
+				}
 			}
 
 			LogManager.getLogger(this.getClass()).error("dimValue: " + dimValue);
@@ -198,7 +200,7 @@ public class LightService extends BaseService {
 
 					if ((resultList != null) && !resultList.isEmpty()) {
 						for (final Light lightGroupMember : resultList) {
-							internalDimLight(lightGroupMember.getId(), dimValue, true);
+							internalDimLight(lightGroupMember.getId(), dimValue, true, isAbsoluteValue);
 						}
 					}
 				}

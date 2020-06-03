@@ -184,7 +184,7 @@ public class HueInterface extends BaseService {
 			} else {
 
 				LightService.getInstance().setLightState(hueDevice.getExternalId(),
-						("on".equals(message.getPayload()) ? LightStates.ON : LightStates.OFF));
+						("on".equals(message.getPayload()) ? LightStates.ON : LightStates.OFF), false);
 			}
 		}
 	}
