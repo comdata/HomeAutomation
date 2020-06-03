@@ -177,7 +177,9 @@ public class LightService extends BaseService {
 					int range = dimLight.getMaximumValue() - dimLight.getMinimumValue();
 
 					if (range > 0) {
-						dimValue = dimLight.getMinimumValue() + (range / 100 * dimPercentValue);
+						dimValue = dimLight.getMinimumValue()
+								+ (int) ((range / 100f)
+										* dimPercentValue);
 					}
 				}
 
