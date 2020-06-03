@@ -7,6 +7,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import org.apache.log4j.LogManager;
+
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DimmableLight;
 import cm.homeautomation.entities.Light;
@@ -166,6 +168,8 @@ public class LightService extends BaseService {
 
 			int dimValue = dimPercentValue;
 
+			LogManager.getLogger(this.getClass()).error("dimPercentValue: " + dimPercentValue);
+
 			if (light instanceof DimmableLight) {
 				DimmableLight dimLight = (DimmableLight) light;
 
@@ -178,6 +182,9 @@ public class LightService extends BaseService {
 				}
 
 			}
+
+			LogManager.getLogger(this.getClass()).error("dimValue: " + dimValue);
+
 			// if part of a group then call for the others as well
 			if (!calledForGroup) {
 				final String lightGroup = light.getLightGroup();
