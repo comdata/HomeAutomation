@@ -173,7 +173,7 @@ public class LightService extends BaseService {
 			if (light instanceof DimmableLight) {
 				DimmableLight dimLight = (DimmableLight) light;
 
-				if (dimLight.getMaximumValue() > 0 && dimLight.getMinimumValue() > 0) {
+				if (dimLight.getMaximumValue() > 0 && dimLight.getMinimumValue() >= 0) {
 					int range = dimLight.getMaximumValue() - dimLight.getMinimumValue();
 
 					if (range > 0) {
