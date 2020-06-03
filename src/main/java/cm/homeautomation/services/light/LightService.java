@@ -178,8 +178,7 @@ public class LightService extends BaseService {
 
 					if (range > 0) {
 						dimValue = dimLight.getMinimumValue()
-								+ (int) ((range / 100f)
-										* dimPercentValue);
+								+ ((range * dimPercentValue) / 100);
 					}
 				}
 
