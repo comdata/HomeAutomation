@@ -148,12 +148,12 @@ public class LightService extends BaseService {
 		return resultList;
 	}
 
-	private GenericStatus internalDimLight(final long lightId, final int dimValue, boolean calledForGroup) {
+	private GenericStatus internalDimLight(final long lightId, final int dimPercentValue, boolean calledForGroup) {
 
 		final Runnable httpRequestThread = () -> {
 			String powerState = "off";
 
-			if (dimValue == 0) {
+			if (dimPercentValue == 0) {
 				powerState = "off";
 			} else {
 				powerState = "on";
@@ -164,6 +164,20 @@ public class LightService extends BaseService {
 			final Light light = (Light) em.createQuery("select l from Light l where l.id=:lightId")
 					.setParameter(LIGHT_ID, lightId).getSingleResult();
 
+			int dimValue = dimPercentValue;
+
+			if (light instanceof DimmableLight) {
+				DimmableLight dimLight = (DimmableLight) light;
+
+				if (dimLight.getMaximumValue() > 0 && dimLight.getMinimumValue() > 0) {
+					int range = dimLight.getMaximumValue() - dimLight.getMinimumValue();
+
+					if (range > 0) {
+						dimValue = dimLight.getMinimumValue() + (range / 100 * dimPercentValue);
+					}
+				}
+
+			}
 			// if part of a group then call for the others as well
 			if (!calledForGroup) {
 				final String lightGroup = light.getLightGroup();
@@ -214,7 +228,7 @@ public class LightService extends BaseService {
 				} else {
 					topic = light.getMqttPowerOnTopic();
 					messagePayload = light.getMqttPowerOnMessage();
-					
+
 					messagePayload = messagePayload.replace(DIMVALUE_CONST, Integer.toString(dimValue));
 				}
 
@@ -250,8 +264,7 @@ public class LightService extends BaseService {
 			if (TRADFRI.equals(rgbLight.getLightType())) {
 				TradfriStartupService.getInstance().setColor(rgbLight.getExternalId(), shortHex);
 			} else if (MQTT.equals(rgbLight.getLightType()) || ZIGBEE.equals(rgbLight.getLightType())) {
-				if (rgbLight.getMqttColorMessage() != null
-						&& rgbLight.getMqttColorTopic() != null) {
+				if (rgbLight.getMqttColorMessage() != null && rgbLight.getMqttColorTopic() != null) {
 					String topic = rgbLight.getMqttColorTopic();
 					String messagePayload = rgbLight.getMqttColorMessage().replace("{HEXVALUE}", shortHex);
 					MQTTSender.sendMQTTMessage(topic, messagePayload);
@@ -264,7 +277,6 @@ public class LightService extends BaseService {
 				}
 			}
 		}
-
 
 		return new GenericStatus(true);
 	}
