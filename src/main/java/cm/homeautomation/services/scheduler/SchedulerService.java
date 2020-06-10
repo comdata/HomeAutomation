@@ -53,7 +53,8 @@ public class SchedulerService extends BaseService {
 
 		EntityManager em = EntityManagerService.getManager();
 
-		List<Task> tasks = em.createQuery("select t from Task t", Task.class).getResultList();
+		List<Task> tasks = em.createQuery("select t from Task t", Task.class)
+				.setHint("javax.persistence.cache.storeMode", "REFRESH").getResultList();
 
 		if (tasks != null && !tasks.isEmpty()) {
 
