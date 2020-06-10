@@ -19,6 +19,7 @@ import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.SchedulerException;
 import org.quartz.TriggerBuilder;
 
@@ -72,6 +73,13 @@ public class SchedulerService extends BaseService {
 
 					CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(name, group)
 							.withSchedule(CronScheduleBuilder.cronSchedule(cronExpression)).build();
+
+					JobKey jobKey = new JobKey(name, group);
+					JobDetail existingJob = quartz.getJobDetail(jobKey);
+
+					if (existingJob != null) {
+						quartz.deleteJob(jobKey);
+					}
 
 					quartz.scheduleJob(job, trigger);
 				} catch (SchedulerException e) {
