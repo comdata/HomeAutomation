@@ -16,7 +16,7 @@ pipeline {
 		stage('Build Backend') {
 			steps {
 				withMaven() {
-					sh '$MVN_CMD -DskipTests -B package'
+					sh '$MVN_CMD -DskipTests -B clean package'
             	}
             }
 		}
