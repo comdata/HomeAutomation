@@ -71,12 +71,13 @@
 		<class>cm.homeautomation.entities.ZigbeeLight</class>
 		<class>cm.homeautomation.entities.ZigbeeMotionSensor</class>
 		<class>cm.homeautomation.entities.LoggingEntity</class>
+		<class>cm.homeautomation.entities.Task</class>
 		<class>cm.homeautomation.zigbee.ZigbeeWaterSensor</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver"
 				value="org.mariadb.jdbc.Driver" />
 			<property name="javax.persistence.jdbc.url"
-				value="jdbc:mariadb://ha-mariadb:3306/HA?characterEncoding=utf8" />
+				value="jdbc:mariadb://nas:3306/HA?characterEncoding=utf8" />
 			<property name="javax.persistence.jdbc.user" value="root" />
 			<property name="javax.persistence.jdbc.password" value="" />
 

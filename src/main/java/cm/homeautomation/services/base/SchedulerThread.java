@@ -14,7 +14,6 @@ import it.sauronsoftware.cron4j.TaskCollector;
  * @author christoph
  *
  */
-@AutoCreateInstance
 public class SchedulerThread {
 	private static SchedulerThread instance = null;
 	private Scheduler scheduler;
