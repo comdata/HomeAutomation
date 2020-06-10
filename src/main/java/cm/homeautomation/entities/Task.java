@@ -21,6 +21,8 @@ public class Task {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	String description;
+
 	String clazz;
 
 	String method;
