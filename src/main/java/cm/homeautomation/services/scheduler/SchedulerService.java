@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -14,6 +15,8 @@ import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
+import org.apache.commons.collections4.map.HashedMap;
+import org.apache.log4j.LogManager;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
@@ -26,12 +29,13 @@ import org.quartz.TriggerBuilder;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Task;
 import cm.homeautomation.services.base.BaseService;
-import cm.homeautomation.services.base.SchedulerThread;
 import io.quarkus.runtime.StartupEvent;
 
 @ApplicationScoped
 @Path("scheduler")
 public class SchedulerService extends BaseService {
+
+	Map<Long, JobKey> jobMap = new HashedMap<>();
 
 	@Inject
 	org.quartz.Scheduler quartz;
@@ -44,8 +48,7 @@ public class SchedulerService extends BaseService {
 		try {
 			initialize();
 		} catch (SchedulerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error(e);
 		}
 	}
 
@@ -61,30 +64,37 @@ public class SchedulerService extends BaseService {
 			for (Task task : tasks) {
 
 				try {
-					JobDataMap newJobDataMap = new JobDataMap();
-					newJobDataMap.put("clazz", task.getClazz());
-					newJobDataMap.put("method", task.getMethod());
-					newJobDataMap.put("arguments", task.getArguments());
 					String group = task.getClazz() + "." + task.getMethod();
-					String name = "ID_" + task.getId();
-					JobDetail job = JobBuilder.newJob(SingleJobClass.class).usingJobData(newJobDataMap)
-							.withIdentity(name, group).build();
-
-					String cronExpression = task.getCronExpression();
-
-					CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(name, group)
-							.withSchedule(CronScheduleBuilder.cronSchedule(cronExpression)).build();
+					Long taskId = task.getId();
+					String name = "ID_" + taskId;
 
 					JobKey jobKey = new JobKey(name, group);
 					JobDetail existingJob = quartz.getJobDetail(jobKey);
 
 					if (existingJob != null) {
 						quartz.deleteJob(jobKey);
+						jobMap.remove(taskId);
 					}
 
-					quartz.scheduleJob(job, trigger);
+					if (task.isEnabled()) {
+						JobDataMap newJobDataMap = new JobDataMap();
+						newJobDataMap.put("clazz", task.getClazz());
+						newJobDataMap.put("method", task.getMethod());
+						newJobDataMap.put("arguments", task.getArguments());
+
+						JobDetail job = JobBuilder.newJob(SingleJobClass.class).usingJobData(newJobDataMap)
+								.withIdentity(name, group).build();
+
+						String cronExpression = task.getCronExpression();
+
+						CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(name, group)
+								.withSchedule(CronScheduleBuilder.cronSchedule(cronExpression)).build();
+
+						quartz.scheduleJob(job, trigger);
+						jobMap.put(taskId, jobKey);
+					}
 				} catch (SchedulerException e) {
-					e.printStackTrace();
+					LogManager.getLogger(this.getClass()).error(e);
 				}
 			}
 
@@ -102,13 +112,10 @@ public class SchedulerService extends BaseService {
 		try {
 			this.initialize();
 		} catch (SchedulerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error(e);
 		}
 
 		SchedulerResponse schedulerResponse = new SchedulerResponse();
-
-		SchedulerThread.getInstance().reloadScheduler();
 
 		schedulerResponse.setSuccess(true);
 		return schedulerResponse;
@@ -116,9 +123,8 @@ public class SchedulerService extends BaseService {
 
 	@GET
 	@Path("getTasks")
-	public List<Task> getSchedulerEntries() {
-
-		return null;
+	public Map<Long, JobKey> getSchedulerEntries() {
+		return jobMap;
 	}
 
 	@GET

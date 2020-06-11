@@ -27,6 +27,8 @@ public class Task {
 
 	String method;
 
+	boolean enabled = true;
+
 	@ElementCollection
 	@CollectionTable
 	List<String> arguments;

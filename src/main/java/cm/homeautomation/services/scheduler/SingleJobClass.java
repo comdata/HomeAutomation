@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -34,9 +35,9 @@ public class SingleJobClass implements Job {
 
 			specificMethod.invoke(null, args);
 
-		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException 
-				| IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-			e.printStackTrace();
+		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException | IllegalArgumentException
+				| IllegalAccessException | InvocationTargetException e) {
+			LogManager.getLogger(this.getClass()).error(e);
 		}
 
 	}
