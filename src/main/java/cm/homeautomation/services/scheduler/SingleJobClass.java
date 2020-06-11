@@ -28,7 +28,13 @@ public class SingleJobClass implements Job {
 
 			Method specificMethod = Class.forName(clazz).getMethod(method, String[].class);
 
-			System.out.println("Invoking method Task called. " + clazz + "." + method);
+			String argumentString = "";
+			for (String argument : arguments) {
+				argumentString += argument + "; ";
+			}
+
+			System.out
+					.println("Invoking method Task called. " + clazz + "." + method + " arguments: " + argumentString);
 
 			final Object[] args = new Object[1];
 			args[0] = arguments;
