@@ -2,6 +2,7 @@ package cm.homeautomation.services.hueinterface;
 
 import java.util.List;
 
+import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -43,7 +44,8 @@ public class HueInterface extends BaseService {
 
 			List<HueDevice> hueDeviceNameList = em.createQuery("select hd from HueDevice hd where hd.name=:name",
 					HueDevice.class)
-					.setParameter("name", message.getDeviceName()).getResultList();
+					.setParameter("name", message.getDeviceName())
+					.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS).getResultList();
 			if (hueDeviceNameList != null && !hueDeviceNameList.isEmpty()) {
 				HueDevice hueDevice = hueDeviceNameList.get(0);
 
