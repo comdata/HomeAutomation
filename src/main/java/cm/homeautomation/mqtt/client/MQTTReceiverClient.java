@@ -3,6 +3,7 @@ package cm.homeautomation.mqtt.client;
 import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.apache.logging.log4j.LogManager;
@@ -26,8 +27,11 @@ import cm.homeautomation.jeromq.server.NoClassInformationContainedException;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.services.hueinterface.HueEmulatorMessage;
 import cm.homeautomation.services.hueinterface.HueInterface;
+import io.quarkus.runtime.StartupEvent;
+import lombok.NoArgsConstructor;
 
 @ApplicationScoped
+@NoArgsConstructor
 public class MQTTReceiverClient implements MqttCallback {
 
 	private static final String MQTT_EXCEPTION = "MQTT Exception.";
@@ -39,7 +43,7 @@ public class MQTTReceiverClient implements MqttCallback {
 	@Inject
 	private HueInterface hueInterface;
 
-	public MQTTReceiverClient() {
+	void startup(@Observes StartupEvent event) {
 		runClient();
 	}
 
