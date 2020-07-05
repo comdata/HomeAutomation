@@ -27,9 +27,11 @@ import cm.homeautomation.jeromq.server.NoClassInformationContainedException;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.services.hueinterface.HueEmulatorMessage;
 import cm.homeautomation.services.hueinterface.HueInterface;
+import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import lombok.NoArgsConstructor;
 
+@Startup
 @ApplicationScoped
 @NoArgsConstructor
 public class MQTTReceiverClient implements MqttCallback {
