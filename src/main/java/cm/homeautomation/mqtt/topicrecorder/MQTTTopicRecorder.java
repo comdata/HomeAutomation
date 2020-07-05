@@ -3,7 +3,6 @@ package cm.homeautomation.mqtt.topicrecorder;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -12,7 +11,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.MQTTTopic;
 import cm.homeautomation.eventbus.EventBusService;
-import io.quarkus.runtime.Startup;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 
@@ -22,8 +20,6 @@ import lombok.extern.log4j.Log4j2;
  * @author christoph
  *
  */
-@Startup
-@ApplicationScoped
 @Log4j2
 public class MQTTTopicRecorder {
 
