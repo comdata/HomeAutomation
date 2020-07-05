@@ -102,6 +102,7 @@ public class MQTTReceiverClient implements MqttCallback {
 		connOpt.setAutomaticReconnect(true);
 		connOpt.setKeepAliveInterval(60);
 		connOpt.setConnectionTimeout(60);
+		connOpt.setMaxInflight(50);
 		connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
 
 		client.connect(connOpt);
@@ -143,8 +144,6 @@ public class MQTTReceiverClient implements MqttCallback {
 		String messageContent = new String(payload);
 		LogManager.getLogger(this.getClass()).info("Got MQTT message: " + message.getId() + "/" + messageContent);
 
-		EventBusService.getEventBus().post(new MQTTTopicEvent(topic, messageContent));
-
 		try {
 			Runnable receiver = null;
 			if (topic.startsWith("/fhem")) {
@@ -170,6 +169,8 @@ public class MQTTReceiverClient implements MqttCallback {
 			if (receiver != null) {
 				new Thread(receiver).start();
 			}
+
+			EventBusService.getEventBus().post(new MQTTTopicEvent(topic, messageContent));
 
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass()).error("Got an exception while saving data.", e);
