@@ -2,6 +2,7 @@ package cm.homeautomation.mqtt.client;
 
 import java.util.UUID;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.apache.logging.log4j.LogManager;
@@ -13,6 +14,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cm.homeautomation.configuration.ConfigurationService;
@@ -22,11 +24,10 @@ import cm.homeautomation.fhem.FHEMDataReceiver;
 import cm.homeautomation.jeromq.server.JSONSensorDataReceiver;
 import cm.homeautomation.jeromq.server.NoClassInformationContainedException;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
-import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.hueinterface.HueEmulatorMessage;
 import cm.homeautomation.services.hueinterface.HueInterface;
 
-@AutoCreateInstance
+@ApplicationScoped
 public class MQTTReceiverClient implements MqttCallback {
 
 	private static final String MQTT_EXCEPTION = "MQTT Exception.";
@@ -150,6 +151,7 @@ public class MQTTReceiverClient implements MqttCallback {
 			} else if (topic.startsWith("ebusd/")) {
 				receiver = () -> EBUSDataReceiver.receiveEBUSData(topic, messageContent);
 			} else if (topic.startsWith("hueinterface")) {
+				System.out.println(messageContent);
 				HueEmulatorMessage hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
 				hueInterface.handleMessage(hueMessage);
 			} else {
@@ -179,5 +181,27 @@ public class MQTTReceiverClient implements MqttCallback {
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken token) {
 		// nothing to do
+	}
+
+	public static void main(String[] args) {
+		new MQTTReceiverClient().test();
+	}
+
+	private void test() {
+		String messageContent = "{\n" + "  \"on\" : true,\n" + "  \"from\" : \"::ffff:192.168.1.88\",\n"
+				+ "  \"on_off_command\" : true,\n" + "  \"payload\" : \"on\",\n" + "  \"change_direction\" : 0,\n"
+				+ "  \"bri\" : 100,\n" + "  \"bri_normalized\" : 1,\n" + "  \"device_name\" : \"Stehlampe\",\n"
+				+ "  \"light_id\" : \"5c33cb1ba93134\",\n" + "  \"port\" : 38301,\n"
+				+ "  \"_msgid\" : \"4c9afd9b.6261b4\"\n" + "}";
+		System.out.println(messageContent);
+		HueEmulatorMessage hueMessage;
+		try {
+			hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
+			hueInterface.handleMessage(hueMessage);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 }
