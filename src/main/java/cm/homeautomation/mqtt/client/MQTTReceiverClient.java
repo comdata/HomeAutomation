@@ -2,6 +2,8 @@ package cm.homeautomation.mqtt.client;
 
 import java.util.UUID;
 
+import javax.inject.Inject;
+
 import org.apache.logging.log4j.LogManager;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -11,6 +13,8 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.ebus.EBUSDataReceiver;
 import cm.homeautomation.eventbus.EventBusService;
@@ -19,6 +23,8 @@ import cm.homeautomation.jeromq.server.JSONSensorDataReceiver;
 import cm.homeautomation.jeromq.server.NoClassInformationContainedException;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.services.base.AutoCreateInstance;
+import cm.homeautomation.services.hueinterface.HueEmulatorMessage;
+import cm.homeautomation.services.hueinterface.HueInterface;
 
 @AutoCreateInstance
 public class MQTTReceiverClient implements MqttCallback {
@@ -27,6 +33,10 @@ public class MQTTReceiverClient implements MqttCallback {
 	private MqttClient client;
 	private boolean run = true;
 	private MemoryPersistence memoryPersistence = new MemoryPersistence();
+	private static ObjectMapper mapper = new ObjectMapper();
+
+	@Inject
+	private HueInterface hueInterface;
 
 	public MQTTReceiverClient() {
 		runClient();
@@ -139,6 +149,9 @@ public class MQTTReceiverClient implements MqttCallback {
 				receiver = () -> FHEMDataReceiver.receiveFHEMData(topic, messageContent);
 			} else if (topic.startsWith("ebusd/")) {
 				receiver = () -> EBUSDataReceiver.receiveEBUSData(topic, messageContent);
+			} else if (topic.startsWith("hueinterface")) {
+				HueEmulatorMessage hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
+				hueInterface.handleMessage(hueMessage);
 			} else {
 				receiver = () -> {
 					try {
