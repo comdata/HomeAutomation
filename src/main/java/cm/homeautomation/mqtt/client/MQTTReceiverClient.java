@@ -3,7 +3,6 @@ package cm.homeautomation.mqtt.client;
 import java.util.UUID;
 
 import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 
 import org.apache.logging.log4j.LogManager;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -37,9 +36,6 @@ public class MQTTReceiverClient implements MqttCallback {
 	private boolean run = true;
 	private MemoryPersistence memoryPersistence = new MemoryPersistence();
 	private static ObjectMapper mapper = new ObjectMapper();
-
-	@Inject
-	private HueInterface hueInterface;
 
 	public MQTTReceiverClient() {
 		runClient();
@@ -158,7 +154,7 @@ public class MQTTReceiverClient implements MqttCallback {
 			} else if (topic.startsWith("hueinterface")) {
 				System.out.println(messageContent);
 				HueEmulatorMessage hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
-				hueInterface.handleMessage(hueMessage);
+				new HueInterface().handleMessage(hueMessage);
 			} else {
 				receiver = () -> {
 					try {
@@ -202,7 +198,7 @@ public class MQTTReceiverClient implements MqttCallback {
 		HueEmulatorMessage hueMessage;
 		try {
 			hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
-			hueInterface.handleMessage(hueMessage);
+			new HueInterface().handleMessage(hueMessage);
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
