@@ -2,8 +2,6 @@ package cm.homeautomation.mqtt.client;
 
 import java.util.UUID;
 
-import javax.enterprise.event.Observes;
-
 import org.apache.logging.log4j.LogManager;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -26,7 +24,6 @@ import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.hueinterface.HueEmulatorMessage;
 import cm.homeautomation.services.hueinterface.HueInterface;
-import io.quarkus.runtime.StartupEvent;
 
 @AutoCreateInstance
 public class MQTTReceiverClient implements MqttCallback {
@@ -39,9 +36,6 @@ public class MQTTReceiverClient implements MqttCallback {
 
 	public MQTTReceiverClient() {
 		runClient();
-	}
-
-	void startup(@Observes StartupEvent event) {
 	}
 
 	public void runClient() {

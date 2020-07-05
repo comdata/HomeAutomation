@@ -2,7 +2,6 @@ package cm.homeautomation.services.hueinterface;
 
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 import javax.ws.rs.POST;
@@ -28,7 +27,6 @@ import cm.homeautomation.services.light.LightService;
 import cm.homeautomation.services.light.LightStates;
 import cm.homeautomation.services.windowblind.WindowBlindService;
 
-@ApplicationScoped
 @Path("hueInterface")
 public class HueInterface extends BaseService {
 
