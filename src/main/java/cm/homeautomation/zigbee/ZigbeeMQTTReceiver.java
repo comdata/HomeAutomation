@@ -9,7 +9,6 @@ import javax.persistence.EntityManager;
 
 import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -60,7 +59,7 @@ public class ZigbeeMQTTReceiver {
 		MQTTSender.sendMQTTMessage(zigbeeMqttTopic + "/bridge/config/devices/get", "");
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@Subscribe
 	public void receiveMQTTTopicEvents(MQTTTopicEvent event) throws JsonMappingException, JsonProcessingException {
 		@NonNull
 		String topic = event.getTopic();
