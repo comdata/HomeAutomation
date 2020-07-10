@@ -16,7 +16,7 @@ public class MowerEventReceiver {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@Subscribe
 	public void subscribe(MQTTEventBusObject eventObject) {
 
 		String messageContent = eventObject.getMessageContent();

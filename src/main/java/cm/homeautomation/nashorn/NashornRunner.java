@@ -50,7 +50,7 @@ public class NashornRunner {
 		}
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@Subscribe
 	public void handleEvent(final EventObject event) {
 		Logger logger = LogManager.getLogger(this.getClass());
 		if (engine != null) {

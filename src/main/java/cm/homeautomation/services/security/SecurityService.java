@@ -9,7 +9,6 @@ import javax.ws.rs.PathParam;
 
 import org.apache.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.SecurityZone;
@@ -47,7 +46,7 @@ public class SecurityService extends BaseService {
 		return em.createQuery("select s from SecurityZone s").getResultList();
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@Subscribe
 	public void handleWindowEvents(EventObject eventObject) {
 		if ((eventObject.getData() != null) && (eventObject.getData() instanceof WindowStateData)) {
 			final WindowStateData windowStateData = (WindowStateData) eventObject.getData();

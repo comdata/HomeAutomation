@@ -1,7 +1,6 @@
 package cm.homeautomation.services.motion;
 
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
@@ -14,7 +13,7 @@ public class MotionDetectionService extends BaseService {
 
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@Subscribe
 	public void registerMotionEvent(final EventObject event) {
 
 		final Object eventData = event.getData();

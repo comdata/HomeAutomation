@@ -6,7 +6,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.MQTTTopic;
@@ -29,7 +28,7 @@ public class MQTTTopicRecorder {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@Subscribe
 	public void receiverMQTTTopicEvents(MQTTTopicEvent event) {
 		EntityManager em = EntityManagerService.getManager();
 

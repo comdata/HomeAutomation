@@ -13,7 +13,6 @@ import javax.ws.rs.PathParam;
 
 import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.dashbutton.DashButtonEvent;
 import cm.homeautomation.db.EntityManagerService;
@@ -100,7 +99,7 @@ public class NetworkDevicesService extends BaseService {
 	 *
 	 * @param event
 	 */
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@Subscribe
 	public void handleEvent(final EventObject event) {
 
 		final Object data = event.getData();

@@ -8,7 +8,6 @@ import javax.persistence.NoResultException;
 
 import org.apache.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Sensor;
@@ -26,7 +25,7 @@ public class MQTTTopicSensorReceiver {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@Subscribe
 	public void receiveMQTTTopic(MQTTTopicEvent topicEvent) {
 		log.debug("got topic: " + topicEvent.getTopic() + " -  message: " + topicEvent.getMessage());
 

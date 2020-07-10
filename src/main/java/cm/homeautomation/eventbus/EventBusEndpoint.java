@@ -18,7 +18,6 @@ import javax.websocket.server.ServerEndpoint;
 import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.logging.WebSocketEvent;
         
@@ -49,7 +48,7 @@ public class EventBusEndpoint {
 	 *
 	 * @param eventObject
 	 */
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@Subscribe
 	public void handleEvent(final EventObject eventObject) {
 		userSessions.keys();
 		try {
@@ -67,7 +66,7 @@ public class EventBusEndpoint {
 		}
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@Subscribe
 	public void handleEvent(final WebSocketEvent eventObject) {
 
 		try {

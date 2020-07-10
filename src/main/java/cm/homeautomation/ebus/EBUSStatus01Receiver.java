@@ -5,7 +5,6 @@ import java.util.Date;
 import javax.persistence.NoResultException;
 
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
@@ -45,7 +44,7 @@ public class EBUSStatus01Receiver {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@Subscribe
 	public void receive(EventObject eventObject) {
 		if (eventObject.getData() instanceof EBusMessageEvent) {
 			EBusMessageEvent messageEvent = (EBusMessageEvent) eventObject.getData();

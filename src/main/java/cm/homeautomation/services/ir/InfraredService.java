@@ -9,7 +9,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -68,7 +67,7 @@ public class InfraredService extends BaseService {
 	 *
 	 * @param event
 	 */
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@Subscribe
 	public void handleEvent(final EventObject event) {
 
 		final Object data = event.getData();

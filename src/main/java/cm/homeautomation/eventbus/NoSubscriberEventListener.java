@@ -14,7 +14,7 @@ public class NoSubscriberEventListener {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@Subscribe
 	public void subscribe(NoSubscriberEvent event) {
 
 		LogManager.getLogger(this.getClass())
