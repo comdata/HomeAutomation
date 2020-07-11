@@ -46,10 +46,10 @@ public class MQTTReceiverClient implements MqttCallback {
 
 				while (run) {
 					keepClientConnected();
-
+					Thread.sleep(1000);
 				}
 
-			} catch (MqttException e) {
+			} catch (MqttException | InterruptedException e) {
 				LogManager.getLogger(this.getClass()).error(MQTT_EXCEPTION, e);
 			}
 		};
@@ -70,9 +70,9 @@ public class MQTTReceiverClient implements MqttCallback {
 				LogManager.getLogger(this.getClass()).info("client is null");
 				connect();
 			}
-			Thread.sleep(10000);
 
-		} catch (MqttException | InterruptedException e) {
+
+		} catch (MqttException e) {
 			LogManager.getLogger(this.getClass()).error("Exception while running client.", e);
 		}
 	}
@@ -100,7 +100,7 @@ public class MQTTReceiverClient implements MqttCallback {
 		connOpt.setAutomaticReconnect(true);
 		connOpt.setKeepAliveInterval(60);
 		connOpt.setConnectionTimeout(60);
-		connOpt.setMaxInflight(50);
+		connOpt.setMaxInflight(200);
 		connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
 
 		client.connect(connOpt);
