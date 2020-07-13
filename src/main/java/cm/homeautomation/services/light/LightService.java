@@ -18,7 +18,6 @@ import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.base.HTTPHelper;
-import cm.homeautomation.tradfri.TradfriStartupService;
 
 @Path("light")
 public class LightService extends BaseService {
@@ -26,7 +25,6 @@ public class LightService extends BaseService {
 	private static final String DIMVALUE_CONST = "{DIMVALUE}";
 	private static final String ZIGBEE = "ZIGBEE";
 	private static final String LIGHT_ID = "lightId";
-	private static final String TRADFRI = "TRADFRI";
 	private static final String MQTT = "MQTT";
 
 	private static LightService instance;
@@ -225,9 +223,6 @@ public class LightService extends BaseService {
 
 			em.getTransaction().commit();
 
-			if (TRADFRI.equals(light.getLightType())) {
-				TradfriStartupService.getInstance().dimBulb(light.getExternalId(), dimValue);
-			}
 			if (MQTT.equals(light.getLightType()) || ZIGBEE.equals(light.getLightType())) {
 				String topic;
 				String messagePayload;
@@ -271,9 +266,7 @@ public class LightService extends BaseService {
 			em.persist(rgbLight);
 			em.getTransaction().commit();
 
-			if (TRADFRI.equals(rgbLight.getLightType())) {
-				TradfriStartupService.getInstance().setColor(rgbLight.getExternalId(), shortHex);
-			} else if (MQTT.equals(rgbLight.getLightType()) || ZIGBEE.equals(rgbLight.getLightType())) {
+			if (MQTT.equals(rgbLight.getLightType()) || ZIGBEE.equals(rgbLight.getLightType())) {
 				if (rgbLight.getMqttColorMessage() != null && rgbLight.getMqttColorTopic() != null) {
 					String topic = rgbLight.getMqttColorTopic();
 					String messagePayload = rgbLight.getMqttColorMessage().replace("{HEXVALUE}", shortHex);
