@@ -12,6 +12,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cm.homeautomation.configuration.ConfigurationService;
@@ -46,7 +47,7 @@ public class MQTTReceiverClient implements MqttCallback {
 
 				while (run) {
 					keepClientConnected();
-					Thread.sleep(1000);
+					Thread.sleep(500);
 				}
 
 			} catch (MqttException | InterruptedException e) {
@@ -70,7 +71,6 @@ public class MQTTReceiverClient implements MqttCallback {
 				LogManager.getLogger(this.getClass()).info("client is null");
 				connect();
 			}
-
 
 		} catch (MqttException e) {
 			LogManager.getLogger(this.getClass()).error("Exception while running client.", e);
@@ -99,9 +99,9 @@ public class MQTTReceiverClient implements MqttCallback {
 		MqttConnectOptions connOpt = new MqttConnectOptions();
 		connOpt.setAutomaticReconnect(true);
 		connOpt.setCleanSession(false);
-		connOpt.setKeepAliveInterval(60);
-		connOpt.setConnectionTimeout(60);
-		connOpt.setMaxInflight(200);
+		connOpt.setKeepAliveInterval(10);
+		connOpt.setConnectionTimeout(5);
+		connOpt.setMaxInflight(10);
 		connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
 
 		client.connect(connOpt);
@@ -150,9 +150,19 @@ public class MQTTReceiverClient implements MqttCallback {
 			} else if (topic.startsWith("ebusd/")) {
 				receiver = () -> EBUSDataReceiver.receiveEBUSData(topic, messageContent);
 			} else if (topic.startsWith("hueinterface")) {
-				System.out.println(messageContent);
-				HueEmulatorMessage hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
-				new HueInterface().handleMessage(hueMessage);
+				receiver = () -> {
+					HueEmulatorMessage hueMessage;
+					try {
+						hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
+						new HueInterface().handleMessage(hueMessage);
+					} catch (JsonMappingException e) {
+						LogManager.getLogger(this.getClass()).error("Got an exception while handling hue data data.",
+								e);
+					} catch (JsonProcessingException e) {
+						LogManager.getLogger(this.getClass()).error("Got an exception while handling hue data data.",
+								e);
+					}
+				};
 			} else {
 				receiver = () -> {
 					try {
