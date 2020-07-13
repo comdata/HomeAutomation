@@ -16,8 +16,6 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DimmableLight;
@@ -153,19 +151,6 @@ public class ActorService extends BaseService implements MqttCallback {
 			}
 		}
 
-		private void sendMQTTMessage(final ActorMessage actorMessage) {
-
-			try {
-				final ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-				final String jsonMessage = ow.writeValueAsString(actorMessage);
-
-				MQTTSender.sendMQTTMessage("/switch", jsonMessage);
-
-			} catch (final JsonProcessingException e) {
-				LogManager.getLogger(this.getClass()).error(e);
-			}
-		}
-
 		private void sendHTTPMessage(final Switch singleSwitch, final ActorMessage actorMessage) {
 			String switchSetUrl = singleSwitch.getSwitchSetUrl();
 			switchSetUrl = switchSetUrl.replace("{STATE}", (("0".equals(actorMessage.getStatus())) ? "off" : "on"));
@@ -184,7 +169,7 @@ public class ActorService extends BaseService implements MqttCallback {
 	}
 
 	@Scheduled(every = "120s")
-	private void initSwitchList() {
+	public void initSwitchList() {
 		final EntityManager em = EntityManagerService.getManager();
 
 		final List<Room> rooms = em.createQuery("select r from Room r", Room.class).getResultList();
