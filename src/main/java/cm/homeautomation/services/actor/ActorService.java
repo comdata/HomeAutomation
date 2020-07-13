@@ -1,7 +1,9 @@
 package cm.homeautomation.services.actor;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
@@ -21,15 +23,18 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DimmableLight;
 import cm.homeautomation.entities.Light;
 import cm.homeautomation.entities.MQTTSwitch;
+import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.sensors.ActorMessage;
+import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.HTTPHelper;
 import cm.homeautomation.services.ir.InfraredService;
 import cm.homeautomation.services.light.LightService;
+import io.quarkus.scheduler.Scheduled;
 
 /**
  * everything necessary for handling actors and reading the statuses
@@ -37,8 +42,11 @@ import cm.homeautomation.services.light.LightService;
  * @author mertins
  *
  */
+@AutoCreateInstance
 @Path("actor")
 public class ActorService extends BaseService implements MqttCallback {
+
+	private static Map<Long, List<Switch>> switchList = new HashMap<>();
 
 	private final class SwitchPressRunner implements Runnable {
 		private final String targetStatus;
@@ -80,10 +88,11 @@ public class ActorService extends BaseService implements MqttCallback {
 			// standard lights
 			if ("SOCKET".equals(singleSwitch.getSwitchType()) || "LIGHT".equals(singleSwitch.getSwitchType())) {
 
-				System.out.println("Actor Switch Type: " + singleSwitch.getClass().getSimpleName());
+				LogManager.getLogger(this.getClass())
+						.debug("Actor Switch Type: " + singleSwitch.getClass().getSimpleName());
 
 				if (singleSwitch instanceof MQTTSwitch) {
-					System.out.println("Switch is MQTTSwitch");
+					LogManager.getLogger(this.getClass()).debug("Switch is MQTTSwitch");
 					MQTTSwitch singleMqttSwitch = (MQTTSwitch) singleSwitch;
 
 					String topic = null;
@@ -98,15 +107,13 @@ public class ActorService extends BaseService implements MqttCallback {
 						message = singleMqttSwitch.getMqttPowerOffMessage();
 					}
 
-					System.out.println("MQTT: " + topic + " - " + message);
+					LogManager.getLogger(this.getClass()).debug("MQTT: " + topic + " - " + message);
 
 					MQTTSender.sendMQTTMessage(topic, message);
 
 				} else {
 
 					if (singleSwitch.getHouseCode() != null) {
-						// sendMQTTMessage(actorMessage);
-
 						MQTTSender.sendMQTTMessage("ESP_RC/cmd",
 								"RC," + ("1".equals(actorMessage.getStatus()) ? "ON" : "OFF") + "="
 										+ actorMessage.getHouseCode().trim() + actorMessage.getSwitchNo().trim());
@@ -172,6 +179,32 @@ public class ActorService extends BaseService implements MqttCallback {
 
 	private static ActorService instance;
 
+	public ActorService() {
+		initSwitchList();
+	}
+
+	@Scheduled(every = "120s")
+	private void initSwitchList() {
+		final EntityManager em = EntityManagerService.getManager();
+
+		final List<Room> rooms = em.createQuery("select r from Room r", Room.class).getResultList();
+
+		if (rooms != null && !rooms.isEmpty()) {
+
+			for (Room room : rooms) {
+
+				Long roomId = room.getId();
+				final List<Switch> switchesList = em.createQuery(
+						"select sw from Switch sw where sw.switchType IN ('SOCKET', 'LIGHT', 'IR') and sw.visible=true and sw.room=(select r from Room r where r.id=:room)",
+						Switch.class).setParameter("room", roomId).getResultList();
+
+				switchList.put(roomId, switchesList);
+
+			}
+
+		}
+	}
+
 	/**
 	 * press a switch via cron
 	 *
@@ -225,12 +258,9 @@ public class ActorService extends BaseService implements MqttCallback {
 		final EntityManager em = EntityManagerService.getManager();
 		final SwitchStatuses switchStatuses = new SwitchStatuses();
 
-		@SuppressWarnings("unchecked")
-		final List<Switch> switchList = em.createQuery(
-				"select sw from Switch sw where sw.switchType IN ('SOCKET', 'LIGHT', 'IR') and sw.visible=true and sw.room=(select r from Room r where r.id=:room)")
-				.setParameter("room", Long.parseLong(room)).getResultList();
+		List<Switch> switchesList = switchList.get(Long.parseLong(room));
 
-		for (final Switch singleSwitch : switchList) {
+		for (final Switch singleSwitch : switchesList) {
 
 			singleSwitch.setSwitchState("ON".equals(singleSwitch.getLatestStatus()));
 
