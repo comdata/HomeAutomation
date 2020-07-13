@@ -247,29 +247,7 @@
 			<artifactId>smiley-http-proxy-servlet</artifactId>
 			<version>1.11</version>
 		</dependency>
-		<dependency>
-			<groupId>de.eckey</groupId>
-			<artifactId>Tradfrj</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>slf4j-api</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>slf4j-log4j12</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>commons-lang3</artifactId>
-					<groupId>org.apache.commons</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>commons-beanutils</artifactId>
-					<groupId>commons-beanutils</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+		
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
