@@ -7,6 +7,8 @@ import javax.persistence.EntityManager;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
+import org.apache.logging.log4j.LogManager;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -134,7 +136,7 @@ public class HueInterface extends BaseService {
 					}
 				}
 			} else {
-				System.out.println("hue not found for lightId: " + lightId);
+				LogManager.getLogger(this.getClass()).debug("hue not found for lightId: " + lightId);
 			}
 		}
 
@@ -154,7 +156,7 @@ public class HueInterface extends BaseService {
 		if (!message.isOnOffCommand()) {
 			dimValue = Integer.toString(message.getBrightness());
 		}
-		System.out.println("Window Blind dim: " + dimValue);
+		LogManager.getLogger(HueInterface.class).debug("Window Blind dim: " + dimValue);
 
 		new WindowBlindService().setDim(hueDevice.getExternalId(), ("on".equals(message.getPayload()) ? dimValue : "0"),
 				hueDevice.isGroupDevice() ? WindowBlind.ALL_AT_ONCE : WindowBlind.SINGLE,
@@ -176,7 +178,7 @@ public class HueInterface extends BaseService {
 			if (message.getXy() != null) {
 				x = message.getXy()[0];
 				y = message.getXy()[1];
-				System.out.println("Color infos:" + x + " - " + y);
+				LogManager.getLogger(HueInterface.class).debug("Color infos:" + x + " - " + y);
 				isColor = true;
 			}
 
@@ -198,6 +200,6 @@ public class HueInterface extends BaseService {
 
 		HueEmulatorMessage readValue = mapper.readValue(message, HueEmulatorMessage.class);
 
-		System.out.println(readValue.getXy()[1]);
+		LogManager.getLogger(HueInterface.class).debug(readValue.getXy()[1]);
 	}
 }
