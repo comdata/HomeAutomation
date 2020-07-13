@@ -103,7 +103,11 @@ public class LightService extends BaseService {
 				newDimValue = dimLight.getMinimumValue();
 				break;
 			case ON:
-				newDimValue = dimLight.getBrightnessLevel();
+				if (dimLight.getBrightnessLevel() > dimLight.getMinimumValue()) {
+					newDimValue = dimLight.getBrightnessLevel();
+				} else {
+					newDimValue = dimLight.getMaximumValue();
+				}
 				break;
 			}
 		} else {
@@ -209,12 +213,11 @@ public class LightService extends BaseService {
 			if (light instanceof DimmableLight) {
 				final DimmableLight dimmableLight = (DimmableLight) light;
 
-				int newDimValue = dimValue;
-				if (newDimValue > dimmableLight.getMaximumValue()) {
-					newDimValue = dimmableLight.getMaximumValue();
+				if (dimValue > dimmableLight.getMaximumValue()) {
+					dimValue = dimmableLight.getMaximumValue();
 				}
 
-				dimmableLight.setBrightnessLevel(newDimValue);
+				dimmableLight.setBrightnessLevel(dimValue);
 				em.persist(dimmableLight);
 				dimUrl = dimmableLight.getDimUrl();
 			} else {
