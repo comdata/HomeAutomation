@@ -8,6 +8,8 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import cm.homeautomation.configuration.ConfigurationService;
+import io.quarkus.scheduler.Scheduled;
+import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -17,12 +19,9 @@ import lombok.extern.log4j.Log4j2;
  *
  */
 @Log4j2
+@NoArgsConstructor
 public class MQTTSender {
 	private static MqttClient client;
-
-	private MQTTSender() {
-		// nothing to be done
-	}
 
 	public static MqttClient getClient() {
 		return client;
@@ -30,20 +29,7 @@ public class MQTTSender {
 
 	public static void sendMQTTMessage(String topic, String messagePayload) {
 		final Runnable mqttSendThread = () -> {
-			try {
-
-				initClient();
-
-				log.debug("MQTT: sending message " + messagePayload + " to topic " + topic);
-
-				MqttMessage message = new MqttMessage();
-				message.setPayload(messagePayload.getBytes());
-				client.publish(topic, message);
-				log.debug("MQTT:  message sent " + messagePayload + " to topic " + topic);
-
-			} catch (MqttException e) {
-				log.error("Sending MQTT message: " + messagePayload + " failed.", e);
-			}
+			MQTTSender.sendSyncMQTTMessage(topic, messagePayload);
 		};
 		new Thread(mqttSendThread).start();
 	}
@@ -59,12 +45,12 @@ public class MQTTSender {
 			message.setPayload(messagePayload.getBytes());
 			client.publish(topic, message);
 			log.debug("MQTT:  message sent " + messagePayload + " to topic " + topic);
-
 		} catch (MqttException e) {
 			log.error("Sending MQTT message: " + messagePayload + " failed.", e);
 		}
 	}
 
+	@Scheduled(every = "60s")
 	public static void initClient() throws MqttException {
 		if (client == null || !client.isConnected()) {
 
@@ -78,7 +64,7 @@ public class MQTTSender {
 
 			MqttConnectOptions connOpt = new MqttConnectOptions();
 			connOpt.setAutomaticReconnect(true);
-			connOpt.setCleanSession(true);
+			connOpt.setCleanSession(false);
 			connOpt.setKeepAliveInterval(60);
 			connOpt.setConnectionTimeout(30);
 			connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);

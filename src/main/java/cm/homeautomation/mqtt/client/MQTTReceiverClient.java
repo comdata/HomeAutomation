@@ -98,6 +98,7 @@ public class MQTTReceiverClient implements MqttCallback {
 
 		MqttConnectOptions connOpt = new MqttConnectOptions();
 		connOpt.setAutomaticReconnect(true);
+		connOpt.setCleanSession(false);
 		connOpt.setKeepAliveInterval(60);
 		connOpt.setConnectionTimeout(60);
 		connOpt.setMaxInflight(200);
