@@ -21,20 +21,31 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @NoArgsConstructor
 public class MQTTSender {
-	private static MqttClient client;
+	private MqttClient client;
+	private static MQTTSender instance;
 
-	public static MqttClient getClient() {
+	public MqttClient getClient() {
 		return client;
 	}
 
+	public static MQTTSender getInstance() {
+
+		if (instance == null) {
+			instance = new MQTTSender();
+		}
+		return instance;
+	}
+
 	public static void sendMQTTMessage(String topic, String messagePayload) {
-		final Runnable mqttSendThread = () -> {
-			MQTTSender.sendSyncMQTTMessage(topic, messagePayload);
-		};
+		final Runnable mqttSendThread = () -> getInstance().doSendSyncMQTTMessage(topic, messagePayload);
 		new Thread(mqttSendThread).start();
 	}
 
 	public static void sendSyncMQTTMessage(String topic, String messagePayload) {
+		getInstance().doSendSyncMQTTMessage(topic, messagePayload);
+	}
+
+	public void doSendSyncMQTTMessage(String topic, String messagePayload) {
 
 		try {
 			initClient();
@@ -51,7 +62,7 @@ public class MQTTSender {
 	}
 
 	@Scheduled(every = "60s")
-	public static void initClient() throws MqttException {
+	public void initClient() throws MqttException {
 		if (client == null || !client.isConnected()) {
 
 			UUID uuid = UUID.randomUUID();
