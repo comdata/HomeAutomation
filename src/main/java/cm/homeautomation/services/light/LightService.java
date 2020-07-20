@@ -22,6 +22,8 @@ import cm.homeautomation.services.base.HTTPHelper;
 @Path("light")
 public class LightService extends BaseService {
 
+	private static final String ON = "on";
+	private static final String OFF = "off";
 	private static final String DIMVALUE_CONST = "{DIMVALUE}";
 	private static final String ZIGBEE = "ZIGBEE";
 	private static final String LIGHT_ID = "lightId";
@@ -98,26 +100,20 @@ public class LightService extends BaseService {
 
 		if (light instanceof DimmableLight) {
 			DimmableLight dimLight = (DimmableLight) light;
-			switch (state) {
-			case OFF:
+			if (state == LightStates.OFF) {
 				newDimValue = dimLight.getMinimumValue();
-				break;
-			case ON:
+			} else if (state == LightStates.ON) {
 				if (dimLight.getBrightnessLevel() > dimLight.getMinimumValue()) {
 					newDimValue = dimLight.getBrightnessLevel();
 				} else {
 					newDimValue = dimLight.getMaximumValue();
 				}
-				break;
 			}
 		} else {
-			switch (state) {
-			case OFF:
+			if (state == LightStates.OFF) {
 				newDimValue = 0;
-				break;
-			case ON:
+			} else if (state == LightStates.ON) {
 				newDimValue = 100;
-				break;
 			}
 		}
 
@@ -127,9 +123,8 @@ public class LightService extends BaseService {
 	public Light getLightForTypeAndExternalId(final String type, final String externalId) {
 		final EntityManager em = EntityManagerService.getManager();
 
-		@SuppressWarnings("unchecked")
 		final List<Light> lights = em
-				.createQuery("select l from Light l where l.lightType=:type and l.externalId=:externalId")
+				.createQuery("select l from Light l where l.lightType=:type and l.externalId=:externalId", Light.class)
 				.setParameter("type", type).setParameter("externalId", externalId).getResultList();
 
 		if ((lights != null) && !lights.isEmpty()) {
@@ -155,111 +150,128 @@ public class LightService extends BaseService {
 	private GenericStatus internalDimLight(final long lightId, final int dimPercentValue, boolean calledForGroup,
 			boolean isAbsoluteValue) {
 
-		final Runnable httpRequestThread = () -> {
-			String powerState = "off";
-
-			if (dimPercentValue == 0) {
-				powerState = "off";
-			} else {
-				powerState = "on";
-			}
+		final Runnable requestThread = () -> {
+			String powerState = getPowerStateFromDimValue(dimPercentValue);
 
 			final EntityManager em = EntityManagerService.getManager();
 			em.getTransaction().begin();
-			final Light light = (Light) em.createQuery("select l from Light l where l.id=:lightId")
-					.setParameter(LIGHT_ID, lightId).getSingleResult();
+			final Light light = em.find(Light.class, lightId);
 
-			int dimValue = dimPercentValue;
+			if (light != null) {
 
-			LogManager.getLogger(this.getClass()).error("dimPercentValue: " + dimPercentValue);
+				int dimValue = dimPercentValue;
 
-			if (!isAbsoluteValue) {
+				LogManager.getLogger(this.getClass()).error("dimPercentValue: " + dimPercentValue);
+
+				dimValue = dimByPercentIfPercentValue(dimPercentValue, isAbsoluteValue, light, dimValue);
+
+				LogManager.getLogger(this.getClass()).error("dimValue: " + dimValue);
+
+				// if part of a group then call for the others as well
+				checkAndCallLightGroup(lightId, calledForGroup, isAbsoluteValue, em, light, dimValue);
+
+				String dimUrl = light.getDimUrl();
+
 				if (light instanceof DimmableLight) {
-					DimmableLight dimLight = (DimmableLight) light;
+					final DimmableLight dimmableLight = (DimmableLight) light;
 
-					if (dimLight.getMaximumValue() > 0 && dimLight.getMinimumValue() >= 0) {
-						int range = dimLight.getMaximumValue() - dimLight.getMinimumValue();
-
-						if (range > 0) {
-							dimValue = dimLight.getMinimumValue() + ((range * dimPercentValue) / 100);
-						}
+					if (dimValue > dimmableLight.getMaximumValue()) {
+						dimValue = dimmableLight.getMaximumValue();
 					}
 
-				}
-			}
-
-			LogManager.getLogger(this.getClass()).error("dimValue: " + dimValue);
-
-			// if part of a group then call for the others as well
-			if (!calledForGroup) {
-				final String lightGroup = light.getLightGroup();
-
-				if ((lightGroup != null) && !lightGroup.isEmpty()) {
-					@SuppressWarnings("unchecked")
-					final List<Light> resultList = em
-							.createQuery("select l from Light l where l.id!=:lightId and l.lightGroup=:lightGroup")
-							.setParameter(LIGHT_ID, lightId).setParameter("lightGroup", lightGroup).getResultList();
-
-					if ((resultList != null) && !resultList.isEmpty()) {
-						for (final Light lightGroupMember : resultList) {
-							internalDimLight(lightGroupMember.getId(), dimValue, true, isAbsoluteValue);
-						}
-					}
-				}
-			}
-
-			String dimUrl = light.getDimUrl();
-
-			if (light instanceof DimmableLight) {
-				final DimmableLight dimmableLight = (DimmableLight) light;
-
-				if (dimValue > dimmableLight.getMaximumValue()) {
-					dimValue = dimmableLight.getMaximumValue();
-				}
-
-				dimmableLight.setBrightnessLevel(dimValue);
-				em.persist(dimmableLight);
-				dimUrl = dimmableLight.getDimUrl();
-			} else {
-				light.setPowerState("off".equals(powerState));
-			}
-
-			em.getTransaction().commit();
-
-			if (MQTT.equals(light.getLightType()) || ZIGBEE.equals(light.getLightType())) {
-				String topic;
-				String messagePayload;
-
-				if ("off".equals(powerState)) {
-					topic = light.getMqttPowerOffTopic();
-					messagePayload = light.getMqttPowerOffMessage();
+					dimmableLight.setBrightnessLevel(dimValue);
+					em.persist(dimmableLight);
+					dimUrl = dimmableLight.getDimUrl();
 				} else {
-					topic = light.getMqttPowerOnTopic();
-					messagePayload = light.getMqttPowerOnMessage();
-
-					messagePayload = messagePayload.replace(DIMVALUE_CONST, Integer.toString(dimValue));
+					light.setPowerState(OFF.equals(powerState));
 				}
 
-				MQTTSender.sendMQTTMessage(topic, messagePayload);
-			} else {
+				em.getTransaction().commit();
 
-				dimUrl = dimUrl.replace(DIMVALUE_CONST, Integer.toString(dimValue));
-				dimUrl = dimUrl.replace("{STATE}", powerState);
-
-				HTTPHelper.performHTTPRequest(dimUrl);
+				sendMessageToDevice(powerState, light, dimValue, dimUrl);
 			}
 		};
-		new Thread(httpRequestThread).start();
+		new Thread(requestThread).start();
 		return new GenericStatus(true);
+	}
+
+	private String getPowerStateFromDimValue(final int dimPercentValue) {
+		if (dimPercentValue == 0) {
+			return OFF;
+		} else {
+			return ON;
+		}
+	}
+
+	private void sendMessageToDevice(String powerState, final Light light, int dimValue, String dimUrl) {
+		if (MQTT.equals(light.getLightType()) || ZIGBEE.equals(light.getLightType())) {
+			String topic;
+			String messagePayload;
+
+			if (OFF.equals(powerState)) {
+				topic = light.getMqttPowerOffTopic();
+				messagePayload = light.getMqttPowerOffMessage();
+			} else {
+				topic = light.getMqttPowerOnTopic();
+				messagePayload = light.getMqttPowerOnMessage();
+
+				messagePayload = messagePayload.replace(DIMVALUE_CONST, Integer.toString(dimValue));
+			}
+
+			MQTTSender.sendMQTTMessage(topic, messagePayload);
+		} else {
+
+			dimUrl = dimUrl.replace(DIMVALUE_CONST, Integer.toString(dimValue));
+			dimUrl = dimUrl.replace("{STATE}", powerState);
+
+			HTTPHelper.performHTTPRequest(dimUrl);
+		}
+	}
+
+	private void checkAndCallLightGroup(final long lightId, boolean calledForGroup, boolean isAbsoluteValue,
+			final EntityManager em, final Light light, int dimValue) {
+		if (!calledForGroup) {
+			final String lightGroup = light.getLightGroup();
+
+			if ((lightGroup != null) && !lightGroup.isEmpty()) {
+				@SuppressWarnings("unchecked")
+				final List<Light> resultList = em
+						.createQuery("select l from Light l where l.id!=:lightId and l.lightGroup=:lightGroup")
+						.setParameter(LIGHT_ID, lightId).setParameter("lightGroup", lightGroup).getResultList();
+
+				if ((resultList != null) && !resultList.isEmpty()) {
+					for (final Light lightGroupMember : resultList) {
+						internalDimLight(lightGroupMember.getId(), dimValue, true, isAbsoluteValue);
+					}
+				}
+			}
+		}
+	}
+
+	private int dimByPercentIfPercentValue(final int dimPercentValue, boolean isAbsoluteValue, final Light light,
+			int dimValue) {
+		if (!isAbsoluteValue && light instanceof DimmableLight) {
+			DimmableLight dimLight = (DimmableLight) light;
+
+			if (dimLight.getMaximumValue() > 0 && dimLight.getMinimumValue() >= 0) {
+				int range = dimLight.getMaximumValue() - dimLight.getMinimumValue();
+
+				if (range > 0) {
+					dimValue = dimLight.getMinimumValue() + ((range * dimPercentValue) / 100);
+				}
+			}
+
+		}
+		return dimValue;
 	}
 
 	@GET
 	@Path("color/{lightId}/{hex}")
 	public GenericStatus setColor(@PathParam(LIGHT_ID) final long lightId, @PathParam("hex") final String hex) {
 		final String shortHex = hex.substring(1);
-		final EntityManager em = EntityManagerService.getManager();
+		EntityManager em = EntityManagerService.getManager();
 
-		RGBLight rgbLight = em.find(RGBLight.class, lightId);
+		RGBLight rgbLight = findRGBLight(lightId, em);
 
 		if (rgbLight != null) {
 
@@ -285,6 +297,10 @@ public class LightService extends BaseService {
 		}
 
 		return new GenericStatus(true);
+	}
+
+	private RGBLight findRGBLight(final long lightId, EntityManager em) {
+		return em.find(RGBLight.class, lightId);
 	}
 
 	public void setColor(long lightId, int dimValue, Float x, Float y) {
