@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 public class SensorData {
 	@Id
 	@GeneratedValue(generator = "SensorData")
-	@TableGenerator(name = "SensorData", table = "SEQUENCE", pkColumnName = "SEQ_NAME", valueColumnName = "SEQ_COUNT", pkColumnValue = "SENSOR_DATA", allocationSize = 10)
+	@TableGenerator(name = "SensorData", table = "SEQUENCE", pkColumnName = "SEQ_NAME", valueColumnName = "SEQ_COUNT", pkColumnValue = "SENSOR_DATA", allocationSize = 100)
 	private Long id;
 
 	private String value;
