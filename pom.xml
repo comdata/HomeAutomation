@@ -28,10 +28,10 @@
 		<odata.version>4.6.0</odata.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<quarkus-plugin.version>1.5.0.Final</quarkus-plugin.version>
+		<quarkus-plugin.version>1.6.0.Final</quarkus-plugin.version>
 		<quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
 		<quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
-		<quarkus.platform.version>1.5.0.Final</quarkus.platform.version>
+		<quarkus.platform.version>1.6.0.Final</quarkus.platform.version>
 		<ratelimitj-inmemory.version>0.6.0</ratelimitj-inmemory.version>
 		<surefire-plugin.version>2.4.3</surefire-plugin.version>
 		<telegrambots.version>2.4.2</telegrambots.version>
@@ -96,7 +96,7 @@
 		<dependency>
 			<groupId>org.eclipse.paho</groupId>
 			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-			<version>1.2.2</version>
+			<version>1.2.5</version>
 		</dependency>
 		<dependency>
 			<groupId>joda-time</groupId>
@@ -108,9 +108,6 @@
 			<artifactId>ical4j</artifactId>
 			<version>3.0.17</version>
 		</dependency>
-		<!-- <dependency> <groupId>cm.homeautomation</groupId> <artifactId>HomeAutomationZWave</artifactId> 
-			<version>0.0.1-SNAPSHOT</version> </dependency> <dependency> <groupId>com.oberasoftware</groupId> 
-			<artifactId>obera_zwave</artifactId> <version>1.0-SNAPSHOT</version> </dependency> -->
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>javax.mail-api</artifactId>
@@ -146,22 +143,10 @@
 			<artifactId>log4j-1.2-api</artifactId>
 			<version>${log4j.version}</version>
 		</dependency>
-
-		<!--<dependency> <groupId>org.apache.logging.log4j</groupId> <artifactId>log4j-web</artifactId> 
-			<version>${log4j.version}</version> </dependency> -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-jpa</artifactId>
 			<version>${log4j.version}</version>
-		</dependency>
-
-
-		<!--<dependency> <groupId>org.apache.logging.log4j</groupId> <artifactId>log4j-slf4j-impl</artifactId> 
-			<version>${log4j.version}</version> </dependency> -->
-		<dependency>
-			<groupId>it.sauronsoftware.cron4j</groupId>
-			<artifactId>cron4j</artifactId>
-			<version>2.2.5</version>
 		</dependency>
 		<dependency>
 			<groupId>io.quarkus</groupId>
@@ -189,8 +174,6 @@
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-resteasy-jaxb</artifactId>
 		</dependency>
-		<!-- <dependency> <groupId>io.quarkus</groupId> <artifactId>quarkus-resteasy-jsonb</artifactId> 
-			</dependency> -->
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-smallrye-health</artifactId>
@@ -219,12 +202,10 @@
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-cache</artifactId>
 		</dependency>
-		<!-- <dependency> <groupId>io.quarkus</groupId> <artifactId>quarkus-undertow</artifactId> 
-			</dependency> -->
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>org.eclipse.persistence.jpa</artifactId>
-			<version>2.7.6</version>
+			<version>2.7.7</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -236,22 +217,15 @@
 			<artifactId>reflections</artifactId>
 			<version>0.9.11</version>
 		</dependency>
-		<!-- <dependency> <groupId>com.sap.olingo</groupId> <artifactId>odata-jpa-processor</artifactId> 
-			<version>0.2.10-SNAPSHOT</version> <exclusions> <exclusion> <artifactId>javax.persistence</artifactId> 
-			<groupId>org.eclipse.persistence</groupId> </exclusion> </exclusions> </dependency> 
-			<dependency> <groupId>com.sap.olingo</groupId> <artifactId>odata-jpa-metadata</artifactId> 
-			<version>0.2.10-SNAPSHOT</version> <exclusions> <exclusion> <artifactId>javax.persistence</artifactId> 
-			<groupId>org.eclipse.persistence</groupId> </exclusion> </exclusions> </dependency> -->
 		<dependency>
 			<groupId>org.mitre.dsmiley.httpproxy</groupId>
 			<artifactId>smiley-http-proxy-servlet</artifactId>
 			<version>1.11</version>
 		</dependency>
-		
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-			<version>2.8.6</version>
+			<version>2.8.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.telegram</groupId>
