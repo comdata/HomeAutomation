@@ -32,7 +32,6 @@ public class WindowBlind {
 	@JsonIdentityReference(alwaysAsId = true)
 	@ManyToOne
 	@JoinColumn(name = "ROOM_ID", nullable = false)
-	
 	private Room room;
 
 	private String name;
