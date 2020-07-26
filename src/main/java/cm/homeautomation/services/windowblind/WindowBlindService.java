@@ -19,6 +19,8 @@ import cm.homeautomation.services.base.HTTPHelper;
 @Path("windowBlinds/")
 public class WindowBlindService extends BaseService {
 
+	private static final String DIMVALUE = "{DIMVALUE}";
+
 	public enum DimDirection {
 		UP, DOWN
 	}
@@ -124,13 +126,12 @@ public class WindowBlindService extends BaseService {
 			@PathParam("type") String type, @PathParam("roomId") Long roomId) {
 		final EntityManager em = EntityManagerService.getManager();
 
-		if (Float.parseFloat(value) > 99) {
-			value = "99";
-		}
 
-		final String newValue = value;
+
 
 		final Runnable windowBlindThread = () -> {
+
+			String newValue = value;
 
 			if (WindowBlind.SINGLE.equals(type)) {
 
@@ -138,14 +139,18 @@ public class WindowBlindService extends BaseService {
 						.createQuery("select w from WindowBlind w where w.id=:id").setParameter("id", windowBlindId)
 						.getSingleResult();
 
+				if (Float.parseFloat(value) > singleWindowBlind1.getMaximumValue()) {
+					newValue = Integer.toString(singleWindowBlind1.getMaximumValue());
+				}
+
 				String mqttDimTopic = singleWindowBlind1.getMqttDimTopic();
 				if (mqttDimTopic != null && !mqttDimTopic.isEmpty()) {
-					String dimMessage = singleWindowBlind1.getMqttDimMessage().replace("{DIMVALUE}", newValue);
+					String dimMessage = singleWindowBlind1.getMqttDimMessage().replace(DIMVALUE, newValue);
 
 					MQTTSender.sendMQTTMessage(singleWindowBlind1.getMqttDimTopic(), dimMessage);
 				} else {
 
-					final String dimUrl1 = singleWindowBlind1.getDimUrl().replace("{DIMVALUE}", newValue);
+					final String dimUrl1 = singleWindowBlind1.getDimUrl().replace(DIMVALUE, newValue);
 
 					HTTPHelper.performHTTPRequest(dimUrl1);
 					singleWindowBlind1.setCurrentValue(Float.parseFloat(newValue));
@@ -173,12 +178,12 @@ public class WindowBlindService extends BaseService {
 
 					String mqttDimTopic = singleWindowBlind2.getMqttDimTopic();
 					if (mqttDimTopic != null && !mqttDimTopic.isEmpty()) {
-						String dimMessage = singleWindowBlind2.getMqttDimMessage().replace("{DIMVALUE}", newValue);
+						String dimMessage = singleWindowBlind2.getMqttDimMessage().replace(DIMVALUE, newValue);
 
 						MQTTSender.sendMQTTMessage(singleWindowBlind2.getMqttDimTopic(), dimMessage);
 					} else {
 
-						final String dimUrl1 = singleWindowBlind2.getDimUrl().replace("{DIMVALUE}", newValue);
+						final String dimUrl1 = singleWindowBlind2.getDimUrl().replace(DIMVALUE, newValue);
 
 						HTTPHelper.performHTTPRequest(dimUrl1);
 

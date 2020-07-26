@@ -1,5 +1,6 @@
 package cm.homeautomation.entities;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,7 +12,6 @@ import javax.persistence.Transient;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 
 import lombok.Getter;
 import lombok.Setter;
@@ -46,6 +46,12 @@ public class WindowBlind {
 
 	private String mqttDimTopic;
 	private String mqttDimMessage;
+
+	@Column(name = "MINIMUM_VALUE")
+	private int minimumValue = 0;
+
+	@Column(name = "MAXIMUM_VALUE")
+	private int maximumValue = 99;
 
 	@Transient
 	private String windowBlindType = WindowBlind.SINGLE;

@@ -41,7 +41,7 @@
 						<items>
 							<InputListItem label="{windowBlinds>name}">
 
-								<Slider min="0" max="99"
+								<Slider min="{windowBlinds>minimumValue}" max="{windowBlinds>maximumValue}"
 									value="{windowBlinds>currentValue}" width="100px"
 									change="handleBlindChange" />
 								<Label text="{windowBlinds>currentValue}"></Label>

@@ -38,14 +38,14 @@ public class HueInterface extends BaseService {
 		EntityManager em = EntityManagerService.getManager();
 
 		String lightId = message.getLightId();
-		List<HueDevice> hueDeviceList = em.createQuery("select hd from HueDevice hd where hd.lightId=:lightId",
-				HueDevice.class)
+		List<HueDevice> hueDeviceList = em
+				.createQuery("select hd from HueDevice hd where hd.lightId=:lightId", HueDevice.class)
 				.setParameter("lightId", lightId).getResultList();
 
 		if (hueDeviceList == null || hueDeviceList.isEmpty()) {
 
-			List<HueDevice> hueDeviceNameList = em.createQuery("select hd from HueDevice hd where hd.name=:name",
-					HueDevice.class)
+			List<HueDevice> hueDeviceNameList = em
+					.createQuery("select hd from HueDevice hd where hd.name=:name", HueDevice.class)
 					.setParameter("name", message.getDeviceName())
 					.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS).getResultList();
 			if (hueDeviceNameList != null && !hueDeviceNameList.isEmpty()) {
@@ -113,7 +113,6 @@ public class HueInterface extends BaseService {
 
 			if (hueDevice != null) {
 
-
 				HueDeviceType type = hueDevice.getType();
 				if (type != null) {
 					switch (type) {
@@ -152,15 +151,23 @@ public class HueInterface extends BaseService {
 	}
 
 	private void handleWindowBlind(HueEmulatorMessage message, HueDevice hueDevice) {
-		String dimValue = "99";
-		if (!message.isOnOffCommand()) {
-			dimValue = Integer.toString(message.getBrightness());
-		}
-		LogManager.getLogger(HueInterface.class).debug("Window Blind dim: " + dimValue);
+		EntityManager em = EntityManagerService.getManager();
 
-		new WindowBlindService().setDim(hueDevice.getExternalId(), ("on".equals(message.getPayload()) ? dimValue : "0"),
-				hueDevice.isGroupDevice() ? WindowBlind.ALL_AT_ONCE : WindowBlind.SINGLE,
-				(hueDevice.isGroupDevice() ? hueDevice.getRoom().getId() : null));
+		WindowBlind windowBlind = em.find(WindowBlind.class, hueDevice.getExternalId());
+
+		if (windowBlind != null) {
+
+			String dimValue = Integer.toString(windowBlind.getMaximumValue());
+			if (!message.isOnOffCommand()) {
+				dimValue = Integer.toString(message.getBrightness());
+			}
+			LogManager.getLogger(HueInterface.class).debug("Window Blind dim: " + dimValue);
+
+			new WindowBlindService().setDim(hueDevice.getExternalId(),
+					("on".equals(message.getPayload()) ? dimValue : "0"),
+					hueDevice.isGroupDevice() ? WindowBlind.ALL_AT_ONCE : WindowBlind.SINGLE,
+					(hueDevice.isGroupDevice() ? hueDevice.getRoom().getId() : null));
+		}
 	}
 
 	private void handleSwitch(HueEmulatorMessage message, HueDevice hueDevice) {
@@ -183,8 +190,7 @@ public class HueInterface extends BaseService {
 			}
 
 			if (isColor) {
-				LightService.getInstance().setColor(hueDevice.getExternalId(), message.getBrightness(),
-						x, y);
+				LightService.getInstance().setColor(hueDevice.getExternalId(), message.getBrightness(), x, y);
 			} else {
 
 				LightService.getInstance().setLightState(hueDevice.getExternalId(),
