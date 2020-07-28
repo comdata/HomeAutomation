@@ -19,9 +19,9 @@ public class MotionEvent implements HumanMessageGenerationInterface{
 	@Override
 	public String getMessageString() {
 		if (state) {
-			return "Motion detected. Room:" + getRoom() + " state: " + isState();
+			return "Motion detected. Name: " + name + " Room:" + getRoom() + " state: " + isState();
 		} else {
-			return "Motion stopped. Room:" + getRoom() + " state: " + isState();
+			return "Motion stopped. Name: " + name + " Room:" + getRoom() + " state: " + isState();
 		}
 	}
 
