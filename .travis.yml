@@ -23,10 +23,11 @@ script:
   #- mvn install -DskipTests=true sonar:sonar org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
   mvn package
   echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  docker push comdata456/homeautomation:travis-$TRAVIS_BUILD_NUMBER
   docker push comdata456/homeautomation:latest
 
 before_script:
-  - mysql -u root -e 'CREATE DATABASE HA;'
-  - mysql -u root HA < HomeAutomation/WebContent/WEB-INF/log4j.sql
+  - mysql -e 'CREATE DATABASE HA;'
+  - mysql HA < HomeAutomation/WebContent/WEB-INF/log4j.sql
 #after_success:
 #  - bash <(curl -s https://codecov.io/bash)
