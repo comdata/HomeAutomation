@@ -14,7 +14,7 @@ cache:
   - $HOME/.m2
 
 addons:
-  mariadb: '10.5'
+#  mariadb: '10.5'
   sonarcloud:
     organization: "homeautomation"
 
@@ -28,8 +28,8 @@ script:
   docker push comdata456/homeautomation:travis-$TRAVIS_BUILD_NUMBER
   docker push comdata456/homeautomation:latest
 
-before_script:
-  - mysql -e 'CREATE DATABASE HA;'
-  - mysql HA < HomeAutomation/WebContent/WEB-INF/log4j.sql
+#before_script:
+#  - mysql -e 'CREATE DATABASE HA;'
+#  - mysql HA < HomeAutomation/WebContent/WEB-INF/log4j.sql
 #after_success:
 #  - bash <(curl -s https://codecov.io/bash)
