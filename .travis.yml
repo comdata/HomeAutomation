@@ -21,12 +21,12 @@ addons:
 script:
   # the following command line builds the project, runs the tests with coverage and then execute the SonarQube analysis
   #- mvn install -DskipTests=true sonar:sonar org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
-  mvn package -DskipTests=true
-  echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  docker build -t comdata456/homeautomation:travis-$TRAVIS_BUILD_NUMBER .
-  docker tag comdata456/homeautomation:travis-$TRAVIS_BUILD_NUMBER comdata456/homeautomation:latest
-  docker push comdata456/homeautomation:travis-$TRAVIS_BUILD_NUMBER
-  docker push comdata456/homeautomation:latest
+  - mvn package -DskipTests=true
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker build -t comdata456/homeautomation:travis-$TRAVIS_BUILD_NUMBER .
+  - docker tag comdata456/homeautomation:travis-$TRAVIS_BUILD_NUMBER comdata456/homeautomation:latest
+  - docker push comdata456/homeautomation:travis-$TRAVIS_BUILD_NUMBER
+  - docker push comdata456/homeautomation:latest
 
 #before_script:
 #  - mysql -e 'CREATE DATABASE HA;'
