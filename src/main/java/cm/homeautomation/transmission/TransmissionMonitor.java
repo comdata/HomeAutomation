@@ -18,13 +18,15 @@ import nl.stil4m.transmission.api.domain.ids.NumberListIds;
 import nl.stil4m.transmission.rpc.RpcClient;
 import nl.stil4m.transmission.rpc.RpcConfiguration;
 import nl.stil4m.transmission.rpc.RpcException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 
 public class TransmissionMonitor {
 
 	public static void checkTorrents(String[] args) {
 		try {
-			ObjectMapper objectMapper = new ObjectMapper();
-			objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+			ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);;
+            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            
 			RpcConfiguration rpcConfiguration = new RpcConfiguration();
 			rpcConfiguration.setHost(URI.create("http://"+args[0]+":"+args[1]+"@"+args[2]+":"+args[3]+"/transmission/rpc"));
 			
