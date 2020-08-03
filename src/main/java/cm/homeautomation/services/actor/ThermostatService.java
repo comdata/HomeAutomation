@@ -70,7 +70,7 @@ public class ThermostatService extends BaseService {
 
 	@GET
 	@Path("setValue/{id}/{value}")
-	public GenericStatus setValue(@PathParam("id") final Long id, @PathParam("value") final String value) {
+	public GenericStatus setValue(@PathParam("id") final Long id, @PathParam("value") String value) {
 
 		final EntityManager em = EntityManagerService.getManager();
 		em.getTransaction().begin();
