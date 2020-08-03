@@ -197,7 +197,6 @@ public class SchedulerService extends BaseService {
 				}
 
 			}
-			reader.close();
 		} catch (IOException e) {
 			LogManager.getLogger(this.getClass()).error(e);
 		}
