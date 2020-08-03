@@ -210,8 +210,7 @@ public class MQTTReceiverClient implements MqttCallback {
 			hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
 			new HueInterface().handleMessage(hueMessage);
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error(e);
 		}
 
 	}
