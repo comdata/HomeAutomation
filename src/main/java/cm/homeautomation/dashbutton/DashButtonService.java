@@ -121,9 +121,7 @@ public class DashButtonService {
 	}
 
 	public DashButtonService() {
-
-		//LogManager.getLogger(this.getClass()).debug("Creating Dashbutton Service");
-		this.run();
+    	this.run();
 	}
 
 	@AutoCreateInstance
