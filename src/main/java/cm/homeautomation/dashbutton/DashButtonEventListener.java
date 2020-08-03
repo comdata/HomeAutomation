@@ -91,7 +91,7 @@ public class DashButtonEventListener {
 
 					NashornRunner.getInstance().run(jsCode);
 				} catch (final ScriptException e) {
-					LogManager.getLogger(this.getClass()).error("error running code: " + jsCode, e);
+					LogManager.getLogger(this.getClass()).error("error running code: {}", jsCode, e);
 				}
 
 			}
