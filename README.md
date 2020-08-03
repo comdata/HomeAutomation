@@ -1,6 +1,6 @@
 # HomeAutomation
 
-[[https://travis-ci.org/comdata/HomeAutomation.svg?branch=Main]]
+[![Build Status](https://travis-ci.org/comdata/HomeAutomation.svg?branch=Main)](https://travis-ci.org/comdata/HomeAutomation)
 
 This is my approach to automate my home.
 
