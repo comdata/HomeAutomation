@@ -30,9 +30,7 @@ public class CustomEventBus {
 	}
 
 	public void post(final Object event) {
-		Runnable eventThread = () -> {
-			EventBus.getDefault().post(event);
-		};
+		Runnable eventThread = () -> EventBus.getDefault().post(event);
 
 		new Thread(eventThread).start();
 	}
