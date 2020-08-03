@@ -26,6 +26,12 @@ Any comments are welcome.
 
 This is just a hobby... ;-)
 
+# Deployment
+
+The application is also available on Docker:
+
+https://hub.docker.com/repository/docker/comdata456/homeautomation
+
 # This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
