@@ -86,9 +86,12 @@ public class ThermostatService extends BaseService {
 
 		em.persist(singleSwitch);
 
-		em.getTransaction().commit();
+        em.getTransaction().commit();
+        
+        id = id.replaceAll("[\n|\r|\t]", "_");
+        value = value.replaceAll("[\n|\r|\t]", "_");
 
-		LogManager.getLogger(this.getClass()).info("Set " + id + " to value: " + value);
+		LogManager.getLogger(this.getClass()).info("Set {} to value: {}", id, value);
 		return new GenericStatus(true);
 	}
 
