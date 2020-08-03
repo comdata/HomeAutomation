@@ -19,6 +19,8 @@ import cm.homeautomation.services.base.AutoCreateInstance;
 @AutoCreateInstance
 public class LogConfigurator {
 
+    private long domConfigureAndWatchTime=60*1000;
+
 	public LogConfigurator() {
 		init();
 	}
@@ -27,14 +29,14 @@ public class LogConfigurator {
 		final String loggingFile = ConfigurationService.getConfigurationProperty("logging", "log4j");
 
 		final LoggerContext context = (org.apache.logging.log4j.core.LoggerContext) LogManager.getContext(false);
-		final File file = new File(loggingFile);
+        final File file = new File(loggingFile);
 
 		if (file.exists()) {
 			// this will force a reconfiguration
 			URI log4jURI = file.toURI();
 			context.setConfigLocation(log4jURI);
 			
-			DOMConfigurator.configureAndWatch(loggingFile, 60 * 1000);
+			DOMConfigurator.configureAndWatch(loggingFile, domConfigureAndWatchTime);
 			
 		} else {
 			System.out.println();
