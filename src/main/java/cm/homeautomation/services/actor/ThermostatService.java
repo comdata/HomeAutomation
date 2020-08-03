@@ -88,7 +88,6 @@ public class ThermostatService extends BaseService {
 
         em.getTransaction().commit();
         
-        id = id.replaceAll("[\n|\r|\t]", "_");
         value = value.replaceAll("[\n|\r|\t]", "_");
 
 		LogManager.getLogger(this.getClass()).info("Set {} to value: {}", id, value);
