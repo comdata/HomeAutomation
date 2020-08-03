@@ -151,9 +151,8 @@ public class SchedulerService extends BaseService {
 		EntityManager em = EntityManagerService.getManager();
 
 		File cronFile = new File("/Users/christoph/git/HomeAutomation/schedule.cron");
-		BufferedReader reader;
-		try {
-			reader = new BufferedReader(new FileReader(cronFile));
+		
+		try (BufferedReader reader = new BufferedReader(new FileReader(cronFile));) {
 			String line = reader.readLine();
 			while (line != null) {
 				System.out.println(line);
