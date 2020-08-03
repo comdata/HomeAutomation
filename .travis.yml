@@ -31,6 +31,6 @@ script:
 
 before_script:
   - mysql -e 'CREATE DATABASE HA;'
-  - mysql HA < HomeAutomation/WebContent/WEB-INF/log4j.sql
+ # - mysql HA < HomeAutomation/WebContent/WEB-INF/log4j.sql
 after_success:
   - bash <(curl -s https://codecov.io/bash)
