@@ -1,5 +1,7 @@
 # HomeAutomation
 
+[[https://travis-ci.org/comdata/HomeAutomation.svg?branch=Main]]
+
 This is my approach to automate my home.
 
 The system currently supports reading:
