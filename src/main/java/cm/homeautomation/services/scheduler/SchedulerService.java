@@ -199,7 +199,7 @@ public class SchedulerService extends BaseService {
 			}
 			reader.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error(e);
 		}
 
 	}
