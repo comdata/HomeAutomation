@@ -10,6 +10,11 @@ import org.junit.jupiter.api.Test;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Room;
 
+import de.a9d3.testing.checks.*;
+import de.a9d3.testing.executer.SingleThreadExecutor;
+import java.util.Arrays;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class RoomTest {
 	private EntityManager em;
 	
@@ -31,5 +36,18 @@ public class RoomTest {
 		em.getTransaction().commit();
 		
 		assertNotNull(room);
-	}
+    }
+    
+    @Test
+    public void baseTest() {
+        SingleThreadExecutor executor = new SingleThreadExecutor();
+
+        assertTrue(executor.execute(Room.class, Arrays.asList( 
+                //new CopyConstructorCheck(), 
+                //new DefensiveCopyingCheck(),
+                //new EmptyCollectionCheck(), 
+                new GetterIsSetterCheck(),
+                //new HashcodeAndEqualsCheck(), 
+                new PublicVariableCheck(true))));
+    }
 }
