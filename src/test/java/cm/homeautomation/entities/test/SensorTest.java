@@ -34,7 +34,7 @@ public class SensorTest {
 		em.getTransaction().begin();
 		Sensor sensor = new Sensor();
 	//	sensor.setRoom(room);
-	//	sensor.setSensorName("Testsensor");
+		sensor.setSensorName("Testsensor");
 	//	sensor.setMinValue(null);
 	//	sensor.setMaxValue(null);
 

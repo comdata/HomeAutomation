@@ -15,8 +15,6 @@ RUN apt-get update && apt-get install -y \
         mc \
     && apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
     
-RUN echo "127.0.0.1 nas" >> /etc/hosts
-
 USER gitpod
 # Apply user-specific settings
 #ENV ...
