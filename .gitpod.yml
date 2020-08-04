@@ -4,6 +4,5 @@ image:
 vscode:
   extensions:
     - vscjava.vscode-java-test@0.24.0:7HNVdb++kyf3KAg0JZ7a4w==
-    - cool2k.vscode-lombok@1.0.2:e816/wZO588Jp8PN58Wj6g==
     - redhat.vscode-quarkus@1.6.0:L1WGCvkSZeXbqk0esLq6mQ==
     - vscjava.vscode-maven@0.21.2:tFEkt2FqLujaNTLU5AmRiQ==
