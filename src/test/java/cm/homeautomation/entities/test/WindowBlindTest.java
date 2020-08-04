@@ -94,7 +94,7 @@ public class WindowBlindTest {
     }
     
 
-        @Test
+    @Test
     public void baseTest() {
         SingleThreadExecutor executor = new SingleThreadExecutor();
 
