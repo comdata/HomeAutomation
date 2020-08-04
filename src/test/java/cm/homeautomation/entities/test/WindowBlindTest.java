@@ -15,6 +15,12 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.WindowBlind;
 
+import de.a9d3.testing.checks.*;
+import de.a9d3.testing.executer.SingleThreadExecutor;
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class WindowBlindTest {
 	private EntityManager em;
 	private String calibrationUrl="http://www.google.de";
@@ -35,11 +41,14 @@ public class WindowBlindTest {
 	
 	@AfterEach
 	public void tearDown() {
-		em = EntityManagerService.getNewManager();
-		em.getTransaction().begin();
-		windowBlind=em.merge(windowBlind);
-		em.remove(windowBlind);
-		em.getTransaction().commit();
+                
+        if (windowBlind!=null) {
+            em = EntityManagerService.getNewManager();
+		    em.getTransaction().begin();
+		    windowBlind=em.merge(windowBlind);
+		    em.remove(windowBlind);
+            em.getTransaction().commit();
+        }
 	}
 	
 	@Test
@@ -82,5 +91,19 @@ public class WindowBlindTest {
 		assertTrue(windowBlind.getId()!=null, "id is null");
 		assertTrue(windowBlind.getId().longValue()>0, "id is not greater 0");
 		assertTrue(calibrationUrl.equals(windowBlind.getCalibrationUrl()), "calibration Url is not: " + calibrationUrl);
-	}
+    }
+    
+
+        @Test
+    public void baseTest() {
+        SingleThreadExecutor executor = new SingleThreadExecutor();
+
+        assertTrue(executor.execute(WindowBlind.class, Arrays.asList( 
+                //new CopyConstructorCheck(), 
+                //new DefensiveCopyingCheck(),
+                //new EmptyCollectionCheck(), 
+                new GetterIsSetterCheck(),
+                //new HashcodeAndEqualsCheck(), 
+                new PublicVariableCheck(true))));
+    }
 }
