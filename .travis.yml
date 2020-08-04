@@ -30,7 +30,7 @@ script:
   - docker push comdata456/homeautomation:latest
 
 before_script:
-  - echo "127.0.0.1   nas" >> /etc/hosts
+#  - echo "127.0.0.1   nas" >> /etc/hosts
   - mysql -e 'CREATE DATABASE HA;'
  # - mysql HA < HomeAutomation/WebContent/WEB-INF/log4j.sql
 after_success:
