@@ -46,8 +46,6 @@ public class TransmissionMonitor {
 			int numberOfDoneTorrents = 0;
 			List<TorrentInfo> torrents = result.getTorrents();
 			for (TorrentInfo torrentInfo : torrents) {
-				Boolean finished = torrentInfo.getFinished();
-
 				double percentDone = torrentInfo.getPercentDone().doubleValue();
 				LogManager.getLogger(TransmissionMonitor.class).info("Percent done: " + percentDone);
 				if (percentDone == 1) {
