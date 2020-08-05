@@ -1,7 +1,5 @@
 package cm.homeautomation.entities.test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
 
