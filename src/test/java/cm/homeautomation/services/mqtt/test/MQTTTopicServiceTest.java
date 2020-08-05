@@ -3,9 +3,11 @@ package cm.homeautomation.services.mqtt.test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import cm.homeautomation.entities.MQTTTopic;
 import cm.homeautomation.services.mqtt.MQTTTopicService;
 import de.a9d3.testing.checks.GetterIsSetterCheck;
 import de.a9d3.testing.checks.PublicVariableCheck;
@@ -25,4 +27,12 @@ public class MQTTTopicServiceTest {
                 //new HashcodeAndEqualsCheck(), 
                 new PublicVariableCheck(true))));
     }
+
+    @Test
+    public void testGetAll() {
+        List<MQTTTopic> all = new MQTTTopicService().getAll();
+        assertTrue(all!=null);
+        assertTrue(all.isEmpty());
+    }
+
 }
