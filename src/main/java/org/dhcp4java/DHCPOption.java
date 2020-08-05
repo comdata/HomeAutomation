@@ -1075,8 +1075,8 @@ public class DHCPOption implements Serializable {
             return null;
         }
         
-        List list = userClassToList(buf);
-        Iterator it = list.iterator();
+        List<String> list = userClassToList(buf);
+        Iterator<String> it = list.iterator();
         StringBuffer s = new StringBuffer();
         
         while (it.hasNext()) {
