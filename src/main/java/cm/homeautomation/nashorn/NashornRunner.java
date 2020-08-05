@@ -11,7 +11,6 @@ import javax.script.ScriptException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
@@ -23,7 +22,10 @@ import cm.homeautomation.services.base.AutoCreateInstance;
 @AutoCreateInstance
 public class NashornRunner {
 
-	private static NashornRunner instance;
+	private static final String ENABLED = "enabled";
+    private static final String NASHORN = "nashorn";
+    private static final String TRUE = "true";
+    private static NashornRunner instance;
 	private ScriptEngine engine = null;
 
 	public static NashornRunner getInstance() {
@@ -39,11 +41,11 @@ public class NashornRunner {
 	}
 
 	public NashornRunner() {
-		String nashornEnabled = ConfigurationService.getConfigurationProperty("nashorn", "enabled");
+		String nashornEnabled = ConfigurationService.getConfigurationProperty(NASHORN, ENABLED);
 
-		if ("true".equalsIgnoreCase(nashornEnabled)) {
+		if (TRUE.equalsIgnoreCase(nashornEnabled)) {
 			final ScriptEngineManager factory = new ScriptEngineManager();
-			engine = factory.getEngineByName("nashorn");
+			engine = factory.getEngineByName(NASHORN);
 
 			setInstance(this);
 			EventBusService.getEventBus().register(this);
