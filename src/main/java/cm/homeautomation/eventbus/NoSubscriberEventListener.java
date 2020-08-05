@@ -3,7 +3,6 @@ package cm.homeautomation.eventbus;
 import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.NoSubscriberEvent;
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.services.base.AutoCreateInstance;
 
