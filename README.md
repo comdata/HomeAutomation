@@ -16,7 +16,9 @@ The system currently supports reading:
 
 Additionally it can proxy for a MJPEG camera.
 
-The system is split in a webapp (currently tested on Tomcat8) and a client (for collecting the sensor data).
+The system is consisting of a backend and a UI.
+
+Most of the data is being exchanged between the devices and the backend via MQTT.
 
 The UI is based on OpenUI5 http://openui5.org . The frontend gets update via Websockets from the backend.
 
