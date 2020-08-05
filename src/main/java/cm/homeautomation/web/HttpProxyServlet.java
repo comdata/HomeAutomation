@@ -51,7 +51,6 @@ public final class HttpProxyServlet extends HttpServlet {
 	protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
 			throws ServletException, IOException {
 
-		@SuppressWarnings("unchecked")
 		Map<String, String[]> requestParameters = ((Map<String, String[]>) request.getParameterMap());
 
 		StringBuilder query = new StringBuilder();
@@ -100,7 +99,6 @@ public final class HttpProxyServlet extends HttpServlet {
 	protected void doPost(final HttpServletRequest request, final HttpServletResponse response)
 			throws ServletException, IOException {
 
-		@SuppressWarnings("unchecked")
 		Map<String, String[]> requestParameters = request.getParameterMap();
 
 		String uri = url.toString();

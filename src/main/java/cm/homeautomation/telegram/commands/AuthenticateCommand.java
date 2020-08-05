@@ -47,7 +47,7 @@ public class AuthenticateCommand extends BotCommand {
 
 				answer.setText("user authenticated: " + user.getId());
 
-				List result = em.createQuery("select u from TelegramUser u where u.userId=:userId")
+				List<TelegramUser> result = em.createQuery("select u from TelegramUser u where u.userId=:userId", TelegramUser.class)
 						.setParameter("userId", userId).getResultList();
 
 				if (result == null || result.isEmpty()) {
