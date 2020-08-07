@@ -7,7 +7,6 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 import cm.homeautomation.entities.RGBLight;
-import de.a9d3.testing.checks.GetterIsSetterCheck;
 import de.a9d3.testing.checks.PublicVariableCheck;
 import de.a9d3.testing.executer.SingleThreadExecutor;
 
@@ -21,7 +20,7 @@ class RGBLightTest {
 				// new CopyConstructorCheck(),
 				// new DefensiveCopyingCheck(),
 				// new EmptyCollectionCheck(),
-				new GetterIsSetterCheck(),
+				// new GetterIsSetterCheck(),
 				// new HashcodeAndEqualsCheck(),
 				new PublicVariableCheck(true))));
 	}
