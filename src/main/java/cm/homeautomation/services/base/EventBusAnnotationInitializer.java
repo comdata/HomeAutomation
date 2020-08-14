@@ -1,5 +1,6 @@
 package cm.homeautomation.services.base;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,48 +27,50 @@ import com.google.common.base.Predicate;
 @AutoCreateInstance
 public class EventBusAnnotationInitializer {
 
-	private static Map<Class<?>, Object> instances = new HashMap<>();
+    private static Map<Class<?>, Object> instances = new HashMap<>();
 
-	public EventBusAnnotationInitializer() {
-		this(false);
-	}
+    public EventBusAnnotationInitializer() {
+        this(false);
+    }
 
-	public EventBusAnnotationInitializer(boolean noInit) {
-		if (!noInit) {
-			initializeEventBus();
-		}
-	}
-	
-	public Map<Class<?>, Object> getInstances() {
-		return instances;
-	}
+    public EventBusAnnotationInitializer(boolean noInit) {
+        if (!noInit) {
+            initializeEventBus();
+        }
+    }
 
-	public void initializeEventBus() {
-		final Set<Method> resources = getEventBusClasses();
+    public Map<Class<?>, Object> getInstances() {
+        return instances;
+    }
 
-		Map<Class<?>, Object> startupInstances = StartupAnnotationInitializer.getInstances();
+    public void initializeEventBus() {
+        final Set<Method> resources = getEventBusClasses();
 
-		Map<Class<?>, Object> startedInstances = new HashMap<Class<?>, Object>();
+        Map<Class<?>, Object> startupInstances = StartupAnnotationInitializer.getInstances();
 
-		for (final Method method : resources) {
-			final Class<?> declaringClass = method.getDeclaringClass();
+        Map<Class<?>, Object> startedInstances = new HashMap<Class<?>, Object>();
 
-			// check if the class has already been initialized
-			if (!startedInstances.containsKey(declaringClass) && !instances.containsKey(declaringClass)
-					&& !startupInstances.containsKey(declaringClass)) {
+        for (final Method method : resources) {
+            final Class<?> declaringClass = method.getDeclaringClass();
 
-				startedInstances.put(declaringClass, "started");
+            // check if the class has already been initialized
+            if (!startedInstances.containsKey(declaringClass) && !instances.containsKey(declaringClass)
+                    && !startupInstances.containsKey(declaringClass)) {
 
-				LogManager.getLogger(this.getClass()).info("Creating class: " + declaringClass.getName());
+                startedInstances.put(declaringClass, "started");
 
-				final Runnable singleInstanceCreator = new Runnable() {
-					@Override
-					public void run() {
-						try {
-							final Object classInstance = declaringClass.newInstance();
+                LogManager.getLogger(this.getClass()).info("Creating class: " + declaringClass.getName());
 
-							instances.put(declaringClass, classInstance);
-						} catch (InstantiationException | IllegalAccessException e) {
+                final Runnable singleInstanceCreator = new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            final Object classInstance = declaringClass.getDeclaredConstructor(declaringClass)
+                                    .newInstance();
+
+                            instances.put(declaringClass, classInstance);
+                        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                                | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 							LogManager.getLogger(this.getClass()).info("Failed creating class");
 						}
 					}
