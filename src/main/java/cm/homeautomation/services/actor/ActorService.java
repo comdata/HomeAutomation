@@ -240,7 +240,6 @@ public class ActorService extends BaseService implements MqttCallback {
 	@GET
 	@Path("forroom/{room}")
 	public SwitchStatuses getSwitchStatusesForRoom(@PathParam("room") final String room) {
-		final EntityManager em = EntityManagerService.getManager();
 		final SwitchStatuses switchStatuses = new SwitchStatuses();
 
 		List<Switch> switchesList = switchList.get(Long.parseLong(room));
