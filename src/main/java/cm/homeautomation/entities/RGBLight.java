@@ -18,20 +18,20 @@ import lombok.Setter;
 public class RGBLight extends DimmableColorLight {
 
 	@Column(name = "RED")
-	private int red;
+	private int red = 0;
 	@Column(name = "GREEN")
-	private int green;
+	private int green = 0;
 	@Column(name = "BLUE")
-	private int blue;
+	private int blue = 0;
 
 	@Column(name = "WHITE")
-	private int white;
+	private int white = 0;
 
 	@Enumerated(EnumType.STRING)
-	private RGBLightType rgbLightType;
+	private RGBLightType rgbLightType = RGBLightType.RGB;
 
-	private Float x;
-	private Float y;
+	private Float x = 0F;
+	private Float y = 0F;
 
 	private String mqttColorTopic;
 	private String mqttColorMessage;
