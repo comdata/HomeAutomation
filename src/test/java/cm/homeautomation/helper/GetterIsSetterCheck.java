@@ -8,7 +8,9 @@ import de.a9d3.testing.testdata.TestDataProvider;
 import de.a9d3.testing.tuple.MethodTuple;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -64,9 +66,30 @@ public class GetterIsSetterCheck implements CheckInterface {
     public boolean check(Class c, List<MethodTuple> tuples) {
         Object instance = provider.fill(c, "test", true);
 
+        CountDownLatch countDownLatch = new CountDownLatch(tuples.size());
+
+        List<Boolean> testTuplesLog = new ArrayList<>();
+
         for (int i = 0; i < tuples.size(); i++) {
-            if (checkIfGetterReturnSetValue(tuples.get(i), instance, i))
+            MethodTuple tuple = tuples.get(i);
+            final int a=i;
+
+            Runnable checkThread = () -> {
+                System.out.println("running test: "+tuple.getA().getName()+"/"+tuple.getB().getName());
+                if (checkIfGetterReturnSetValue(tuple, instance, a)) {
+                    testTuplesLog.add(Boolean.FALSE);
+                }
+
+                countDownLatch.countDown();
+                ;
+            };
+            new Thread(checkThread).start();
+        }
+
+        for (Boolean testTuplesStatus : testTuplesLog) {
+            if (!testTuplesStatus.booleanValue()) {
                 return false;
+            }
         }
 
         return true;
@@ -76,7 +99,7 @@ public class GetterIsSetterCheck implements CheckInterface {
         Object data = provider.fill(tuple.getB().getParameterTypes()[0], seed + i, true);
         if (data == null) {
             System.out.println("data is null while calling " + instance.getClass().getCanonicalName() + "."
-                    + tuple.getB().getName()+". Please provide test data for this method.");
+                    + tuple.getB().getName() + ". Please provide test data for this method.");
             return true;
         } else {
             try {
