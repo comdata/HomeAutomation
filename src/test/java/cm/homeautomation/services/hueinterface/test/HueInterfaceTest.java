@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import cm.homeautomation.services.hueinterface.HueEmulatorMessage;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
 
 @QuarkusTest
 class HueInterfaceTest {
@@ -18,7 +19,8 @@ class HueInterfaceTest {
 
 		hueEmulatorMessage.setDeviceName("basic test device");
 
-		given().when().post("/hueInterface/send", hueEmulatorMessage).then().statusCode(200)
+		given().when().contentType(ContentType.JSON)
+            .body(hueEmulatorMessage).post("/hueInterface/send").then().statusCode(200)
 				.body(containsString("true"));
 	}
 
