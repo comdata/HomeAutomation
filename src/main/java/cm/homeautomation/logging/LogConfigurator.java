@@ -16,7 +16,6 @@ import cm.homeautomation.services.base.AutoCreateInstance;
  * @author christoph
  *
  */
-@AutoCreateInstance
 public class LogConfigurator {
 
     private long domConfigureAndWatchTime=60L*1000;
