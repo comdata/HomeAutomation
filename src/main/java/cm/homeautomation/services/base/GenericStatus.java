@@ -21,12 +21,19 @@ import lombok.Setter;
 @Setter
 public class GenericStatus {
 
-	private Object object;
+    private Object object;
 
-	private boolean success = false;
+    private boolean success = false;
 
-	public GenericStatus(boolean success) {
-		this.success = success;
+    private String errorMessage;
 
-	}
+    public GenericStatus(boolean success) {
+        this.success = success;
+    }
+
+    public GenericStatus(boolean isError, String errorMessage) {
+        this.success = !isError;
+        this.errorMessage = errorMessage;
+    }
+
 }
