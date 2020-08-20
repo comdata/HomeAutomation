@@ -2,7 +2,9 @@ package cm.homeautomation.services.base;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -96,11 +98,13 @@ public class StartupAnnotationInitializer extends Thread {
 
 	public void disposeInstances() {
 		synchronized (this) {
-			Set<Class<?>> keySet = instances.keySet();
+			Iterator<Map.Entry<Class<?>, Object>> it = instances.entrySet().iterator();
 
-			for (Class<?> clazz : keySet) {
-				instances.remove(clazz);
+			while (it.hasNext()) {
+				Entry<Class<?>, Object> item = it.next();
+				it.remove();
 			}
+
 		}
 	}
 }
