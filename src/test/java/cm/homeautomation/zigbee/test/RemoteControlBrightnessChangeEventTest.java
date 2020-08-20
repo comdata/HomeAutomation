@@ -1,5 +1,6 @@
 package cm.homeautomation.zigbee.test;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import cm.homeautomation.helper.GetterIsSetterCheck;
 import cm.homeautomation.zigbee.RemoteControlBrightnessChangeEvent;
+import cm.homeautomation.zigbee.WaterLeakEvent;
 import de.a9d3.testing.checks.PublicVariableCheck;
 import de.a9d3.testing.executer.SingleThreadExecutor;
 
@@ -22,5 +24,12 @@ class RemoteControlBrightnessChangeEventTest {
                 new GetterIsSetterCheck(),
                 // new HashcodeAndEqualsCheck(),
                 new PublicVariableCheck(true))));
+    }
+
+    @Test
+    void testConstructor() {
+        RemoteControlBrightnessChangeEvent remoteControlBrightnessChangeEvent = new RemoteControlBrightnessChangeEvent();
+
+        assertNotNull(remoteControlBrightnessChangeEvent);
     }
 }
