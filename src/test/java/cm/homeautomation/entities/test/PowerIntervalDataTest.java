@@ -7,7 +7,7 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 import cm.homeautomation.entities.PowerIntervalData;
-import de.a9d3.testing.checks.GetterIsSetterCheck;
+import cm.homeautomation.helper.GetterIsSetterCheck;
 import de.a9d3.testing.checks.PublicVariableCheck;
 import de.a9d3.testing.executer.SingleThreadExecutor;
 
