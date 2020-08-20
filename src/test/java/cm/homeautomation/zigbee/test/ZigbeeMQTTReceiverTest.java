@@ -10,7 +10,7 @@ import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.zigbee.ZigbeeMQTTReceiver;
 
-public class ZigbeeMQTTReceiverTest {
+class ZigbeeMQTTReceiverTest {
 
     @BeforeEach
     public void setup() {
@@ -18,7 +18,7 @@ public class ZigbeeMQTTReceiverTest {
     }
 
     @Test
-    public void testReceiveEvent() throws JsonMappingException, JsonProcessingException {
+    void testReceiveEvent() throws JsonMappingException, JsonProcessingException {
    		var zigbeeMQTTReceiver = new ZigbeeMQTTReceiver();
 
 		MQTTTopicEvent zigbeeDeviceEvent = new MQTTTopicEvent();

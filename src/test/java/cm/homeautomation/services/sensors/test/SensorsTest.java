@@ -8,17 +8,17 @@ import org.junit.jupiter.api.Test;
 import cm.homeautomation.sensors.SensorDatas;
 import cm.homeautomation.services.sensors.Sensors;
 
-public class SensorsTest {
+class SensorsTest {
     
     @Test
-    public void testGetInstance() {
+    void testGetInstance() {
         Sensors instance = Sensors.getInstance();
 
         assertNotNull(instance);
     }
 
     @Test
-    public void testGetDataForRoomNotExisting() {
+    void testGetDataForRoomNotExisting() {
         Sensors instance = Sensors.getInstance();
        
         assertNotNull(instance);

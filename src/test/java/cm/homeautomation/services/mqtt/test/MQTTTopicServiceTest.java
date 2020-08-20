@@ -13,10 +13,10 @@ import de.a9d3.testing.checks.GetterIsSetterCheck;
 import de.a9d3.testing.checks.PublicVariableCheck;
 import de.a9d3.testing.executer.SingleThreadExecutor;
 
-public class MQTTTopicServiceTest {
+class MQTTTopicServiceTest {
     
     @Test
-    public void baseTest() {
+    void baseTest() {
         SingleThreadExecutor executor = new SingleThreadExecutor();
 
         assertTrue(executor.execute(MQTTTopicService.class, Arrays.asList( 
@@ -29,7 +29,7 @@ public class MQTTTopicServiceTest {
     }
 
     @Test
-    public void testGetAll() {
+    void testGetAll() {
         List<MQTTTopic> all = new MQTTTopicService().getAll();
         assertTrue(all!=null);
         assertTrue(all.isEmpty());
