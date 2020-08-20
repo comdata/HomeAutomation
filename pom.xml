@@ -313,7 +313,7 @@
                     </execution>
                 </executions>
             </plugin>
-           <!-- <plugin>
+           <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.version}</version>
@@ -331,7 +331,7 @@
 						</goals>
 					</execution>
 				</executions>                
-            </plugin> -->             
+            </plugin>             
         </plugins>
     </build>
     <profiles>
