@@ -42,4 +42,13 @@ class WaterLeakEventTest {
 
         assertTrue(("Water Leak detected: " + device).equals(event.getMessageString()));
     }
+
+    @Test
+    void testDevice() {
+
+        String device = "Test Water Leak Device";
+        WaterLeakEvent event = WaterLeakEvent.builder().device(device).build();
+
+        assertTrue(device.equals(event.getDevice()));
+    }
 }
