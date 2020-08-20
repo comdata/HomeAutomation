@@ -1,5 +1,6 @@
 package cm.homeautomation.zigbee.test;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
@@ -23,5 +24,12 @@ class ZigbeeWaterSensorTest {
                 new GetterIsSetterCheck(),
                 // new HashcodeAndEqualsCheck(),
                 new PublicVariableCheck(true))));
+    }
+
+     @Test
+    void testBuilder() {
+        ZigbeeWaterSensor sensor = ZigbeeWaterSensor.builder().build();
+
+        assertNotNull(sensor);
     }
 }
