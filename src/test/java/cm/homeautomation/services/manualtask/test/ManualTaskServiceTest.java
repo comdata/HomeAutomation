@@ -12,7 +12,7 @@ class ManualTaskServiceTest {
 	@Test
 	void testGetAllOpenBasicTest() {
 
-		given().when().get("/manualtask/getAllOpern").then().statusCode(200);
+		given().when().get("/manualtask/getAllOpen").then().statusCode(200);
 	}
 
 }
