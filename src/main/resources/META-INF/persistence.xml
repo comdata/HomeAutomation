@@ -72,6 +72,7 @@
 		<class>cm.homeautomation.entities.ZigbeeMotionSensor</class>
 		<class>cm.homeautomation.entities.LoggingEntity</class>
 		<class>cm.homeautomation.entities.Task</class>
+		<class>cm.homeautomation.entities.ManualTask</class>
 		<class>cm.homeautomation.zigbee.ZigbeeWaterSensor</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver"
