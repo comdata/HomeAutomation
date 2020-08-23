@@ -3,8 +3,10 @@ package cm.homeautomation.services.motion;
 import org.greenrobot.eventbus.Subscribe;
 
 import cm.homeautomation.eventbus.EventBusService;
+import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.base.BaseService;
 
+@AutoCreateInstance
 public class MotionDetectionService extends BaseService {
 
 	public MotionDetectionService() {
