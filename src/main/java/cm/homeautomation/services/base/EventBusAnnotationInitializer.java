@@ -1,7 +1,9 @@
 package cm.homeautomation.services.base;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -99,7 +101,45 @@ public class EventBusAnnotationInitializer {
 				.useParallelExecutor());
 
 		// MethodAnnotationsScanner
-		return reflections.getMethodsAnnotatedWith(Subscribe.class);
+		Set<Method> methodsAnnotatedWithForFiltering = reflections.getMethodsAnnotatedWith(Subscribe.class);
+
+		Set<Method> methodsAnnotatedWith = new HashSet<>();
+
+		Set<Class<?>> classes = new HashSet<>();
+
+		try {
+			for (Method method : methodsAnnotatedWithForFiltering) {
+				String clazzName = method.getDeclaringClass().getName();
+				// System.out.print(clazzName);
+				// System.out.println("#" + method.getName());
+
+				Class<?> clazz = Class.forName(clazzName);
+				Annotation[] annotations = clazz.getAnnotations();
+
+				if (!classes.contains(clazz)) {
+					boolean notFound = true;
+
+					for (Annotation annotation : annotations) {
+						// System.out.println("Annotation: " + annotation.toString());
+						if ("@javax.enterprise.context.ApplicationScoped()".equals(annotation.toString())) {
+							// System.out.println("filtering method: " + method.getName());
+							notFound = false;
+						}
+					}
+
+					if (notFound) {
+						classes.add(clazz);
+						methodsAnnotatedWith.add(method);
+					}
+				}
+			}
+
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return methodsAnnotatedWith;
 
 	}
 }
