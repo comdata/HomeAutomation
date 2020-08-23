@@ -576,73 +576,53 @@ public class ZigbeeMQTTReceiver {
 	}
 
 	private void handleTradfriRemoteControl(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
-		String action = messageObject.get("action").asText();
+		JsonNode actionNode = messageObject.get("action");
+		if (actionNode != null) {
+			String action = actionNode.asText();
 
-		EntityManager em = EntityManagerService.getManager();
+			EntityManager em = EntityManagerService.getManager();
 
-		String ieeeAddr = zigbeeDevice.getIeeeAddr();
-		ZigBeeTradfriRemoteControl existingRemote = getOrCreateRemote(zigbeeDevice, em, ieeeAddr);
+			String ieeeAddr = zigbeeDevice.getIeeeAddr();
+			ZigBeeTradfriRemoteControl existingRemote = getOrCreateRemote(zigbeeDevice, em, ieeeAddr);
 
-		if ("toggle".equals(action)) {
-			boolean sourcePowerState = existingRemote.isPowerOnState();
-			boolean targetPowerState = sourcePowerState ? false : true;
-			existingRemote.setPowerOnState(targetPowerState);
-			existingRemote.setBrightness(targetPowerState ? 254 : 0);
-			// TODO hold events
-			RemoteControlEvent remoteControlEvent = new RemoteControlEvent(zigbeeDevice.getFriendlyName(), ieeeAddr,
-					RemoteControlEvent.EventType.REMOTE);
+			if ("toggle".equals(action)) {
+				boolean sourcePowerState = existingRemote.isPowerOnState();
+				boolean targetPowerState = sourcePowerState ? false : true;
+				existingRemote.setPowerOnState(targetPowerState);
+				existingRemote.setBrightness(targetPowerState ? 254 : 0);
+				// TODO hold events
+				RemoteControlEvent remoteControlEvent = new RemoteControlEvent(zigbeeDevice.getFriendlyName(), ieeeAddr,
+						RemoteControlEvent.EventType.REMOTE);
 
-			remoteControlEvent.setPoweredOnState(existingRemote.isPowerOnState());
+				remoteControlEvent.setPoweredOnState(existingRemote.isPowerOnState());
 
-			EventBusService.getEventBus().post(remoteControlEvent);
+				EventBusService.getEventBus().post(remoteControlEvent);
 
-			// update changed object in database
-			em.getTransaction().begin();
+				// update changed object in database
+				em.getTransaction().begin();
 
-			em.merge(existingRemote);
-			em.getTransaction().commit();
+				em.merge(existingRemote);
+				em.getTransaction().commit();
 
-			LogManager.getLogger(this.getClass()).debug("remote control: " + message);
+				LogManager.getLogger(this.getClass()).debug("remote control: " + message);
 
-		}
+			}
 
-		if ("arrow_right_click".equals(action)) {
+			if ("arrow_right_click".equals(action)) {
 
-		}
+			}
 
-		if ("arrow_left_click".equals(action)) {
+			if ("arrow_left_click".equals(action)) {
 
-		}
+			}
 
-		if ("brightness_up_click".equals(action)) {
-			RemoteControlBrightnessChangeEvent remoteControlBrightnessChangeEvent = new RemoteControlBrightnessChangeEvent();
-
-			remoteControlBrightnessChangeEvent.setTechnicalId(existingRemote.getIeeeAddr());
-			remoteControlBrightnessChangeEvent.setName(zigbeeDevice.getFriendlyName());
-			remoteControlBrightnessChangeEvent.setPoweredOnState(existingRemote.isPowerOnState());
-			int newBrightness = brightnessChange(existingRemote, brightnessChangeIncrement);
-
-			remoteControlBrightnessChangeEvent.setBrightness(newBrightness);
-			EventBusService.getEventBus().post(remoteControlBrightnessChangeEvent);
-
-			// update changed object in database
-			em.getTransaction().begin();
-			existingRemote.setBrightness(newBrightness);
-			existingRemote.setPowerOnState((newBrightness > 0));
-			em.merge(existingRemote);
-			em.getTransaction().commit();
-
-		}
-
-		if ("brightness_down_click".equals(action)) {
-			if (existingRemote.isPowerOnState()) {
+			if ("brightness_up_click".equals(action)) {
 				RemoteControlBrightnessChangeEvent remoteControlBrightnessChangeEvent = new RemoteControlBrightnessChangeEvent();
 
 				remoteControlBrightnessChangeEvent.setTechnicalId(existingRemote.getIeeeAddr());
 				remoteControlBrightnessChangeEvent.setName(zigbeeDevice.getFriendlyName());
 				remoteControlBrightnessChangeEvent.setPoweredOnState(existingRemote.isPowerOnState());
-
-				int newBrightness = brightnessChange(existingRemote, -1 * brightnessChangeIncrement);
+				int newBrightness = brightnessChange(existingRemote, brightnessChangeIncrement);
 
 				remoteControlBrightnessChangeEvent.setBrightness(newBrightness);
 				EventBusService.getEventBus().post(remoteControlBrightnessChangeEvent);
@@ -653,9 +633,31 @@ public class ZigbeeMQTTReceiver {
 				existingRemote.setPowerOnState((newBrightness > 0));
 				em.merge(existingRemote);
 				em.getTransaction().commit();
+
+			}
+
+			if ("brightness_down_click".equals(action)) {
+				if (existingRemote.isPowerOnState()) {
+					RemoteControlBrightnessChangeEvent remoteControlBrightnessChangeEvent = new RemoteControlBrightnessChangeEvent();
+
+					remoteControlBrightnessChangeEvent.setTechnicalId(existingRemote.getIeeeAddr());
+					remoteControlBrightnessChangeEvent.setName(zigbeeDevice.getFriendlyName());
+					remoteControlBrightnessChangeEvent.setPoweredOnState(existingRemote.isPowerOnState());
+
+					int newBrightness = brightnessChange(existingRemote, -1 * brightnessChangeIncrement);
+
+					remoteControlBrightnessChangeEvent.setBrightness(newBrightness);
+					EventBusService.getEventBus().post(remoteControlBrightnessChangeEvent);
+
+					// update changed object in database
+					em.getTransaction().begin();
+					existingRemote.setBrightness(newBrightness);
+					existingRemote.setPowerOnState((newBrightness > 0));
+					em.merge(existingRemote);
+					em.getTransaction().commit();
+				}
 			}
 		}
-
 	}
 
 	private ZigBeeTradfriRemoteControl getOrCreateRemote(ZigBeeDevice zigbeeDevice, EntityManager em, String ieeeAddr) {
