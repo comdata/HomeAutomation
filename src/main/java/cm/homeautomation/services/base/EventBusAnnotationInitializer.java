@@ -18,6 +18,8 @@ import org.reflections.util.FilterBuilder;
 
 import com.google.common.base.Predicate;
 
+import cm.homeautomation.configuration.ConfigurationService;
+
 /**
  * initialize event bus annotated objects
  *
@@ -30,7 +32,16 @@ public class EventBusAnnotationInitializer {
     private static Map<Class<?>, Object> instances = new HashMap<>();
 
     public EventBusAnnotationInitializer() {
-        this(false);
+		String eventbusEnabled = ConfigurationService.getConfigurationProperty("eventbus", "enable");
+		boolean eventbusEnabledBoolean = false;
+
+		if (eventbusEnabled != null && "true".equalsIgnoreCase(eventbusEnabled)) {
+			eventbusEnabledBoolean = true;
+		}
+
+		if (eventbusEnabledBoolean) {
+			initializeEventBus();
+		}
     }
 
     public EventBusAnnotationInitializer(boolean noInit) {
@@ -48,7 +59,7 @@ public class EventBusAnnotationInitializer {
 
         Map<Class<?>, Object> startupInstances = StartupAnnotationInitializer.getInstances();
 
-        Map<Class<?>, Object> startedInstances = new HashMap<Class<?>, Object>();
+		Map<Class<?>, Object> startedInstances = new HashMap<>();
 
         for (final Method method : resources) {
             final Class<?> declaringClass = method.getDeclaringClass();
