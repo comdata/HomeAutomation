@@ -1,6 +1,5 @@
 package cm.homeautomation.services.base;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,9 +28,9 @@ import cm.homeautomation.configuration.ConfigurationService;
 @AutoCreateInstance
 public class EventBusAnnotationInitializer {
 
-    private static Map<Class<?>, Object> instances = new HashMap<>();
+	private static Map<Class<?>, Object> instances = new HashMap<>();
 
-    public EventBusAnnotationInitializer() {
+	public EventBusAnnotationInitializer() {
 		String eventbusEnabled = ConfigurationService.getConfigurationProperty("eventbus", "enable");
 		boolean eventbusEnabledBoolean = false;
 
@@ -42,46 +41,45 @@ public class EventBusAnnotationInitializer {
 		if (eventbusEnabledBoolean) {
 			initializeEventBus();
 		}
-    }
+	}
 
-    public EventBusAnnotationInitializer(boolean noInit) {
-        if (!noInit) {
-            initializeEventBus();
-        }
-    }
+	public EventBusAnnotationInitializer(boolean noInit) {
+		if (!noInit) {
+			initializeEventBus();
+		}
+	}
 
-    public Map<Class<?>, Object> getInstances() {
-        return instances;
-    }
+	public Map<Class<?>, Object> getInstances() {
+		return instances;
+	}
 
-    public void initializeEventBus() {
-        final Set<Method> resources = getEventBusClasses();
+	public void initializeEventBus() {
+		final Set<Method> resources = getEventBusClasses();
 
-        Map<Class<?>, Object> startupInstances = StartupAnnotationInitializer.getInstances();
+		Map<Class<?>, Object> startupInstances = StartupAnnotationInitializer.getInstances();
 
 		Map<Class<?>, Object> startedInstances = new HashMap<>();
 
-        for (final Method method : resources) {
-            final Class<?> declaringClass = method.getDeclaringClass();
+		for (final Method method : resources) {
+			final Class<?> declaringClass = method.getDeclaringClass();
 
-            // check if the class has already been initialized
-            if (!startedInstances.containsKey(declaringClass) && !instances.containsKey(declaringClass)
-                    && !startupInstances.containsKey(declaringClass)) {
+			// check if the class has already been initialized
+			if (!startedInstances.containsKey(declaringClass) && !instances.containsKey(declaringClass)
+					&& !startupInstances.containsKey(declaringClass)) {
 
-                startedInstances.put(declaringClass, "started");
+				startedInstances.put(declaringClass, "started");
 
-                LogManager.getLogger(this.getClass()).info("Creating class: " + declaringClass.getName());
+				LogManager.getLogger(this.getClass()).info("Creating class: " + declaringClass.getName());
 
-                final Runnable singleInstanceCreator = new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            final Object classInstance = declaringClass.getDeclaredConstructor(declaringClass)
-                                    .newInstance();
+				final Runnable singleInstanceCreator = new Runnable() {
+					@Override
+					public void run() {
+						try {
+							final Object classInstance = declaringClass.newInstance();
 
-                            instances.put(declaringClass, classInstance);
-                        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-                                | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+							instances.put(declaringClass, classInstance);
+						} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+								| SecurityException e) {
 							LogManager.getLogger(this.getClass()).info("Failed creating class");
 						}
 					}
@@ -97,7 +95,8 @@ public class EventBusAnnotationInitializer {
 
 		Reflections reflections = new Reflections(new ConfigurationBuilder()
 				.setUrls(ClasspathHelper.forPackage("cm.homeautomation")).filterInputsBy(filter)
-				.setScanners(new TypeElementsScanner(), new TypeAnnotationsScanner(), new MethodAnnotationsScanner()).useParallelExecutor());
+				.setScanners(new TypeElementsScanner(), new TypeAnnotationsScanner(), new MethodAnnotationsScanner())
+				.useParallelExecutor());
 
 		// MethodAnnotationsScanner
 		return reflections.getMethodsAnnotatedWith(Subscribe.class);
