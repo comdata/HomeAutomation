@@ -34,6 +34,7 @@ import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.remotecontrol.RemoteControlEventListener;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
+import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.motion.MotionEvent;
 import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
@@ -41,11 +42,12 @@ import cm.homeautomation.services.windowblind.WindowBlindService;
 import cm.homeautomation.zigbee.entities.ZigBeeTradfriRemoteControl;
 import lombok.NonNull;
 
+@AutoCreateInstance
 public class ZigbeeMQTTReceiver {
 
 	private static final String SELECT_S_FROM_SENSOR_S_WHERE_S_EXTERNAL_ID_EXTERNAL_ID_AND_S_SENSOR_TYPE_SENSOR_TYPE = "select s from Sensor s where s.externalId=:externalId and s.sensorType=:sensorType";
 	private static final int brightnessChangeIncrement = 10;
-	private static final int BRIGHTNESSCHANGEINCREMENT2 = brightnessChangeIncrement;
+
 	@NonNull
 	private String zigbeeMqttTopic = ConfigurationService.getConfigurationProperty("zigbee", "mqttTopic");
 
@@ -618,7 +620,7 @@ public class ZigbeeMQTTReceiver {
 			remoteControlBrightnessChangeEvent.setTechnicalId(existingRemote.getIeeeAddr());
 			remoteControlBrightnessChangeEvent.setName(zigbeeDevice.getFriendlyName());
 			remoteControlBrightnessChangeEvent.setPoweredOnState(existingRemote.isPowerOnState());
-			int newBrightness = brightnessChange(existingRemote, BRIGHTNESSCHANGEINCREMENT2);
+			int newBrightness = brightnessChange(existingRemote, brightnessChangeIncrement);
 
 			remoteControlBrightnessChangeEvent.setBrightness(newBrightness);
 			EventBusService.getEventBus().post(remoteControlBrightnessChangeEvent);
@@ -640,7 +642,7 @@ public class ZigbeeMQTTReceiver {
 				remoteControlBrightnessChangeEvent.setName(zigbeeDevice.getFriendlyName());
 				remoteControlBrightnessChangeEvent.setPoweredOnState(existingRemote.isPowerOnState());
 
-				int newBrightness = brightnessChange(existingRemote, -1 * BRIGHTNESSCHANGEINCREMENT2);
+				int newBrightness = brightnessChange(existingRemote, -1 * brightnessChangeIncrement);
 
 				remoteControlBrightnessChangeEvent.setBrightness(newBrightness);
 				EventBusService.getEventBus().post(remoteControlBrightnessChangeEvent);
