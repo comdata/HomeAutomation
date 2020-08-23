@@ -42,16 +42,18 @@ public class MQTTReceiverClient implements MqttCallback {
 	public void runClient() {
 
 		Runnable mqttClient = () -> {
-			try {
-				connect();
+			while (run) {
+				try {
+					connect();
 
-				while (run) {
-					keepClientConnected();
-					Thread.sleep(500);
+					while (run) {
+						keepClientConnected();
+						Thread.sleep(500);
+					}
+
+				} catch (MqttException | InterruptedException e) {
+					LogManager.getLogger(this.getClass()).error(MQTT_EXCEPTION, e);
 				}
-
-			} catch (MqttException | InterruptedException e) {
-				LogManager.getLogger(this.getClass()).error(MQTT_EXCEPTION, e);
 			}
 		};
 
