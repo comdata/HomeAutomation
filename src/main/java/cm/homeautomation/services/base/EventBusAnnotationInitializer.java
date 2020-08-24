@@ -71,7 +71,7 @@ public class EventBusAnnotationInitializer {
 
 				startedInstances.put(declaringClass, "started");
 
-				LogManager.getLogger(this.getClass()).info("Creating class: " + declaringClass.getName());
+				LogManager.getLogger(this.getClass()).info("Creating class: {}", declaringClass.getName());
 
 				final Runnable singleInstanceCreator = new Runnable() {
 					@Override
@@ -110,8 +110,6 @@ public class EventBusAnnotationInitializer {
 		try {
 			for (Method method : methodsAnnotatedWithForFiltering) {
 				String clazzName = method.getDeclaringClass().getName();
-				// System.out.print(clazzName);
-				// System.out.println("#" + method.getName());
 
 				Class<?> clazz = Class.forName(clazzName);
 				Annotation[] annotations = clazz.getAnnotations();
@@ -120,9 +118,9 @@ public class EventBusAnnotationInitializer {
 					boolean notFound = true;
 
 					for (Annotation annotation : annotations) {
-						// System.out.println("Annotation: " + annotation.toString());
+
 						if ("@javax.enterprise.context.ApplicationScoped()".equals(annotation.toString())) {
-							// System.out.println("filtering method: " + method.getName());
+
 							notFound = false;
 						}
 					}
@@ -135,8 +133,8 @@ public class EventBusAnnotationInitializer {
 			}
 
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LogManager.getLogger(this.getClass()).error("Failed creating class", e);
+
 		}
 
 		return methodsAnnotatedWith;
