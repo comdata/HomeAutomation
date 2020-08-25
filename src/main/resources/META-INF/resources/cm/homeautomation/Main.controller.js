@@ -565,6 +565,19 @@ sap.ui.define([
 
         },
 
+        loadManualTasks: function () {
+
+            if (this.loadDataInProgress == false) {
+                this.loadDataInProgress = true;
+                var oModel = new RESTService();
+                oModel.loadDataAsync("manualtask/getAllOpen", "", "GET", this.handleManualTasksLoaded, this._loadDataFailed, this);
+            }
+        },
+
+        handleManualTasksLoaded: function(event, model, data)  {
+
+        },
+
         _handleCamerasLoaded:	function (event, camerasModel, cameraData) {
         	var subject=this;
         	this.cameras= [];
