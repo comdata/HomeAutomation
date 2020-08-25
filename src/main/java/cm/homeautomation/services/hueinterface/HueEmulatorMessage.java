@@ -26,8 +26,6 @@ public class HueEmulatorMessage {
 
 	boolean on;
 
-	// TODO xy als Array
-
 	String payload;
 
 	@JsonAlias("bri")
