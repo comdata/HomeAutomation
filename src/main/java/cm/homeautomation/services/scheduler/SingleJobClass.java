@@ -11,41 +11,45 @@ import org.quartz.JobExecutionException;
 
 public class SingleJobClass implements Job {
 
-	public SingleJobClass() {
-		super();
-	}
+    public SingleJobClass() {
+        super();
+    }
 
-	@Override
-	public void execute(JobExecutionContext context) throws JobExecutionException {
+    @Override
+    public void execute(JobExecutionContext context) throws JobExecutionException {
 
-		try {
-			String clazz = (String) context.getJobDetail().getJobDataMap().get("clazz");
+        try {
+            String clazz = (String) context.getJobDetail().getJobDataMap().get("clazz");
 
-			String method = (String) context.getJobDetail().getJobDataMap().get("method");
-			List<String> argumentList = (List<String>) context.getJobDetail().getJobDataMap().get("arguments");
+            String method = (String) context.getJobDetail().getJobDataMap().get("method");
+            Object object = context.getJobDetail().getJobDataMap().get("arguments");
 
-			String[] arguments = (argumentList != null) ? argumentList.toArray(new String[0]) : new String[0];
+            if (object instanceof List) {
 
-			Method specificMethod = Class.forName(clazz).getMethod(method, String[].class);
+                List<?> argumentList = (List<?>) object;
 
-			String argumentString = "";
-			for (String argument : arguments) {
-				argumentString += argument + "; ";
-			}
+                String[] arguments = (argumentList != null) ? argumentList.toArray(new String[0]) : new String[0];
 
-			System.out
-					.println("Invoking method Task called. " + clazz + "." + method + " arguments: " + argumentString);
+                Method specificMethod = Class.forName(clazz).getMethod(method, String[].class);
 
-			final Object[] args = new Object[1];
-			args[0] = arguments;
+                String argumentString = "";
+                for (String argument : arguments) {
+                    argumentString += argument + "; ";
+                }
 
-			specificMethod.invoke(null, args);
+                System.out.println(
+                        "Invoking method Task called. " + clazz + "." + method + " arguments: " + argumentString);
 
-		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException | IllegalArgumentException
-				| IllegalAccessException | InvocationTargetException e) {
-			LogManager.getLogger(this.getClass()).error(e);
-		}
+                final Object[] args = new Object[1];
+                args[0] = arguments;
 
-	}
+                specificMethod.invoke(null, args);
+            }
+        } catch (NoSuchMethodException | SecurityException | ClassNotFoundException | IllegalArgumentException
+                | IllegalAccessException | InvocationTargetException e) {
+            LogManager.getLogger(this.getClass()).error(e);
+        }
+
+    }
 
 }
