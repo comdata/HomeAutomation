@@ -21,7 +21,7 @@ public class TestDataProvider extends de.a9d3.testing.testdata.TestDataProvider 
     protected static final int LIST_ARRAY_ITEM_COUNT = 2;
     private static final Logger LOGGER = Logger.getLogger(TestDataProvider.class.getName());
     private Map<String, Function<String, Object>> providerMap;
-    private Map<Class, String> enumMap;
+    private Map<Class<?>, String> enumMap;
 
     /**
      * This class will invoke classes with seeded data
@@ -30,7 +30,7 @@ public class TestDataProvider extends de.a9d3.testing.testdata.TestDataProvider 
         providerMap = TestDataStatics.getCompleteSeededMap();
     }
 
-    public TestDataProvider(Map<Class, String> enumMap, boolean useEnumMap) {
+    public TestDataProvider(Map<Class<?>, String> enumMap, boolean useEnumMap) {
         providerMap = TestDataStatics.getCompleteSeededMap();
         this.enumMap = enumMap;
     }
@@ -67,7 +67,7 @@ public class TestDataProvider extends de.a9d3.testing.testdata.TestDataProvider 
         return new TestDataProvider(TestDataStatics.getCompleteDefaultMap());
     }
 
-    private static void writeWarningLogCouldNotInitialize(Class c) {
+    private static void writeWarningLogCouldNotInitialize(Class<?> c) {
         // Could not initialize class
         StringBuilder message = new StringBuilder();
         message.append("Could not initialize ");
@@ -82,8 +82,8 @@ public class TestDataProvider extends de.a9d3.testing.testdata.TestDataProvider 
         LOGGER.warning(message::toString);
     }
 
-    private static Constructor[] getSortedConstructors(Class c, boolean tryComplexConstructorFirst) {
-        Constructor[] constructors = c.getConstructors();
+    private static Constructor<?>[] getSortedConstructors(Class<?> c, boolean tryComplexConstructorFirst) {
+        Constructor<?>[] constructors = c.getConstructors();
         Arrays.sort(constructors, tryComplexConstructorFirst ? // tryComplexConstructorFirst determines the sorted order
                 Comparator.comparingInt(con -> -con.getParameterCount())
                 : Comparator.comparingInt(Constructor::getParameterCount));
@@ -145,7 +145,7 @@ public class TestDataProvider extends de.a9d3.testing.testdata.TestDataProvider 
      * @param seed The seed which should be used for generating seeded data
      * @return An instance of the provided class
      */
-    private <T> T invokeArrayInstance(Class c, String seed) {
+    private <T> T invokeArrayInstance(Class<?> c, String seed) {
         Object objects = Array.newInstance(c.getComponentType(), LIST_ARRAY_ITEM_COUNT);
         for (int i = 0; i < Array.getLength(objects); i++) {
             Array.set(objects, i, fill(c.getComponentType(), seed + i, false));
@@ -162,7 +162,7 @@ public class TestDataProvider extends de.a9d3.testing.testdata.TestDataProvider 
      * @param seed The seed which should be used for generating seeded data
      * @return An instance of the provided class
      */
-    private Collection invokeCollectionInstance(Class c, String seed) {
+    private Collection invokeCollectionInstance(Class<?> c, String seed) {
         Collection instance;
 
         // https://static.javatpoint.com/images/java-collection-hierarchy.png
@@ -190,7 +190,7 @@ public class TestDataProvider extends de.a9d3.testing.testdata.TestDataProvider 
      * @param seed The seed which should be used for generating seeded data
      * @return An instance of the provided class
      */
-    private Map invokeMapInstance(Class c, String seed) {
+    private Map invokeMapInstance(Class<?> c, String seed) {
         Map instance;
 
         // https://static.javatpoint.com/images/core/java-map-hierarchy.png
@@ -247,8 +247,8 @@ public class TestDataProvider extends de.a9d3.testing.testdata.TestDataProvider 
         providerMap.putAll(customMap);
     }
 
-    private <T> T invokeComplexClass(Class c, String seed, boolean tryComplexConstructorFirst) {
-        for (Constructor constructor : getSortedConstructors(c, tryComplexConstructorFirst)) {
+    private <T> T invokeComplexClass(Class<?> c, String seed, boolean tryComplexConstructorFirst) {
+        for (Constructor<?> constructor : getSortedConstructors(c, tryComplexConstructorFirst)) {
             if (Arrays.stream(constructor.getParameterTypes()).noneMatch(aClass -> aClass.equals(c))) {
                 try {
                     return invokeComplexConstructorWithProviderData(seed, tryComplexConstructorFirst, constructor);
