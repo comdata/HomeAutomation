@@ -1,5 +1,7 @@
 package cm.homeautomation.services.motion;
 
+import java.util.Date;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
@@ -14,7 +16,10 @@ public class MotionEvent implements HumanMessageGenerationInterface{
 	private String mac;
 	private int room;
 	private boolean state;
-	String name;
+    String name;
+    private Date timestamp;
+    
+    private String type;
 	
 	@Override
 	public String getMessageString() {
