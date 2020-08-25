@@ -1,7 +1,6 @@
 package cm.homeautomation.services.messaging;
 
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.eventbus.EventBusHumanMessageIgnore;
 import cm.homeautomation.eventbus.EventBusService;
