@@ -6,10 +6,7 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-import cm.homeautomation.helper.GetterIsSetterCheck;
 import cm.homeautomation.zigbee.WaterLeakEvent;
-import de.a9d3.testing.checks.CopyConstructorCheck;
-import de.a9d3.testing.checks.EmptyCollectionCheck;
 import de.a9d3.testing.checks.PublicVariableCheck;
 import de.a9d3.testing.executer.SingleThreadExecutor;
 

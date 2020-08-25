@@ -14,7 +14,7 @@ public class MultiThreadExecutor implements Executor {
 
     private static final Logger LOGGER = Logger.getLogger(MultiThreadExecutor.class.getName());
 
-    private static String executionLogToString(Class testClass, Map<String, String> executionLog) {
+    private static String executionLogToString(Class<?> testClass, Map<String, String> executionLog) {
         StringBuilder builder = new StringBuilder();
         builder.append("Tested ");
         builder.append(testClass.getName());

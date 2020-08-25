@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import cm.homeautomation.helper.GetterIsSetterCheck;
 import cm.homeautomation.zigbee.RemoteControlBrightnessChangeEvent;
-import cm.homeautomation.zigbee.WaterLeakEvent;
 import de.a9d3.testing.checks.PublicVariableCheck;
 import de.a9d3.testing.executer.SingleThreadExecutor;
 
