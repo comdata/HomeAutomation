@@ -20,7 +20,7 @@ class RemoteControlGroupMemberTest {
 	@Test
 	public void baseTest() {
 		SingleThreadExecutor executor = new SingleThreadExecutor();
-        Map<Class, String> enumMap=new HashMap<>();
+        Map<Class<?>, String> enumMap=new HashMap<>();
         enumMap.put(RemoteControlGroupMemberType.class, RemoteControlGroupMemberType.SWITCH.toString());
 		assertTrue(executor.execute(RemoteControlGroupMember.class, Arrays.asList(
 				// new CopyConstructorCheck(),
