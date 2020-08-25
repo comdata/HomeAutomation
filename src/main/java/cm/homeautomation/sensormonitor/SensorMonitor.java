@@ -15,7 +15,7 @@ public class SensorMonitor {
 		
 		String qlString = "select (select max(sd.validThru) from SensorData sd where sd.sensor=s) from Sensor s";
 		System.out.println("SQL: "+qlString);
-		List<Date> resultList = em.createQuery(qlString).getResultList();
+		List<Date> resultList = em.createQuery(qlString, Date.class).getResultList();
 		
 		for (Date date : resultList) {
 			if (date!=null) { 
