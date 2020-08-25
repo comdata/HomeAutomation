@@ -13,7 +13,7 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.GasIntervalData;
 import cm.homeautomation.services.base.BaseService;
 
-@Path("gas/")
+@Path("gas")
 public class GasMeterService extends BaseService {
 
 	@GET
