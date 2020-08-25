@@ -24,150 +24,153 @@ import cm.homeautomation.zigbee.RemoteControlBrightnessChangeEvent;
 
 @AutoCreateInstance
 public class RemoteControlEventListener {
-	public RemoteControlEventListener() {
-		EventBusService.getEventBus().register(this);
-	}
+    public RemoteControlEventListener() {
+        EventBusService.getEventBus().register(this);
+    }
 
-	@Subscribe
-	public void subscribe(RemoteControlBrightnessChangeEvent event) {
-		String name = event.getName();
-		String technicalId = event.getTechnicalId();
-		EntityManager em = EntityManagerService.getManager();
+    @Subscribe
+    public void subscribe(RemoteControlBrightnessChangeEvent event) {
+        String name = event.getName();
+        String technicalId = event.getTechnicalId();
+        EntityManager em = EntityManagerService.getManager();
 
-		LogManager.getLogger(this.getClass()).debug("got remote event: " + name + "/" + technicalId);
+        LogManager.getLogger(this.getClass()).debug("got remote event: " + name + "/" + technicalId);
 
-		List<RemoteControl> remoteList = em
-				.createQuery("select rc from RemoteControl rc where rc.technicalId=:technicalId", RemoteControl.class)
-				.setParameter("technicalId", technicalId).getResultList();
+        List<RemoteControl> remoteList = em
+                .createQuery("select rc from RemoteControl rc where rc.technicalId=:technicalId", RemoteControl.class)
+                .setParameter("technicalId", technicalId).getResultList();
 
-		if (remoteList != null && !remoteList.isEmpty()) {
-			for (RemoteControl remoteControl : remoteList) {
+        if (remoteList != null && !remoteList.isEmpty()) {
+            for (RemoteControl remoteControl : remoteList) {
 
-				if (remoteControl != null) {
-					List<RemoteControlGroup> remoteControlGroups = remoteControl.getGroups();
+                if (remoteControl != null) {
+                    List<RemoteControlGroup> remoteControlGroups = remoteControl.getGroups();
 
-					for (RemoteControlGroup remoteControlGroup : remoteControlGroups) {
-						List<RemoteControlGroupMember> members = remoteControlGroup.getMembers();
+                    for (RemoteControlGroup remoteControlGroup : remoteControlGroups) {
+                        List<RemoteControlGroupMember> members = remoteControlGroup.getMembers();
 
-						LogManager.getLogger(this.getClass())
-								.debug("found remote group: " + remoteControlGroup.getName());
+                        LogManager.getLogger(this.getClass())
+                                .debug("found remote group: " + remoteControlGroup.getName());
 
-						for (RemoteControlGroupMember remoteControlGroupMember : members) {
+                        for (RemoteControlGroupMember remoteControlGroupMember : members) {
 
-							final Runnable controlMemberThread = () -> {
-								LogManager.getLogger(this.getClass())
-										.debug("found remote member: " + remoteControl.getName());
-								switch (remoteControlGroupMember.getType()) {
-								case LIGHT:
-									LightService.getInstance().dimLight(remoteControlGroupMember.getExternalId(),
-											event.getBrightness());
+                            final Runnable controlMemberThread = () -> {
+                                LogManager.getLogger(this.getClass())
+                                        .debug("found remote member: " + remoteControl.getName());
+                                switch (remoteControlGroupMember.getType()) {
+                                    case LIGHT:
+                                        LightService.getInstance().dimLight(remoteControlGroupMember.getExternalId(),
+                                                event.getBrightness());
+                                        break;
+                                    case SWITCH:
+                                        break;
+                                    case WINDOWBLIND:
+                                        break;
+                                }
+                            };
 
-									break;
-								}
-							};
+                            new Thread(controlMemberThread).start();
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-							new Thread(controlMemberThread).start();
-						}
-					}
-				}
-			}
-		}
-	}
+    @Subscribe
+    public void subscribe(RemoteControlEvent event) {
+        String name = event.getName();
+        String technicalId = event.getTechnicalId();
+        EntityManager em = EntityManagerService.getManager();
 
-	@Subscribe
-	public void subscribe(RemoteControlEvent event) {
-		String name = event.getName();
-		String technicalId = event.getTechnicalId();
-		EntityManager em = EntityManagerService.getManager();
+        LogManager.getLogger(this.getClass()).error("got remote event: " + name + "/" + technicalId);
 
-		LogManager.getLogger(this.getClass()).error("got remote event: " + name + "/" + technicalId);
+        List<RemoteControl> remoteList = em
+                .createQuery("select rc from RemoteControl rc where rc.technicalId=:technicalId", RemoteControl.class)
+                .setParameter("technicalId", technicalId).getResultList();
 
-		List<RemoteControl> remoteList = em
-				.createQuery("select rc from RemoteControl rc where rc.technicalId=:technicalId", RemoteControl.class)
-				.setParameter("technicalId", technicalId).getResultList();
+        if (remoteList != null && !remoteList.isEmpty()) {
+            for (RemoteControl remoteControl : remoteList) {
 
-		if (remoteList != null && !remoteList.isEmpty()) {
-			for (RemoteControl remoteControl : remoteList) {
+                if (remoteControl != null) {
+                    List<RemoteControlGroup> remoteControlGroups = remoteControl.getGroups();
 
-				if (remoteControl != null) {
-					List<RemoteControlGroup> remoteControlGroups = remoteControl.getGroups();
+                    for (RemoteControlGroup remoteControlGroup : remoteControlGroups) {
+                        List<RemoteControlGroupMember> members = remoteControlGroup.getMembers();
 
-					for (RemoteControlGroup remoteControlGroup : remoteControlGroups) {
-						List<RemoteControlGroupMember> members = remoteControlGroup.getMembers();
+                        LogManager.getLogger(this.getClass())
+                                .debug("found remote group: " + remoteControlGroup.getName());
 
-						LogManager.getLogger(this.getClass())
-								.debug("found remote group: " + remoteControlGroup.getName());
+                        for (RemoteControlGroupMember remoteControlGroupMember : members) {
+                            LogManager.getLogger(this.getClass())
+                                    .debug("found remote member: " + remoteControl.getName());
+                            switch (remoteControlGroupMember.getType()) {
+                                case LIGHT:
+                                    LightService.getInstance().setLightState(remoteControlGroupMember.getExternalId(),
+                                            (event.isPoweredOnState() ? LightStates.ON : LightStates.OFF), false);
+                                    break;
+                                case SWITCH:
+                                    ActorService.getInstance().pressSwitch(
+                                            Long.toString(remoteControlGroupMember.getExternalId()),
+                                            (event.isPoweredOnState() ? "ON" : "OFF"));
+                                    break;
+                                case WINDOWBLIND:
 
-						for (RemoteControlGroupMember remoteControlGroupMember : members) {
-							LogManager.getLogger(this.getClass())
-									.debug("found remote member: " + remoteControl.getName());
-							switch (remoteControlGroupMember.getType()) {
-							case LIGHT:
-								LightService.getInstance().setLightState(remoteControlGroupMember.getExternalId(),
-										(event.isPoweredOnState() ? LightStates.ON : LightStates.OFF), false);
-								break;
-							case SWITCH:
-								ActorService.getInstance().pressSwitch(
-										Long.toString(remoteControlGroupMember.getExternalId()),
-										(event.isPoweredOnState() ? "ON" : "OFF"));
-								break;
-							case WINDOWBLIND:
+                                    switch (event.getEventType()) {
 
-								switch (event.getEventType()) {
+                                        case ON_OFF:
 
-								case ON_OFF:
-									
-									DimDirection dimDirection;
-									if (event.getClick().equals("open")) {
-										dimDirection = DimDirection.UP;
-									} else {
-										dimDirection = DimDirection.DOWN;
-									}
+                                            DimDirection dimDirection;
+                                            if (event.getClick().equals("open")) {
+                                                dimDirection = DimDirection.UP;
+                                            } else {
+                                                dimDirection = DimDirection.DOWN;
+                                            }
 
-									new WindowBlindService().dim(dimDirection,
-											remoteControlGroupMember.getExternalId());
-									
-									break;
+                                            new WindowBlindService().dim(dimDirection,
+                                                    remoteControlGroupMember.getExternalId());
 
-								case REMOTE:
+                                            break;
 
-									new WindowBlindService().setDim(remoteControlGroupMember.getExternalId(),
-											(event.isPoweredOnState() ? "99" : "0"));
-									break;
-								}
+                                        case REMOTE:
 
-								break;
-							default:
-								break;
+                                            new WindowBlindService().setDim(remoteControlGroupMember.getExternalId(),
+                                                    (event.isPoweredOnState() ? "99" : "0"));
+                                            break;
+                                    }
 
-							}
+                                    break;
+                                default:
+                                    break;
 
-						}
+                            }
 
-					}
+                        }
 
-				} else {
-					// control not found
-				}
-			}
-		} else {
-			// remote not found let's create it
+                    }
 
-			em.getTransaction().begin();
+                } else {
+                    // control not found
+                }
+            }
+        } else {
+            // remote not found let's create it
 
-			RemoteControl remoteControl = new RemoteControl();
+            em.getTransaction().begin();
 
-			remoteControl.setTechnicalId(technicalId);
-			remoteControl.setName(name);
-			List<RemoteControlGroup> groups = new ArrayList<>();
-			RemoteControlGroup group = new RemoteControlGroup();
-			group.setName(name);
-			group.setRemote(remoteControl);
-			groups.add(group);
-			remoteControl.setGroups(groups);
-			em.persist(remoteControl);
-			em.persist(group);
-			em.getTransaction().commit();
-		}
-	}
+            RemoteControl remoteControl = new RemoteControl();
+
+            remoteControl.setTechnicalId(technicalId);
+            remoteControl.setName(name);
+            List<RemoteControlGroup> groups = new ArrayList<>();
+            RemoteControlGroup group = new RemoteControlGroup();
+            group.setName(name);
+            group.setRemote(remoteControl);
+            groups.add(group);
+            remoteControl.setGroups(groups);
+            em.persist(remoteControl);
+            em.persist(group);
+            em.getTransaction().commit();
+        }
+    }
 }
