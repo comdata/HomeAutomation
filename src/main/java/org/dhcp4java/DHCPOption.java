@@ -1227,7 +1227,7 @@ public class DHCPOption implements Serializable {
      * @param code the DHCP option code
      * @return the Class object representing accepted types
      */
-    public static Class getOptionFormat(byte code) {
+    public static Class<?> getOptionFormat(byte code) {
     	OptionFormat format = _DHO_FORMATS.get(code);
     	if (format == null) {
     		return null;
@@ -1271,7 +1271,7 @@ public class DHCPOption implements Serializable {
      * @param className name of the data format (see above)
      * @return <tt>Class</tt> or <tt>null</tt> if not supported
      */
-    public static Class string2Class(String className) {
+    public static Class<?> string2Class(String className) {
     	if ("InetAddress".equals(className)) return InetAddress.class;
     	if ("inet".equals(className)) return InetAddress.class;
     	if ("InetAddress[]".equals(className)) return InetAddress[].class;
@@ -1301,7 +1301,7 @@ public class DHCPOption implements Serializable {
      * @param value string representation of the value
      * @return the DHCPOption object
      */
-    public static DHCPOption parseNewOption(byte code, Class format, String value) {
+    public static DHCPOption parseNewOption(byte code, Class<?> format, String value) {
     	if ((format == null) || (value == null)) {
     		throw new NullPointerException();
     	}
