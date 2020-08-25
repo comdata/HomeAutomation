@@ -76,7 +76,7 @@ public class Phone extends BaseService {
 
 		EntityManager em = EntityManagerService.getManager();
 
-		return em.createQuery("select p from PhoneCallEvent p order by p.timestamp desc").getResultList();
+		return em.createQuery("select p from PhoneCallEvent p order by p.timestamp desc", PhoneCallEvent.class).getResultList();
 
 	}
 
