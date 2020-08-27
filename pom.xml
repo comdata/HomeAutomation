@@ -13,6 +13,7 @@
 		<maven.compiler.parameters>true</maven.compiler.parameters>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
+        <maven.required.version>3.6.0</maven.required.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -310,7 +311,7 @@
 						<configuration>
 							<rules>
 								<requireMavenVersion>
-									<version>3.6.2</version>
+									<version>${maven.required.version}</version>
 								</requireMavenVersion>
 							</rules>
 						</configuration>
