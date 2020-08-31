@@ -48,6 +48,8 @@ public class WindowBlindService extends BaseService {
 		new WindowBlindService().setDim(Long.valueOf(windowBlindId), dimValue);
 	}
 
+    @GET
+    @Path("getAll")
 	public WindowBlindsList getAll() {
 		final WindowBlindsList windowBlindsList = new WindowBlindsList();
 

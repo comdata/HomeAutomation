@@ -14,6 +14,6 @@ public class WindowBlindServiceTest {
           .when().get("/windowBlinds/getAll")
           .then()
              .statusCode(200)
-             .body(is("{}"));
+             .body(is("{\"windowBlinds\":[]}"));
     }
 }
