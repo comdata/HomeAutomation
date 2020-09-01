@@ -74,6 +74,7 @@ public class PackageTrackingTest {
         packageHistory.add(history);
 
         pack.setPackageHistory(packageHistory);
+        em.persist(history);
         em.persist(pack);
         em.getTransaction().commit();
 
@@ -85,6 +86,7 @@ public class PackageTrackingTest {
 
         em.getTransaction().begin();
 
+        em.createQuery("delete from PackageHistory p").executeUpdate();
         em.createQuery("delete from Package p where p.packageName=:name").setParameter("name", pack.getPackageName()).executeUpdate();
 
         em.getTransaction().commit();
