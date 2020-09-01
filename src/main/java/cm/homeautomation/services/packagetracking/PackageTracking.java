@@ -43,6 +43,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Package;
 import cm.homeautomation.entities.PackageHistory;
@@ -50,7 +51,7 @@ import cm.homeautomation.entities.PackageHistoryPK;
 import cm.homeautomation.entities.PackagePK;
 
 @Path("packages")
-public class PackageTracking {
+public class PackageTracking extends BaseService {
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
 	private static final String ACCEPT_HEADER = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
 	private static final Map<String, String> CARRIER_MAP = createCarrierMap();
@@ -347,11 +348,6 @@ public class PackageTracking {
 		carrierMap.put("zhy", "Zhy Express");
 		carrierMap.put("zto", "ZTO Express");
 		return carrierMap;
-	}
-
-	public static void main(String[] args) throws KeyManagementException,
-			NoSuchAlgorithmException, IOException {
-		updateTrackingInformation(args);
 	}
 
 	private static Date parseDate(List<SimpleDateFormat> knownPatterns, String candidate) {
