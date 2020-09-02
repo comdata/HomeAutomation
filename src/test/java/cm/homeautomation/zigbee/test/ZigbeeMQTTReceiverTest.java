@@ -19,7 +19,7 @@ class ZigbeeMQTTReceiverTest {
 
     @Test
     void testReceiveEvent() throws JsonMappingException, JsonProcessingException {
-   		var zigbeeMQTTReceiver = new ZigbeeMQTTReceiver();
+   		ZigbeeMQTTReceiver zigbeeMQTTReceiver = new ZigbeeMQTTReceiver();
 
 		MQTTTopicEvent zigbeeDeviceEvent = new MQTTTopicEvent();
 
@@ -35,7 +35,7 @@ class ZigbeeMQTTReceiverTest {
 
     @Test
     void testReceiveEventBridgeOnly() throws JsonMappingException, JsonProcessingException {
-   		var zigbeeMQTTReceiver = new ZigbeeMQTTReceiver();
+   		ZigbeeMQTTReceiver zigbeeMQTTReceiver = new ZigbeeMQTTReceiver();
 
 		MQTTTopicEvent zigbeeDeviceEvent = new MQTTTopicEvent();
 
@@ -44,5 +44,22 @@ class ZigbeeMQTTReceiverTest {
         zigbeeDeviceEvent.setMessage("");
 
 		zigbeeMQTTReceiver.receiveMQTTTopicEvents(zigbeeDeviceEvent);
+    }
+
+    @Test
+    void testReceiveEventTradfriDriver() throws JsonMappingException, JsonProcessingException {
+        ZigbeeMQTTReceiver zigbeeMQTTReceiver = new ZigbeeMQTTReceiver();
+
+        MQTTTopicEvent zigbeeDeviceEvent = new MQTTTopicEvent();
+
+        zigbeeDeviceEvent.setTopic("zigbee2mqtt" + "/Arbeitsleuchte");
+
+        String ieeeAddr = "0x99111b0018e21111";
+
+        zigbeeDeviceEvent.setMessage("[{\"ieeeAddr\":\"" + ieeeAddr
+                + "\",\"type\":\"Router\",\"networkAddress\":673,\"model\":\"ICPSHC24-10EU-IL-1\",\"vendor\":\"IKEA\",\"description\":\"TRADFRI driver for wireless control (10 watt)\",\"friendly_name\":\"Arbeitsleuchte\",\"manufacturerID\":4476,\"manufacturerName\":\"IKEA of Sweden\",\"powerSource\":\"Mains (single phase)\",\"modelID\":\"TRADFRI Driver 10W\",\"hardwareVersion\":1,\"softwareBuildID\":\"1.2.245\",\"dateCode\":\"20170529\",\"lastSeen\":1587293860058}]");
+
+        zigbeeMQTTReceiver.receiveMQTTTopicEvents(zigbeeDeviceEvent);
+
     }
 }
