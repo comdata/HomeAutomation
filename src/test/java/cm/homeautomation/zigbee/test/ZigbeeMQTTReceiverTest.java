@@ -32,4 +32,17 @@ class ZigbeeMQTTReceiverTest {
 
 		zigbeeMQTTReceiver.receiveMQTTTopicEvents(zigbeeDeviceEvent);
     }
+
+    @Test
+    void testReceiveEventBridgeOnly() throws JsonMappingException, JsonProcessingException {
+   		var zigbeeMQTTReceiver = new ZigbeeMQTTReceiver();
+
+		MQTTTopicEvent zigbeeDeviceEvent = new MQTTTopicEvent();
+
+		zigbeeDeviceEvent.setTopic("zigbee2mqtt" + "/bridge/1234");
+
+        zigbeeDeviceEvent.setMessage("");
+
+		zigbeeMQTTReceiver.receiveMQTTTopicEvents(zigbeeDeviceEvent);
+    }
 }
