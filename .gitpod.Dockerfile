@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
         mc \
     && apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
     
-RUN mysql -e "create database HA"
+RUN "${mysql[@]}" -e "CREATE DATABASE HA"
     
 USER gitpod
 # Apply user-specific settings
