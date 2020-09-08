@@ -44,7 +44,7 @@ public class JSONSensorDataReceiver {
         // intentionally left empty
     }
 
-    public static void receiveSensorData(String messageContent) throws NoClassInformationContainedException {
+    public static void receiveSensorData(String messageContent) {
 
         try {
             if (!messageContent.contains("@c")) {
