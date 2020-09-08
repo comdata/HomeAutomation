@@ -163,7 +163,7 @@ public class ZigbeeMQTTReceiver {
 
 		RemoteControlEvent remoteControlEvent = new RemoteControlEvent();
 		remoteControlEvent.setName(zigbeeDevice.getFriendlyName());
-		remoteControlEvent.setTechnicalId(ieeeAddr);
+		remoteControlEvent.setTechnicalId(existingRemote.getIeeeAddr());
 		remoteControlEvent.setEventType(EventType.ON_OFF);
 		remoteControlEvent.setClick(click);
 
@@ -371,8 +371,6 @@ public class ZigbeeMQTTReceiver {
 	}
 
 	private void recordIlluminanceLevelForDevice(ZigBeeDevice zigbeeDevice, int illuminance) {
-		// TODO Auto-generated method stub
-
 		EntityManager em = EntityManagerService.getManager();
 
 		List<Sensor> sensorList = em
