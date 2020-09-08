@@ -20,14 +20,14 @@ import cm.homeautomation.entities.PackagePK;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-public class PackageTrackingTest {
+class PackageTrackingTest {
     @Test
-    public void testPackagesGetAllOpen() {
+    void testPackagesGetAllOpen() {
         given().when().get("/packages/getAllOpen").then().statusCode(200).body(is("[]"));
     }
 
     @Test
-    public void testPackagesGetAllOpenWithEntity() {
+    void testPackagesGetAllOpenWithEntity() {
         EntityManager em = EntityManagerService.getManager();
 
         em.getTransaction().begin();
@@ -53,7 +53,7 @@ public class PackageTrackingTest {
     }
 
     @Test
-    public void testPackagesGetAllOpenWithEntityAndHistory() {
+    void testPackagesGetAllOpenWithEntityAndHistory() {
         EntityManager em = EntityManagerService.getManager();
 
         em.getTransaction().begin();
