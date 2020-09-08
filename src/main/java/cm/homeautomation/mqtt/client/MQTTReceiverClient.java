@@ -167,12 +167,8 @@ public class MQTTReceiverClient implements MqttCallback {
 				};
 			} else {
 				receiver = () -> {
-					try {
-						if (messageContent.startsWith("{")) {
-							JSONSensorDataReceiver.receiveSensorData(messageContent);
-						}
-					} catch (NoClassInformationContainedException e) {
-						LogManager.getLogger(this.getClass()).error("Got an exception while saving data.", e);
+					if (messageContent.startsWith("{")) {
+						JSONSensorDataReceiver.receiveSensorData(messageContent);
 					}
 				};
 			}
