@@ -74,7 +74,9 @@
         <class>cm.homeautomation.entities.ManualTask</class>
         <class>cm.homeautomation.entities.MotionDetection</class>
         <class>cm.homeautomation.entities.TelegramFilter</class>
-		<class>cm.homeautomation.zigbee.ZigbeeWaterSensor</class>
+		<class>cm.homeautomation.zigbee.ZigbeeWaterSensor</class>        
+		<class>cm.homeautomation.entities.LinkedDevices</class>
+		
 		<properties>
 			<property name="javax.persistence.jdbc.driver"
 				value="org.mariadb.jdbc.Driver" />
