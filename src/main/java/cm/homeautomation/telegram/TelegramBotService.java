@@ -107,7 +107,7 @@ public class TelegramBotService {
     public void updateTelegramFilter() {
         EntityManager em = EntityManagerService.getManager();
 
-        filterList = em.createQuery("select f TelegramFilter f", TelegramFilter.class).getResultList();
+        filterList = em.createQuery("select f from TelegramFilter f", TelegramFilter.class).getResultList();
     }
 
     private void registerBot() {
