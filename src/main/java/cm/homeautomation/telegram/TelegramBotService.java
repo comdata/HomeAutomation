@@ -39,11 +39,11 @@ public class TelegramBotService {
         return instance;
     }
 
-    private TelegramBotsApi telegramBotApi;
+    private static TelegramBotsApi telegramBotApi;
 
-    private CommandsHandler bot;
-    private final boolean enabled;
-    private List<TelegramFilter> filterList;
+    private static CommandsHandler bot;
+    private static boolean enabled;
+    private static List<TelegramFilter> filterList;
 
     public TelegramBotService() {
 
