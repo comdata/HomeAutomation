@@ -11,10 +11,12 @@ import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
+import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.sensors.Sensors;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
+@AutoCreateInstance
 public class EBUSStatus01Receiver {
 
 	private static final String SOLARPUMP = "SOLARPUMP";
