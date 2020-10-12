@@ -27,138 +27,140 @@ import io.quarkus.scheduler.Scheduled;
 @AutoCreateInstance
 public class TelegramBotService {
 
-    private static final String USER = "user";
-    private static final String TOKEN = "token";
-    private static final String TELEGRAM = "telegram";
-    private static TelegramBotService instance;
+	private static final String USER = "user";
+	private static final String TOKEN = "token";
+	private static final String TELEGRAM = "telegram";
+	private static TelegramBotService instance;
 
-    public static TelegramBotService getInstance() {
-        if (instance == null) {
-            instance = new TelegramBotService();
-        }
-        return instance;
-    }
+	public static TelegramBotService getInstance() {
+		if (instance == null) {
+			instance = new TelegramBotService();
+		}
+		return instance;
+	}
 
-    private static TelegramBotsApi telegramBotApi;
+	private static TelegramBotsApi telegramBotApi;
 
-    private static CommandsHandler bot;
-    private static boolean enabled;
-    private static List<TelegramFilter> filterList;
+	private static CommandsHandler bot;
+	private static boolean enabled;
+	private static List<TelegramFilter> filterList;
 
-    public TelegramBotService() {
+	public TelegramBotService() {
 
-        this.enabled = Boolean.parseBoolean(ConfigurationService.getConfigurationProperty(TELEGRAM, "enabled"));
+		this.enabled = Boolean.parseBoolean(ConfigurationService.getConfigurationProperty(TELEGRAM, "enabled"));
 
-        instance = this;
-        init();
+		if (enabled) {
+			instance = this;
+			init();
 
-        EventBusService.getEventBus().register(this);
-    }
+			EventBusService.getEventBus().register(this);
+		}
+	}
 
-    @Subscribe
-    public void handleEvent(final EventObject eventObject) {
-        if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
-            final HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventObject
-                    .getData();
+	@Subscribe
+	public void handleEvent(final EventObject eventObject) {
+		if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
+			final HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventObject
+					.getData();
 
-            boolean ignore = humanMessage.getClass().isAnnotationPresent(TelegramIgnore.class);
+			boolean ignore = humanMessage.getClass().isAnnotationPresent(TelegramIgnore.class);
 
-            String messageString = humanMessage.getMessageString();
-            if (!ignore) {
-                boolean filtered = checkMessageFiltered(messageString);
+			String messageString = humanMessage.getMessageString();
+			if (!ignore) {
+				boolean filtered = checkMessageFiltered(messageString);
 
-                // message must not be set to ignore and not be filtered
-                if (!filtered) {
-                    TelegramBotService.getInstance().sendMessage(messageString);
-                }
-            }
+				// message must not be set to ignore and not be filtered
+				if (!filtered) {
+					TelegramBotService.getInstance().sendMessage(messageString);
+				}
+			}
 
-        }
-    }
+		}
+	}
 
-    private boolean checkMessageFiltered(String message) {
-        if (message != null) {
-            for (TelegramFilter telegramFilter : filterList) {
-                if (message.contains(telegramFilter.getMessagePart())) {
-                    return true;
-                }
-            }
-        }
+	private boolean checkMessageFiltered(String message) {
+		if (message != null) {
+			for (TelegramFilter telegramFilter : filterList) {
+				if (message.contains(telegramFilter.getMessagePart())) {
+					return true;
+				}
+			}
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    public void init() {
-        try {
+	public void init() {
+		try {
 
-            updateTelegramFilter();
+			updateTelegramFilter();
 
-            if (this.enabled) {
-                ApiContextInitializer.init();
-                telegramBotApi = new TelegramBotsApi();
-                registerBot();
-            }
-        } catch (final Exception e) {
-            LogManager.getLogger(this.getClass()).error(e);
-        }
-    }
+			if (this.enabled) {
+				ApiContextInitializer.init();
+				telegramBotApi = new TelegramBotsApi();
+				registerBot();
+			}
+		} catch (final Exception e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		}
+	}
 
-    @Scheduled(every = "120s")
-    public void updateTelegramFilter() {
-        EntityManager em = EntityManagerService.getManager();
+	@Scheduled(every = "120s")
+	public void updateTelegramFilter() {
+		EntityManager em = EntityManagerService.getManager();
 
-        filterList = em.createQuery("select f from TelegramFilter f", TelegramFilter.class).getResultList();
-    }
+		filterList = em.createQuery("select f from TelegramFilter f", TelegramFilter.class).getResultList();
+	}
 
-    private void registerBot() {
+	private void registerBot() {
 
-        try {
-            String token = ConfigurationService.getConfigurationProperty(TELEGRAM, TOKEN);
-            String user = ConfigurationService.getConfigurationProperty(TELEGRAM, USER);
-            bot = new CommandsHandler(user, token);
-            telegramBotApi.registerBot(bot);
+		try {
+			String token = ConfigurationService.getConfigurationProperty(TELEGRAM, TOKEN);
+			String user = ConfigurationService.getConfigurationProperty(TELEGRAM, USER);
+			bot = new CommandsHandler(user, token);
+			telegramBotApi.registerBot(bot);
 
-            sendMessage("Bot is alive");
+			sendMessage("Bot is alive");
 
-        } catch (final TelegramApiException e) {
-            LogManager.getLogger(this.getClass()).error(e);
-        }
-    }
+		} catch (final TelegramApiException e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		}
+	}
 
-    /**
-     * send a message
-     *
-     * @param message
-     */
-    public void sendMessage(final String message) {
-        final EntityManager em = EntityManagerService.getManager();
+	/**
+	 * send a message
+	 *
+	 * @param message
+	 */
+	public void sendMessage(final String message) {
+		final EntityManager em = EntityManagerService.getManager();
 
-        final List<TelegramUser> resultList = em.createQuery("select t from TelegramUser t", TelegramUser.class)
-                .getResultList();
+		final List<TelegramUser> resultList = em.createQuery("select t from TelegramUser t", TelegramUser.class)
+				.getResultList();
 
-        final String pattern = "yyyy-MM-dd HH:mm:ss";
-        final Date date = new Date();
-        final String defaultFmt = new SimpleDateFormat(pattern).format(date);
+		final String pattern = "yyyy-MM-dd HH:mm:ss";
+		final Date date = new Date();
+		final String defaultFmt = new SimpleDateFormat(pattern).format(date);
 
-        if ((resultList != null) && !resultList.isEmpty()) {
+		if ((resultList != null) && !resultList.isEmpty()) {
 
-            for (final TelegramUser telegramUser : resultList) {
+			for (final TelegramUser telegramUser : resultList) {
 
-                final SendMessage sendMessage = new SendMessage();
-                sendMessage.enableMarkdown(true);
+				final SendMessage sendMessage = new SendMessage();
+				sendMessage.enableMarkdown(true);
 
-                sendMessage.setChatId(telegramUser.getUserId());
-                sendMessage.setText(defaultFmt + ": " + message);
+				sendMessage.setChatId(telegramUser.getUserId());
+				sendMessage.setText(defaultFmt + ": " + message);
 
-                Executors.newSingleThreadExecutor().execute(() -> {
-                    try {
-                        bot.sendMessage(sendMessage);
-                    } catch (final TelegramApiException e) {
-                        LogManager.getLogger(this.getClass()).error(e);
-                    }
-                });
-            }
-        }
+				Executors.newSingleThreadExecutor().execute(() -> {
+					try {
+						bot.sendMessage(sendMessage);
+					} catch (final TelegramApiException e) {
+						LogManager.getLogger(this.getClass()).error(e);
+					}
+				});
+			}
+		}
 
-    }
+	}
 }
