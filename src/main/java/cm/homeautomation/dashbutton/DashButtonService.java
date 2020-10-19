@@ -124,15 +124,14 @@ public class DashButtonService {
     	this.run();
 	}
 
-	@AutoCreateInstance
 	public void run() {
-		LogManager.getLogger(this.getClass()).debug("Creating runner");
+		//LogManager.getLogger(this.getClass()).debug("Creating runner");
 		final Runnable dashbuttonRunner = new DashButtonRunnable();
 
-		LogManager.getLogger(this.getClass()).debug("Triggering start");
+		//LogManager.getLogger(this.getClass()).debug("Triggering start");
 		new Thread(dashbuttonRunner).start();
 
-		LogManager.getLogger(this.getClass()).debug("Start triggered");
+		//LogManager.getLogger(this.getClass()).debug("Start triggered");
 	}
 
 }
