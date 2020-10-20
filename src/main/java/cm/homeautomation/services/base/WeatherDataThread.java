@@ -114,7 +114,7 @@ public class WeatherDataThread {
 			}
 
 		} catch (Exception e) {
-			LogManager.getLogger(this.getClass()).error(e);
+//			LogManager.getLogger(this.getClass()).error(e);
 		}
 	}
 }

@@ -27,7 +27,7 @@ public class DeviceService {
 		try {
 			final EntityManager em = EntityManagerService.getManager();
 			mac = mac.toLowerCase();
-			LogManager.getLogger(DeviceService.class).info(MAC, mac);
+//			LogManager.getLogger(DeviceService.class).info(MAC, mac);
 			final List<Device> devices = em.createQuery("select d from Device d where d.mac=:mac", Device.class)
 					.setParameter("mac", mac).getResultList();
 
@@ -36,7 +36,7 @@ public class DeviceService {
 			}
 			return null;
 		} catch (final NoResultException e) {
-			LogManager.getLogger(DeviceService.class).debug(MAC, mac, e);
+//			LogManager.getLogger(DeviceService.class).debug(MAC, mac, e);
 			return null;
 		}
 	}
@@ -46,13 +46,13 @@ public class DeviceService {
 			final Device device = getDeviceForMac(mac);
 
 			if (device == null) {
-				LogManager.getLogger(DeviceService.class).debug("No Device for mac found: {}", mac);
+//				LogManager.getLogger(DeviceService.class).debug("No Device for mac found: {}", mac);
 				return null;
 			}
 
 			return device.getRoom();
 		} catch (final NoResultException e) {
-			LogManager.getLogger(DeviceService.class).info(MAC, mac, e);
+//			LogManager.getLogger(DeviceService.class).info(MAC, mac, e);
 
 			return null;
 		}

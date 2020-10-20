@@ -2,6 +2,7 @@ package cm.homeautomation.mqtt.client;
 
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -18,7 +19,6 @@ import lombok.extern.log4j.Log4j2;
  * @author christoph
  *
  */
-@Log4j2
 @NoArgsConstructor
 public class MQTTSender {
 	private MqttClient client;
@@ -50,14 +50,14 @@ public class MQTTSender {
 		try {
 			initClient();
 
-			log.debug("MQTT: sending message " + messagePayload + " to topic " + topic);
+			//LogManager.getLogger(this.getClass()).debug("MQTT: sending message " + messagePayload + " to topic " + topic);
 
 			MqttMessage message = new MqttMessage();
 			message.setPayload(messagePayload.getBytes());
 			client.publish(topic, message);
-			log.debug("MQTT:  message sent " + messagePayload + " to topic " + topic);
+			//LogManager.getLogger(this.getClass()).debug("MQTT:  message sent " + messagePayload + " to topic " + topic);
 		} catch (MqttException e) {
-			log.error("Sending MQTT message: " + messagePayload + " failed.", e);
+			//LogManager.getLogger(this.getClass()).error("Sending MQTT message: " + messagePayload + " failed.", e);
 		}
 	}
 

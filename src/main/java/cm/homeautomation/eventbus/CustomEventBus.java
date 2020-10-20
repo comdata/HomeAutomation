@@ -41,13 +41,13 @@ public class CustomEventBus {
 		final String clazzName = clazz.getName();
 
 		if (getClasses().containsKey(clazzName)) {
-			LogManager.getLogger(this.getClass()).debug("Class already registered on eventbus: {}", clazzName);
+//			LogManager.getLogger(this.getClass()).debug("Class already registered on eventbus: {}", clazzName);
 		} else {
-			LogManager.getLogger(this.getClass()).debug("Registering Class on eventbus: {}", clazz.getName());
+//			LogManager.getLogger(this.getClass()).debug("Registering Class on eventbus: {}", clazz.getName());
 			try {
 				EventBus.getDefault().register(object);
 			} catch (final EventBusException e) {
-				LogManager.getLogger(this.getClass()).error(e);
+//				LogManager.getLogger(this.getClass()).error(e);
 			}
 			getClasses().put(clazzName, clazz);
 		}

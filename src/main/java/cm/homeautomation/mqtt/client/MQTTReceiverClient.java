@@ -52,7 +52,7 @@ public class MQTTReceiverClient implements MqttCallback {
 					}
 
 				} catch (MqttException | InterruptedException e) {
-					LogManager.getLogger(this.getClass()).error(MQTT_EXCEPTION, e);
+//					LogManager.getLogger(this.getClass()).error(MQTT_EXCEPTION, e);
 				}
 			}
 		};
@@ -64,18 +64,18 @@ public class MQTTReceiverClient implements MqttCallback {
 		try {
 			if (client != null) {
 				if (!client.isConnected()) {
-					LogManager.getLogger(this.getClass()).info("Not connected");
+//					LogManager.getLogger(this.getClass()).info("Not connected");
 					tryToDisconnect();
 					client.reconnect();
 				}
 
 			} else {
-				LogManager.getLogger(this.getClass()).info("client is null");
+//				LogManager.getLogger(this.getClass()).info("client is null");
 				connect();
 			}
 
 		} catch (MqttException e) {
-			LogManager.getLogger(this.getClass()).error("Exception while running client.", e);
+//			LogManager.getLogger(this.getClass()).error("Exception while running client.", e);
 		}
 	}
 
@@ -83,7 +83,7 @@ public class MQTTReceiverClient implements MqttCallback {
 		try {
 			client.disconnectForcibly(100);
 		} catch (MqttException e) {
-			LogManager.getLogger(this.getClass()).error(MQTT_EXCEPTION, e);
+//			LogManager.getLogger(this.getClass()).error(MQTT_EXCEPTION, e);
 		}
 	}
 
@@ -109,7 +109,7 @@ public class MQTTReceiverClient implements MqttCallback {
 		client.connect(connOpt);
 
 		client.subscribe("#");
-		LogManager.getLogger(this.getClass()).info("Started MQTT client");
+//		LogManager.getLogger(this.getClass()).info("Started MQTT client");
 	}
 
 	public void stopServer() {
@@ -118,7 +118,7 @@ public class MQTTReceiverClient implements MqttCallback {
 			run = false;
 			client.disconnect();
 		} catch (MqttException e) {
-			LogManager.getLogger(this.getClass()).error(MQTT_EXCEPTION, e);
+//			LogManager.getLogger(this.getClass()).error(MQTT_EXCEPTION, e);
 		}
 	}
 
@@ -129,13 +129,13 @@ public class MQTTReceiverClient implements MqttCallback {
 			client.close();
 			client.disconnect();
 		} catch (MqttException e1) {
-			LogManager.getLogger(this.getClass()).error("force close failed.", e1);
+//			LogManager.getLogger(this.getClass()).error("force close failed.", e1);
 		}
-		LogManager.getLogger(this.getClass()).info("trying reconnect to MQTT broker");
+//		LogManager.getLogger(this.getClass()).info("trying reconnect to MQTT broker");
 		try {
 			connect();
 		} catch (MqttException e) {
-			LogManager.getLogger(this.getClass()).error(MQTT_EXCEPTION, e);
+//			LogManager.getLogger(this.getClass()).error(MQTT_EXCEPTION, e);
 		}
 	}
 
@@ -143,7 +143,7 @@ public class MQTTReceiverClient implements MqttCallback {
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		byte[] payload = message.getPayload();
 		String messageContent = new String(payload);
-		LogManager.getLogger(this.getClass()).info("Got MQTT message: " + message.getId() + "/" + messageContent);
+//		LogManager.getLogger(this.getClass()).info("Got MQTT message: " + message.getId() + "/" + messageContent);
 
 		try {
 			Runnable receiver = null;
@@ -158,11 +158,11 @@ public class MQTTReceiverClient implements MqttCallback {
 						hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
 						new HueInterface().handleMessage(hueMessage);
 					} catch (JsonMappingException e) {
-						LogManager.getLogger(this.getClass()).error("Got an exception while handling hue data data.",
-								e);
+//						LogManager.getLogger(this.getClass()).error("Got an exception while handling hue data data.",
+//								e);
 					} catch (JsonProcessingException e) {
-						LogManager.getLogger(this.getClass()).error("Got an exception while handling hue data data.",
-								e);
+//						LogManager.getLogger(this.getClass()).error("Got an exception while handling hue data data.",
+//								e);
 					}
 				};
 			} else {
@@ -180,7 +180,7 @@ public class MQTTReceiverClient implements MqttCallback {
 			EventBusService.getEventBus().post(new MQTTTopicEvent(topic, messageContent));
 
 		} catch (Exception e) {
-			LogManager.getLogger(this.getClass()).error("Got an exception while saving data.", e);
+//			LogManager.getLogger(this.getClass()).error("Got an exception while saving data.", e);
 		}
 
 		client.messageArrivedComplete(message.getId(), message.getQos());
@@ -208,7 +208,7 @@ public class MQTTReceiverClient implements MqttCallback {
 			hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
 			new HueInterface().handleMessage(hueMessage);
 		} catch (JsonProcessingException e) {
-			LogManager.getLogger(this.getClass()).error(e);
+//			LogManager.getLogger(this.getClass()).error(e);
 		}
 
 	}

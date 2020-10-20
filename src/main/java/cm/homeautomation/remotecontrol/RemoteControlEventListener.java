@@ -83,7 +83,7 @@ public class RemoteControlEventListener {
         String technicalId = event.getTechnicalId();
         EntityManager em = EntityManagerService.getManager();
 
-        LogManager.getLogger(this.getClass()).error("got remote event: " + name + "/" + technicalId);
+        //LogManager.getLogger(this.getClass()).error("got remote event: " + name + "/" + technicalId);
 
         List<RemoteControl> remoteList = em
                 .createQuery("select rc from RemoteControl rc where rc.technicalId=:technicalId", RemoteControl.class)
@@ -98,12 +98,12 @@ public class RemoteControlEventListener {
                     for (RemoteControlGroup remoteControlGroup : remoteControlGroups) {
                         List<RemoteControlGroupMember> members = remoteControlGroup.getMembers();
 
-                        LogManager.getLogger(this.getClass())
-                                .debug("found remote group: " + remoteControlGroup.getName());
+                        //LogManager.getLogger(this.getClass())
+                        //        .debug("found remote group: " + remoteControlGroup.getName());
 
                         for (RemoteControlGroupMember remoteControlGroupMember : members) {
-                            LogManager.getLogger(this.getClass())
-                                    .debug("found remote member: " + remoteControl.getName());
+//                            LogManager.getLogger(this.getClass())
+//                                    .debug("found remote member: " + remoteControl.getName());
                             switch (remoteControlGroupMember.getType()) {
                                 case LIGHT:
                                     LightService.getInstance().setLightState(remoteControlGroupMember.getExternalId(),

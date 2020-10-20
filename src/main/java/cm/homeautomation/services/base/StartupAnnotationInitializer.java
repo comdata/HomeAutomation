@@ -45,7 +45,7 @@ public class StartupAnnotationInitializer extends Thread {
 
 			String message = "Creating class: " + declaringClass.getName();
 
-			LogManager.getLogger(this.getClass()).info(message);
+//			LogManager.getLogger(this.getClass()).info(message);
 
 			Runnable singleInstanceCreator = new Runnable() {
 				@Override
@@ -55,7 +55,7 @@ public class StartupAnnotationInitializer extends Thread {
 
 						instances.put(declaringClass, classInstance);
 					} catch (InstantiationException | IllegalAccessException e) {
-						LogManager.getLogger(this.getClass()).info("Failed creating class");
+//						LogManager.getLogger(this.getClass()).info("Failed creating class");
 					}
 				}
 			};
@@ -65,7 +65,7 @@ public class StartupAnnotationInitializer extends Thread {
 	}
 
 	public Set<Class<?>> getClassesWithAutoCreateInstance() {
-		LogManager.getLogger(this.getClass()).info("Scanning classes");
+//		LogManager.getLogger(this.getClass()).info("Scanning classes");
 
 		Predicate<String> filter = new FilterBuilder().includePackage("cm.homeautomation").include(".*class")
 				.exclude(".*java").exclude(".*properties").exclude(".*xml");
@@ -82,7 +82,7 @@ public class StartupAnnotationInitializer extends Thread {
 		for (Method method : resources) {
 			Class<?> declaringClass = method.getDeclaringClass();
 			String message = "Adding class: " + declaringClass.getName();
-			LogManager.getLogger(this.getClass()).info(message);
+//			LogManager.getLogger(this.getClass()).info(message);
 
 			if (!typesAnnotatedWith.contains(declaringClass)) {
 

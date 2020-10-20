@@ -133,7 +133,7 @@ public class EventBusAnnotationInitializer {
 			}
 
 		} catch (ClassNotFoundException e) {
-			LogManager.getLogger(this.getClass()).error("Failed creating class", e);
+//			LogManager.getLogger(this.getClass()).error("Failed creating class", e);
 
 		}
 

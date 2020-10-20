@@ -30,7 +30,7 @@ public class FHEMWindowDataReceiver {
 			WindowStateService.getInstance().handleWindowState(fhemDevice.getReferencedId(), state);
 
 		} else {
-			LogManager.getLogger(FHEMDataReceiver.class).error("Window: add handling for last part: " + topicLastPart);
+//			LogManager.getLogger(FHEMDataReceiver.class).error("Window: add handling for last part: " + topicLastPart);
 		}
 	}
 }

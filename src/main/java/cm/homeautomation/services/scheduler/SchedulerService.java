@@ -48,7 +48,7 @@ public class SchedulerService extends BaseService {
 		try {
 			initialize();
 		} catch (SchedulerException e) {
-			LogManager.getLogger(this.getClass()).error(e);
+//			LogManager.getLogger(this.getClass()).error(e);
 		}
 	}
 
@@ -94,7 +94,7 @@ public class SchedulerService extends BaseService {
 						jobMap.put(taskId, jobKey);
 					}
 				} catch (SchedulerException e) {
-					LogManager.getLogger(this.getClass()).error(e);
+//					LogManager.getLogger(this.getClass()).error(e);
 				}
 			}
 
@@ -112,7 +112,7 @@ public class SchedulerService extends BaseService {
 		try {
 			this.initialize();
 		} catch (SchedulerException e) {
-			LogManager.getLogger(this.getClass()).error(e);
+//			LogManager.getLogger(this.getClass()).error(e);
 		}
 
 		SchedulerResponse schedulerResponse = new SchedulerResponse();
@@ -198,7 +198,7 @@ public class SchedulerService extends BaseService {
 
 			}
 		} catch (IOException e) {
-			LogManager.getLogger(this.getClass()).error(e);
+//			LogManager.getLogger(this.getClass()).error(e);
 		}
 
 	}

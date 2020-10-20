@@ -18,7 +18,7 @@ public class EventBusEndpointConfigurator extends Configurator {
 	}
 
 	public static void setEventBusEndpoint(EventBusEndpoint eventBusEndpoint) {
-		LogManager.getLogger(EventBusEndpointConfigurator.class).info("adding eventBusEndpoint");
+//		LogManager.getLogger(EventBusEndpointConfigurator.class).info("adding eventBusEndpoint");
 		EventBusEndpointConfigurator.eventBusEndpoint = eventBusEndpoint;
 	}
 }

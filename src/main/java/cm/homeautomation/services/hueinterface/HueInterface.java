@@ -139,7 +139,7 @@ public class HueInterface extends BaseService {
                         }
                     }
                 } else {
-                    LogManager.getLogger(this.getClass()).debug("hue not found for lightId: " + lightId);
+//                    LogManager.getLogger(this.getClass()).debug("hue not found for lightId: " + lightId);
                 }
             }
 
@@ -168,7 +168,7 @@ public class HueInterface extends BaseService {
             if (!message.isOnOffCommand()) {
                 dimValue = Integer.toString(message.getBrightness());
             }
-            LogManager.getLogger(HueInterface.class).debug("Window Blind dim: " + dimValue);
+//            LogManager.getLogger(HueInterface.class).debug("Window Blind dim: " + dimValue);
 
             new WindowBlindService().setDim(hueDevice.getExternalId(),
                     ("on".equals(message.getPayload()) ? dimValue : "0"),
@@ -192,7 +192,7 @@ public class HueInterface extends BaseService {
             if (message.getXy() != null) {
                 x = message.getXy()[0];
                 y = message.getXy()[1];
-                LogManager.getLogger(HueInterface.class).debug("Color infos:" + x + " - " + y);
+//                LogManager.getLogger(HueInterface.class).debug("Color infos:" + x + " - " + y);
                 isColor = true;
             }
 
@@ -213,6 +213,6 @@ public class HueInterface extends BaseService {
 
         HueEmulatorMessage readValue = mapper.readValue(message, HueEmulatorMessage.class);
 
-        LogManager.getLogger(HueInterface.class).debug(readValue.getXy()[1]);
+//        LogManager.getLogger(HueInterface.class).debug(readValue.getXy()[1]);
     }
 }

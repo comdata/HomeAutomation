@@ -161,7 +161,7 @@ public class LightService extends BaseService {
 
 				int dimValue = dimPercentValue;
 
-				LogManager.getLogger(this.getClass()).error("dimPercentValue: " + dimPercentValue);
+//				LogManager.getLogger(this.getClass()).error("dimPercentValue: " + dimPercentValue);
 
 				dimValue = dimByPercentIfPercentValue(dimPercentValue, isAbsoluteValue, light, dimValue);
 

@@ -25,7 +25,7 @@ public class EventTranscoder implements Encoder.Text<EventObject>, Decoder.Text<
 		try {
 			return mapper.readValue(s, EventObject.class);
 		} catch (final IOException e) {
-			LogManager.getLogger(this.getClass()).error("decoding failed: " + s, e);
+//			LogManager.getLogger(this.getClass()).error("decoding failed: " + s, e);
 		}
 		return null;
 	}

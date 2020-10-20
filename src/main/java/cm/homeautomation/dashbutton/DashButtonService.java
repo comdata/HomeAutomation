@@ -33,7 +33,7 @@ public class DashButtonService {
 			final int MAX_BUFFER_SIZE = 1000;
 
 			try (DatagramSocket socket = new DatagramSocket(listenPort);) {
-				LogManager.getLogger(this.getClass()).debug("start listening");
+//				LogManager.getLogger(this.getClass()).debug("start listening");
 
 				final byte[] payload = new byte[MAX_BUFFER_SIZE];
 
@@ -45,23 +45,23 @@ public class DashButtonService {
 					listenAndReceive(listenPort, socket, p);
 				}
 			} catch (final SocketException e) {
-				LogManager.getLogger(this.getClass()).error("socket exeception", e);
+				//LogManager.getLogger(this.getClass()).error("socket exeception", e);
 			}
 		}
 
 		private void listenAndReceive(final int listenPort, DatagramSocket socket, final DatagramPacket p) {
 			try {
-				LogManager.getLogger(this.getClass()).debug("Listening on port " + listenPort + "...");
+//				LogManager.getLogger(this.getClass()).debug("Listening on port " + listenPort + "...");
 
 				socket.receive(p); // throws i/o exception
-				LogManager.getLogger(this.getClass()).debug("Received data");
+//				LogManager.getLogger(this.getClass()).debug("Received data");
 
 				final DHCPPacket packet = DHCPPacket.getPacket(p);
 
 				final String mac = packet.getHardwareAddress().getHardwareAddressHex();
-				LogManager.getLogger(this.getClass()).debug("checking mac: " + mac);
+//				LogManager.getLogger(this.getClass()).debug("checking mac: " + mac);
 				if (isDashButton(mac)) {
-					LogManager.getLogger(this.getClass()).debug("found a dashbutton mac: " + mac);
+//					LogManager.getLogger(this.getClass()).debug("found a dashbutton mac: " + mac);
 
 					/*
 					 * suppress events if they are to fast
@@ -76,16 +76,16 @@ public class DashButtonService {
 					if (((filterTime.getTime()) + 1000) < (new Date()).getTime()) {
 						timeFilter.put(mac, new Date());
 						EventBusService.getEventBus().post(new EventObject(new DashButtonEvent(mac)));
-						LogManager.getLogger(this.getClass()).debug("send dashbutton event");
+//						LogManager.getLogger(this.getClass()).debug("send dashbutton event");
 					}
 
 				} else {
-					LogManager.getLogger(this.getClass()).debug("not a dashbutton: " + mac);
+//					LogManager.getLogger(this.getClass()).debug("not a dashbutton: " + mac);
 				}
 			} catch (final SocketException e) {
-				LogManager.getLogger(this.getClass()).error("socket exeception", e);
+//				LogManager.getLogger(this.getClass()).error("socket exeception", e);
 			} catch (final IOException e) {
-				LogManager.getLogger(this.getClass()).error("IO exeception", e);
+//				LogManager.getLogger(this.getClass()).error("IO exeception", e);
 			}
 		}
 
@@ -106,9 +106,9 @@ public class DashButtonService {
 					return true;
 				}
 			} catch (final NoResultException e) {
-				LogManager.getLogger(this.getClass()).error(e);
+//				LogManager.getLogger(this.getClass()).error(e);
 			}
-			LogManager.getLogger(this.getClass()).trace("vendorCode: " + vendorCode);
+//			LogManager.getLogger(this.getClass()).trace("vendorCode: " + vendorCode);
 
 			return false;
 		}

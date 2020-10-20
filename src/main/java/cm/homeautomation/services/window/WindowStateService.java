@@ -85,7 +85,7 @@ public class WindowStateService extends BaseService {
 
 		synchronized (this) {
 
-			LogManager.getLogger(this.getClass()).debug("window: " + windowId + " state: ---" + state + "---");
+//			LogManager.getLogger(this.getClass()).debug("window: " + windowId + " state: ---" + state + "---");
 
 			final EntityManager em = EntityManagerService.getManager();
 
@@ -137,7 +137,7 @@ public class WindowStateService extends BaseService {
 			try {
 				Sensors.getInstance().saveSensorData(sensorDataSaveRequest);
 			} catch (SensorDataLimitViolationException e) {
-				LogManager.getLogger(this.getClass()).error("window: " + windowId + " state: ---" + state + "---", e);
+//				LogManager.getLogger(this.getClass()).error("window: " + windowId + " state: ---" + state + "---", e);
 			}
 		}
 	}

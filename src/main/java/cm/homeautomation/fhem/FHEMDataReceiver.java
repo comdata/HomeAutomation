@@ -24,7 +24,7 @@ public class FHEMDataReceiver {
 	}
 
 	public static void receiveFHEMData(String topic, String messageContent) {
-		LogManager.getLogger(FHEMDataReceiver.class).debug("FHEM message for topic: {} message: {}", topic,  messageContent);
+//		LogManager.getLogger(FHEMDataReceiver.class).debug("FHEM message for topic: {} message: {}", topic,  messageContent);
 
 		EntityManager em = EntityManagerService.getManager();
 
@@ -46,7 +46,7 @@ public class FHEMDataReceiver {
 						handleDeviceSpecific(topic, messageContent, device, fhemDevice, deviceType);
 					}
 				} else {
-					LogManager.getLogger(FHEMDataReceiver.class).error("FHEM Device not found for device: {}", device);
+//					LogManager.getLogger(FHEMDataReceiver.class).error("FHEM Device not found for device: {}", device);
 					createNewFHEMDevices(device);					
 				}
 
@@ -76,13 +76,13 @@ public class FHEMDataReceiver {
 				break;
 				
 			default:
-				LogManager.getLogger(FHEMDataReceiver.class).error(
-						"Device type: " + deviceType + " for device: " + device + " not mapped.");
+//				LogManager.getLogger(FHEMDataReceiver.class).error(
+//						"Device type: " + deviceType + " for device: " + device + " not mapped.");
 				break;
 			}
 
 		} else {
-			LogManager.getLogger(FHEMDataReceiver.class).debug("Device type for device: " + device);
+//			LogManager.getLogger(FHEMDataReceiver.class).debug("Device type for device: " + device);
 		}
 	}
 

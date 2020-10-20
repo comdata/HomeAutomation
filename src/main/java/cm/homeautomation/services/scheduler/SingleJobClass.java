@@ -47,7 +47,7 @@ public class SingleJobClass implements Job {
             }
         } catch (NoSuchMethodException | SecurityException | ClassNotFoundException | IllegalArgumentException
                 | IllegalAccessException | InvocationTargetException e) {
-            LogManager.getLogger(this.getClass()).error(e);
+            //LogManager.getLogger(this.getClass()).error(e);
         }
 
     }
