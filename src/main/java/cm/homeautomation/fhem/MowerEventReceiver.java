@@ -1,6 +1,5 @@
 package cm.homeautomation.fhem;
 
-import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
 
 import cm.homeautomation.eventbus.EventBusService;

@@ -2,8 +2,6 @@ package cm.homeautomation.eventbus;
 
 import javax.websocket.server.ServerEndpointConfig.Configurator;
 
-import org.apache.logging.log4j.LogManager;
-
 public class EventBusEndpointConfigurator extends Configurator {
 	private static EventBusEndpoint eventBusEndpoint;
 

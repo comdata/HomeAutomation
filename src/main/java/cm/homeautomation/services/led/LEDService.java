@@ -9,7 +9,6 @@ import javax.ws.rs.PathParam;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.services.base.BaseService;
 

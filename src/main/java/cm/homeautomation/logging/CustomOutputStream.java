@@ -7,7 +7,6 @@ import java.io.PrintStream;
 import org.apache.log4j.Logger;
 
 import cm.homeautomation.configuration.ConfigurationService;
-import cm.homeautomation.services.base.AutoCreateInstance;
 
 //@AutoCreateInstance
 public class CustomOutputStream extends OutputStream {
