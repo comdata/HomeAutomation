@@ -4,8 +4,6 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
-import org.apache.logging.log4j.LogManager;
-
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Device;
 import cm.homeautomation.entities.FHEMDevice;

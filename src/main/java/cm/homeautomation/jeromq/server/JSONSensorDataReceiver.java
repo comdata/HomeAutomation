@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cm.homeautomation.eventbus.EventBusService;

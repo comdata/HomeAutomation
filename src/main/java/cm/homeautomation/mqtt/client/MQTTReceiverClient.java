@@ -2,7 +2,6 @@ package cm.homeautomation.mqtt.client;
 
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -20,7 +19,6 @@ import cm.homeautomation.ebus.EBUSDataReceiver;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.fhem.FHEMDataReceiver;
 import cm.homeautomation.jeromq.server.JSONSensorDataReceiver;
-import cm.homeautomation.jeromq.server.NoClassInformationContainedException;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.hueinterface.HueEmulatorMessage;

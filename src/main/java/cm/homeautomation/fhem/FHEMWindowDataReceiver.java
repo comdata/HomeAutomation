@@ -1,7 +1,5 @@
 package cm.homeautomation.fhem;
 
-import org.apache.logging.log4j.LogManager;
-
 import cm.homeautomation.entities.FHEMDevice;
 import cm.homeautomation.services.window.WindowStateService;
 

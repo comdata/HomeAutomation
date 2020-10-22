@@ -2,7 +2,6 @@ package cm.homeautomation.mqtt.client;
 
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -11,7 +10,6 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import cm.homeautomation.configuration.ConfigurationService;
 import io.quarkus.scheduler.Scheduled;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
 /**
  * generic MQTT sender
