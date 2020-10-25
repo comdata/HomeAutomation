@@ -53,30 +53,32 @@ public class MQTTSender {
 			}
 			MqttMessage message = new MqttMessage();
 			message.setPayload(messagePayload.getBytes());
-			System.out.println(System.currentTimeMillis()+" sending message to: " + topic);
+			System.out.println(System.currentTimeMillis() + " sending message to: " + topic);
 			client.publish(topic, message);
-			System.out.println(System.currentTimeMillis()+" message sent: " + topic);
+			System.out.println(System.currentTimeMillis() + " message sent: " + topic);
 		} catch (MqttException e) {
 		}
 	}
 
 	@Scheduled(every = "5s")
 	public void initClient() throws MqttException {
-		if (client == null || !client.isConnected()) {
+		synchronized (this) {
+			if (client == null || !client.isConnected()) {
 
-			UUID uuid = UUID.randomUUID();
-			String randomUUIDString = uuid.toString();
+				UUID uuid = UUID.randomUUID();
+				String randomUUIDString = uuid.toString();
 
-			client = new MqttClient("tcp://" + host + ":" + port, "HomeAutomation/" + randomUUIDString);
+				client = new MqttClient("tcp://" + host + ":" + port, "HomeAutomation/" + randomUUIDString);
 
-			MqttConnectOptions connOpt = new MqttConnectOptions();
-			connOpt.setAutomaticReconnect(true);
-			connOpt.setCleanSession(false);
-			connOpt.setKeepAliveInterval(60);
-			connOpt.setConnectionTimeout(30);
-			connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
+				MqttConnectOptions connOpt = new MqttConnectOptions();
+				connOpt.setAutomaticReconnect(true);
+				connOpt.setCleanSession(false);
+				connOpt.setKeepAliveInterval(60);
+				connOpt.setConnectionTimeout(30);
+				connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
 
-			client.connect(connOpt);
+				client.connect(connOpt);
+			}
 		}
 	}
 }
