@@ -46,20 +46,19 @@ public class MQTTSender {
 	public void doSendSyncMQTTMessage(String topic, String messagePayload) {
 
 		try {
-			initClient();
-
-			//LogManager.getLogger(this.getClass()).debug("MQTT: sending message " + messagePayload + " to topic " + topic);
-
+			if (client == null || !client.isConnected()) {
+				initClient();
+			}
 			MqttMessage message = new MqttMessage();
 			message.setPayload(messagePayload.getBytes());
+			System.out.println("sending message to: " + topic);
 			client.publish(topic, message);
-			//LogManager.getLogger(this.getClass()).debug("MQTT:  message sent " + messagePayload + " to topic " + topic);
+			System.out.println("message sent: " + topic);
 		} catch (MqttException e) {
-			//LogManager.getLogger(this.getClass()).error("Sending MQTT message: " + messagePayload + " failed.", e);
 		}
 	}
 
-	@Scheduled(every = "60s")
+	@Scheduled(every = "5s")
 	public void initClient() throws MqttException {
 		if (client == null || !client.isConnected()) {
 
