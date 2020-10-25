@@ -24,7 +24,6 @@ import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.hueinterface.HueEmulatorMessage;
 import cm.homeautomation.services.hueinterface.HueInterface;
 
-@AutoCreateInstance
 public class MQTTReceiverClient implements MqttCallback {
 
 	private static final String MQTT_EXCEPTION = "MQTT Exception.";
