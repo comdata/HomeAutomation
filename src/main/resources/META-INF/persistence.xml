@@ -76,6 +76,7 @@
         <class>cm.homeautomation.entities.TelegramFilter</class>
 		<class>cm.homeautomation.zigbee.ZigbeeWaterSensor</class>        
 		<class>cm.homeautomation.entities.LinkedDevices</class>
+        <class>cm.homeautomation.entities.HumanMessageEmitterFilter</class>
 		
 		<properties>
 			<property name="javax.persistence.jdbc.driver"
