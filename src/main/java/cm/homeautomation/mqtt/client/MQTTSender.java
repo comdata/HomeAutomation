@@ -21,6 +21,8 @@ import lombok.NoArgsConstructor;
 public class MQTTSender {
 	private MqttClient client;
 	private static MQTTSender instance;
+	private String host = ConfigurationService.getConfigurationProperty("mqtt", "host");
+	private String port = ConfigurationService.getConfigurationProperty("mqtt", "port");
 
 	public MqttClient getClient() {
 		return client;
@@ -51,9 +53,9 @@ public class MQTTSender {
 			}
 			MqttMessage message = new MqttMessage();
 			message.setPayload(messagePayload.getBytes());
-			System.out.println("sending message to: " + topic);
+			System.out.println(System.currentTimeMillis()+" sending message to: " + topic);
 			client.publish(topic, message);
-			System.out.println("message sent: " + topic);
+			System.out.println(System.currentTimeMillis()+" message sent: " + topic);
 		} catch (MqttException e) {
 		}
 	}
@@ -64,9 +66,6 @@ public class MQTTSender {
 
 			UUID uuid = UUID.randomUUID();
 			String randomUUIDString = uuid.toString();
-
-			String host = ConfigurationService.getConfigurationProperty("mqtt", "host");
-			String port = ConfigurationService.getConfigurationProperty("mqtt", "port");
 
 			client = new MqttClient("tcp://" + host + ":" + port, "HomeAutomation/" + randomUUIDString);
 
