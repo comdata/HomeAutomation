@@ -18,8 +18,8 @@ import io.quarkus.scheduler.Scheduled;
 @AutoCreateInstance
 public class MQTTHumanMessageEmitter {
 
-    private String humanMessageTopic;
-    private static List<HumanMessageEmitterFilter> filterList;
+	private String humanMessageTopic;
+	private static List<HumanMessageEmitterFilter> filterList;
 
 	public MQTTHumanMessageEmitter() {
 		humanMessageTopic = ConfigurationService.getConfigurationProperty("mqtt", "humanMessageTopic");
@@ -27,9 +27,9 @@ public class MQTTHumanMessageEmitter {
 		if (humanMessageTopic != null && !"".equals(humanMessageTopic)) {
 			EventBusService.getEventBus().register(this);
 		}
-    }
-    
-    private boolean checkMessageFiltered(String message) {
+	}
+
+	private boolean checkMessageFiltered(String message) {
 		if (message != null) {
 			for (HumanMessageEmitterFilter filter : filterList) {
 				if (message.contains(filter.getMessagePart())) {
@@ -41,29 +41,31 @@ public class MQTTHumanMessageEmitter {
 		return false;
 	}
 
-
-
 	@Scheduled(every = "120s")
 	public void updateHumanMessageFilter() {
 		EntityManager em = EntityManagerService.getManager();
 
-		filterList = em.createQuery("select f from HumanMessageEmitterFilter f", HumanMessageEmitterFilter.class).getResultList();
+		filterList = em.createQuery("select f from HumanMessageEmitterFilter f", HumanMessageEmitterFilter.class)
+				.getResultList();
 	}
 
 	@Subscribe
 	public void handleEvent(final EventObject eventObject) {
-		if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
-			HumanMessageGenerationInterface humanMessageGenerationInterface = (HumanMessageGenerationInterface) eventObject
-					.getData();
-			String message = humanMessageGenerationInterface.getTitle() + ": "
-                    + humanMessageGenerationInterface.getMessageString();
-            
-            boolean filtered = checkMessageFiltered(message);
+		Runnable eventThread = () -> {
+			if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
+				HumanMessageGenerationInterface humanMessageGenerationInterface = (HumanMessageGenerationInterface) eventObject
+						.getData();
+				String message = humanMessageGenerationInterface.getTitle() + ": "
+						+ humanMessageGenerationInterface.getMessageString();
 
-			// message must not be set to ignore and not be filtered
-			if (!filtered) {
-                MQTTSender.sendMQTTMessage(humanMessageTopic, message);
-            }
-		}
+				boolean filtered = checkMessageFiltered(message);
+
+				// message must not be set to ignore and not be filtered
+				if (!filtered) {
+					MQTTSender.sendMQTTMessage(humanMessageTopic, message);
+				}
+			}
+		};
+		new Thread(eventThread).start();
 	}
 }
