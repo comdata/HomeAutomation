@@ -14,7 +14,7 @@ import javax.persistence.EntityManager;
 
 @QuarkusTest
 public class WindowBlindServiceTest {
-    @Test
+    //@Test
     public void testWindowBlindGetAll() {
         given()
           .when().get("/windowBlinds/getAll")
