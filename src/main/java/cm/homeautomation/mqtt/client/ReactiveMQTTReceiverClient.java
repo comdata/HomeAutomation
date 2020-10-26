@@ -3,6 +3,7 @@ package cm.homeautomation.mqtt.client;
 import java.util.concurrent.CompletionStage;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 
@@ -23,6 +24,8 @@ import io.smallrye.reactive.messaging.mqtt.MqttMessage;
 public class ReactiveMQTTReceiverClient {
 	private static ObjectMapper mapper = new ObjectMapper();
 	
+	@Inject HueInterface hueInterface;
+	
 	@Incoming("homeautomation")
 	public CompletionStage<Void> consume(MqttMessage<byte[]> message) {
 		String topic=message.getTopic();
@@ -39,7 +42,7 @@ public class ReactiveMQTTReceiverClient {
 					HueEmulatorMessage hueMessage;
 					try {
 						hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
-						new HueInterface().handleMessage(hueMessage);
+						hueInterface.handleMessage(hueMessage);
 					} catch (JsonMappingException e) {
 					} catch (JsonProcessingException e) {
 

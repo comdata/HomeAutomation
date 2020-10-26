@@ -44,129 +44,119 @@ import io.quarkus.scheduler.Scheduled;
 @ApplicationScoped
 @Path("actor")
 public class ActorService extends BaseService implements MqttCallback {
-	
-	@Inject MQTTSender mqttSender;
-
 
 	private static Map<Long, List<Switch>> switchList = new HashMap<>();
 
-	private final class SwitchPressRunner implements Runnable {
-		private final String targetStatus;
-		private final String switchId;
+	private static ActorService instance;
 
-		private SwitchPressRunner(String targetStatus, String switchId) {
-			this.targetStatus = targetStatus;
-			this.switchId = switchId;
-		}
+	@Inject
+	MQTTSender mqttSender;
 
-		@Override
-		public void run() {
+	public void performSwitch(String targetStatus, String switchId) {
 
-			final String upperCaseTargetStatus = targetStatus.toUpperCase();
+		final String upperCaseTargetStatus = targetStatus.toUpperCase();
 
-			final Switch singleSwitch = updateBackendSwitchState(switchId, upperCaseTargetStatus);
+		final Switch singleSwitch = updateBackendSwitchState(switchId, upperCaseTargetStatus);
 
-			final ActorMessage actorMessage = createActorMessage(upperCaseTargetStatus, singleSwitch);
+		final ActorMessage actorMessage = createActorMessage(upperCaseTargetStatus, singleSwitch);
 
-			switchLights(targetStatus, singleSwitch);
+		switchLights(targetStatus, singleSwitch);
 
-			switchSockets(singleSwitch, actorMessage);
+		switchSockets(singleSwitch, actorMessage);
 
-			EventBusService.getEventBus().post(new EventObject(actorMessage));
-
-		}
-
-		private ActorMessage createActorMessage(final String targetStatus, final Switch singleSwitch) {
-			final ActorMessage actorMessage = new ActorMessage();
-			actorMessage.setId(singleSwitch.getId());
-			actorMessage.setHouseCode(singleSwitch.getHouseCode());
-			actorMessage.setStatus((targetStatus.equals("ON") ? "1" : "0"));
-			actorMessage.setSwitchNo(singleSwitch.getSwitchNo());
-
-			return actorMessage;
-		}
-
-		private void switchSockets(final Switch singleSwitch, final ActorMessage actorMessage) {
-			// standard lights
-			if ("SOCKET".equals(singleSwitch.getSwitchType()) || "LIGHT".equals(singleSwitch.getSwitchType())) {
-
-				LogManager.getLogger(this.getClass())
-						.debug("Actor Switch Type: " + singleSwitch.getClass().getSimpleName());
-
-				if (singleSwitch instanceof MQTTSwitch) {
-					LogManager.getLogger(this.getClass()).debug("Switch is MQTTSwitch");
-					MQTTSwitch singleMqttSwitch = (MQTTSwitch) singleSwitch;
-
-					String topic = null;
-					String message = null;
-
-					if ("1".equals(actorMessage.getStatus())) {
-						topic = singleMqttSwitch.getMqttPowerOnTopic();
-						message = singleMqttSwitch.getMqttPowerOnMessage();
-
-					} else {
-						topic = singleMqttSwitch.getMqttPowerOffTopic();
-						message = singleMqttSwitch.getMqttPowerOffMessage();
-					}
-
-					LogManager.getLogger(this.getClass()).debug("MQTT: " + topic + " - " + message);
-
-					mqttSender.sendMQTTMessage(topic, message);
-
-				} else {
-
-					if (singleSwitch.getHouseCode() != null) {
-						mqttSender.sendMQTTMessage("ESP_RC/cmd",
-								"RC," + ("1".equals(actorMessage.getStatus()) ? "ON" : "OFF") + "="
-										+ actorMessage.getHouseCode().trim() + actorMessage.getSwitchNo().trim());
-					}
-
-					if (singleSwitch.getSwitchSetUrl() != null) {
-						sendHTTPMessage(singleSwitch, actorMessage);
-					}
-				}
-			} else if ("IR".equals(singleSwitch.getSwitchType())) {
-				try {
-					InfraredService.getInstance().sendCommand(singleSwitch.getIrCommand().getId());
-				} catch (final JsonProcessingException e) {
-					LogManager.getLogger(this.getClass()).error(e);
-				}
-			}
-		}
-
-		private void switchLights(String targetStatus, final Switch singleSwitch) {
-			// support lights in the switches list and switch them as well
-			final List<Light> lights = singleSwitch.getLights();
-			if ((lights != null) && !lights.isEmpty()) {
-				boolean on = false;
-				if ("ON".equals(targetStatus)) {
-					on = true;
-				}
-
-				final LightService lightService = LightService.getInstance();
-
-				for (final Light light : lights) {
-					if (light instanceof DimmableLight) {
-						final DimmableLight dimmableLight = (DimmableLight) light;
-						final int dimValue = (on) ? dimmableLight.getMaximumValue() : dimmableLight.getMinimumValue();
-						lightService.dimLight(light.getId(), dimValue);
-					}
-				}
-			}
-		}
-
-		private void sendHTTPMessage(final Switch singleSwitch, final ActorMessage actorMessage) {
-			String switchSetUrl = singleSwitch.getSwitchSetUrl();
-			switchSetUrl = switchSetUrl.replace("{STATE}", (("0".equals(actorMessage.getStatus())) ? "off" : "on"));
-
-			LogManager.getLogger(this.getClass()).debug(switchSetUrl);
-
-			HTTPHelper.performHTTPRequest(switchSetUrl);
-		}
+		EventBusService.getEventBus().post(new EventObject(actorMessage));
 
 	}
 
-	private static ActorService instance;
+	private ActorMessage createActorMessage(final String targetStatus, final Switch singleSwitch) {
+		final ActorMessage actorMessage = new ActorMessage();
+		actorMessage.setId(singleSwitch.getId());
+		actorMessage.setHouseCode(singleSwitch.getHouseCode());
+		actorMessage.setStatus((targetStatus.equals("ON") ? "1" : "0"));
+		actorMessage.setSwitchNo(singleSwitch.getSwitchNo());
+
+		return actorMessage;
+	}
+
+	private void switchSockets(final Switch singleSwitch, final ActorMessage actorMessage) {
+
+		// standard lights
+		if ("SOCKET".equals(singleSwitch.getSwitchType()) || "LIGHT".equals(singleSwitch.getSwitchType())) {
+
+			LogManager.getLogger(this.getClass())
+					.debug("Actor Switch Type: " + singleSwitch.getClass().getSimpleName());
+
+			if (singleSwitch instanceof MQTTSwitch) {
+				LogManager.getLogger(this.getClass()).debug("Switch is MQTTSwitch");
+				MQTTSwitch singleMqttSwitch = (MQTTSwitch) singleSwitch;
+
+				String topic = null;
+				String message = null;
+
+				if ("1".equals(actorMessage.getStatus())) {
+					topic = singleMqttSwitch.getMqttPowerOnTopic();
+					message = singleMqttSwitch.getMqttPowerOnMessage();
+
+				} else {
+					topic = singleMqttSwitch.getMqttPowerOffTopic();
+					message = singleMqttSwitch.getMqttPowerOffMessage();
+				}
+
+				LogManager.getLogger(this.getClass()).debug("MQTT: " + topic + " - " + message);
+
+				mqttSender.sendMQTTMessage(topic, message);
+
+			} else {
+
+				if (singleSwitch.getHouseCode() != null) {
+					mqttSender.sendMQTTMessage("ESP_RC/cmd",
+							"RC," + ("1".equals(actorMessage.getStatus()) ? "ON" : "OFF") + "="
+									+ actorMessage.getHouseCode().trim() + actorMessage.getSwitchNo().trim());
+				}
+
+				if (singleSwitch.getSwitchSetUrl() != null) {
+					sendHTTPMessage(singleSwitch, actorMessage);
+				}
+			}
+		} else if ("IR".equals(singleSwitch.getSwitchType())) {
+			try {
+				InfraredService.getInstance().sendCommand(singleSwitch.getIrCommand().getId());
+			} catch (final JsonProcessingException e) {
+				LogManager.getLogger(this.getClass()).error(e);
+			}
+		}
+	}
+
+	private void switchLights(String targetStatus, final Switch singleSwitch) {
+		// support lights in the switches list and switch them as well
+		final List<Light> lights = singleSwitch.getLights();
+		if ((lights != null) && !lights.isEmpty()) {
+			boolean on = false;
+			if ("ON".equals(targetStatus)) {
+				on = true;
+			}
+
+			final LightService lightService = LightService.getInstance();
+
+			for (final Light light : lights) {
+				if (light instanceof DimmableLight) {
+					final DimmableLight dimmableLight = (DimmableLight) light;
+					final int dimValue = (on) ? dimmableLight.getMaximumValue() : dimmableLight.getMinimumValue();
+					lightService.dimLight(light.getId(), dimValue);
+				}
+			}
+		}
+	}
+
+	private void sendHTTPMessage(final Switch singleSwitch, final ActorMessage actorMessage) {
+		String switchSetUrl = singleSwitch.getSwitchSetUrl();
+		switchSetUrl = switchSetUrl.replace("{STATE}", (("0".equals(actorMessage.getStatus())) ? "off" : "on"));
+
+		LogManager.getLogger(this.getClass()).debug(switchSetUrl);
+
+		HTTPHelper.performHTTPRequest(switchSetUrl);
+	}
+
 
 	public ActorService() {
 		initSwitchList();
@@ -297,9 +287,8 @@ public class ActorService extends BaseService implements MqttCallback {
 	public SwitchPressResponse pressSwitch(@PathParam("switch") final String switchId,
 			@PathParam("status") String targetStatus) {
 
-		final Runnable actorThread = new SwitchPressRunner(targetStatus, switchId);
-		new Thread(actorThread).start();
-
+		performSwitch(targetStatus, switchId);
+		
 		final SwitchPressResponse switchPressResponse = new SwitchPressResponse();
 		switchPressResponse.setSuccess(true);
 		return switchPressResponse;

@@ -2,12 +2,11 @@ package cm.homeautomation.services.hueinterface;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-
-import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -32,6 +31,10 @@ import cm.homeautomation.services.windowblind.WindowBlindService;
 @Path("hueInterface")
 public class HueInterface extends BaseService {
 
+	@Inject ActorService actorService;
+	@Inject WindowBlindService windowBlindService;
+	@Inject LightService lightService;
+	
     @POST
     @Path("send")
     public GenericStatus handleMessage(HueEmulatorMessage message) {
@@ -170,7 +173,7 @@ public class HueInterface extends BaseService {
             }
 //            LogManager.getLogger(HueInterface.class).debug("Window Blind dim: " + dimValue);
 
-            new WindowBlindService().setDim(hueDevice.getExternalId(),
+            windowBlindService.setDim(hueDevice.getExternalId(),
                     ("on".equals(message.getPayload()) ? dimValue : "0"),
                     hueDevice.isGroupDevice() ? WindowBlind.ALL_AT_ONCE : WindowBlind.SINGLE,
                     (hueDevice.isGroupDevice() ? hueDevice.getRoom().getId() : null));
@@ -178,13 +181,13 @@ public class HueInterface extends BaseService {
     }
 
     private void handleSwitch(HueEmulatorMessage message, HueDevice hueDevice) {
-        ActorService.getInstance().pressSwitch(Long.toString(hueDevice.getExternalId()),
+        actorService.pressSwitch(Long.toString(hueDevice.getExternalId()),
                 ("on".equals(message.getPayload()) ? "ON" : "OFF"));
     }
 
     private void handleLight(HueEmulatorMessage message, HueDevice hueDevice) {
         if (!message.isOnOffCommand()) {
-            LightService.getInstance().dimLight(hueDevice.getExternalId(), message.getBrightness());
+            lightService.dimLight(hueDevice.getExternalId(), message.getBrightness());
         } else {
             boolean isColor = false;
             Float x = 0f;
@@ -197,10 +200,10 @@ public class HueInterface extends BaseService {
             }
 
             if (isColor) {
-                LightService.getInstance().setColor(hueDevice.getExternalId(), message.getBrightness(), x, y);
+                lightService.setColor(hueDevice.getExternalId(), message.getBrightness(), x, y);
             } else {
 
-                LightService.getInstance().setLightState(hueDevice.getExternalId(),
+                lightService.setLightState(hueDevice.getExternalId(),
                         (message.isOn() ? LightStates.ON : LightStates.OFF), false);
             }
         }
