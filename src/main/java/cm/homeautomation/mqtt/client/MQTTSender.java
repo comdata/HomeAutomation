@@ -2,13 +2,17 @@ package cm.homeautomation.mqtt.client;
 
 import java.util.UUID;
 
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
+
 
 import cm.homeautomation.configuration.ConfigurationService;
 import io.quarkus.scheduler.Scheduled;
+import io.smallrye.reactive.messaging.mqtt.MqttMessage;
+
 import lombok.NoArgsConstructor;
 
 /**
@@ -18,15 +22,15 @@ import lombok.NoArgsConstructor;
  *
  */
 @NoArgsConstructor
+@ApplicationScoped
 public class MQTTSender {
-	private MqttClient client;
 	private static MQTTSender instance;
-	private String host = ConfigurationService.getConfigurationProperty("mqtt", "host");
-	private String port = ConfigurationService.getConfigurationProperty("mqtt", "port");
 
-	public MqttClient getClient() {
+    @Inject @Channel("homeautomation") Emitter<Object> emitter;
+
+/*	public MqttClient getClient() {
 		return client;
-	}
+	}*/
 
 	public static MQTTSender getInstance() {
 
@@ -46,39 +50,6 @@ public class MQTTSender {
 	}
 
 	public void doSendSyncMQTTMessage(String topic, String messagePayload) {
-
-		try {
-			if (client == null || !client.isConnected()) {
-				initClient();
-			}
-			MqttMessage message = new MqttMessage();
-			message.setPayload(messagePayload.getBytes());
-			System.out.println(System.currentTimeMillis() + " sending message to: " + topic);
-			client.publish(topic, message);
-			System.out.println(System.currentTimeMillis() + " message sent: " + topic);
-		} catch (MqttException e) {
-		}
-	}
-
-	@Scheduled(every = "5s")
-	public void initClient() throws MqttException {
-		synchronized (this) {
-			if (client == null || !client.isConnected()) {
-
-				UUID uuid = UUID.randomUUID();
-				String randomUUIDString = uuid.toString();
-
-				client = new MqttClient("tcp://" + host + ":" + port, "HomeAutomation/" + randomUUIDString);
-
-				MqttConnectOptions connOpt = new MqttConnectOptions();
-				connOpt.setAutomaticReconnect(true);
-				connOpt.setCleanSession(false);
-				connOpt.setKeepAliveInterval(60);
-				connOpt.setConnectionTimeout(30);
-				connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
-
-				client.connect(connOpt);
-			}
-		}
+        emitter.send(MqttMessage.of(topic, messagePayload););
 	}
 }
