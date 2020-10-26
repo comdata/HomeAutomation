@@ -50,6 +50,6 @@ public class MQTTSender {
 	}
 
 	public void doSendSyncMQTTMessage(String topic, String messagePayload) {
-        emitter.send(MqttMessage.of(topic, messagePayload););
+        emitter.send(MqttMessage.of(topic, messagePayload));
 	}
 }
