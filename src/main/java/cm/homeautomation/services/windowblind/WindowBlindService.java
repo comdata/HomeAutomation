@@ -2,6 +2,7 @@ package cm.homeautomation.services.windowblind;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -18,6 +19,8 @@ import cm.homeautomation.services.base.HTTPHelper;
 
 @Path("windowBlinds/")
 public class WindowBlindService extends BaseService {
+	@Inject MQTTSender mqttSender;
+
 
 	private static final String DIMVALUE = "{DIMVALUE}";
 
@@ -149,7 +152,7 @@ public class WindowBlindService extends BaseService {
 				if (mqttDimTopic != null && !mqttDimTopic.isEmpty()) {
 					String dimMessage = singleWindowBlind1.getMqttDimMessage().replace(DIMVALUE, newValue);
 
-					MQTTSender.sendMQTTMessage(singleWindowBlind1.getMqttDimTopic(), dimMessage);
+					mqttSender.sendMQTTMessage(singleWindowBlind1.getMqttDimTopic(), dimMessage);
 				} else {
 
 					final String dimUrl1 = singleWindowBlind1.getDimUrl().replace(DIMVALUE, newValue);
@@ -182,7 +185,7 @@ public class WindowBlindService extends BaseService {
 					if (mqttDimTopic != null && !mqttDimTopic.isEmpty()) {
 						String dimMessage = singleWindowBlind2.getMqttDimMessage().replace(DIMVALUE, newValue);
 
-						MQTTSender.sendMQTTMessage(singleWindowBlind2.getMqttDimTopic(), dimMessage);
+						mqttSender.sendMQTTMessage(singleWindowBlind2.getMqttDimTopic(), dimMessage);
 					} else {
 
 						final String dimUrl1 = singleWindowBlind2.getDimUrl().replace(DIMVALUE, newValue);

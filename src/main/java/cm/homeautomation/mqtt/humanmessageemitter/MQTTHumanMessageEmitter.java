@@ -10,6 +10,7 @@ import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.entities.HumanMessageEmitterFilter;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.util.List;
 import cm.homeautomation.db.EntityManagerService;
@@ -18,6 +19,7 @@ import io.quarkus.scheduler.Scheduled;
 @AutoCreateInstance
 public class MQTTHumanMessageEmitter {
 
+	@Inject MQTTSender mqttSender;
 	private String humanMessageTopic;
 	private static List<HumanMessageEmitterFilter> filterList;
 
@@ -62,7 +64,7 @@ public class MQTTHumanMessageEmitter {
 
 				// message must not be set to ignore and not be filtered
 				if (!filtered) {
-					MQTTSender.sendMQTTMessage(humanMessageTopic, message);
+					mqttSender.sendMQTTMessage(humanMessageTopic, message);
 				}
 			}
 		};

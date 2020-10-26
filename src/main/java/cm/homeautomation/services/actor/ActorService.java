@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -27,7 +29,6 @@ import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.sensors.ActorMessage;
-import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.HTTPHelper;
 import cm.homeautomation.services.ir.InfraredService;
@@ -40,9 +41,12 @@ import io.quarkus.scheduler.Scheduled;
  * @author mertins
  *
  */
-@AutoCreateInstance
+@ApplicationScoped
 @Path("actor")
 public class ActorService extends BaseService implements MqttCallback {
+	
+	@Inject MQTTSender mqttSender;
+
 
 	private static Map<Long, List<Switch>> switchList = new HashMap<>();
 
@@ -107,12 +111,12 @@ public class ActorService extends BaseService implements MqttCallback {
 
 					LogManager.getLogger(this.getClass()).debug("MQTT: " + topic + " - " + message);
 
-					MQTTSender.sendMQTTMessage(topic, message);
+					mqttSender.sendMQTTMessage(topic, message);
 
 				} else {
 
 					if (singleSwitch.getHouseCode() != null) {
-						MQTTSender.sendMQTTMessage("ESP_RC/cmd",
+						mqttSender.sendMQTTMessage("ESP_RC/cmd",
 								"RC," + ("1".equals(actorMessage.getStatus()) ? "ON" : "OFF") + "="
 										+ actorMessage.getHouseCode().trim() + actorMessage.getSwitchNo().trim());
 					}

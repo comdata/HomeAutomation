@@ -3,6 +3,7 @@ package cm.homeautomation.services.ir;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -31,6 +32,8 @@ import cm.homeautomation.services.base.GenericStatus;
  */
 @Path("ir")
 public class InfraredService extends BaseService {
+	@Inject MQTTSender mqttSender;
+
 
 	private static InfraredService instance;
 
@@ -148,7 +151,7 @@ public class InfraredService extends BaseService {
 		final ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		final String jsonMessage = ow.writeValueAsString(irCommand);
 
-		MQTTSender.sendMQTTMessage("/irmessage", jsonMessage);
+		mqttSender.sendMQTTMessage("/irmessage", jsonMessage);
 
 		final IRCommand followUpCommand = irCommand.getFollowUpCommand();
 		if (followUpCommand != null) {

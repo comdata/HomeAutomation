@@ -1,16 +1,23 @@
 package cm.homeautomation.mqtt.client;
 
-public class MQTTPubClient {
-	
-	private MQTTPubClient() {
-		// not to be constructed
-	}
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
+@ApplicationScoped
+public class MQTTPubClient {
+
+	@Inject
+	static MQTTSender mqttSender;
+
+	private MQTTPubClient() {
+		// not to be created
+	}
+	
 	public static void publish(String[] args) {
 
 		String topic = args[0];
 		String content = "";
-		MQTTSender.sendMQTTMessage(topic, content);
+		mqttSender.sendMQTTMessage(topic, content);
 
 	}
 }

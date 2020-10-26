@@ -1,18 +1,14 @@
 package cm.homeautomation.mqtt.client;
 
-import java.util.UUID;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
-
-import cm.homeautomation.configuration.ConfigurationService;
-import io.quarkus.scheduler.Scheduled;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.reactive.messaging.mqtt.MqttMessage;
-
 import lombok.NoArgsConstructor;
 
 /**
@@ -21,32 +17,18 @@ import lombok.NoArgsConstructor;
  * @author christoph
  *
  */
-@NoArgsConstructor
-@ApplicationScoped
+@Singleton
 public class MQTTSender {
-	private static MQTTSender instance;
 
-    @Inject @Channel("homeautomation") Emitter<Object> emitter;
+    @Inject @Channel("homeautomationclient") Emitter<String> emitter;
 
-/*	public MqttClient getClient() {
-		return client;
-	}*/
-
-	public static MQTTSender getInstance() {
-
-		if (instance == null) {
-			instance = new MQTTSender();
-		}
-		return instance;
-	}
-
-	public static void sendMQTTMessage(String topic, String messagePayload) {
-		final Runnable mqttSendThread = () -> getInstance().doSendSyncMQTTMessage(topic, messagePayload);
+	public void sendMQTTMessage(String topic, String messagePayload) {
+		final Runnable mqttSendThread = () -> doSendSyncMQTTMessage(topic, messagePayload);
 		new Thread(mqttSendThread).start();
 	}
 
-	public static void sendSyncMQTTMessage(String topic, String messagePayload) {
-		getInstance().doSendSyncMQTTMessage(topic, messagePayload);
+	public void sendSyncMQTTMessage(String topic, String messagePayload) {
+		doSendSyncMQTTMessage(topic, messagePayload);
 	}
 
 	public void doSendSyncMQTTMessage(String topic, String messagePayload) {

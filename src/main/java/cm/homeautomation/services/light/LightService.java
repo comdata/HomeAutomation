@@ -2,6 +2,7 @@ package cm.homeautomation.services.light;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -21,6 +22,8 @@ import cm.homeautomation.services.base.HTTPHelper;
 
 @Path("light")
 public class LightService extends BaseService {
+	@Inject
+	MQTTSender mqttSender;
 
 	private static final String ON = "on";
 	private static final String OFF = "off";
@@ -218,7 +221,7 @@ public class LightService extends BaseService {
 				messagePayload = messagePayload.replace(DIMVALUE_CONST, Integer.toString(dimValue));
 			}
 
-			MQTTSender.sendMQTTMessage(topic, messagePayload);
+			mqttSender.sendMQTTMessage(topic, messagePayload);
 		} else {
 
 			dimUrl = dimUrl.replace(DIMVALUE_CONST, Integer.toString(dimValue));
@@ -285,7 +288,7 @@ public class LightService extends BaseService {
 				if (rgbLight.getMqttColorMessage() != null && rgbLight.getMqttColorTopic() != null) {
 					String topic = rgbLight.getMqttColorTopic();
 					String messagePayload = rgbLight.getMqttColorMessage().replace("{HEXVALUE}", shortHex);
-					MQTTSender.sendMQTTMessage(topic, messagePayload);
+					mqttSender.sendMQTTMessage(topic, messagePayload);
 				}
 			} else {
 				String colorUrl = rgbLight.getColorUrl();
@@ -313,7 +316,7 @@ public class LightService extends BaseService {
 			String topic = rgbLight.getMqttColorTopic();
 			String messagePayload = rgbLight.getMqttColorMessage().replace(DIMVALUE_CONST, Integer.toString(dimValue))
 					.replace("{colorX}", x.toString()).replace("{colorY}", y.toString());
-			MQTTSender.sendMQTTMessage(topic, messagePayload);
+			mqttSender.sendMQTTMessage(topic, messagePayload);
 		}
 
 	}
