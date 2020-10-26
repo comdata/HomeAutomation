@@ -10,6 +10,10 @@ services:
 
 #sudo: false
 
+before_install:
+  - sudo apt-get update
+  - sudo apt-get -y install mosquitto
+
 cache:
   directories:
   - $HOME/.m2
@@ -21,7 +25,7 @@ addons:
 
 script:
   # the following command line builds the project, runs the tests with coverage and then execute the SonarQube analysis
-  - mvn package sonar:sonar org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar
+  - mvn package sonar:sonar org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar quarkus:test
   #- mvn package -DskipTests=true
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - docker build -t comdata456/homeautomation:travis-$TRAVIS_BUILD_NUMBER .
