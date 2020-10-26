@@ -23,7 +23,7 @@ public class WindowBlindServiceTest {
              .body(is("{\"windowBlinds\":[]}"));
     }
 
-    @Test
+    //@Test
     public void testWindowBlindGetAllWithEntity() {
         EntityManager em = EntityManagerService.getManager();
 
