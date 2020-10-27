@@ -19,7 +19,6 @@
 		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.LevelAttributeConverter</class>
 		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.InstantAttributeConverter</class>
 		<class>org.apache.logging.log4j.core.appender.db.jpa.converter.ThrowableAttributeConverter</class>
-		<class>cm.homeautomation.entities.LoggingEntity</class>
 		<class>cm.homeautomation.entities.NetworkDevice</class>
 		<class>cm.homeautomation.entities.Device</class>
 		<class>cm.homeautomation.entities.Room</class>
