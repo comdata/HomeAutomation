@@ -2,14 +2,11 @@ package cm.homeautomation.mqtt.client;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
-import io.smallrye.mutiny.Multi;
 import io.smallrye.reactive.messaging.mqtt.MqttMessage;
-import lombok.NoArgsConstructor;
 
 /**
  * generic MQTT sender
@@ -17,7 +14,7 @@ import lombok.NoArgsConstructor;
  * @author christoph
  *
  */
-@Singleton
+@ApplicationScoped
 public class MQTTSender {
 
     @Inject @Channel("homeautomationclient") Emitter<String> emitter;
