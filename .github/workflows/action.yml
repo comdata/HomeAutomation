@@ -1,7 +1,7 @@
 name: Java CI
 on: 
   push:
-    branches: Master
+    branches: Main
 jobs:
   build:
     runs-on: ubuntu-latest
