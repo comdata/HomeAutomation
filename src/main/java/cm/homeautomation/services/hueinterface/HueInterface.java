@@ -27,13 +27,16 @@ import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.light.LightService;
 import cm.homeautomation.services.light.LightStates;
 import cm.homeautomation.services.windowblind.WindowBlindService;
+import org.jboss.logging.Logger;
 
 @Path("hueInterface")
 public class HueInterface extends BaseService {
 
 	@Inject ActorService actorService;
 	@Inject WindowBlindService windowBlindService;
-	@Inject LightService lightService;
+    @Inject LightService lightService;
+    
+    private static final Logger LOG = Logger.getLogger(HueInterface.class);
 	
     @POST
     @Path("send")
@@ -142,7 +145,7 @@ public class HueInterface extends BaseService {
                         }
                     }
                 } else {
-//                    LogManager.getLogger(this.getClass()).debug("hue not found for lightId: " + lightId);
+                    LOG.debug("hue not found for lightId: " + lightId);
                 }
             }
 
@@ -195,7 +198,7 @@ public class HueInterface extends BaseService {
             if (message.getXy() != null) {
                 x = message.getXy()[0];
                 y = message.getXy()[1];
-//                LogManager.getLogger(HueInterface.class).debug("Color infos:" + x + " - " + y);
+                LOG.debug("Color infos:" + x + " - " + y);
                 isColor = true;
             }
 
@@ -207,15 +210,5 @@ public class HueInterface extends BaseService {
                         (message.isOn() ? LightStates.ON : LightStates.OFF), false);
             }
         }
-    }
-
-    public static void main(String[] args) throws JsonMappingException, JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-
-        String message = "{\"xy\": [0.24224, 0.4444]}";
-
-        HueEmulatorMessage readValue = mapper.readValue(message, HueEmulatorMessage.class);
-
-//        LogManager.getLogger(HueInterface.class).debug(readValue.getXy()[1]);
     }
 }
