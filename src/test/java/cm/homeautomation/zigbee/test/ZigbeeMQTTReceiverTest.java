@@ -1,5 +1,7 @@
 package cm.homeautomation.zigbee.test;
 
+import javax.inject.Inject;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
@@ -9,8 +11,12 @@ import org.junit.jupiter.api.Test;
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.zigbee.ZigbeeMQTTReceiver;
+import io.quarkus.test.junit.QuarkusTest;
 
+@QuarkusTest
 class ZigbeeMQTTReceiverTest {
+
+    @Inject ZigbeeMQTTReceiver zigbeeMQTTReceiver;
 
     @BeforeEach
     public void setup() {
@@ -19,9 +25,7 @@ class ZigbeeMQTTReceiverTest {
 
     @Test
     void testReceiveEvent() throws JsonMappingException, JsonProcessingException {
-   		ZigbeeMQTTReceiver zigbeeMQTTReceiver = new ZigbeeMQTTReceiver();
-
-		MQTTTopicEvent zigbeeDeviceEvent = new MQTTTopicEvent();
+    	MQTTTopicEvent zigbeeDeviceEvent = new MQTTTopicEvent();
 
 		zigbeeDeviceEvent.setTopic("zigbee2mqtt" + "/bridge/config/devices");
 
@@ -35,8 +39,6 @@ class ZigbeeMQTTReceiverTest {
 
     @Test
     void testReceiveEventBridgeOnly() throws JsonMappingException, JsonProcessingException {
-   		ZigbeeMQTTReceiver zigbeeMQTTReceiver = new ZigbeeMQTTReceiver();
-
 		MQTTTopicEvent zigbeeDeviceEvent = new MQTTTopicEvent();
 
 		zigbeeDeviceEvent.setTopic("zigbee2mqtt" + "/bridge/1234");
@@ -48,8 +50,6 @@ class ZigbeeMQTTReceiverTest {
 
     @Test
     void testReceiveEventTradfriDriver() throws JsonMappingException, JsonProcessingException {
-        ZigbeeMQTTReceiver zigbeeMQTTReceiver = new ZigbeeMQTTReceiver();
-
         MQTTTopicEvent zigbeeDeviceEvent = new MQTTTopicEvent();
 
         zigbeeDeviceEvent.setTopic("zigbee2mqtt" + "/Arbeitsleuchte");
