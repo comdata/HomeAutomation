@@ -13,9 +13,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.logging.log4j.LogManager;
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -43,7 +40,7 @@ import io.quarkus.scheduler.Scheduled;
  */
 @ApplicationScoped
 @Path("actor")
-public class ActorService extends BaseService implements MqttCallback {
+public class ActorService extends BaseService {
 
 	private static Map<Long, List<Switch>> switchList = new HashMap<>();
 
@@ -213,18 +210,6 @@ public class ActorService extends BaseService implements MqttCallback {
 		ActorService.instance = instance;
 	}
 
-	@Override
-	public void connectionLost(final Throwable arg0) {
-		// do nothing
-
-	}
-
-	@Override
-	public void deliveryComplete(final IMqttDeliveryToken arg0) {
-		// do nothing
-
-	}
-
 	/**
 	 * get switch status for a room
 	 *
@@ -267,12 +252,6 @@ public class ActorService extends BaseService implements MqttCallback {
 
 		switchStatuses.getSwitchStatuses().addAll(switchList);
 		return switchStatuses;
-	}
-
-	@Override
-	public void messageArrived(final String arg0, final MqttMessage arg1) throws Exception {
-		// do nothing
-
 	}
 
 	/**

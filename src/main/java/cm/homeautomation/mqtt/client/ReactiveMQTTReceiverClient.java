@@ -18,54 +18,54 @@ import cm.homeautomation.jeromq.server.JSONSensorDataReceiver;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.services.hueinterface.HueEmulatorMessage;
 import cm.homeautomation.services.hueinterface.HueInterface;
+import io.quarkus.runtime.Startup;
 import io.smallrye.reactive.messaging.mqtt.MqttMessage;
 
+@Startup
 @ApplicationScoped
 public class ReactiveMQTTReceiverClient {
 	private static ObjectMapper mapper = new ObjectMapper();
-	
-	@Inject HueInterface hueInterface;
-	
+
+	@Inject
+	HueInterface hueInterface;
+
 	@Incoming("homeautomation")
 	public CompletionStage<Void> consume(MqttMessage<byte[]> message) {
-		String topic=message.getTopic();
+		String topic = message.getTopic();
 		String messageContent = new String(message.getPayload());
+		System.out.println(message.getTopic() + ": " + new String(message.getPayload()));
 
 		try {
-			Runnable receiver = null;
+
 			if (topic.startsWith("/fhem")) {
-				receiver = () -> FHEMDataReceiver.receiveFHEMData(topic, messageContent);
+				FHEMDataReceiver.receiveFHEMData(topic, messageContent);
 			} else if (topic.startsWith("ebusd/")) {
-				receiver = () -> EBUSDataReceiver.receiveEBUSData(topic, messageContent);
+				EBUSDataReceiver.receiveEBUSData(topic, messageContent);
 			} else if (topic.startsWith("hueinterface")) {
-				receiver = () -> {
-					HueEmulatorMessage hueMessage;
-					try {
-						hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
-						hueInterface.handleMessage(hueMessage);
-					} catch (JsonMappingException e) {
-					} catch (JsonProcessingException e) {
 
-					}
-				};
+				HueEmulatorMessage hueMessage;
+				try {
+					hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
+					hueInterface.handleMessage(hueMessage);
+				} catch (JsonMappingException e) {
+				} catch (JsonProcessingException e) {
+
+				}
+
 			} else {
-				receiver = () -> {
-					if (messageContent.startsWith("{")) {
-						JSONSensorDataReceiver.receiveSensorData(messageContent);
-					}
-				};
-			}
 
-			if (receiver != null) {
-				new Thread(receiver).start();
+				if (messageContent.startsWith("{")) {
+					JSONSensorDataReceiver.receiveSensorData(messageContent);
+				}
+
 			}
 
 			EventBusService.getEventBus().post(new MQTTTopicEvent(topic, messageContent));
 
 		} catch (Exception e) {
-			
+
 		}
-		
+
 		return message.ack();
 	}
 }

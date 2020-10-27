@@ -9,6 +9,7 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+
 public class SingleJobClass implements Job {
 
     public SingleJobClass() {
@@ -47,7 +48,8 @@ public class SingleJobClass implements Job {
             }
         } catch (NoSuchMethodException | SecurityException | ClassNotFoundException | IllegalArgumentException
                 | IllegalAccessException | InvocationTargetException e) {
-            //LogManager.getLogger(this.getClass()).error(e);
+            e.printStackTrace();
+        	LogManager.getLogger(this.getClass()).error(e);
         }
 
     }

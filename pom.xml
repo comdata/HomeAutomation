@@ -20,7 +20,7 @@
 		<quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
 		<quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
 		<quarkus.platform.version>1.9.0.Final</quarkus.platform.version>
-		<quarkus-plugin.version>${quarkus.platform.version}</quarkus-plugin.version>		
+		<quarkus-plugin.version>${quarkus.platform.version}</quarkus-plugin.version>
 		<ratelimitj-inmemory.version>0.7.0-RC1</ratelimitj-inmemory.version>
 		<surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
 		<jacoco.version>0.8.5</jacoco.version>
@@ -93,11 +93,6 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.paho</groupId>
-			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-			<version>1.2.5</version>
-		</dependency>
-		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
 			<version>${jodatime.version}</version>
@@ -122,27 +117,27 @@
 			<artifactId>eventbus</artifactId>
 			<version>3.2.0</version>
 		</dependency>
-        <dependency>
-            <groupId>org.jboss.logmanager</groupId>
-            <artifactId>log4j-jboss-logmanager</artifactId> 
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.slf4j</groupId>
-            <artifactId>slf4j-jboss-logging</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.logmanager</groupId>
-            <artifactId>log4j2-jboss-logmanager</artifactId>
-        </dependency>
-         <dependency>
-            <groupId>org.jboss.logging</groupId>
-            <artifactId>commons-logging-jboss-logging</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging-jdk</artifactId>
-            <version>2.1.2.GA</version>
-        </dependency>
+		<dependency>
+			<groupId>org.jboss.logmanager</groupId>
+			<artifactId>log4j-jboss-logmanager</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.slf4j</groupId>
+			<artifactId>slf4j-jboss-logging</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.logmanager</groupId>
+			<artifactId>log4j2-jboss-logmanager</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.logging</groupId>
+			<artifactId>commons-logging-jboss-logging</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.logging</groupId>
+			<artifactId>jboss-logging-jdk</artifactId>
+			<version>2.1.2.GA</version>
+		</dependency>
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-quartz</artifactId>
@@ -184,6 +179,11 @@
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-smallrye-metrics</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.hivemq</groupId>
+			<artifactId>hivemq-mqtt-client</artifactId>
+			<version>1.2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>io.quarkus</groupId>

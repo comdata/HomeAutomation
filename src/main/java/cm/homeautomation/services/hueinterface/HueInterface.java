@@ -2,15 +2,14 @@ package cm.homeautomation.services.hueinterface;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jboss.logging.Logger;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.HueDevice;
@@ -27,8 +26,8 @@ import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.light.LightService;
 import cm.homeautomation.services.light.LightStates;
 import cm.homeautomation.services.windowblind.WindowBlindService;
-import org.jboss.logging.Logger;
 
+@ApplicationScoped
 @Path("hueInterface")
 public class HueInterface extends BaseService {
 
