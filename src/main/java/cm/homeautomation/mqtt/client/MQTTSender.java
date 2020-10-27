@@ -29,6 +29,7 @@ public class MQTTSender {
 	}
 
 	public void doSendSyncMQTTMessage(String topic, String messagePayload) {
+		System.out.println("MQTT "+topic+" "+messagePayload);
         emitter.send(MqttMessage.of(topic, messagePayload));
 	}
 }
