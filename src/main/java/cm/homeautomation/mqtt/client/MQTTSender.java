@@ -30,7 +30,7 @@ public class MQTTSender {
 			int port = Integer.parseInt(ConfigurationService.getConfigurationProperty("mqtt", "port"));
 
 			publishClient = Mqtt5Client.builder().identifier(UUID.randomUUID().toString()).serverHost(host)
-					.serverPort(port).buildBlocking();
+					.serverPort(port).automaticReconnect().applyAutomaticReconnect().buildBlocking();
 
 			publishClient.connect();
 		}
