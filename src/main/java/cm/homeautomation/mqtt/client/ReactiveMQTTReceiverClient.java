@@ -24,48 +24,49 @@ import io.smallrye.reactive.messaging.mqtt.MqttMessage;
 @Startup
 @ApplicationScoped
 public class ReactiveMQTTReceiverClient {
-	private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper = new ObjectMapper();
 
-	@Inject
-	HueInterface hueInterface;
+    @Inject
+    HueInterface hueInterface;
 
-	@Incoming("homeautomation")
-	public CompletionStage<Void> consume(MqttMessage<byte[]> message) {
-		String topic = message.getTopic();
-		String messageContent = new String(message.getPayload());
-		System.out.println(message.getTopic() + ": " + new String(message.getPayload()));
+    @Incoming("homeautomation")
+    public CompletionStage<Void> consume(MqttMessage<byte[]> message) {
+        String topic = message.getTopic();
+        String messageContent = new String(message.getPayload());
+        System.out.println(message.getTopic() + ": " + new String(message.getPayload()));
 
-		try {
+        try {
 
-			if (topic.startsWith("/fhem")) {
-				FHEMDataReceiver.receiveFHEMData(topic, messageContent);
-			} else if (topic.startsWith("ebusd/")) {
-				EBUSDataReceiver.receiveEBUSData(topic, messageContent);
-			} else if (topic.startsWith("hueinterface")) {
+            if (topic.startsWith("/fhem")) {
+                FHEMDataReceiver.receiveFHEMData(topic, messageContent);
+            } else if (topic.startsWith("ebusd/")) {
+                EBUSDataReceiver.receiveEBUSData(topic, messageContent);
+            } else if (topic.startsWith("hueinterface")) {
 
-				HueEmulatorMessage hueMessage;
-				try {
-					hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
-					hueInterface.handleMessage(hueMessage);
-				} catch (JsonMappingException e) {
-				} catch (JsonProcessingException e) {
+                HueEmulatorMessage hueMessage;
+                try {
+                    hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
+                    hueInterface.handleMessage(hueMessage);
+                } catch (JsonMappingException e) {
+                    e.printStackTrace();
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
 
-				}
+            } else {
 
-			} else {
+                if (messageContent.startsWith("{")) {
+                    JSONSensorDataReceiver.receiveSensorData(messageContent);
+                }
 
-				if (messageContent.startsWith("{")) {
-					JSONSensorDataReceiver.receiveSensorData(messageContent);
-				}
+            }
 
-			}
+            EventBusService.getEventBus().post(new MQTTTopicEvent(topic, messageContent));
 
-			EventBusService.getEventBus().post(new MQTTTopicEvent(topic, messageContent));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-		} catch (Exception e) {
-
-		}
-
-		return message.ack();
-	}
+        return message.ack();
+    }
 }
