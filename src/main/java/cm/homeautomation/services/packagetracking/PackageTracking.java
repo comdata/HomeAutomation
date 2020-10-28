@@ -500,14 +500,15 @@ public class PackageTracking extends BaseService {
                             LogManager.getLogger(PackageHistory.class).info("duplicate found");
                         }
                     }
+
+                    mergeTrackedPackage(trackedPackage);
+
+                    trackedPackages.add(trackedPackage);
+
+                    LogManager.getLogger(PackageHistory.class).info("Tracking No:" + trackingNumber + " Delivered: "
+                            + delivered + " sCarrier: " + carrierFullname + " Name: " + packageName);
                 }
 
-                mergeTrackedPackage(trackedPackage);
-
-                trackedPackages.add(trackedPackage);
-
-                LogManager.getLogger(PackageHistory.class).info("Tracking No:" + trackingNumber + " Delivered: "
-                        + delivered + " sCarrier: " + carrierFullname + " Name: " + packageName);
             }
         }
 
