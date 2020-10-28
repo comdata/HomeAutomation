@@ -12,7 +12,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cm.homeautomation.ebus.EBUSDataReceiver;
+import cm.homeautomation.ebus.EBusMessageEvent;
 import cm.homeautomation.eventbus.EventBusService;
+import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.fhem.FHEMDataReceiver;
 import cm.homeautomation.jeromq.server.JSONSensorDataReceiver;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
@@ -40,7 +42,8 @@ public class ReactiveMQTTReceiverClient {
             if (topic.startsWith("/fhem")) {
                 FHEMDataReceiver.receiveFHEMData(topic, messageContent);
             } else if (topic.startsWith("ebusd/")) {
-                EBUSDataReceiver.receiveEBUSData(topic, messageContent);
+                EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
+		        EventBusService.getEventBus().post(new EventObject(ebusMessageEvent));
             } else if (topic.startsWith("hueinterface")) {
 
                 HueEmulatorMessage hueMessage;
