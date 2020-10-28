@@ -26,50 +26,57 @@ import io.smallrye.reactive.messaging.mqtt.MqttMessage;
 @Startup
 @ApplicationScoped
 public class ReactiveMQTTReceiverClient {
-    private static ObjectMapper mapper = new ObjectMapper();
+	private static ObjectMapper mapper = new ObjectMapper();
 
-    @Inject
-    HueInterface hueInterface;
+	@Inject
+	HueInterface hueInterface;
 
-    @Incoming("homeautomation")
-    public CompletionStage<Void> consume(MqttMessage<byte[]> message) {
-        String topic = message.getTopic();
-        String messageContent = new String(message.getPayload());
-        //System.out.println(message.getTopic() + ": " + new String(message.getPayload()));
+	@Incoming("homeautomation")
+	public CompletionStage<Void> consume(MqttMessage<byte[]> message) {
+		String topic = message.getTopic();
+		String messageContent = new String(message.getPayload());
+		System.out.println(message.getTopic() + ": " + new String(message.getPayload()));
 
-        try {
+		handleMessage(topic, messageContent);
 
-            if (topic.startsWith("/fhem")) {
-                FHEMDataReceiver.receiveFHEMData(topic, messageContent);
-            } else if (topic.startsWith("ebusd/")) {
-                EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
-		        EventBusService.getEventBus().post(new EventObject(ebusMessageEvent));
-            } else if (topic.startsWith("hueinterface")) {
+		return message.ack();
+	}
 
-                HueEmulatorMessage hueMessage;
-                try {
-                    hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
-                    hueInterface.handleMessage(hueMessage);
-                } catch (JsonMappingException e) {
-                    e.printStackTrace();
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                }
+	private void handleMessage(String topic, String messageContent) {
+		Runnable runThread = () -> {
+			try {
 
-            } else {
+				if (topic.startsWith("/fhem")) {
+					FHEMDataReceiver.receiveFHEMData(topic, messageContent);
+				} else if (topic.startsWith("ebusd/")) {
+					EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
+					EventBusService.getEventBus().post(new EventObject(ebusMessageEvent));
+				} else if (topic.startsWith("hueinterface")) {
 
-                if (messageContent.startsWith("{")) {
-                    JSONSensorDataReceiver.receiveSensorData(messageContent);
-                }
+					HueEmulatorMessage hueMessage;
+					try {
+						hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
+						hueInterface.handleMessage(hueMessage);
+					} catch (JsonMappingException e) {
+						e.printStackTrace();
+					} catch (JsonProcessingException e) {
+						e.printStackTrace();
+					}
 
-            }
+				} else {
 
-            EventBusService.getEventBus().post(new MQTTTopicEvent(topic, messageContent));
+					if (messageContent.startsWith("{")) {
+						JSONSensorDataReceiver.receiveSensorData(messageContent);
+					}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+				}
 
-        return message.ack();
-    }
+				EventBusService.getEventBus().post(new MQTTTopicEvent(topic, messageContent));
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		};
+		new Thread(runThread).start();
+	}
 }
