@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.context.ApplicationScoped;
+
+import org.greenrobot.eventbus.Subscribe;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cm.homeautomation.eventbus.EventBusService;
@@ -19,6 +23,7 @@ import cm.homeautomation.sensors.RainData;
 import cm.homeautomation.sensors.SensorDataRoomSaveRequest;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.sensors.WindowSensorData;
+import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
 
@@ -30,6 +35,8 @@ import cm.homeautomation.services.sensors.Sensors;
  * @author christoph
  *
  */
+@AutoCreateInstance
+@ApplicationScoped
 public class JSONSensorDataReceiver {
 
     private static final String RECEIVED_SENSOR_DATA_LIMIT_VIOLATION_EXCEPTION = "received SensorDataLimitViolationException";
@@ -40,10 +47,14 @@ public class JSONSensorDataReceiver {
 
     public JSONSensorDataReceiver() {
         // intentionally left empty
+    	EventBusService.getEventBus().register(this);
     }
 
-    public static void receiveSensorData(String messageContent) {
+    @Subscribe
+    public void receiveSensorData(JSONDataEvent jsonDataEvent) {
 
+    	String messageContent=jsonDataEvent.getMessage();
+    	
         try {
             if (!messageContent.contains("@c")) {
                 return;

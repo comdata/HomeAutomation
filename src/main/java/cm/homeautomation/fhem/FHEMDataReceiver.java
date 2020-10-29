@@ -3,13 +3,19 @@ package cm.homeautomation.fhem;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 
 import org.apache.logging.log4j.LogManager;
+import org.greenrobot.eventbus.Subscribe;
+
+import com.google.api.services.calendar.model.Event;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.FHEMDevice;
 import cm.homeautomation.entities.FHEMDevice.FHEMDeviceType;
+import cm.homeautomation.eventbus.EventBusService;
+import cm.homeautomation.services.base.AutoCreateInstance;
 
 /**
  * receive and event stream from FHEM via MQTT
@@ -17,13 +23,23 @@ import cm.homeautomation.entities.FHEMDevice.FHEMDeviceType;
  * @author christoph
  *
  */
+@AutoCreateInstance
+@ApplicationScoped
 public class FHEMDataReceiver {
 
 	private FHEMDataReceiver() {
-		// do nothing
+		EventBusService.getEventBus().register(this);
 	}
 
-	public static void receiveFHEMData(String topic, String messageContent) {
+	@Subscribe
+	public void handleFHEMData(FHEMDataEvent fhemDataEvent) {
+		String messageContent=fhemDataEvent.getPayload();
+		String topic=fhemDataEvent.getTopic();
+		
+		receiveFHEMData(topic, messageContent);
+	}
+	
+	public  void receiveFHEMData(String topic, String messageContent) {
 //		LogManager.getLogger(FHEMDataReceiver.class).debug("FHEM message for topic: {} message: {}", topic,  messageContent);
 
 		EntityManager em = EntityManagerService.getManager();
@@ -35,8 +51,7 @@ public class FHEMDataReceiver {
 
 				String device = topicParts[2];
 
-				@SuppressWarnings("unchecked")
-				List<FHEMDevice> resultList = em.createQuery("select f from FHEMDevice f where f.name=:name")
+				List<FHEMDevice> resultList = em.createQuery("select f from FHEMDevice f where f.name=:name", FHEMDevice.class)
 						.setParameter("name", device).getResultList();
 
 				if (resultList != null && !resultList.isEmpty()) {
