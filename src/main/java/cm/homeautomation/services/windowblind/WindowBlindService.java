@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
@@ -21,6 +22,7 @@ import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.base.HTTPHelper;
 import io.quarkus.scheduler.Scheduled;
 
+@ApplicationScoped
 @Path("windowBlinds/")
 public class WindowBlindService extends BaseService {
 	@Inject MQTTSender mqttSender;
@@ -32,7 +34,9 @@ public class WindowBlindService extends BaseService {
 
 	private static final String DIMVALUE = "{DIMVALUE}";
 
-
+	public WindowBlindService() {
+		initWindowBlindList();
+	}
 
 
 	public enum DimDirection {
