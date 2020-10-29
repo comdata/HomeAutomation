@@ -12,7 +12,7 @@ import cm.homeautomation.entities.HumanMessageEmitterFilter;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
-import cm.homeautomation.mqtt.client.MQTTSender;
+import cm.homeautomation.mqtt.client.MQTTSendEvent;
 import cm.homeautomation.services.base.AutoCreateInstance;
 import io.quarkus.scheduler.Scheduled;
 
@@ -63,7 +63,7 @@ public class MQTTHumanMessageEmitter {
 
 				// message must not be set to ignore and not be filtered
 				if (!filtered) {
-					MQTTSender.send(humanMessageTopic, message);
+					EventBusService.getEventBus().post(new MQTTSendEvent(humanMessageTopic, message));
 				}
 			}
 		};
