@@ -1,6 +1,8 @@
 package cm.homeautomation.services.sensor.mqttsensor;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
@@ -16,55 +18,64 @@ import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
+import io.quarkus.scheduler.Scheduled;
 
 @ApplicationScoped
 @AutoCreateInstance
 public class MQTTTopicSensorReceiver {
 
 	private static final Logger LOG = Logger.getLogger(MQTTTopicSensorReceiver.class);
+	private Map<String, Sensor> sensorTechnicalTypeMap;
 
 	public MQTTTopicSensorReceiver() {
+		initSensorMap();
 		EventBusService.getEventBus().register(this);
 	}
 
 	@Subscribe
 	public void receiveMQTTTopic(MQTTTopicEvent topicEvent) {
 		Runnable mqttTopicThread = () -> {
-		LOG.debug("got topic: " + topicEvent.getTopic() + " -  message: " + topicEvent.getMessage());
+			LOG.debug("got topic: " + topicEvent.getTopic() + " -  message: " + topicEvent.getMessage());
 
-		EntityManager em = EntityManagerService.getManager();
-
-		String technicalType = "mqtt://" + topicEvent.getTopic();
-		try {
+			String technicalType = "mqtt://" + topicEvent.getTopic();
 
 			LOG.debug("looking for technicaltype: " + technicalType);
 
-			List<Sensor> sensors = em
-					.createQuery("select s from Sensor s where s.sensorTechnicalType=:technicalType", Sensor.class)
-					.setParameter("technicalType", technicalType).getResultList();
+			try {
 
-			if (sensors != null && !sensors.isEmpty()) {
-
-				try {
-
-					Sensor sensor = sensors.get(0);
+				Sensor sensor = sensorTechnicalTypeMap.get(technicalType);
+				if (sensor != null) {
 					LOG.debug("got sensors: " + sensor.getId() + " name:" + sensor.getSensorName());
 
 					Sensors.getInstance().saveSensorData(sensor.getId(), topicEvent.getMessage());
-				} catch (SensorDataLimitViolationException e) {
-					LOG.error(e);
-				}
-			} else {
-				LOG.debug("list is empty for technicaltype: " + technicalType);
+				} else {
+					LOG.debug("list is empty for technicaltype: " + technicalType);
 
+				}
+			} catch (SensorDataLimitViolationException e) {
+				LOG.error(e);
 			}
 
-		} catch (NoResultException e) { // ignore since no result is a valid expectation here
-			LOG.debug(e);
-		}
 		};
 		new Thread(mqttTopicThread).start();
 
+	}
+
+	@Scheduled(every = "120s")
+	public void initSensorMap() {
+		final EntityManager em = EntityManagerService.getManager();
+
+		List<Sensor> sensorFullList = em.createQuery("select s from Sensor s", Sensor.class).getResultList();
+		sensorTechnicalTypeMap = new HashMap<>();
+
+		for (Sensor sensor : sensorFullList) {
+
+			String sensorTechnicalType = sensor.getSensorTechnicalType();
+			if (sensorTechnicalType != null && !"".equals(sensorTechnicalType)) {
+				sensorTechnicalTypeMap.put(sensorTechnicalType, sensor);
+			}
+
+		}
 	}
 
 }
