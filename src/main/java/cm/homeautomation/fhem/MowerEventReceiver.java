@@ -1,16 +1,23 @@
 package cm.homeautomation.fhem;
 
+import javax.enterprise.event.Observes;
+import javax.inject.Singleton;
+
 import org.greenrobot.eventbus.Subscribe;
 
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.mqtt.client.MQTTEventBusObject;
-import cm.homeautomation.services.base.AutoCreateInstance;
+import io.quarkus.runtime.StartupEvent;
 
-@AutoCreateInstance
+@Singleton
 public class MowerEventReceiver {
 
 	public MowerEventReceiver() {
+		EventBusService.getEventBus().register(this);
+	}
+
+	void startup(@Observes StartupEvent event) {
 		EventBusService.getEventBus().register(this);
 	}
 

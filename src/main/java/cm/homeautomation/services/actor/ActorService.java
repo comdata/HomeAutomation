@@ -5,8 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -30,6 +31,7 @@ import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.HTTPHelper;
 import cm.homeautomation.services.ir.InfraredService;
 import cm.homeautomation.services.light.LightService;
+import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
 
 /**
@@ -38,7 +40,7 @@ import io.quarkus.scheduler.Scheduled;
  * @author mertins
  *
  */
-@ApplicationScoped
+@Singleton
 @Path("actor")
 public class ActorService extends BaseService {
 
@@ -49,6 +51,11 @@ public class ActorService extends BaseService {
 	@Inject
 	MQTTSender mqttSender;
 
+	
+	void startup(@Observes StartupEvent event) {
+		EventBusService.getEventBus().register(this);
+	}
+	
 	public void performSwitch(String targetStatus, String switchId) {
 
 		final String upperCaseTargetStatus = targetStatus.toUpperCase();

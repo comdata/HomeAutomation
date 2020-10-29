@@ -2,7 +2,6 @@ package cm.homeautomation.mqtt.client;
 
 import java.util.UUID;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Singleton;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -14,7 +13,6 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.eventbus.EventBusService;
-import cm.homeautomation.services.base.AutoCreateInstance;
 
 /**
  * generic MQTT sender

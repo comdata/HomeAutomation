@@ -2,6 +2,7 @@ package cm.homeautomation.services.hueinterface;
 
 import java.util.List;
 
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.CacheRetrieveMode;
@@ -27,197 +28,204 @@ import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.light.LightService;
 import cm.homeautomation.services.light.LightStates;
 import cm.homeautomation.services.windowblind.WindowBlindService;
+import io.quarkus.runtime.StartupEvent;
 
 @Singleton
 @Path("hueInterface")
 public class HueInterface extends BaseService {
 
-	@Inject ActorService actorService;
-	@Inject WindowBlindService windowBlindService;
-    @Inject LightService lightService;
-    
-    private static final Logger LOG = Logger.getLogger(HueInterface.class);
-	
-    public HueInterface() {
-    	EventBusService.getEventBus().register(this);
-    }
-    
-    @Subscribe
-    public void handleEventBusMessage(HueEmulatorMessage message) {
-    	handleMessage(message);
-    }
-    
-    @POST
-    @Path("send")
-    public GenericStatus handleMessage(HueEmulatorMessage message) {
-        EntityManager em = EntityManagerService.getManager();
+	@Inject
+	ActorService actorService;
+	@Inject
+	WindowBlindService windowBlindService;
+	@Inject
+	LightService lightService;
 
-        String lightId = message.getLightId();
+	private static final Logger LOG = Logger.getLogger(HueInterface.class);
 
-        if (lightId != null) {
+	public HueInterface() {
+		EventBusService.getEventBus().register(this);
+	}
 
-            List<HueDevice> hueDeviceList = em
-                    .createQuery("select hd from HueDevice hd where hd.lightId=:lightId", HueDevice.class)
-                    .setParameter("lightId", lightId).getResultList();
+	void startup(@Observes StartupEvent event) {
+		EventBusService.getEventBus().register(this);
+	}
 
-            if (hueDeviceList == null || hueDeviceList.isEmpty()) {
+	@Subscribe
+	public void handleEventBusMessage(HueEmulatorMessage message) {
+		handleMessage(message);
+	}
 
-                List<HueDevice> hueDeviceNameList = em
-                        .createQuery("select hd from HueDevice hd where hd.name=:name", HueDevice.class)
-                        .setParameter("name", message.getDeviceName())
-                        .setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS).getResultList();
-                if (hueDeviceNameList != null && !hueDeviceNameList.isEmpty()) {
-                    HueDevice hueDevice = hueDeviceNameList.get(0);
+	@POST
+	@Path("send")
+	public GenericStatus handleMessage(HueEmulatorMessage message) {
+		EntityManager em = EntityManagerService.getManager();
 
-                    em.getTransaction().begin();
-                    hueDevice.setLightId(message.getLightId());
-                    em.merge(hueDevice);
-                    em.getTransaction().commit();
-                    handleMessage(message);
-                } else {
+		String lightId = message.getLightId();
 
-                    // try to find existing device
-                    long externalId = 0;
-                    HueDeviceType type = null;
+		if (lightId != null) {
 
-                    List<Switch> switchList = em
-                            .createQuery("select sw from Switch sw where sw.name=:name", Switch.class)
-                            .setParameter("name", message.getDeviceName()).getResultList();
+			List<HueDevice> hueDeviceList = em
+					.createQuery("select hd from HueDevice hd where hd.lightId=:lightId", HueDevice.class)
+					.setParameter("lightId", lightId).getResultList();
 
-                    if (switchList != null && !switchList.isEmpty()) {
-                        Switch singleSwitch = switchList.get(0);
-                        externalId = singleSwitch.getId();
-                        type = HueDeviceType.SWITCH;
-                    } else {
-                        List<Light> lightList = em.createQuery("select l from Light l where l.name=:name", Light.class)
-                                .setParameter("name", message.getDeviceName()).getResultList();
-                        if (lightList != null && !lightList.isEmpty()) {
-                            Light singleLight = lightList.get(0);
-                            externalId = singleLight.getId();
-                            type = HueDeviceType.LIGHT;
-                        } else {
-                            List<WindowBlind> windowBlindList = em
-                                    .createQuery("select w from WindowBlind w where w.name=:name", WindowBlind.class)
-                                    .setParameter("name", message.getDeviceName()).getResultList();
+			if (hueDeviceList == null || hueDeviceList.isEmpty()) {
 
-                            if (windowBlindList != null && !windowBlindList.isEmpty()) {
-                                WindowBlind windowBlind = windowBlindList.get(0);
-                                externalId = windowBlind.getId();
-                                type = HueDeviceType.WINDOWBLIND;
-                            }
-                        }
-                    }
-                    em.getTransaction().begin();
+				List<HueDevice> hueDeviceNameList = em
+						.createQuery("select hd from HueDevice hd where hd.name=:name", HueDevice.class)
+						.setParameter("name", message.getDeviceName())
+						.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS).getResultList();
+				if (hueDeviceNameList != null && !hueDeviceNameList.isEmpty()) {
+					HueDevice hueDevice = hueDeviceNameList.get(0);
 
-                    HueDevice hueDevice = new HueDevice();
-                    hueDevice.setName(message.getDeviceName());
-                    hueDevice.setLightId(message.getLightId());
+					em.getTransaction().begin();
+					hueDevice.setLightId(message.getLightId());
+					em.merge(hueDevice);
+					em.getTransaction().commit();
+					handleMessage(message);
+				} else {
 
-                    if (externalId > 0 && type != null) {
-                        hueDevice.setExternalId(externalId);
-                        hueDevice.setType(type);
+					// try to find existing device
+					long externalId = 0;
+					HueDeviceType type = null;
 
-                    }
+					List<Switch> switchList = em
+							.createQuery("select sw from Switch sw where sw.name=:name", Switch.class)
+							.setParameter("name", message.getDeviceName()).getResultList();
 
-                    em.persist(hueDevice);
-                    em.getTransaction().commit();
+					if (switchList != null && !switchList.isEmpty()) {
+						Switch singleSwitch = switchList.get(0);
+						externalId = singleSwitch.getId();
+						type = HueDeviceType.SWITCH;
+					} else {
+						List<Light> lightList = em.createQuery("select l from Light l where l.name=:name", Light.class)
+								.setParameter("name", message.getDeviceName()).getResultList();
+						if (lightList != null && !lightList.isEmpty()) {
+							Light singleLight = lightList.get(0);
+							externalId = singleLight.getId();
+							type = HueDeviceType.LIGHT;
+						} else {
+							List<WindowBlind> windowBlindList = em
+									.createQuery("select w from WindowBlind w where w.name=:name", WindowBlind.class)
+									.setParameter("name", message.getDeviceName()).getResultList();
 
-                    if (externalId > 0 && type != null) {
-                        // do it again, since device is now created
-                        handleMessage(message);
-                    }
-                }
-            } else {
-                HueDevice hueDevice = hueDeviceList.get(0);
+							if (windowBlindList != null && !windowBlindList.isEmpty()) {
+								WindowBlind windowBlind = windowBlindList.get(0);
+								externalId = windowBlind.getId();
+								type = HueDeviceType.WINDOWBLIND;
+							}
+						}
+					}
+					em.getTransaction().begin();
 
-                if (hueDevice != null) {
+					HueDevice hueDevice = new HueDevice();
+					hueDevice.setName(message.getDeviceName());
+					hueDevice.setLightId(message.getLightId());
 
-                    HueDeviceType type = hueDevice.getType();
-                    if (type != null) {
-                        switch (type) {
-                            case LIGHT:
+					if (externalId > 0 && type != null) {
+						hueDevice.setExternalId(externalId);
+						hueDevice.setType(type);
 
-                                handleLight(message, hueDevice);
+					}
 
-                                break;
-                            case SWITCH:
-                                handleSwitch(message, hueDevice);
-                                break;
-                            case WINDOWBLIND:
-                                handleWindowBlind(message, hueDevice);
-                                break;
-                            case REMOTE:
-                                handleRemote(message, hueDevice);
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                } else {
-                    LOG.debug("hue not found for lightId: " + lightId);
-                }
-            }
+					em.persist(hueDevice);
+					em.getTransaction().commit();
 
-            return new GenericStatus(true);
-        } else {
-            return new GenericStatus(true, "Light Id is null");
-        }
-    }
+					if (externalId > 0 && type != null) {
+						// do it again, since device is now created
+						handleMessage(message);
+					}
+				}
+			} else {
+				HueDevice hueDevice = hueDeviceList.get(0);
 
-    private void handleRemote(HueEmulatorMessage message, HueDevice hueDevice) {
-        RemoteControlEvent remoteControlEvent = new RemoteControlEvent(hueDevice.getName(),
-                hueDevice.getId().toString(), EventType.REMOTE);
+				if (hueDevice != null) {
 
-        remoteControlEvent.setPoweredOnState("on".equals(message.getPayload()));
-        EventBusService.getEventBus().post(remoteControlEvent);
-    }
+					HueDeviceType type = hueDevice.getType();
+					if (type != null) {
+						switch (type) {
+						case LIGHT:
 
-    private void handleWindowBlind(HueEmulatorMessage message, HueDevice hueDevice) {
-        EntityManager em = EntityManagerService.getManager();
+							handleLight(message, hueDevice);
 
-        WindowBlind windowBlind = em.find(WindowBlind.class, hueDevice.getExternalId());
+							break;
+						case SWITCH:
+							handleSwitch(message, hueDevice);
+							break;
+						case WINDOWBLIND:
+							handleWindowBlind(message, hueDevice);
+							break;
+						case REMOTE:
+							handleRemote(message, hueDevice);
+							break;
+						default:
+							break;
+						}
+					}
+				} else {
+					LOG.debug("hue not found for lightId: " + lightId);
+				}
+			}
 
-        if (windowBlind != null) {
+			return new GenericStatus(true);
+		} else {
+			return new GenericStatus(true, "Light Id is null");
+		}
+	}
 
-            String dimValue = Integer.toString(windowBlind.getMaximumValue());
-            if (!message.isOnOffCommand()) {
-                dimValue = Integer.toString(message.getBrightness());
-            }
+	private void handleRemote(HueEmulatorMessage message, HueDevice hueDevice) {
+		RemoteControlEvent remoteControlEvent = new RemoteControlEvent(hueDevice.getName(),
+				hueDevice.getId().toString(), EventType.REMOTE);
+
+		remoteControlEvent.setPoweredOnState("on".equals(message.getPayload()));
+		EventBusService.getEventBus().post(remoteControlEvent);
+	}
+
+	private void handleWindowBlind(HueEmulatorMessage message, HueDevice hueDevice) {
+		EntityManager em = EntityManagerService.getManager();
+
+		WindowBlind windowBlind = em.find(WindowBlind.class, hueDevice.getExternalId());
+
+		if (windowBlind != null) {
+
+			String dimValue = Integer.toString(windowBlind.getMaximumValue());
+			if (!message.isOnOffCommand()) {
+				dimValue = Integer.toString(message.getBrightness());
+			}
 //            LogManager.getLogger(HueInterface.class).debug("Window Blind dim: " + dimValue);
 
-            windowBlindService.setDim(hueDevice.getExternalId(),
-                    ("on".equals(message.getPayload()) ? dimValue : "0"),
-                    hueDevice.isGroupDevice() ? WindowBlind.ALL_AT_ONCE : WindowBlind.SINGLE,
-                    (hueDevice.isGroupDevice() ? hueDevice.getRoom().getId() : null));
-        }
-    }
+			windowBlindService.setDim(hueDevice.getExternalId(), ("on".equals(message.getPayload()) ? dimValue : "0"),
+					hueDevice.isGroupDevice() ? WindowBlind.ALL_AT_ONCE : WindowBlind.SINGLE,
+					(hueDevice.isGroupDevice() ? hueDevice.getRoom().getId() : null));
+		}
+	}
 
-    private void handleSwitch(HueEmulatorMessage message, HueDevice hueDevice) {
-        actorService.pressSwitch(Long.toString(hueDevice.getExternalId()),
-                ("on".equals(message.getPayload()) ? "ON" : "OFF"));
-    }
+	private void handleSwitch(HueEmulatorMessage message, HueDevice hueDevice) {
+		actorService.pressSwitch(Long.toString(hueDevice.getExternalId()),
+				("on".equals(message.getPayload()) ? "ON" : "OFF"));
+	}
 
-    private void handleLight(HueEmulatorMessage message, HueDevice hueDevice) {
-        if (!message.isOnOffCommand()) {
-            lightService.dimLight(hueDevice.getExternalId(), message.getBrightness());
-        } else {
-            boolean isColor = false;
-            Float x = 0f;
-            Float y = 0f;
-            if (message.getXy() != null) {
-                x = message.getXy()[0];
-                y = message.getXy()[1];
-                LOG.debug("Color infos:" + x + " - " + y);
-                isColor = true;
-            }
+	private void handleLight(HueEmulatorMessage message, HueDevice hueDevice) {
+		if (!message.isOnOffCommand()) {
+			lightService.dimLight(hueDevice.getExternalId(), message.getBrightness());
+		} else {
+			boolean isColor = false;
+			Float x = 0f;
+			Float y = 0f;
+			if (message.getXy() != null) {
+				x = message.getXy()[0];
+				y = message.getXy()[1];
+				LOG.debug("Color infos:" + x + " - " + y);
+				isColor = true;
+			}
 
-            if (isColor) {
-                lightService.setColor(hueDevice.getExternalId(), message.getBrightness(), x, y);
-            } else {
+			if (isColor) {
+				lightService.setColor(hueDevice.getExternalId(), message.getBrightness(), x, y);
+			} else {
 
-                lightService.setLightState(hueDevice.getExternalId(),
-                        (message.isOn() ? LightStates.ON : LightStates.OFF), false);
-            }
-        }
-    }
+				lightService.setLightState(hueDevice.getExternalId(),
+						(message.isOn() ? LightStates.ON : LightStates.OFF), false);
+			}
+		}
+	}
 }

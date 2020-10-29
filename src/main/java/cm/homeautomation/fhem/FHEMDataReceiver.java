@@ -3,6 +3,7 @@ package cm.homeautomation.fhem;
 
 import java.util.List;
 
+import javax.enterprise.event.Observes;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
@@ -13,6 +14,7 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.FHEMDevice;
 import cm.homeautomation.entities.FHEMDevice.FHEMDeviceType;
 import cm.homeautomation.eventbus.EventBusService;
+import io.quarkus.runtime.StartupEvent;
 
 /**
  * receive and event stream from FHEM via MQTT
@@ -24,6 +26,10 @@ import cm.homeautomation.eventbus.EventBusService;
 public class FHEMDataReceiver {
 
 	public FHEMDataReceiver() {
+		EventBusService.getEventBus().register(this);
+	}
+	
+	void startup(@Observes StartupEvent event) {
 		EventBusService.getEventBus().register(this);
 	}
 
