@@ -37,8 +37,6 @@ public class ReactiveMQTTReceiverClient {
 	public CompletionStage<Void> consume(MqttMessage<byte[]> message) {
 		String topic = message.getTopic();
 		String messageContent = new String(message.getPayload());
-		System.out.println(message.getTopic() + ": " + new String(message.getPayload()));
-
 		handleMessage(topic, messageContent);
 
 		return message.ack();
