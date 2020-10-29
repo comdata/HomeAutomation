@@ -13,10 +13,12 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
+import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
 
 @ApplicationScoped
+@AutoCreateInstance
 public class MQTTTopicSensorReceiver {
 
 	private static final Logger LOG = Logger.getLogger(MQTTTopicSensorReceiver.class);
