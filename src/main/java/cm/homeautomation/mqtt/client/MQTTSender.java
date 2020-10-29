@@ -35,7 +35,7 @@ public class MQTTSender {
 			
 		}
 		
-		if (!publishClient.getState().isConnected()) {
+		if (!publishClient.getState().isConnectedOrReconnect()) {
 			publishClient.connect();
 		}
 	}
