@@ -1,9 +1,8 @@
 package cm.homeautomation.mqtt.client;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import cm.homeautomation.eventbus.EventBusService;
 import io.quarkus.runtime.Startup;
 
 @Startup
@@ -20,7 +19,8 @@ public class MQTTPubClient {
 		String content = "";
 
 		System.out.println(topic + " " + content);
-		MQTTSender.send(topic, content);
+		
+		EventBusService.getEventBus().post(new MQTTSendEvent(topic, content));
 
 	}
 }
