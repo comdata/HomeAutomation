@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.jboss.logging.Logger;
