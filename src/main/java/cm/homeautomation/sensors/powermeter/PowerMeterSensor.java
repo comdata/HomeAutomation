@@ -220,10 +220,4 @@ public class PowerMeterSensor {
 		final EventObject intervalEventObject = new EventObject(powerMeterIntervalData);
 		EventBusService.getEventBus().post(intervalEventObject);
 	}
-	
-	public static void main(String[] args) throws NoClassInformationContainedException {
-		PowerMeterSensor powerMeterSensor = new PowerMeterSensor();
-		JSONSensorDataReceiver.receiveSensorData("{\"@c\":\".PowerMeterData\", \"powermeter\": 122.00}");
-	}
-
 }
