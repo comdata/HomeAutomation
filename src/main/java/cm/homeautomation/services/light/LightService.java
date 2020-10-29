@@ -1,6 +1,8 @@
 package cm.homeautomation.services.light;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -19,6 +21,7 @@ import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.base.HTTPHelper;
+import io.quarkus.scheduler.Scheduled;
 
 @Path("light")
 public class LightService extends BaseService {
@@ -34,6 +37,13 @@ public class LightService extends BaseService {
 
 	private static LightService instance;
 
+	private Map<Long, List<Light>> lightRoomList;
+
+	private Map<Long, Light> lightList;
+	private Map<String, Light> lightExternalList;
+
+	private Map<Long, Room> rooms;
+
 	public static LightService getInstance() {
 		if (instance == null) {
 			instance = new LightService();
@@ -46,6 +56,7 @@ public class LightService extends BaseService {
 	}
 
 	public LightService() {
+		initLightList();
 		setInstance(this);
 	}
 
@@ -75,8 +86,7 @@ public class LightService extends BaseService {
 		final EntityManager em = EntityManagerService.getManager();
 		em.getTransaction().begin();
 
-		final Room room = (Room) em.createQuery("select r from Room r where r.id=:roomId")
-				.setParameter("roomId", roomId).getSingleResult();
+		final Room room = rooms.get(roomId);
 
 		room.getLights().add(light);
 		light.setRoom(room);
@@ -95,10 +105,7 @@ public class LightService extends BaseService {
 	}
 
 	public GenericStatus setLightState(long lightId, LightStates state, boolean isAbsoluteValue) {
-		final EntityManager em = EntityManagerService.getManager();
-
-		Light light = em.find(Light.class, lightId);
-
+		Light light = lightList.get(lightId);
 		int newDimValue = 0;
 
 		if (light instanceof DimmableLight) {
@@ -124,41 +131,23 @@ public class LightService extends BaseService {
 	}
 
 	public Light getLightForTypeAndExternalId(final String type, final String externalId) {
-		final EntityManager em = EntityManagerService.getManager();
-
-		final List<Light> lights = em
-				.createQuery("select l from Light l where l.lightType=:type and l.externalId=:externalId", Light.class)
-				.setParameter("type", type).setParameter("externalId", externalId).getResultList();
-
-		if ((lights != null) && !lights.isEmpty()) {
-			return lights.get(0);
-		}
-
-		return null;
+		return lightExternalList.get(externalId);
 	}
 
 	@GET
 	@Path("get/{roomId}")
 	public List<Light> getLights(@PathParam("roomId") final Long roomId) {
-
-		final EntityManager em = EntityManagerService.getManager();
-		@SuppressWarnings("unchecked")
-		final List<Light> resultList = em
-				.createQuery("select l from Light l where l.room=(select r from Room r where r.id=:roomId)")
-				.setParameter("roomId", roomId).getResultList();
-
-		return resultList;
+		return lightRoomList.get(roomId);
 	}
 
 	private GenericStatus internalDimLight(final long lightId, final int dimPercentValue, boolean calledForGroup,
 			boolean isAbsoluteValue) {
-
 		final Runnable requestThread = () -> {
 			String powerState = getPowerStateFromDimValue(dimPercentValue);
 
 			final EntityManager em = EntityManagerService.getManager();
 			em.getTransaction().begin();
-			final Light light = em.find(Light.class, lightId);
+			final Light light = lightList.get(lightId);
 
 			if (light != null) {
 
@@ -223,7 +212,6 @@ public class LightService extends BaseService {
 
 			mqttSender.sendMQTTMessage(topic, messagePayload);
 		} else {
-
 			dimUrl = dimUrl.replace(DIMVALUE_CONST, Integer.toString(dimValue));
 			dimUrl = dimUrl.replace("{STATE}", powerState);
 
@@ -263,7 +251,6 @@ public class LightService extends BaseService {
 					dimValue = dimLight.getMinimumValue() + ((range * dimPercentValue) / 100);
 				}
 			}
-
 		}
 		return dimValue;
 	}
@@ -274,10 +261,9 @@ public class LightService extends BaseService {
 		final String shortHex = hex.substring(1);
 		EntityManager em = EntityManagerService.getManager();
 
-		RGBLight rgbLight = findRGBLight(lightId, em);
+		RGBLight rgbLight = findRGBLight(lightId);
 
 		if (rgbLight != null) {
-
 			rgbLight.setColor(hex);
 
 			em.getTransaction().begin();
@@ -302,23 +288,57 @@ public class LightService extends BaseService {
 		return new GenericStatus(true);
 	}
 
-	private RGBLight findRGBLight(final long lightId, EntityManager em) {
-		return em.find(RGBLight.class, lightId);
+	private RGBLight findRGBLight(final long lightId) {
+		Light light = lightList.get(lightId);
+
+		if (light instanceof RGBLight) {
+			return (RGBLight) light;
+		}
+		return null;
 	}
 
 	public void setColor(long lightId, int dimValue, Float x, Float y) {
-		final EntityManager em = EntityManagerService.getManager();
-
-		RGBLight rgbLight = em.find(RGBLight.class, lightId);
+		RGBLight rgbLight = findRGBLight(lightId);
 
 		if (rgbLight != null && rgbLight.getMqttColorMessage() != null && rgbLight.getMqttColorTopic() != null) {
-
 			String topic = rgbLight.getMqttColorTopic();
 			String messagePayload = rgbLight.getMqttColorMessage().replace(DIMVALUE_CONST, Integer.toString(dimValue))
 					.replace("{colorX}", x.toString()).replace("{colorY}", y.toString());
 			mqttSender.sendMQTTMessage(topic, messagePayload);
 		}
+	}
 
+	@Scheduled(every = "120s")
+	public void initLightList() {
+		rooms = new HashMap<>();
+		lightRoomList = new HashMap<>();
+		lightList = new HashMap<>();
+
+		final EntityManager em = EntityManagerService.getManager();
+
+		final List<Room> roomsList = em.createQuery("select r from Room r", Room.class).getResultList();
+
+		for (Room room : roomsList) {
+			rooms.put(room.getId(), room);
+		}
+
+		if (roomsList != null && !roomsList.isEmpty()) {
+			for (Room room : roomsList) {
+				Long roomId = room.getId();
+				final List<Light> lightPerRoomList = em
+						.createQuery("select l from Light l where l.room=(select r from Room r where r.id=:room)",
+								Light.class)
+						.setParameter("room", roomId).getResultList();
+
+				for (Light light : lightPerRoomList) {
+					lightExternalList.put(light.getExternalId(), light);
+					lightList.put(light.getId(), light);
+				}
+
+				lightRoomList.put(roomId, lightPerRoomList);
+			}
+
+		}
 	}
 
 }
