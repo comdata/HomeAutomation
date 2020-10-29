@@ -3,6 +3,7 @@ package cm.homeautomation.services.hueinterface;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
@@ -28,6 +29,7 @@ import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.light.LightService;
 import cm.homeautomation.services.light.LightStates;
 import cm.homeautomation.services.windowblind.WindowBlindService;
+import io.quarkus.runtime.StartupEvent;
 
 @ApplicationScoped
 @Path("hueInterface")
@@ -40,6 +42,10 @@ public class HueInterface extends BaseService {
     private static final Logger LOG = Logger.getLogger(HueInterface.class);
 	
     public HueInterface() {
+    	EventBusService.getEventBus().register(this);
+    }
+    
+    void startup(@Observes StartupEvent event) {
     	EventBusService.getEventBus().register(this);
     }
     
