@@ -32,6 +32,10 @@ public class MQTTSender {
 			publishClient = Mqtt5Client.builder().identifier(UUID.randomUUID().toString()).serverHost(host)
 					.serverPort(port).automaticReconnect().applyAutomaticReconnect().buildBlocking();
 
+			
+		}
+		
+		if (!publishClient.getState().isConnected()) {
 			publishClient.connect();
 		}
 	}
