@@ -25,7 +25,7 @@ import cm.homeautomation.services.base.AutoCreateInstance;
 @ApplicationScoped
 public class FHEMDataReceiver {
 
-	private FHEMDataReceiver() {
+	public FHEMDataReceiver() {
 		EventBusService.getEventBus().register(this);
 	}
 
