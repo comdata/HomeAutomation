@@ -2,7 +2,6 @@ package cm.homeautomation.mqtt.client;
 
 import java.util.concurrent.CompletionStage;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -20,7 +19,6 @@ import cm.homeautomation.jeromq.server.JSONDataEvent;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.services.hueinterface.HueEmulatorMessage;
 import cm.homeautomation.services.hueinterface.HueInterface;
-import io.quarkus.runtime.Startup;
 import io.smallrye.reactive.messaging.mqtt.MqttMessage;
 
 @Singleton
@@ -34,6 +32,9 @@ public class ReactiveMQTTReceiverClient {
 	public CompletionStage<Void> consume(MqttMessage<byte[]> message) {
 		String topic = message.getTopic();
 		String messageContent = new String(message.getPayload());
+		
+		System.out.println("Topic: "+topic+" "+messageContent);
+		
 		handleMessage(topic, messageContent);
 
 		return message.ack();
