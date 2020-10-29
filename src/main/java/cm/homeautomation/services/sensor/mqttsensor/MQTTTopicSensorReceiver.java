@@ -29,6 +29,7 @@ public class MQTTTopicSensorReceiver {
 
 	@Subscribe
 	public void receiveMQTTTopic(MQTTTopicEvent topicEvent) {
+		Runnable mqttTopicThread = () -> {
 		LOG.debug("got topic: " + topicEvent.getTopic() + " -  message: " + topicEvent.getMessage());
 
 		EntityManager em = EntityManagerService.getManager();
@@ -61,6 +62,8 @@ public class MQTTTopicSensorReceiver {
 		} catch (NoResultException e) { // ignore since no result is a valid expectation here
 			LOG.debug(e);
 		}
+		};
+		new Thread(mqttTopicThread).start();
 
 	}
 
