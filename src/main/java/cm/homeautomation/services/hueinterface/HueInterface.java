@@ -29,7 +29,6 @@ import cm.homeautomation.services.light.LightService;
 import cm.homeautomation.services.light.LightStates;
 import cm.homeautomation.services.windowblind.WindowBlindService;
 
-@AutoCreateInstance
 @ApplicationScoped
 @Path("hueInterface")
 public class HueInterface extends BaseService {
