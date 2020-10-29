@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -24,6 +25,7 @@ import cm.homeautomation.services.base.HTTPHelper;
 import io.quarkus.scheduler.Scheduled;
 
 @Path("light")
+@Singleton
 public class LightService extends BaseService {
 	@Inject
 	MQTTSender mqttSender;
@@ -312,7 +314,7 @@ public class LightService extends BaseService {
 	public void initLightList() {
 		rooms = new HashMap<>();
 		lightRoomList = new HashMap<>();
-		lightExternalList=new HashMap<>();
+		lightExternalList = new HashMap<>();
 		lightList = new HashMap<>();
 
 		final EntityManager em = EntityManagerService.getManager();

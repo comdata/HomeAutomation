@@ -3,7 +3,7 @@ package cm.homeautomation.fhem;
 
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import org.apache.logging.log4j.LogManager;
@@ -13,7 +13,6 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.FHEMDevice;
 import cm.homeautomation.entities.FHEMDevice.FHEMDeviceType;
 import cm.homeautomation.eventbus.EventBusService;
-import cm.homeautomation.services.base.AutoCreateInstance;
 
 /**
  * receive and event stream from FHEM via MQTT
@@ -21,8 +20,7 @@ import cm.homeautomation.services.base.AutoCreateInstance;
  * @author christoph
  *
  */
-@AutoCreateInstance
-@ApplicationScoped
+@Singleton
 public class FHEMDataReceiver {
 
 	public FHEMDataReceiver() {

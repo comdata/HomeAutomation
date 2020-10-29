@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +35,7 @@ import es.moki.ratelimitj.inmemory.request.InMemorySlidingWindowRequestRateLimit
  * @author christoph
  *
  */
-@AutoCreateInstance
+@Singleton
 public class PowerMeterSensor {
 
 	/**

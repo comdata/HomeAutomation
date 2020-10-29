@@ -4,6 +4,7 @@ import java.util.concurrent.CompletionStage;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 
@@ -22,8 +23,7 @@ import cm.homeautomation.services.hueinterface.HueInterface;
 import io.quarkus.runtime.Startup;
 import io.smallrye.reactive.messaging.mqtt.MqttMessage;
 
-@Startup
-@ApplicationScoped
+@Singleton
 public class ReactiveMQTTReceiverClient {
 	private static ObjectMapper mapper = new ObjectMapper();
 
