@@ -3,6 +3,7 @@ package cm.homeautomation.mqtt.client;
 import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -21,8 +22,7 @@ import cm.homeautomation.services.base.AutoCreateInstance;
  * @author christoph
  *
  */
-@AutoCreateInstance
-@ApplicationScoped
+@Singleton
 public class MQTTSender {
 
 	private Mqtt5BlockingClient publishClient = null;
@@ -57,7 +57,7 @@ public class MQTTSender {
 	}
 
 	public void doSendSyncMQTTMessage(String topic, String messagePayload) {
-		System.out.println("MQTT " + topic + " " + messagePayload);
+		//System.out.println("MQTT " + topic + " " + messagePayload);
 		EventBusService.getEventBus().post(new MQTTSendEvent(topic, messagePayload));
 		
 
@@ -72,6 +72,6 @@ public class MQTTSender {
 		Mqtt5Publish publishMessage = Mqtt5Publish.builder().topic(topic).qos(MqttQos.AT_LEAST_ONCE)
 				.payload(messagePayload.getBytes()).build();
 		publishClient.publish(publishMessage);
-		System.out.println("sending: " + topic + " " + messagePayload);
+		//System.out.println("sending: " + topic + " " + messagePayload);
 	}
 }
