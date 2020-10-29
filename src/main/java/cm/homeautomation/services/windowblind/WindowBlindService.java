@@ -1,6 +1,8 @@
 package cm.homeautomation.services.windowblind;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -9,6 +11,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
@@ -16,13 +19,21 @@ import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.base.HTTPHelper;
+import io.quarkus.scheduler.Scheduled;
 
 @Path("windowBlinds/")
 public class WindowBlindService extends BaseService {
 	@Inject MQTTSender mqttSender;
 
 
+	private Map<Long, List<WindowBlind>> windowBlindList;
+	private Map<Long, WindowBlind> windowBlindMap;
+
+
 	private static final String DIMVALUE = "{DIMVALUE}";
+
+
+
 
 	public enum DimDirection {
 		UP, DOWN
@@ -59,12 +70,11 @@ public class WindowBlindService extends BaseService {
 		final EntityManager em = EntityManagerService.getManager();
 		em.getTransaction().begin();
 
-		@SuppressWarnings("unchecked")
-		final List<WindowBlind> windowBlinds = em.createQuery("select w FROM WindowBlind w ").getResultList();
+		final Set<Long> windowBlindIds = windowBlindMap.keySet();
 
-		if (windowBlinds != null) {
-			for (final WindowBlind windowBlind : windowBlinds) {
-				windowBlindsList.getWindowBlinds().add(windowBlind);
+		if (windowBlindIds != null) {
+			for (final Long windowBlindId : windowBlindIds) {
+				windowBlindsList.getWindowBlinds().add(windowBlindMap.get(windowBlindId));
 			}
 		}
 
@@ -81,10 +91,7 @@ public class WindowBlindService extends BaseService {
 		final EntityManager em = EntityManagerService.getManager();
 		em.getTransaction().begin();
 
-		@SuppressWarnings("unchecked")
-		final List<WindowBlind> windowBlinds = em
-				.createQuery("select w FROM WindowBlind w where w.room=(select r from Room r where r.id=:roomId)")
-				.setParameter("roomId", roomId).getResultList();
+		final List<WindowBlind> windowBlinds = windowBlindList.get(roomId);
 
 		if ((windowBlinds != null) && !windowBlinds.isEmpty()) {
 			windowBlindsList.getWindowBlinds().addAll(windowBlinds);
@@ -131,18 +138,13 @@ public class WindowBlindService extends BaseService {
 			@PathParam("type") String type, @PathParam("roomId") Long roomId) {
 		final EntityManager em = EntityManagerService.getManager();
 
-
-
-
 		final Runnable windowBlindThread = () -> {
 
 			String newValue = value;
 
 			if (WindowBlind.SINGLE.equals(type)) {
 
-				final WindowBlind singleWindowBlind1 = (WindowBlind) em
-						.createQuery("select w from WindowBlind w where w.id=:id").setParameter("id", windowBlindId)
-						.getSingleResult();
+				final WindowBlind singleWindowBlind1 = windowBlindMap.get(windowBlindId);
 
 				if (Float.parseFloat(value) > singleWindowBlind1.getMaximumValue()) {
 					newValue = Integer.toString(singleWindowBlind1.getMaximumValue());
@@ -173,11 +175,7 @@ public class WindowBlindService extends BaseService {
 				final EventObject eventObject1 = new EventObject(eventData1);
 				EventBusService.getEventBus().post(eventObject1);
 			} else if (WindowBlind.ALL_AT_ONCE.equals(type)) {
-				@SuppressWarnings("unchecked")
-				final List<WindowBlind> windowBlinds = em
-						.createQuery(
-								"select w FROM WindowBlind w where w.room=(select r from Room r where r.id=:roomId)")
-						.setParameter("roomId", roomId).getResultList();
+				final List<WindowBlind> windowBlinds = windowBlindList.get(roomId);
 
 				for (final WindowBlind singleWindowBlind2 : windowBlinds) {
 
@@ -221,8 +219,7 @@ public class WindowBlindService extends BaseService {
 
 		em.getTransaction().begin();
 
-		final WindowBlind singleWindowBlind = (WindowBlind) em.createQuery("select w from WindowBlind w where w.id=:id")
-				.setParameter("id", windowBlindId).getSingleResult();
+		final WindowBlind singleWindowBlind = windowBlindMap.get(windowBlindId);
 
 		singleWindowBlind.setCurrentValue(Float.parseFloat(value));
 		em.merge(singleWindowBlind);
@@ -232,11 +229,7 @@ public class WindowBlindService extends BaseService {
 	}
 
 	public void dim(DimDirection dimDirection, long externalId) {
-		final EntityManager em = EntityManagerService.getManager();
-
-		final WindowBlind singleWindowBlind = (WindowBlind) em
-				.createQuery("select w from WindowBlind w where w.id=:id").setParameter("id", externalId)
-				.getSingleResult();
+		final WindowBlind singleWindowBlind = windowBlindMap.get(externalId);
 
 		if (singleWindowBlind != null) {
 
@@ -255,5 +248,37 @@ public class WindowBlindService extends BaseService {
 		}
 
 	}
+	
+	@Scheduled(every = "120s")
+	public void initWindowBlindList() {
+		final EntityManager em = EntityManagerService.getManager();
+
+		List<Room> rooms = em.createQuery("select r from Room r", Room.class).getResultList();
+
+		List<WindowBlind> windowBlindFullList = em.createQuery(
+				"select b from WindowBlind b",
+				WindowBlind.class).getResultList();
+		
+		for (WindowBlind windowBlind : windowBlindFullList) {
+			windowBlindMap.put(windowBlind.getId(), windowBlind);
+		}
+		
+				
+		if (rooms != null && !rooms.isEmpty()) {
+
+			for (Room room : rooms) {
+
+				Long roomId = room.getId();
+				final List<WindowBlind> windowBlindRoomList = em.createQuery(
+						"select b from WindowBlind b where b.room=(select r from Room r where r.id=:room)",
+						WindowBlind.class).setParameter("room", roomId).getResultList();
+
+				windowBlindList.put(roomId, windowBlindRoomList);
+
+			}
+
+		}
+	}
+
 
 }
