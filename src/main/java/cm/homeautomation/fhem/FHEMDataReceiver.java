@@ -9,8 +9,6 @@ import javax.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
 
-import com.google.api.services.calendar.model.Event;
-
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.FHEMDevice;
 import cm.homeautomation.entities.FHEMDevice.FHEMDeviceType;
@@ -38,6 +36,7 @@ public class FHEMDataReceiver {
 		
 		receiveFHEMData(topic, messageContent);
 	}
+	
 	
 	public  void receiveFHEMData(String topic, String messageContent) {
 //		LogManager.getLogger(FHEMDataReceiver.class).debug("FHEM message for topic: {} message: {}", topic,  messageContent);
