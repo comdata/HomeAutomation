@@ -312,6 +312,7 @@ public class LightService extends BaseService {
 	public void initLightList() {
 		rooms = new HashMap<>();
 		lightRoomList = new HashMap<>();
+		lightExternalList=new HashMap<>();
 		lightList = new HashMap<>();
 
 		final EntityManager em = EntityManagerService.getManager();
