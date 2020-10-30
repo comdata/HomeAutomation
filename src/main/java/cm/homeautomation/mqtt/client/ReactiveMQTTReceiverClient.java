@@ -46,6 +46,8 @@ public class ReactiveMQTTReceiverClient {
 
 						String topic = publish.getTopic().toString();
 						String messageContent = new String(publish.getPayloadAsBytes());
+						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+						
 						handleMessage(topic, messageContent);
 					}).send().whenComplete((subAck, e) -> {
 						if (e != null) {
