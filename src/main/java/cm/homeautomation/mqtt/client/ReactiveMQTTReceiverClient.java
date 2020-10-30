@@ -21,7 +21,6 @@ import cm.homeautomation.jeromq.server.JSONDataEvent;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.services.hueinterface.HueEmulatorMessage;
 import io.quarkus.runtime.StartupEvent;
-import io.smallrye.reactive.messaging.mqtt.MqttMessage;
 
 @Singleton
 public class ReactiveMQTTReceiverClient {
@@ -69,16 +68,6 @@ public class ReactiveMQTTReceiverClient {
 		initClient();
 
 		EventBusService.getEventBus().register(this);
-	}
-
-	//@Incoming("homeautomation")
-	public CompletionStage<Void> consume(MqttMessage<byte[]> message) {
-		String topic = message.getTopic();
-		String messageContent = new String(message.getPayload());
-
-		handleMessage(topic, messageContent);
-
-		return message.ack();
 	}
 
 	private void handleMessage(String topic, String messageContent) {
