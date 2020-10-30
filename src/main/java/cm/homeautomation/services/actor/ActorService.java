@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
@@ -25,7 +24,7 @@ import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
-import cm.homeautomation.mqtt.client.MQTTSender;
+import cm.homeautomation.mqtt.client.MQTTSendEvent;
 import cm.homeautomation.sensors.ActorMessage;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.HTTPHelper;
@@ -47,10 +46,6 @@ public class ActorService extends BaseService {
 	private static Map<Long, List<Switch>> switchList = new HashMap<>();
 
 	private static ActorService instance;
-
-	@Inject
-	MQTTSender mqttSender;
-
 	
 	void startup(@Observes StartupEvent event) {
 		EventBusService.getEventBus().register(this);
@@ -108,14 +103,17 @@ public class ActorService extends BaseService {
 
 				LogManager.getLogger(this.getClass()).debug("MQTT: " + topic + " - " + message);
 
-				mqttSender.sendMQTTMessage(topic, message);
+				EventBusService.getEventBus().post(new MQTTSendEvent(topic, message));
+
 
 			} else {
 
 				if (singleSwitch.getHouseCode() != null) {
-					mqttSender.sendMQTTMessage("ESP_RC/cmd",
-							"RC," + ("1".equals(actorMessage.getStatus()) ? "ON" : "OFF") + "="
-									+ actorMessage.getHouseCode().trim() + actorMessage.getSwitchNo().trim());
+					
+					String topic = "ESP_RC/cmd";
+					String message = "RC," + ("1".equals(actorMessage.getStatus()) ? "ON" : "OFF") + "="
+							+ actorMessage.getHouseCode().trim() + actorMessage.getSwitchNo().trim();
+					EventBusService.getEventBus().post(new MQTTSendEvent(topic, message));
 				}
 
 				if (singleSwitch.getSwitchSetUrl() != null) {
