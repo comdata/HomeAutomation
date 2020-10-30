@@ -6,10 +6,10 @@ import javax.inject.Singleton;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
-import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
+import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.eventbus.EventBusService;
@@ -23,8 +23,8 @@ import cm.homeautomation.eventbus.EventBusService;
 @Singleton
 public class MQTTSender {
 
-	private Mqtt5BlockingClient publishClient = null;
-	
+	private Mqtt3AsyncClient publishClient = null;
+
 	public MQTTSender() {
 		EventBusService.getEventBus().register(this);
 	}
@@ -35,12 +35,18 @@ public class MQTTSender {
 			String host = ConfigurationService.getConfigurationProperty("mqtt", "host");
 			int port = Integer.parseInt(ConfigurationService.getConfigurationProperty("mqtt", "port"));
 
-			publishClient = Mqtt5Client.builder().identifier(UUID.randomUUID().toString()).serverHost(host)
-					.serverPort(port).automaticReconnect().applyAutomaticReconnect().buildBlocking();
+			publishClient = MqttClient.builder().useMqttVersion3().identifier(UUID.randomUUID().toString()).serverHost(host)
+					.serverPort(port).automaticReconnect().applyAutomaticReconnect().buildAsync();
 
-			
+			publishClient.connect().whenComplete((connAck, throwable) -> {
+				if (throwable != null) {
+					// Handle connection failure
+				} else {
+					
+				}
+			});
 		}
-		
+
 		if (!publishClient.getState().isConnectedOrReconnect()) {
 			publishClient.connect();
 		}
@@ -55,21 +61,20 @@ public class MQTTSender {
 	}
 
 	public void doSendSyncMQTTMessage(String topic, String messagePayload) {
-		//System.out.println("MQTT " + topic + " " + messagePayload);
+		// System.out.println("MQTT " + topic + " " + messagePayload);
 		EventBusService.getEventBus().post(new MQTTSendEvent(topic, messagePayload));
-		
 
 	}
 
 	@Subscribe
 	public void send(MQTTSendEvent mqttSendEvent) {
-		String topic=mqttSendEvent.getTopic();
-		String messagePayload=mqttSendEvent.getPayload();
-		
+		String topic = mqttSendEvent.getTopic();
+		String messagePayload = mqttSendEvent.getPayload();
+
 		initClient();
-		Mqtt5Publish publishMessage = Mqtt5Publish.builder().topic(topic).qos(MqttQos.AT_LEAST_ONCE)
+		Mqtt3Publish publishMessage = Mqtt3Publish.builder().topic(topic).qos(MqttQos.AT_LEAST_ONCE)
 				.payload(messagePayload.getBytes()).build();
 		publishClient.publish(publishMessage);
-		//System.out.println("sending: " + topic + " " + messagePayload);
+		// System.out.println("sending: " + topic + " " + messagePayload);
 	}
 }
