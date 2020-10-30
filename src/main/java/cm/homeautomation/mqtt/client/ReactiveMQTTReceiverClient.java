@@ -1,16 +1,18 @@
 package cm.homeautomation.mqtt.client;
 
+import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 
-import javax.inject.Inject;
+import javax.enterprise.event.Observes;
 import javax.inject.Singleton;
-
-import org.eclipse.microprofile.reactive.messaging.Incoming;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hivemq.client.mqtt.MqttClient;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.ebus.EBusMessageEvent;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
@@ -18,23 +20,64 @@ import cm.homeautomation.fhem.FHEMDataEvent;
 import cm.homeautomation.jeromq.server.JSONDataEvent;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.services.hueinterface.HueEmulatorMessage;
-import cm.homeautomation.services.hueinterface.HueInterface;
+import io.quarkus.runtime.StartupEvent;
 import io.smallrye.reactive.messaging.mqtt.MqttMessage;
 
 @Singleton
 public class ReactiveMQTTReceiverClient {
 	private static ObjectMapper mapper = new ObjectMapper();
 
-	@Inject
-	HueInterface hueInterface;
+	private Mqtt3AsyncClient client = null;
 
-	@Incoming("homeautomation")
+	private void initClient() {
+		if (client == null) {
+
+			String host = ConfigurationService.getConfigurationProperty("mqtt", "host");
+			int port = Integer.parseInt(ConfigurationService.getConfigurationProperty("mqtt", "port"));
+
+			client = MqttClient.builder().useMqttVersion3().identifier(UUID.randomUUID().toString()).serverHost(host)
+					.serverPort(port).automaticReconnect().applyAutomaticReconnect().buildAsync();
+
+			client.connect().whenComplete((connAck, throwable) -> {
+				if (throwable != null) {
+					// Handle connection failure
+				} else {
+					client.subscribeWith().topicFilter("#").callback(publish -> {
+						// Process the received message
+						
+						String topic=publish.getTopic().toString();
+						String messageContent=new String(publish.getPayloadAsBytes());
+						handleMessage(topic, messageContent);
+					}).send().whenComplete((subAck, e) -> {
+						if (e != null) {
+							// Handle failure to subscribe
+						} else {
+							// Handle successful subscription, e.g. logging or incrementing a metric
+						}
+					});
+				}
+			});
+		}
+
+		if (!client.getState().isConnectedOrReconnect()) {
+			client.connect();
+		}
+
+	}
+
+	void startup(@Observes StartupEvent event) {
+		initClient();
+
+		EventBusService.getEventBus().register(this);
+	}
+
+	//@Incoming("homeautomation")
 	public CompletionStage<Void> consume(MqttMessage<byte[]> message) {
 		String topic = message.getTopic();
 		String messageContent = new String(message.getPayload());
-		
-		System.out.println("Topic: "+topic+" "+messageContent);
-		
+
+		System.out.println("Topic: " + topic + " " + messageContent);
+
 		handleMessage(topic, messageContent);
 
 		return message.ack();
