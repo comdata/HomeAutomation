@@ -5,8 +5,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import org.apache.logging.log4j.LogManager;
@@ -36,15 +37,15 @@ import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.remotecontrol.RemoteControlEventListener;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
-import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.motion.MotionEvent;
 import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
 import cm.homeautomation.services.windowblind.WindowBlindService;
 import cm.homeautomation.zigbee.entities.ZigBeeTradfriRemoteControl;
+import io.quarkus.runtime.StartupEvent;
 import lombok.NonNull;
 
-@ApplicationScoped
+@Singleton
 public class ZigbeeMQTTReceiver {
 	@Inject MQTTSender mqttSender;
 
@@ -55,11 +56,20 @@ public class ZigbeeMQTTReceiver {
 	private String zigbeeMqttTopic = ConfigurationService.getConfigurationProperty("zigbee", "mqttTopic");
 
 	public ZigbeeMQTTReceiver() {
+		init();
+	}
+
+	private void init() {
 		EventBusService.getEventBus().register(this);
 
 		updateDeviceList();
 	}
 
+	void startup(@Observes StartupEvent event) {
+		init();
+	}
+
+	
 	private void updateDeviceList() {
 		mqttSender.sendMQTTMessage(zigbeeMqttTopic + "/bridge/config/devices/get", "");
 	}
