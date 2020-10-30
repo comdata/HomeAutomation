@@ -76,14 +76,13 @@ public class ReactiveMQTTReceiverClient {
 		String topic = message.getTopic();
 		String messageContent = new String(message.getPayload());
 
-		System.out.println("Topic: " + topic + " " + messageContent);
-
 		handleMessage(topic, messageContent);
 
 		return message.ack();
 	}
 
 	private void handleMessage(String topic, String messageContent) {
+		System.out.println("Topic: " + topic + " " + messageContent);
 		Runnable runThread = () -> {
 			try {
 
