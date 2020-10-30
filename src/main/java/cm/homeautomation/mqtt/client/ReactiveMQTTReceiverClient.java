@@ -1,7 +1,6 @@
 package cm.homeautomation.mqtt.client;
 
 import java.util.UUID;
-import java.util.concurrent.CompletionStage;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Singleton;
@@ -71,7 +70,7 @@ public class ReactiveMQTTReceiverClient {
 	}
 
 	private void handleMessage(String topic, String messageContent) {
-		System.out.println("Topic: " + topic + " " + messageContent);
+		//System.out.println("Topic: " + topic + " " + messageContent);
 		Runnable runThread = () -> {
 			try {
 
