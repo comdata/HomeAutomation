@@ -55,10 +55,6 @@ public class ZigbeeMQTTReceiver {
 	@NonNull
 	private String zigbeeMqttTopic = ConfigurationService.getConfigurationProperty("zigbee", "mqttTopic");
 
-	public ZigbeeMQTTReceiver() {
-		init();
-	}
-
 	private void init() {
 		EventBusService.getEventBus().register(this);
 

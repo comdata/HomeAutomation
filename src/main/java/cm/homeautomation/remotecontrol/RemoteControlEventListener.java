@@ -26,10 +26,7 @@ import io.quarkus.runtime.StartupEvent;
 
 @Singleton
 public class RemoteControlEventListener {
-	public RemoteControlEventListener() {
-		EventBusService.getEventBus().register(this);
-	}
-	
+
 	void startup(@Observes StartupEvent event) {
 		EventBusService.getEventBus().register(this);
 	}
