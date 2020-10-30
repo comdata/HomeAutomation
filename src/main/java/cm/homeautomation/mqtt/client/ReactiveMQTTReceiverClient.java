@@ -5,8 +5,9 @@ import java.util.UUID;
 import javax.enterprise.event.Observes;
 import javax.inject.Singleton;
 
+import org.apache.log4j.LogManager;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
@@ -42,15 +43,18 @@ public class ReactiveMQTTReceiverClient {
 				} else {
 					client.subscribeWith().topicFilter("#").callback(publish -> {
 						// Process the received message
-						
-						String topic=publish.getTopic().toString();
-						String messageContent=new String(publish.getPayloadAsBytes());
+
+						String topic = publish.getTopic().toString();
+						String messageContent = new String(publish.getPayloadAsBytes());
 						handleMessage(topic, messageContent);
 					}).send().whenComplete((subAck, e) -> {
 						if (e != null) {
 							// Handle failure to subscribe
+							LogManager.getLogger(this.getClass()).error(e);
 						} else {
 							// Handle successful subscription, e.g. logging or incrementing a metric
+							LogManager.getLogger(this.getClass())
+									.debug("successfully subscribed. Type: " + subAck.getType().name());
 						}
 					});
 				}
@@ -70,7 +74,7 @@ public class ReactiveMQTTReceiverClient {
 	}
 
 	private void handleMessage(String topic, String messageContent) {
-		//System.out.println("Topic: " + topic + " " + messageContent);
+		LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
 		Runnable runThread = () -> {
 			try {
 
@@ -80,17 +84,7 @@ public class ReactiveMQTTReceiverClient {
 					EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
 					EventBusService.getEventBus().post(new EventObject(ebusMessageEvent));
 				} else if (topic.startsWith("hueinterface")) {
-
-					HueEmulatorMessage hueMessage;
-					try {
-						hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
-						EventBusService.getEventBus().post(hueMessage);
-					} catch (JsonMappingException e) {
-						e.printStackTrace();
-					} catch (JsonProcessingException e) {
-						e.printStackTrace();
-					}
-
+					sendHueInterfaceMessage(messageContent);
 				} else {
 					if (messageContent.startsWith("{")) {
 						EventBusService.getEventBus().post(new JSONDataEvent(messageContent));
@@ -100,9 +94,19 @@ public class ReactiveMQTTReceiverClient {
 				EventBusService.getEventBus().post(new MQTTTopicEvent(topic, messageContent));
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				LogManager.getLogger(this.getClass()).error(e);
 			}
 		};
 		new Thread(runThread).start();
+	}
+
+	private void sendHueInterfaceMessage(String messageContent) {
+		HueEmulatorMessage hueMessage;
+		try {
+			hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
+			EventBusService.getEventBus().post(hueMessage);
+		} catch (JsonProcessingException e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		}
 	}
 }
