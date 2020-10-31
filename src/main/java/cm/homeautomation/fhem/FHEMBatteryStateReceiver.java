@@ -4,23 +4,29 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.FHEMDevice;
 import cm.homeautomation.entities.ManualTask;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.fhem.BatteryStateResult.BatteryState;
+import io.vertx.core.eventbus.EventBus;
 
+@Singleton
 public class FHEMBatteryStateReceiver {
 
 	private static final String BATTERY = "battery";
+	
+	@Inject
+	EventBus bus;
 
 	private FHEMBatteryStateReceiver() {
 		// do nothing
 	}
 
-	public static BatteryStateResult receive(String topic, String messageContent, FHEMDevice fhemDevice) {
+	public BatteryStateResult receive(String topic, String messageContent, FHEMDevice fhemDevice) {
 		if (topic != null && topic.endsWith(BATTERY)) {
 
 			BigDecimal value = new BigDecimal(messageContent.split(" ")[0]);
@@ -35,7 +41,7 @@ public class FHEMBatteryStateReceiver {
 			} else {
 				BatteryLowEvent batteryLowEvent = new BatteryLowEvent();
 				batteryLowEvent.setBatteryStateResult(batteryStateResult);
-				EventBusService.getEventBus().post(batteryLowEvent);
+				bus.send("BatteryLowEvent", batteryLowEvent);
 
 				createTaskForBatteryDevice(fhemDevice);
 
@@ -46,7 +52,7 @@ public class FHEMBatteryStateReceiver {
 		return null;
 	}
 
-	private static void createTaskForBatteryDevice(FHEMDevice fhemDevice) {
+	private void createTaskForBatteryDevice(FHEMDevice fhemDevice) {
 		EntityManager em = EntityManagerService.getManager();
 
 		List<ManualTask> resultList = em

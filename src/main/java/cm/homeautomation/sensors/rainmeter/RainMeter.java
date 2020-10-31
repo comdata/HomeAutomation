@@ -12,6 +12,7 @@ import cm.homeautomation.entities.RainPing;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.RainData;
+import io.quarkus.vertx.ConsumeEvent;
 
 public class RainMeter {
 
@@ -20,7 +21,7 @@ public class RainMeter {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value = "EventObject", blocking = true)
 	public void handlePowerMeterData(final EventObject eventObject) {
 
 		final Object data = eventObject.getData();

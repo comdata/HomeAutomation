@@ -3,19 +3,16 @@ package cm.homeautomation.fhem;
 
 import java.util.List;
 
-import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import org.apache.logging.log4j.LogManager;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.FHEMDevice;
 import cm.homeautomation.entities.FHEMDevice.FHEMDeviceType;
-import cm.homeautomation.eventbus.EventBusService;
-import io.quarkus.runtime.StartupEvent;
+import io.quarkus.vertx.ConsumeEvent;
 
 /**
  * receive and event stream from FHEM via MQTT
@@ -26,15 +23,10 @@ import io.quarkus.runtime.StartupEvent;
 @Singleton
 public class FHEMDataReceiver {
 
-	public FHEMDataReceiver() {
-		EventBusService.getEventBus().register(this);
-	}
+	@Inject
+	FHEMBatteryStateReceiver batteryStateReceiver;
 	
-	void startup(@Observes StartupEvent event) {
-		EventBusService.getEventBus().register(this);
-	}
-
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value="FHEMDataEvent", blocking=true)
 	public void handleFHEMData(FHEMDataEvent fhemDataEvent) {
 		String messageContent=fhemDataEvent.getPayload();
 		String topic=fhemDataEvent.getTopic();
@@ -74,11 +66,11 @@ public class FHEMDataReceiver {
 		}
 	}
 
-	private static void handleDeviceSpecific(String topic, String messageContent, String device, FHEMDevice fhemDevice,
+	private void handleDeviceSpecific(String topic, String messageContent, String device, FHEMDevice fhemDevice,
 			FHEMDeviceType deviceType) {
 		if (deviceType != null) {
 
-			FHEMBatteryStateReceiver.receive(topic, messageContent, fhemDevice);
+			batteryStateReceiver.receive(topic, messageContent, fhemDevice);
 			
 			switch (deviceType) {
 			case WINDOW:

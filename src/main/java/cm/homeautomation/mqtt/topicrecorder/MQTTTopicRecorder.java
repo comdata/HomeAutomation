@@ -30,10 +30,10 @@ public class MQTTTopicRecorder {
 
 	void startup(@Observes StartupEvent event) {
 		initTopicMap();
-	//	EventBusService.getEventBus().register(this);
+
 	}
 
-	@ConsumeEvent(value="MQTTTopicEvent", blocking = true)
+	@ConsumeEvent(value = "MQTTTopicEvent", blocking = true)
 	public void receiverMQTTTopicEvents(MQTTTopicEvent event) {
 
 		@NonNull

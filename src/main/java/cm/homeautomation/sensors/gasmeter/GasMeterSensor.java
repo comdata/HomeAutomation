@@ -4,15 +4,13 @@ import java.util.Date;
 
 import javax.persistence.EntityManager;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.GasMeterPing;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.GasmeterData;
 import cm.homeautomation.services.base.AutoCreateInstance;
+import io.quarkus.vertx.ConsumeEvent;
 
 /**
  * receiver gas meter data and save it to the database
@@ -27,15 +25,9 @@ public class GasMeterSensor {
 
 	public GasMeterSensor() {
 		em = EntityManagerService.getNewManager();
-		EventBusService.getEventBus().register(this);
 	}
 
-	public void destroy() {
-		EventBusService.getEventBus().unregister(this);
-
-	}
-
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value = "EventObject", blocking = true)
 	public void handleGasMeterData(final EventObject eventObject) {
 
 		final Object data = eventObject.getData();

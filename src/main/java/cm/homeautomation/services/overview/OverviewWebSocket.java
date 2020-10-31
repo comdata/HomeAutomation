@@ -23,6 +23,7 @@ import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.eventbus.StringTranscoder;
+import io.quarkus.vertx.ConsumeEvent;
 
 @ApplicationScoped
 @ServerEndpoint(value = "/overview/{clientId}", encoders = { OverviewMessageTranscoder.class,
@@ -50,10 +51,9 @@ public class OverviewWebSocket {
 			LogManager.getLogger(this.getClass()).error("Overview Websocket initialization failed", e);
 		}
 
-		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value = "EventObject", blocking = true)
 	public void handleSensorDataChanged(final EventObject eventObject) {
 
 		LogManager.getLogger(this.getClass()).info("Overview got event");

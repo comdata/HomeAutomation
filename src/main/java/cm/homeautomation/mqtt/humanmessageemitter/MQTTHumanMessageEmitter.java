@@ -34,7 +34,7 @@ public class MQTTHumanMessageEmitter {
 		humanMessageTopic = ConfigurationService.getConfigurationProperty("mqtt", "humanMessageTopic");
 
 		if (humanMessageTopic != null && !"".equals(humanMessageTopic)) {
-			EventBusService.getEventBus().register(this);
+			
 		}
 	}
 

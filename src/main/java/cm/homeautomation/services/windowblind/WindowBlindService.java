@@ -34,6 +34,8 @@ import io.quarkus.vertx.ConsumeEvent;
 public class WindowBlindService extends BaseService {
 	@Inject
 	MQTTSender mqttSender;
+	
+	
 
 	private Map<Long, List<WindowBlind>> windowBlindList;
 	private Map<Long, WindowBlind> windowBlindMap;
@@ -43,7 +45,6 @@ public class WindowBlindService extends BaseService {
 	void startup(@Observes StartupEvent event) {
 		initWindowBlindList();
 
-		EventBusService.getEventBus().register(this);
 	}
 
 	public enum DimDirection {
@@ -143,7 +144,6 @@ public class WindowBlindService extends BaseService {
 		return new GenericStatus(true);
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
 	@ConsumeEvent(value="WindowBlindDimMessage", blocking = true)
 	public void callDim(WindowBlindDimMessage message) {
 		setDim(message.getWindowBlindId(), message.getValue(), message.getType(), message.getRoomId());

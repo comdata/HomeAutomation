@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -17,11 +17,11 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import cm.homeautomation.logging.WebSocketEvent;
+import io.quarkus.vertx.ConsumeEvent;
         
-@ApplicationScoped
+@Singleton
 
 @ServerEndpoint(value = "/eventbus/{clientId}", encoders = {
 		EventTranscoder.class, WebSocketEventTranscoder.class, StringTranscoder.class }, decoders = {
@@ -38,7 +38,6 @@ public class EventBusEndpoint {
 	 */
 	public EventBusEndpoint() {
 		EventBusEndpointConfigurator.setEventBusEndpoint(this);
-		EventBusService.getEventBus().register(this);
 		eventTranscoder = new EventTranscoder();
 		webSocketEventTranscoder = new WebSocketEventTranscoder();
 	}
@@ -48,7 +47,7 @@ public class EventBusEndpoint {
 	 *
 	 * @param eventObject
 	 */
-	@Subscribe
+	@ConsumeEvent(value="EventObject", blocking=true)
 	public void handleEvent(final EventObject eventObject) {
 		userSessions.keys();
 		try {
@@ -66,7 +65,7 @@ public class EventBusEndpoint {
 		}
 	}
 
-	@Subscribe
+	@ConsumeEvent(value="WebSocketEvent", blocking=true)
 	public void handleEvent(final WebSocketEvent eventObject) {
 
 		try {

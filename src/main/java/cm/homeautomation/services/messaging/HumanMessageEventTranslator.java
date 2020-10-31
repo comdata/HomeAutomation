@@ -1,12 +1,10 @@
 package cm.homeautomation.services.messaging;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import cm.homeautomation.eventbus.EventBusHumanMessageIgnore;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
+import io.quarkus.vertx.ConsumeEvent;
 
 public class HumanMessageEventTranslator {
 
@@ -14,7 +12,7 @@ public class HumanMessageEventTranslator {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value = "EventObject", blocking = true)
 	public void handleEvent(final EventObject eventObject) {
 
 		final Object eventData = eventObject.getData();

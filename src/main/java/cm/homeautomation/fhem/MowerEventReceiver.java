@@ -1,28 +1,20 @@
 package cm.homeautomation.fhem;
 
-import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.mqtt.client.MQTTEventBusObject;
-import io.quarkus.runtime.StartupEvent;
+import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
 
 @Singleton
 public class MowerEventReceiver {
 
-	public MowerEventReceiver() {
-		EventBusService.getEventBus().register(this);
-	}
+	@Inject
+	EventBus bus;
 
-	void startup(@Observes StartupEvent event) {
-		EventBusService.getEventBus().register(this);
-	}
-
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value = "MQTTEventBusObject", blocking = true)
 	public void subscribe(MQTTEventBusObject eventObject) {
 
 		String messageContent = eventObject.getMessageContent();
@@ -35,7 +27,7 @@ public class MowerEventReceiver {
 
 			if (!"no_message".equals(messageContent)) {
 //				LogManager.getLogger(this.getClass()).info("Mower: error: {}", messageContent);
-				EventBusService.getEventBus().post(new EventObject(new MowerErrorEvent(messageContent)));
+				bus.send("EventObject", new EventObject(new MowerErrorEvent(messageContent)));
 			} else {
 //				LogManager.getLogger(this.getClass()).info("Mower: not an error: {}", messageContent);
 			}

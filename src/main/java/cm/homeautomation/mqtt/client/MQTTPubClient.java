@@ -1,18 +1,32 @@
 package cm.homeautomation.mqtt.client;
 
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.log4j.LogManager;
 
-import cm.homeautomation.eventbus.EventBusService;
-import io.quarkus.runtime.Startup;
+import io.quarkus.runtime.StartupEvent;
+import io.vertx.core.eventbus.EventBus;
 
-@Startup
 @Singleton
 public class MQTTPubClient {
 
+	@Inject
+	EventBus bus;
+	private static MQTTPubClient instance;
+
 	private MQTTPubClient() {
 		// not to be created
+		instance = this;
+	}
+
+	void startup(@Observes StartupEvent event) {
+
+	}
+
+	public void publish(MQTTSendEvent event) {
+		bus.send("MQTTSendEvent", event);
 	}
 
 	public static void publish(String[] args) {
@@ -21,8 +35,8 @@ public class MQTTPubClient {
 		String content = "";
 
 		LogManager.getLogger(MQTTPubClient.class).debug("Topic: " + topic + " " + content);
-		
-		EventBusService.getEventBus().post(new MQTTSendEvent(topic, content));
+
+		instance.publish(new MQTTSendEvent(topic, content));
 
 	}
 }

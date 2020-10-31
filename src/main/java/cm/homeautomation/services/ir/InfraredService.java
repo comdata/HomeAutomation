@@ -24,6 +24,7 @@ import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.sensors.IRData;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
+import io.quarkus.vertx.ConsumeEvent;
 
 /**
  * Handle IR messages
@@ -33,16 +34,16 @@ import cm.homeautomation.services.base.GenericStatus;
  */
 @Path("ir")
 public class InfraredService extends BaseService {
-	@Inject MQTTSender mqttSender;
-
+	@Inject
+	MQTTSender mqttSender;
 
 	private static InfraredService instance;
 
 	public static InfraredService getInstance() {
-		if (instance==null) {
-			instance=new InfraredService();
+		if (instance == null) {
+			instance = new InfraredService();
 		}
-		
+
 		return instance;
 	}
 
@@ -51,7 +52,6 @@ public class InfraredService extends BaseService {
 	}
 
 	public InfraredService() {
-		EventBusService.getEventBus().register(this);
 	}
 
 	/**
@@ -71,7 +71,7 @@ public class InfraredService extends BaseService {
 	 *
 	 * @param event
 	 */
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value = "EventObject", blocking = true)
 	public void handleEvent(final EventObject event) {
 
 		final Object data = event.getData();
@@ -90,8 +90,8 @@ public class InfraredService extends BaseService {
 			}
 
 			final List<IRCommand> resultList = em.createQuery(
-					"select ic from IRCommand ic where ic.typeClear=:typeClear and ic.address=:address and ic.command=:command and ic.data=:data", IRCommand.class)
-					.setParameter("data", irData.getData()).setParameter("typeClear", typeClear)
+					"select ic from IRCommand ic where ic.typeClear=:typeClear and ic.address=:address and ic.command=:command and ic.data=:data",
+					IRCommand.class).setParameter("data", irData.getData()).setParameter("typeClear", typeClear)
 					.setParameter("command", command).setParameter("address", address).getResultList();
 
 			if ((resultList == null) || resultList.isEmpty()) {
@@ -131,8 +131,9 @@ public class InfraredService extends BaseService {
 	@Path("sendCommand/{id}")
 	public GenericStatus sendCommand(@PathParam("id") final Long id) throws JsonProcessingException {
 		final EntityManager em = EntityManagerService.getManager();
-		final List<IRCommand> resultList = em.createQuery("select ic from IRCommand ic where ic.id=:id", IRCommand.class)
-				.setParameter("id", id).getResultList();
+		final List<IRCommand> resultList = em
+				.createQuery("select ic from IRCommand ic where ic.id=:id", IRCommand.class).setParameter("id", id)
+				.getResultList();
 
 		if ((resultList != null) && !resultList.isEmpty()) {
 			final IRCommand irCommand = resultList.get(0);

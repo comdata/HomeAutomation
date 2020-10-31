@@ -6,15 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.DistanceSensorData;
 import cm.homeautomation.sensors.GasmeterData;
@@ -27,7 +23,8 @@ import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.sensors.WindowSensorData;
 import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
-import io.quarkus.runtime.StartupEvent;
+import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
 
 /**
  * JSON Data Receiver and mapper
@@ -45,16 +42,11 @@ public class JSONSensorDataReceiver {
 	private static final String MESSAGE_FOR_DESERIALIZATION_S = "message for deserialization: {}";
 	private static final ObjectMapper mapper = new ObjectMapper();
 	private static final Sensors sensorsService = new Sensors();
+	
+	@Inject
+	EventBus bus;
 
-	public JSONSensorDataReceiver() {
-		EventBusService.getEventBus().register(this);
-	}
-
-	void startup(@Observes StartupEvent event) {
-		EventBusService.getEventBus().register(this);
-	}
-
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value = "JSONDataEvent", blocking = true)
 	public void receiveSensorData(JSONDataEvent jsonDataEvent) {
 
 		String messageContent = jsonDataEvent.getMessage();
@@ -95,7 +87,7 @@ public class JSONSensorDataReceiver {
 //                        LogManager.getLogger(JSONSensorDataReceiver.class).debug("Casting to: {}",
 //                                clazz.getSimpleName());
 						EventObject eventObject = new EventObject(clazz.cast(sensorData));
-						EventBusService.getEventBus().post(eventObject);
+						bus.send("EventObject", eventObject);
 					}
 				}
 			}

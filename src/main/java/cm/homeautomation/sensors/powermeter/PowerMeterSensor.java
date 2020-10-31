@@ -27,6 +27,7 @@ import es.moki.ratelimitj.core.limiter.request.RequestLimitRule;
 import es.moki.ratelimitj.core.limiter.request.RequestRateLimiter;
 import es.moki.ratelimitj.inmemory.request.InMemorySlidingWindowRequestRateLimiter;
 import io.quarkus.runtime.StartupEvent;
+import io.quarkus.vertx.ConsumeEvent;
 
 /**
  * receiver power meter data and save it to the database
@@ -57,8 +58,8 @@ public class PowerMeterSensor {
 							+ " 60 * 60))*60 *60) as TIMESLICE, MIN(TIMESTAMP), MAX(TIMESTAMP) "
 							+ "from POWERMETERPING where COMPRESSED=0  and (FLOOR(UNIX_TIMESTAMP(TIMESTAMP)/(60*60))*60*60) <= UNIX_TIMESTAMP(now() - INTERVAL 4 HOUR)"
 							+ " GROUP BY FLOOR(UNIX_TIMESTAMP(TIMESTAMP)/(" + "60"
-							+ " * 60)) order by TIMESTAMP asc limit " + numberOfEntriesToCompress, Object[].class)
-					.getResultList();
+							+ " * 60)) order by TIMESTAMP asc limit " + numberOfEntriesToCompress,
+					Object[].class).getResultList();
 
 			for (final Object[] resultElement : rawResultList) {
 				final PowerMeterPing compressPowerPing = new PowerMeterPing();
@@ -112,13 +113,13 @@ public class PowerMeterSensor {
 	void startup(@Observes StartupEvent event) {
 		init();
 	}
-	
+
 	/**
 	 * handle power meter data from the MQTT receiver
 	 *
 	 * @param eventObject
 	 */
-	@Subscribe(threadMode = ThreadMode.BACKGROUND)
+	@ConsumeEvent(value = "EventObject", blocking = true)
 	public void handlePowerMeterData(final EventObject eventObject) {
 
 		final Object data = eventObject.getData();

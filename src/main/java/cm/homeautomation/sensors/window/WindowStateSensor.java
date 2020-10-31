@@ -2,6 +2,7 @@ package cm.homeautomation.sensors.window;
 
 import java.util.Date;
 
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -14,6 +15,7 @@ import cm.homeautomation.entities.WindowState;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.WindowSensorData;
+import io.quarkus.vertx.ConsumeEvent;
 
 /**
  * receiver power meter data and save it to the database
@@ -21,21 +23,16 @@ import cm.homeautomation.sensors.WindowSensorData;
  * @author christoph
  *
  */
+@Singleton
 public class WindowStateSensor {
 
 	private final EntityManager em;
 
 	public WindowStateSensor() {
 		em = EntityManagerService.getNewManager();
-		EventBusService.getEventBus().register(this);
 	}
 
-	public void destroy() {
-		EventBusService.getEventBus().unregister(this);
-
-	}
-
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value = "EventObject", blocking = true)
 	public void handleWindowState(final EventObject eventObject) {
 
 		final Object data = eventObject.getData();

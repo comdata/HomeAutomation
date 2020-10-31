@@ -24,6 +24,7 @@ import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
 import cm.homeautomation.services.base.AutoCreateInstance;
 import io.quarkus.scheduler.Scheduled;
+import io.quarkus.vertx.ConsumeEvent;
 
 @AutoCreateInstance
 public class TelegramBotService {
@@ -53,12 +54,10 @@ public class TelegramBotService {
 		if (enabled) {
 			instance = this;
 			init();
-
-			EventBusService.getEventBus().register(this);
 		}
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value = "EventObject", blocking = true)
 	public void handleEvent(final EventObject eventObject) {
 		if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
 			final HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventObject

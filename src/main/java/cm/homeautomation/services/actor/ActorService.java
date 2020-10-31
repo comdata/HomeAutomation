@@ -53,9 +53,7 @@ public class ActorService extends BaseService {
 	@Inject
 	EventBus bus;
 
-	void startup(@Observes StartupEvent event) {
-		EventBusService.getEventBus().register(this);
-	}
+	
 
 	public void performSwitch(String targetStatus, String switchId) {
 
@@ -69,7 +67,7 @@ public class ActorService extends BaseService {
 
 		switchSockets(singleSwitch, actorMessage);
 
-		EventBusService.getEventBus().post(new EventObject(actorMessage));
+		bus.send("EventObject", new EventObject(actorMessage));
 
 	}
 

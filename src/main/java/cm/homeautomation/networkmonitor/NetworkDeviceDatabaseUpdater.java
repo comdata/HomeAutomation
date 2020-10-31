@@ -13,15 +13,12 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.NetworkDevice;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
+import io.quarkus.vertx.ConsumeEvent;
 
+@Singleton
 public class NetworkDeviceDatabaseUpdater {
 
-	public NetworkDeviceDatabaseUpdater() {
-		EventBusService.getEventBus().register(this);
-//		LogManager.getLogger(this.getClass()).debug("registered NetworkDeviceDatabaseUpdater");
-	}
-
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value = "EventObject", blocking = true)
 	public void handleNetworkDeviceFound(EventObject eventObject) {
 		final Object data = eventObject.getData();
 		if (data instanceof NetworkScannerHostFoundMessage) {
@@ -35,10 +32,10 @@ public class NetworkDeviceDatabaseUpdater {
 			final String mac = networkDevice.getMac();
 
 //			LogManager.getLogger(this.getClass()).debug("got device for mac: "+mac);
-			
+
 			if (mac != null) {
-				resultList = em.createQuery("select n from NetworkDevice n where n.mac=:mac", NetworkDevice.class).setParameter("mac", mac)
-						.getResultList();
+				resultList = em.createQuery("select n from NetworkDevice n where n.mac=:mac", NetworkDevice.class)
+						.setParameter("mac", mac).getResultList();
 			}
 
 			if ((resultList == null) || resultList.isEmpty()) {
@@ -47,9 +44,10 @@ public class NetworkDeviceDatabaseUpdater {
 			}
 
 			if ((resultList != null) && !resultList.isEmpty()) {
-				
+
 				final NetworkDevice existingNetworkDevice = resultList.get(0);
-				LogManager.getLogger(this.getClass()).debug("updating existing entry: "+existingNetworkDevice.getId());
+				LogManager.getLogger(this.getClass())
+						.debug("updating existing entry: " + existingNetworkDevice.getId());
 				existingNetworkDevice.setIp(networkDevice.getIp());
 				existingNetworkDevice.setHostname(networkDevice.getHostname());
 				existingNetworkDevice.setMac(networkDevice.getMac());

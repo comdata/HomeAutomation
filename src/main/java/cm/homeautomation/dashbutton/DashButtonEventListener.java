@@ -3,21 +3,22 @@ package cm.homeautomation.dashbutton;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.script.ScriptException;
 
 import org.apache.logging.log4j.LogManager;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DashButton;
 import cm.homeautomation.entities.ScriptingEntity;
 import cm.homeautomation.entities.Switch;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.nashorn.NashornRunner;
 import cm.homeautomation.services.actor.ActorService;
+import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
 
 /**
  * listen for dashbutton events and act accordingly
@@ -25,18 +26,13 @@ import cm.homeautomation.services.actor.ActorService;
  * @author christoph
  *
  */
+@Singleton
 public class DashButtonEventListener {
 
-	public DashButtonEventListener() {
-		EventBusService.getEventBus().register(this);
-	}
+	@Inject
+	EventBus bus;
 
-	public void destroy() {
-		EventBusService.getEventBus().unregister(this);
-
-	}
-
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value = "EventObject", blocking = true)
 	public void handleEvent(final EventObject event) {
 
 		final Object data = event.getData();
@@ -78,9 +74,10 @@ public class DashButtonEventListener {
 					final String newStatus = ("ON".equals(latestStatus) ? "OFF" : "ON");
 
 					String switchId = referencedSwitch.getId().toString();
-					
-					LogManager.getLogger(this.getClass()).info("Dashbutton: Pressing switch {} to status: {}", switchId, newStatus);
-					
+
+					LogManager.getLogger(this.getClass()).info("Dashbutton: Pressing switch {} to status: {}", switchId,
+							newStatus);
+
 					ActorService.getInstance().pressSwitch(switchId, newStatus);
 				}
 

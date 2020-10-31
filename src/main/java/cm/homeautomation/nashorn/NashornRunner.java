@@ -19,14 +19,15 @@ import cm.homeautomation.entities.ScriptingEntity;
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.AutoCreateInstance;
+import io.quarkus.vertx.ConsumeEvent;
 
 @AutoCreateInstance
 public class NashornRunner {
 
 	private static final String ENABLED = "enabled";
-    private static final String NASHORN = "nashorn";
-    private static final String TRUE = "true";
-    private static NashornRunner instance;
+	private static final String NASHORN = "nashorn";
+	private static final String TRUE = "true";
+	private static NashornRunner instance;
 	private ScriptEngine engine = null;
 
 	public static NashornRunner getInstance() {
@@ -53,7 +54,7 @@ public class NashornRunner {
 		}
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value = "EventObject", blocking = true)
 	public void handleEvent(final EventObject event) {
 		Logger logger = LogManager.getLogger(this.getClass());
 		if (engine != null) {
@@ -98,9 +99,8 @@ public class NashornRunner {
 	public static void stopInstance() {
 		if (instance != null) {
 			EventBusService.getEventBus().unregister(instance);
-			instance=null;
+			instance = null;
 		}
-		
+
 	}
 }
-

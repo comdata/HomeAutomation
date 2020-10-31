@@ -26,12 +26,16 @@ import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.base.HTTPHelper;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
+import io.vertx.core.eventbus.EventBus;
 
 @Path("light")
 @Singleton
 public class LightService extends BaseService {
 	@Inject
 	MQTTSender mqttSender;
+	
+	@Inject      
+	EventBus bus;
 
 	private static final String ON = "on";
 	private static final String OFF = "off";
@@ -63,10 +67,6 @@ public class LightService extends BaseService {
 	public LightService() {
 		initLightList();
 		setInstance(this);
-	}
-
-	void startup(@Observes StartupEvent event) {
-		EventBusService.getEventBus().register(this);
 	}
 
 	@GET

@@ -24,6 +24,7 @@ import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.networkmonitor.NetworkScanner;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
+import io.quarkus.vertx.ConsumeEvent;
 
 /**
  * service to get all hosts from the {@link NetworkScanner} internal list
@@ -53,7 +54,6 @@ public class NetworkDevicesService extends BaseService {
 	private static final String BROADCAST_IP_ADDRESS = "192.168.1.255";
 
 	public NetworkDevicesService() {
-		EventBusService.getEventBus().register(this);
 		setInstance(this);
 	}
 
@@ -100,7 +100,8 @@ public class NetworkDevicesService extends BaseService {
 	 *
 	 * @param event
 	 */
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value = "EventObject", blocking = true)
+
 	public void handleEvent(final EventObject event) {
 
 		final Object data = event.getData();
@@ -163,12 +164,12 @@ public class NetworkDevicesService extends BaseService {
 
 			final InetAddress address = InetAddress.getByName(BROADCAST_IP_ADDRESS);
 			final DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address, PORT);
-			
-			for (int i=0; i<10; i++) {
+
+			for (int i = 0; i < 10; i++) {
 				socket.send(packet);
 				Thread.sleep(1000);
 			}
-			
+
 			// send post wake up message
 			EventBusService.getEventBus().post(new EventObject(new NetworkWakeupEvent(macStr)));
 
