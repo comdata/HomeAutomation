@@ -258,13 +258,14 @@ public class WindowBlindService extends BaseService {
 
 		List<WindowBlind> windowBlindFullList = em.createQuery("select b from WindowBlind b", WindowBlind.class)
 				.getResultList();
-		windowBlindMap = new HashMap<>();
+		Map<Long, WindowBlind> windowBlindMapTemp = new HashMap<>();
 
 		for (WindowBlind windowBlind : windowBlindFullList) {
-			windowBlindMap.put(windowBlind.getId(), windowBlind);
+			windowBlindMapTemp.put(windowBlind.getId(), windowBlind);
 		}
 
-		windowBlindList = new HashMap<>();
+		
+		Map<Long, List<WindowBlind>> windowBlindListTemp = new HashMap<>();
 		if (rooms != null && !rooms.isEmpty()) {
 
 			for (Room room : rooms) {
@@ -275,11 +276,15 @@ public class WindowBlindService extends BaseService {
 								WindowBlind.class)
 						.setParameter("room", roomId).getResultList();
 
-				windowBlindList.put(roomId, windowBlindRoomList);
+				windowBlindListTemp.put(roomId, windowBlindRoomList);
 
 			}
 
 		}
+
+		// replace once done
+		windowBlindMap = windowBlindMapTemp;
+		windowBlindList = windowBlindListTemp;
 	}
 
 }
