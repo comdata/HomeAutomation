@@ -35,7 +35,7 @@ public class MQTTTopicRecorder {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void receiverMQTTTopicEvents(MQTTTopicEvent event) {
 
 		@NonNull

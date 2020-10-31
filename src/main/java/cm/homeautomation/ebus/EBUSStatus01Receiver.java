@@ -47,7 +47,7 @@ public class EBUSStatus01Receiver {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void receive(EventObject eventObject) {
 		if (eventObject.getData() instanceof EBusMessageEvent) {
 			EBusMessageEvent messageEvent = (EBusMessageEvent) eventObject.getData();

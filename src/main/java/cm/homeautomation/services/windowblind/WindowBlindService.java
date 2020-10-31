@@ -142,7 +142,7 @@ public class WindowBlindService extends BaseService {
 		return new GenericStatus(true);
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void callDim(WindowBlindDimMessage message) {
 		setDim(message.getWindowBlindId(), message.getValue(), message.getType(), message.getRoomId());
 	}

@@ -67,7 +67,7 @@ public class MQTTSender {
 
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void send(MQTTSendEvent mqttSendEvent) {
 		String topic = mqttSendEvent.getTopic();
 		String messagePayload = mqttSendEvent.getPayload();

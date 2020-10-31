@@ -33,7 +33,7 @@ public class RemoteControlEventListener {
 	}
 
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void subscribe(RemoteControlBrightnessChangeEvent event) {
 		String name = event.getName();
 		String technicalId = event.getTechnicalId();
@@ -82,7 +82,7 @@ public class RemoteControlEventListener {
 		}
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void subscribe(RemoteControlEvent event) {
 		String name = event.getName();
 		String technicalId = event.getTechnicalId();

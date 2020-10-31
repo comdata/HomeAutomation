@@ -51,7 +51,7 @@ public class MQTTHumanMessageEmitter {
 				.getResultList();
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void handleEvent(final EventObject eventObject) {
 		Runnable eventThread = () -> {
 			if (eventObject.getData() instanceof HumanMessageGenerationInterface) {

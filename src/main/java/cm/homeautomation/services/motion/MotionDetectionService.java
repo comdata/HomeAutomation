@@ -21,7 +21,7 @@ public class MotionDetectionService extends BaseService {
 
     }
 
-    @Subscribe(threadMode = ThreadMode.POSTING)
+    @Subscribe(threadMode = ThreadMode.ASYNC)
     public void registerMotionEvent(final MotionEvent motionEvent) {
 
         EntityManager em = EntityManagerService.getManager();

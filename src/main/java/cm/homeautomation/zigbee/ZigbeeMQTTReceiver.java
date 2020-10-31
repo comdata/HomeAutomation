@@ -71,7 +71,7 @@ public class ZigbeeMQTTReceiver {
 		mqttSender.sendMQTTMessage(zigbeeMqttTopic + "/bridge/config/devices/get", "");
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void receiveMQTTTopicEvents(MQTTTopicEvent event) throws JsonMappingException, JsonProcessingException {
 		@NonNull
 		String topic = event.getTopic();

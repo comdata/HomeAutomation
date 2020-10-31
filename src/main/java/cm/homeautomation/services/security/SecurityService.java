@@ -47,7 +47,7 @@ public class SecurityService extends BaseService {
 		return em.createQuery("select s from SecurityZone s").getResultList();
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void handleWindowEvents(EventObject eventObject) {
 		if ((eventObject.getData() != null) && (eventObject.getData() instanceof WindowStateData)) {
 			final WindowStateData windowStateData = (WindowStateData) eventObject.getData();

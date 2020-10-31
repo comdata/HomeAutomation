@@ -35,7 +35,7 @@ public class WindowStateSensor {
 
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void handleWindowState(final EventObject eventObject) {
 
 		final Object data = eventObject.getData();

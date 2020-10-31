@@ -21,7 +21,7 @@ public class NetworkDeviceDatabaseUpdater {
 //		LogManager.getLogger(this.getClass()).debug("registered NetworkDeviceDatabaseUpdater");
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void handleNetworkDeviceFound(EventObject eventObject) {
 		final Object data = eventObject.getData();
 		if (data instanceof NetworkScannerHostFoundMessage) {

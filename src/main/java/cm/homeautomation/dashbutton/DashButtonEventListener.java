@@ -36,7 +36,7 @@ public class DashButtonEventListener {
 
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void handleEvent(final EventObject event) {
 
 		final Object data = event.getData();

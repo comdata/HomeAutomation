@@ -34,7 +34,7 @@ public class FHEMDataReceiver {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void handleFHEMData(FHEMDataEvent fhemDataEvent) {
 		String messageContent=fhemDataEvent.getPayload();
 		String topic=fhemDataEvent.getTopic();

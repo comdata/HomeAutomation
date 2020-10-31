@@ -22,7 +22,7 @@ public class MowerEventReceiver {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void subscribe(MQTTEventBusObject eventObject) {
 
 		String messageContent = eventObject.getMessageContent();

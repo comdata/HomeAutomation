@@ -14,7 +14,7 @@ public class HumanMessageEventTranslator {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void handleEvent(final EventObject eventObject) {
 
 		final Object eventData = eventObject.getData();

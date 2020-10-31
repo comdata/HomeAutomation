@@ -48,7 +48,7 @@ public class HueInterface extends BaseService {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void handleEventBusMessage(HueEmulatorMessage message) {
 		handleMessage(message);
 	}

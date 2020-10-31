@@ -35,7 +35,7 @@ public class GasMeterSensor {
 
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void handleGasMeterData(final EventObject eventObject) {
 
 		final Object data = eventObject.getData();

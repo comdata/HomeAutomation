@@ -58,7 +58,7 @@ public class TelegramBotService {
 		}
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void handleEvent(final EventObject eventObject) {
 		if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
 			final HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventObject

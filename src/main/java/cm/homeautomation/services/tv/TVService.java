@@ -87,7 +87,7 @@ public class TVService extends BaseService {
 		return tvBinding.checkAlive(tvIp);
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void phoneEventHandler(final EventObject eventObject) {
 
 		final Object eventData = eventObject.getData();

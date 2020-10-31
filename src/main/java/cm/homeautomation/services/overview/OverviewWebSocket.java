@@ -53,7 +53,7 @@ public class OverviewWebSocket {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void handleSensorDataChanged(final EventObject eventObject) {
 
 		LogManager.getLogger(this.getClass()).info("Overview got event");

@@ -54,7 +54,7 @@ public class JSONSensorDataReceiver {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void receiveSensorData(JSONDataEvent jsonDataEvent) {
 
 		String messageContent = jsonDataEvent.getMessage();

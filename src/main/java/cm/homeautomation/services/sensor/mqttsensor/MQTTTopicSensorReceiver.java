@@ -32,7 +32,7 @@ public class MQTTTopicSensorReceiver {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe(threadMode = ThreadMode.POSTING)
+	@Subscribe(threadMode = ThreadMode.ASYNC)
 	public void receiveMQTTTopic(MQTTTopicEvent topicEvent) {
 		Runnable mqttTopicThread = () -> {
 			LOG.debug("got topic: " + topicEvent.getTopic() + " -  message: " + topicEvent.getMessage());

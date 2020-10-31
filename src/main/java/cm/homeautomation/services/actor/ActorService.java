@@ -261,7 +261,7 @@ public class ActorService extends BaseService {
 		return switchStatuses;
 	}
 
-	@Subscribe(threadMode=ThreadMode.POSTING)
+	@Subscribe(threadMode=ThreadMode.ASYNC)
 	public void subscribePressSwitch(ActorPressSwitchEvent event) {
 		pressSwitch(event.getSwitchId(), event.getTargetStatus());
 	}
