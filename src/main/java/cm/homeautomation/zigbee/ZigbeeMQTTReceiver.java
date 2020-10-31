@@ -78,6 +78,7 @@ public class ZigbeeMQTTReceiver {
 		@NonNull
 		String topic = event.getTopic();
 
+		System.out.println("ZIGBEE: "+topic);
 		if (topic.startsWith(zigbeeMqttTopic)) {
 
 			// do zigbee magic
