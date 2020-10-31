@@ -5,6 +5,7 @@ import java.util.UUID;
 import javax.inject.Singleton;
 
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -66,7 +67,7 @@ public class MQTTSender {
 
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.POSTING)
 	public void send(MQTTSendEvent mqttSendEvent) {
 		String topic = mqttSendEvent.getTopic();
 		String messagePayload = mqttSendEvent.getPayload();

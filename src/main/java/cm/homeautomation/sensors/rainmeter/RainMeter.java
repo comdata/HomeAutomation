@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.EntityManager;
 
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.RainPing;
@@ -19,7 +20,7 @@ public class RainMeter {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.POSTING)
 	public void handlePowerMeterData(final EventObject eventObject) {
 
 		final Object data = eventObject.getData();

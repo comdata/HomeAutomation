@@ -4,6 +4,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Singleton;
 
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
@@ -21,7 +22,7 @@ public class MowerEventReceiver {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.POSTING)
 	public void subscribe(MQTTEventBusObject eventObject) {
 
 		String messageContent = eventObject.getMessageContent();

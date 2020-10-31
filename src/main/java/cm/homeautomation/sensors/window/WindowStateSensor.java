@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.EntityManager;
 
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.device.DeviceService;
@@ -34,7 +35,7 @@ public class WindowStateSensor {
 
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.POSTING)
 	public void handleWindowState(final EventObject eventObject) {
 
 		final Object data = eventObject.getData();

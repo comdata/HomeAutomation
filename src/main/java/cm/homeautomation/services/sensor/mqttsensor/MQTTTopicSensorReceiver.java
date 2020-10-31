@@ -8,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.jboss.logging.Logger;
 
 import cm.homeautomation.db.EntityManagerService;
@@ -31,7 +32,7 @@ public class MQTTTopicSensorReceiver {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.POSTING)
 	public void receiveMQTTTopic(MQTTTopicEvent topicEvent) {
 		Runnable mqttTopicThread = () -> {
 			LOG.debug("got topic: " + topicEvent.getTopic() + " -  message: " + topicEvent.getMessage());

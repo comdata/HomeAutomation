@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.EntityManager;
 
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.GasMeterPing;
@@ -34,7 +35,7 @@ public class GasMeterSensor {
 
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.POSTING)
 	public void handleGasMeterData(final EventObject eventObject) {
 
 		final Object data = eventObject.getData();

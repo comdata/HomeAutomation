@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.MotionDetection;
@@ -20,7 +21,7 @@ public class MotionDetectionService extends BaseService {
 
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.POSTING)
     public void registerMotionEvent(final MotionEvent motionEvent) {
 
         EntityManager em = EntityManagerService.getManager();

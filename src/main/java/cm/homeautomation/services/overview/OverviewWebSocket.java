@@ -17,6 +17,7 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.eventbus.EventBusService;
@@ -52,7 +53,7 @@ public class OverviewWebSocket {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.POSTING)
 	public void handleSensorDataChanged(final EventObject eventObject) {
 
 		LogManager.getLogger(this.getClass()).info("Overview got event");

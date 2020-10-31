@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.FHEMDevice;
@@ -33,7 +34,7 @@ public class FHEMDataReceiver {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.POSTING)
 	public void handleFHEMData(FHEMDataEvent fhemDataEvent) {
 		String messageContent=fhemDataEvent.getPayload();
 		String topic=fhemDataEvent.getTopic();

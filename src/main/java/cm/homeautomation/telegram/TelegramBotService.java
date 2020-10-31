@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -57,7 +58,7 @@ public class TelegramBotService {
 		}
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.POSTING)
 	public void handleEvent(final EventObject eventObject) {
 		if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
 			final HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventObject

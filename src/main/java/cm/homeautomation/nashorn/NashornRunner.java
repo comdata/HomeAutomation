@@ -11,6 +11,7 @@ import javax.script.ScriptException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
@@ -52,7 +53,7 @@ public class NashornRunner {
 		}
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.POSTING)
 	public void handleEvent(final EventObject event) {
 		Logger logger = LogManager.getLogger(this.getClass());
 		if (engine != null) {

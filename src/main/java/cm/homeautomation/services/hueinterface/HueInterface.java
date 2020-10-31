@@ -11,6 +11,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.jboss.logging.Logger;
 
 import cm.homeautomation.db.EntityManagerService;
@@ -51,7 +52,7 @@ public class HueInterface extends BaseService {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.POSTING)
 	public void handleEventBusMessage(HueEmulatorMessage message) {
 		handleMessage(message);
 	}

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
@@ -50,7 +51,7 @@ public class MQTTHumanMessageEmitter {
 				.getResultList();
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.POSTING)
 	public void handleEvent(final EventObject eventObject) {
 		Runnable eventThread = () -> {
 			if (eventObject.getData() instanceof HumanMessageGenerationInterface) {

@@ -8,6 +8,7 @@ import javax.script.ScriptException;
 
 import org.apache.logging.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DashButton;
@@ -35,7 +36,7 @@ public class DashButtonEventListener {
 
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.POSTING)
 	public void handleEvent(final EventObject event) {
 
 		final Object data = event.getData();

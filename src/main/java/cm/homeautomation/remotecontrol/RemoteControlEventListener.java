@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.log4j.LogManager;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.RemoteControl;
@@ -32,7 +33,7 @@ public class RemoteControlEventListener {
 	}
 
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.POSTING)
 	public void subscribe(RemoteControlBrightnessChangeEvent event) {
 		String name = event.getName();
 		String technicalId = event.getTechnicalId();
@@ -81,7 +82,7 @@ public class RemoteControlEventListener {
 		}
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.POSTING)
 	public void subscribe(RemoteControlEvent event) {
 		String name = event.getName();
 		String technicalId = event.getTechnicalId();

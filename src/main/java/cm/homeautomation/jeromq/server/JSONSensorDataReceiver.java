@@ -10,6 +10,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Singleton;
 
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -53,7 +54,7 @@ public class JSONSensorDataReceiver {
 		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe
+	@Subscribe(threadMode = ThreadMode.POSTING)
 	public void receiveSensorData(JSONDataEvent jsonDataEvent) {
 
 		String messageContent = jsonDataEvent.getMessage();
