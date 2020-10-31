@@ -25,7 +25,7 @@ import io.quarkus.scheduler.Scheduled;
 public class MQTTTopicSensorReceiver {
 
 	private static final Logger LOG = Logger.getLogger(MQTTTopicSensorReceiver.class);
-	private Map<String, Sensor> sensorTechnicalTypeMap;
+	private Map<String, Sensor> sensorTechnicalTypeMap = new HashMap<>();
 
 	public MQTTTopicSensorReceiver() {
 		initSensorMap();
@@ -66,16 +66,18 @@ public class MQTTTopicSensorReceiver {
 		final EntityManager em = EntityManagerService.getManager();
 
 		List<Sensor> sensorFullList = em.createQuery("select s from Sensor s", Sensor.class).getResultList();
-		sensorTechnicalTypeMap = new HashMap<>();
 
+		Map<String, Sensor> sensorTechnicalTypeMapTemp = new HashMap<>();
+		
 		for (Sensor sensor : sensorFullList) {
 
 			String sensorTechnicalType = sensor.getSensorTechnicalType();
 			if (sensorTechnicalType != null && !"".equals(sensorTechnicalType)) {
-				sensorTechnicalTypeMap.put(sensorTechnicalType, sensor);
+				sensorTechnicalTypeMapTemp.put(sensorTechnicalType, sensor);
 			}
 
 		}
+		sensorTechnicalTypeMap=sensorTechnicalTypeMapTemp;
 	}
 
 }
