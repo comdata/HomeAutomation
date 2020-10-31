@@ -42,7 +42,7 @@ public class ReactiveMQTTReceiverClient {
 				if (throwable != null) {
 					// Handle connection failure
 				} else {
-					client.subscribeWith().topicFilter("#").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
+					client.subscribeWith().topicFilter("hueinterface").topicFilter("zigbee2mqtt").topicFilter("ebusd").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
 						
 						Runnable runThread = () -> {
 							// Process the received message
