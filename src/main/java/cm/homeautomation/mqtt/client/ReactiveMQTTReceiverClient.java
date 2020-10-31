@@ -3,6 +3,7 @@ package cm.homeautomation.mqtt.client;
 import java.util.UUID;
 
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.log4j.LogManager;
@@ -10,7 +11,6 @@ import org.apache.log4j.LogManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 
 import cm.homeautomation.configuration.ConfigurationService;
@@ -22,11 +22,15 @@ import cm.homeautomation.jeromq.server.JSONDataEvent;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.services.hueinterface.HueEmulatorMessage;
 import io.quarkus.runtime.StartupEvent;
+import io.vertx.core.eventbus.EventBus;
 
 @Singleton
 public class ReactiveMQTTReceiverClient {
 	private static ObjectMapper mapper = new ObjectMapper();
 
+	@Inject
+	EventBus bus;
+	
 	private void initClient() {
 
 		String host = ConfigurationService.getConfigurationProperty("mqtt", "host");
@@ -219,7 +223,10 @@ public class ReactiveMQTTReceiverClient {
 
 		try {
 
-			EventBusService.getEventBus().post(new MQTTTopicEvent(topic, messageContent));
+			MQTTTopicEvent mqttTopicEvent = new MQTTTopicEvent(topic, messageContent);
+			EventBusService.getEventBus().post(mqttTopicEvent);
+
+			bus.send(MQTTTopicEvent.class.getName(), mqttTopicEvent);
 
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass()).error(e);
@@ -229,8 +236,14 @@ public class ReactiveMQTTReceiverClient {
 
 	private void handleMessageFHEM(String topic, String messageContent) {
 		try {
-			EventBusService.getEventBus().post(new FHEMDataEvent(topic, messageContent));
+			FHEMDataEvent fhemDataEvent = new FHEMDataEvent(topic, messageContent);
+			EventBusService.getEventBus().post(fhemDataEvent);
+			
+			bus.send(FHEMDataEvent.class.getName(), fhemDataEvent);
+			
 			handleMessageMQTT(topic, messageContent);
+			
+			
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass()).error(e);
 		}
@@ -240,7 +253,10 @@ public class ReactiveMQTTReceiverClient {
 	private void handleMessageEBUS(String topic, String messageContent) {
 		try {
 			EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
-			EventBusService.getEventBus().post(new EventObject(ebusMessageEvent));
+			EventObject eventObject = new EventObject(ebusMessageEvent);
+			EventBusService.getEventBus().post(eventObject);
+			bus.send(EventObject.class.getName(), eventObject);
+			
 			handleMessageMQTT(topic, messageContent);
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass()).error(e);
@@ -262,7 +278,9 @@ public class ReactiveMQTTReceiverClient {
 		try {
 
 			if (messageContent.startsWith("{")) {
-				EventBusService.getEventBus().post(new JSONDataEvent(messageContent));
+				JSONDataEvent jsonDataEvent = new JSONDataEvent(messageContent);
+				EventBusService.getEventBus().post(jsonDataEvent);
+				bus.send(JSONDataEvent.class.getName(), jsonDataEvent);
 				handleMessageMQTT(topic, messageContent);
 			}
 		} catch (Exception e) {
@@ -276,6 +294,8 @@ public class ReactiveMQTTReceiverClient {
 		try {
 			hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
 			EventBusService.getEventBus().post(hueMessage);
+			
+			bus.send(HueEmulatorMessage.class.getName(), hueMessage);
 		} catch (JsonProcessingException e) {
 			LogManager.getLogger(this.getClass()).error(e);
 		}

@@ -11,8 +11,6 @@ import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import org.apache.logging.log4j.LogManager;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -44,11 +42,18 @@ import cm.homeautomation.services.sensors.Sensors;
 import cm.homeautomation.services.windowblind.WindowBlindService;
 import cm.homeautomation.zigbee.entities.ZigBeeTradfriRemoteControl;
 import io.quarkus.runtime.StartupEvent;
+import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
 import lombok.NonNull;
 
 @Singleton
 public class ZigbeeMQTTReceiver {
 	@Inject MQTTSender mqttSender;
+	
+
+	@Inject
+	EventBus bus;
+	
 
 	private static final String SELECT_S_FROM_SENSOR_S_WHERE_S_EXTERNAL_ID_EXTERNAL_ID_AND_S_SENSOR_TYPE_SENSOR_TYPE = "select s from Sensor s where s.externalId=:externalId and s.sensorType=:sensorType";
 	private static final int brightnessChangeIncrement = 10;
@@ -57,7 +62,7 @@ public class ZigbeeMQTTReceiver {
 	private String zigbeeMqttTopic = ConfigurationService.getConfigurationProperty("zigbee", "mqttTopic");
 
 	private void init() {
-		EventBusService.getEventBus().register(this);
+		//EventBusService.getEventBus().register(this);
 
 		updateDeviceList();
 	}
@@ -71,7 +76,7 @@ public class ZigbeeMQTTReceiver {
 		mqttSender.sendMQTTMessage(zigbeeMqttTopic + "/bridge/config/devices/get", "");
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value="MQTTTopicEvent", blocking = true)
 	public void receiveMQTTTopicEvents(MQTTTopicEvent event) throws JsonMappingException, JsonProcessingException {
 		@NonNull
 		String topic = event.getTopic();
@@ -498,8 +503,9 @@ public class ZigbeeMQTTReceiver {
 
 			remoteControlEvent.setPoweredOnState(occupancyNodeBoolean);
 
-			EventBusService.getEventBus().post(remoteControlEvent);
-
+			//EventBusService.getEventBus().post(remoteControlEvent);
+			bus.send("RemoteControlEvent", remoteControlEvent);
+			
 			MotionEvent motionDetectionEvent = new MotionEvent();
 			motionDetectionEvent.setMac(ieeeAddr);
 			motionDetectionEvent.setName(zigbeeDevice.getFriendlyName());
@@ -507,7 +513,9 @@ public class ZigbeeMQTTReceiver {
             motionDetectionEvent.setTimestamp(new Date());
             motionDetectionEvent.setType("ZIGBEE");
 
-			EventBusService.getEventBus().post(motionDetectionEvent);
+			//EventBusService.getEventBus().post(motionDetectionEvent);
+			
+			bus.send("MotionEvent", motionDetectionEvent);
 		}
 
 		JsonNode illuminanceNode = messageObject.get("illuminance");

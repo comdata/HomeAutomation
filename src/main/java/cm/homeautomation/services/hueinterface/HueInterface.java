@@ -30,6 +30,7 @@ import cm.homeautomation.services.light.LightService;
 import cm.homeautomation.services.light.LightStates;
 import cm.homeautomation.services.windowblind.WindowBlindDimMessage;
 import io.quarkus.runtime.StartupEvent;
+import io.vertx.core.eventbus.EventBus;
 
 @Singleton
 @Path("hueInterface")
@@ -37,6 +38,9 @@ public class HueInterface extends BaseService {
 
 	@Inject
 	LightService lightService;
+
+	@Inject
+	EventBus bus;
 
 	private static final Logger LOG = Logger.getLogger(HueInterface.class);
 
@@ -176,6 +180,8 @@ public class HueInterface extends BaseService {
 
 		remoteControlEvent.setPoweredOnState("on".equals(message.getPayload()));
 		EventBusService.getEventBus().post(remoteControlEvent);
+
+		bus.send(RemoteControlEvent.class.getName(), remoteControlEvent);
 	}
 
 	private void handleWindowBlind(HueEmulatorMessage message, HueDevice hueDevice) {
@@ -191,18 +197,23 @@ public class HueInterface extends BaseService {
 			}
 //            LogManager.getLogger(HueInterface.class).debug("Window Blind dim: " + dimValue);
 
-			EventBusService.getEventBus()
-					.post(new WindowBlindDimMessage(hueDevice.getExternalId(),
-							("on".equals(message.getPayload()) ? dimValue : "0"),
-							hueDevice.isGroupDevice() ? WindowBlind.ALL_AT_ONCE : WindowBlind.SINGLE,
-							(hueDevice.isGroupDevice() ? hueDevice.getRoom().getId() : null)));
+			WindowBlindDimMessage windowBlindDimMessage = new WindowBlindDimMessage(hueDevice.getExternalId(),
+					("on".equals(message.getPayload()) ? dimValue : "0"),
+					hueDevice.isGroupDevice() ? WindowBlind.ALL_AT_ONCE : WindowBlind.SINGLE,
+					(hueDevice.isGroupDevice() ? hueDevice.getRoom().getId() : null));
+			EventBusService.getEventBus().post(windowBlindDimMessage);
+
+			bus.send(WindowBlindDimMessage.class.getName(), windowBlindDimMessage);
 
 		}
 	}
 
 	private void handleSwitch(HueEmulatorMessage message, HueDevice hueDevice) {
-		EventBusService.getEventBus().post(new ActorPressSwitchEvent(Long.toString(hueDevice.getExternalId()),
-				("on".equals(message.getPayload()) ? "ON" : "OFF")));
+		ActorPressSwitchEvent actorPressSwitchEvent = new ActorPressSwitchEvent(Long.toString(hueDevice.getExternalId()),
+				("on".equals(message.getPayload()) ? "ON" : "OFF"));
+		EventBusService.getEventBus().post(actorPressSwitchEvent);
+		
+		bus.send(ActorPressSwitchEvent.class.getName(), actorPressSwitchEvent);
 	}
 
 	private void handleLight(HueEmulatorMessage message, HueDevice hueDevice) {

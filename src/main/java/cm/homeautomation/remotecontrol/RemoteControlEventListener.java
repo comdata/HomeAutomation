@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
@@ -20,20 +21,28 @@ import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.services.actor.ActorService;
 import cm.homeautomation.services.light.LightService;
 import cm.homeautomation.services.light.LightStates;
+import cm.homeautomation.services.windowblind.WindowBlindDimMessage;
+import cm.homeautomation.services.windowblind.WindowBlindDimMessageSimple;
 import cm.homeautomation.services.windowblind.WindowBlindService;
 import cm.homeautomation.services.windowblind.WindowBlindService.DimDirection;
 import cm.homeautomation.zigbee.RemoteControlBrightnessChangeEvent;
 import io.quarkus.runtime.StartupEvent;
+import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
 
 @Singleton
 public class RemoteControlEventListener {
 
+
+	@Inject
+	EventBus bus;
+	
 	void startup(@Observes StartupEvent event) {
 		EventBusService.getEventBus().register(this);
 	}
 
-
 	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value = "RemoteControlBrightnessChangeEvent", blocking = true)
 	public void subscribe(RemoteControlBrightnessChangeEvent event) {
 		String name = event.getName();
 		String technicalId = event.getTechnicalId();
@@ -82,7 +91,7 @@ public class RemoteControlEventListener {
 		}
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value = "RemoteControlEvent", blocking = true)
 	public void subscribe(RemoteControlEvent event) {
 		String name = event.getName();
 		String technicalId = event.getTechnicalId();
@@ -139,9 +148,10 @@ public class RemoteControlEventListener {
 									break;
 
 								case REMOTE:
-
-									new WindowBlindService().setDim(remoteControlGroupMember.getExternalId(),
+									WindowBlindDimMessageSimple windowBlindDimMessage = new WindowBlindDimMessageSimple(
+											remoteControlGroupMember.getExternalId(),
 											(event.isPoweredOnState() ? "99" : "0"));
+									bus.send("WindowBlindDimMessageSimple", windowBlindDimMessage);
 									break;
 								}
 

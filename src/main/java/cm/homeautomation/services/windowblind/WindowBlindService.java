@@ -27,6 +27,7 @@ import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.base.HTTPHelper;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
+import io.quarkus.vertx.ConsumeEvent;
 
 @Singleton
 @Path("windowBlinds/")
@@ -143,9 +144,16 @@ public class WindowBlindService extends BaseService {
 	}
 
 	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value="WindowBlindDimMessage", blocking = true)
 	public void callDim(WindowBlindDimMessage message) {
 		setDim(message.getWindowBlindId(), message.getValue(), message.getType(), message.getRoomId());
 	}
+	
+	@ConsumeEvent(value="WindowBlindDimMessageSimple", blocking = true)
+	public void setDim(WindowBlindDimMessageSimple event) {
+		setDim(event.getWindowBlindId(), event.getValue());
+	}
+
 
 	@GET
 	@Path("setDim/{windowBlind}/{value}/{type}/{roomId}")

@@ -7,18 +7,16 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.jboss.logging.Logger;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Sensor;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
 import io.quarkus.scheduler.Scheduled;
+import io.quarkus.vertx.ConsumeEvent;
 
 @ApplicationScoped
 @AutoCreateInstance
@@ -29,10 +27,9 @@ public class MQTTTopicSensorReceiver {
 
 	public MQTTTopicSensorReceiver() {
 		initSensorMap();
-		EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value = "MQTTTopicEvent", blocking = true)
 	public void receiveMQTTTopic(MQTTTopicEvent topicEvent) {
 		Runnable mqttTopicThread = () -> {
 			LOG.debug("got topic: " + topicEvent.getTopic() + " -  message: " + topicEvent.getMessage());
@@ -68,7 +65,7 @@ public class MQTTTopicSensorReceiver {
 		List<Sensor> sensorFullList = em.createQuery("select s from Sensor s", Sensor.class).getResultList();
 
 		Map<String, Sensor> sensorTechnicalTypeMapTemp = new HashMap<>();
-		
+
 		for (Sensor sensor : sensorFullList) {
 
 			String sensorTechnicalType = sensor.getSensorTechnicalType();
@@ -77,7 +74,7 @@ public class MQTTTopicSensorReceiver {
 			}
 
 		}
-		sensorTechnicalTypeMap=sensorTechnicalTypeMapTemp;
+		sensorTechnicalTypeMap = sensorTechnicalTypeMapTemp;
 	}
 
 }

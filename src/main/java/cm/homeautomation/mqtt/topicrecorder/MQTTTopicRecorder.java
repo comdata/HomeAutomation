@@ -7,14 +7,12 @@ import javax.enterprise.event.Observes;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.MQTTTopic;
 import cm.homeautomation.eventbus.EventBusService;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
+import io.quarkus.vertx.ConsumeEvent;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 
@@ -32,10 +30,10 @@ public class MQTTTopicRecorder {
 
 	void startup(@Observes StartupEvent event) {
 		initTopicMap();
-		EventBusService.getEventBus().register(this);
+	//	EventBusService.getEventBus().register(this);
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value="MQTTTopicEvent", blocking = true)
 	public void receiverMQTTTopicEvents(MQTTTopicEvent event) {
 
 		@NonNull
