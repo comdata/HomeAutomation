@@ -3,6 +3,7 @@ package cm.homeautomation.networkmonitor;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import org.apache.log4j.LogManager;
