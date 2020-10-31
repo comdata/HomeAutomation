@@ -24,21 +24,17 @@ import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.events.RemoteControlEvent.EventType;
 import cm.homeautomation.services.actor.ActorPressSwitchEvent;
-import cm.homeautomation.services.actor.ActorService;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.light.LightService;
 import cm.homeautomation.services.light.LightStates;
 import cm.homeautomation.services.windowblind.WindowBlindDimMessage;
-import cm.homeautomation.services.windowblind.WindowBlindService;
 import io.quarkus.runtime.StartupEvent;
 
 @Singleton
 @Path("hueInterface")
 public class HueInterface extends BaseService {
 
-	@Inject
-	ActorService actorService;
 	@Inject
 	LightService lightService;
 
