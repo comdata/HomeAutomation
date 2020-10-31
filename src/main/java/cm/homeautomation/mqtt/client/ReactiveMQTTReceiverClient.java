@@ -27,146 +27,186 @@ import io.quarkus.runtime.StartupEvent;
 public class ReactiveMQTTReceiverClient {
 	private static ObjectMapper mapper = new ObjectMapper();
 
-	private Mqtt3AsyncClient client = null;
-
 	private void initClient() {
-		if (client == null) {
 
-			String host = ConfigurationService.getConfigurationProperty("mqtt", "host");
-			int port = Integer.parseInt(ConfigurationService.getConfigurationProperty("mqtt", "port"));
+		String host = ConfigurationService.getConfigurationProperty("mqtt", "host");
+		int port = Integer.parseInt(ConfigurationService.getConfigurationProperty("mqtt", "port"));
 
-			client = MqttClient.builder().useMqttVersion3().identifier(UUID.randomUUID().toString()).serverHost(host)
-					.serverPort(port).automaticReconnect().applyAutomaticReconnect().buildAsync();
+		Mqtt3AsyncClient client = buildAClient(host, port);
 
-			client.connect().whenComplete((connAck, throwable) -> {
-				if (throwable != null) {
-					// Handle connection failure
-				} else {
+		Mqtt3AsyncClient zigbeeClient = buildAClient(host, port);
+		Mqtt3AsyncClient ebusClient = buildAClient(host, port);
+		Mqtt3AsyncClient hueClient = buildAClient(host, port);
+		Mqtt3AsyncClient fhemClient = buildAClient(host, port);
+
+		zigbeeClient.connect().whenComplete((connAck, throwable) -> {
+			if (throwable != null) {
+				// Handle connection failure
+			} else {
+
+				zigbeeClient.subscribeWith().topicFilter("zigbee2mqtt").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
+
+					Runnable runThread = () -> {
+						// Process the received message
+
+						String topic = publish.getTopic().toString();
+						String messageContent = new String(publish.getPayloadAsBytes());
+						LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+
+						handleMessageMQTT(topic, messageContent);
+					};
+					new Thread(runThread).start();
+				}).send().whenComplete((subAck, e) -> {
+					if (e != null) {
+						// Handle failure to subscribe
+						LogManager.getLogger(this.getClass()).error(e);
+					} else {
+						// Handle successful subscription, e.g. logging or incrementing a metric
+						LogManager.getLogger(this.getClass())
+								.debug("successfully subscribed. Type: " + subAck.getType().name());
+					}
+				});
+
+			}
+		});
+
+		ebusClient.connect().whenComplete((connAck, throwable) -> {
+			if (throwable != null) {
+				// Handle connection failure
+			} else {
 
 //					topicFilter("zigbee2mqtt").topicFilter("ebusd")
-					client.subscribeWith().topicFilter("ebusd").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
+				ebusClient.subscribeWith().topicFilter("ebusd").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
 
-						Runnable runThread = () -> {
-							// Process the received message
+					Runnable runThread = () -> {
+						// Process the received message
 
-							String topic = publish.getTopic().toString();
-							String messageContent = new String(publish.getPayloadAsBytes());
-							LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-							System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+						String topic = publish.getTopic().toString();
+						String messageContent = new String(publish.getPayloadAsBytes());
+						LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
 
-							handleMessageEBUS(topic, messageContent);
-						};
-						new Thread(runThread).start();
-					}).send().whenComplete((subAck, e) -> {
-						if (e != null) {
-							// Handle failure to subscribe
-							LogManager.getLogger(this.getClass()).error(e);
-						} else {
-							// Handle successful subscription, e.g. logging or incrementing a metric
-							LogManager.getLogger(this.getClass())
-									.debug("successfully subscribed. Type: " + subAck.getType().name());
-						}
-					});
-					client.subscribeWith().topicFilter("/sensordata").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
+						handleMessageEBUS(topic, messageContent);
+					};
+					new Thread(runThread).start();
+				}).send().whenComplete((subAck, e) -> {
+					if (e != null) {
+						// Handle failure to subscribe
+						LogManager.getLogger(this.getClass()).error(e);
+					} else {
+						// Handle successful subscription, e.g. logging or incrementing a metric
+						LogManager.getLogger(this.getClass())
+								.debug("successfully subscribed. Type: " + subAck.getType().name());
+					}
+				});
+			}
 
-						Runnable runThread = () -> {
-							// Process the received message
+		});
 
-							String topic = publish.getTopic().toString();
-							String messageContent = new String(publish.getPayloadAsBytes());
-							LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-							System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+		hueClient.connect().whenComplete((connAck, throwable) -> {
+			if (throwable != null) {
+				// Handle connection failure
+			} else {
 
-							handleMessage(topic, messageContent);
-						};
-						new Thread(runThread).start();
-					}).send().whenComplete((subAck, e) -> {
-						if (e != null) {
-							// Handle failure to subscribe
-							LogManager.getLogger(this.getClass()).error(e);
-						} else {
-							// Handle successful subscription, e.g. logging or incrementing a metric
-							LogManager.getLogger(this.getClass())
-									.debug("successfully subscribed. Type: " + subAck.getType().name());
-						}
-					});
-					client.subscribeWith().topicFilter("/fhem").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
+//					topicFilter("zigbee2mqtt").topicFilter("ebusd")
 
-						Runnable runThread = () -> {
-							// Process the received message
+				hueClient.subscribeWith().topicFilter("hueinterface").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
 
-							String topic = publish.getTopic().toString();
-							String messageContent = new String(publish.getPayloadAsBytes());
-							LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-							System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+					Runnable runThread = () -> {
+						// Process the received message
 
-							handleMessageFHEM(topic, messageContent);
-						};
-						new Thread(runThread).start();
-					}).send().whenComplete((subAck, e) -> {
-						if (e != null) {
-							// Handle failure to subscribe
-							LogManager.getLogger(this.getClass()).error(e);
-						} else {
-							// Handle successful subscription, e.g. logging or incrementing a metric
-							LogManager.getLogger(this.getClass())
-									.debug("successfully subscribed. Type: " + subAck.getType().name());
-						}
-					});
-					client.subscribeWith().topicFilter("zigbee2mqtt").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
+						String topic = publish.getTopic().toString();
+						String messageContent = new String(publish.getPayloadAsBytes());
+						LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
 
-						Runnable runThread = () -> {
-							// Process the received message
+						handleMessageHUE(topic, messageContent);
+					};
+					new Thread(runThread).start();
+				}).send().whenComplete((subAck, e) -> {
+					if (e != null) {
+						// Handle failure to subscribe
+						LogManager.getLogger(this.getClass()).error(e);
+					} else {
+						// Handle successful subscription, e.g. logging or incrementing a metric
+						LogManager.getLogger(this.getClass())
+								.debug("successfully subscribed. Type: " + subAck.getType().name());
+					}
+				});
+			}
+		});
 
-							String topic = publish.getTopic().toString();
-							String messageContent = new String(publish.getPayloadAsBytes());
-							LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-							System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+		fhemClient.connect().whenComplete((connAck, throwable) -> {
+			if (throwable != null) {
+				// Handle connection failure
+			} else {
 
-							handleMessageMQTT(topic, messageContent);
-						};
-						new Thread(runThread).start();
-					}).send().whenComplete((subAck, e) -> {
-						if (e != null) {
-							// Handle failure to subscribe
-							LogManager.getLogger(this.getClass()).error(e);
-						} else {
-							// Handle successful subscription, e.g. logging or incrementing a metric
-							LogManager.getLogger(this.getClass())
-									.debug("successfully subscribed. Type: " + subAck.getType().name());
-						}
-					});
-					client.subscribeWith().topicFilter("hueinterface").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
+				fhemClient.subscribeWith().topicFilter("/fhem").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
 
-						Runnable runThread = () -> {
-							// Process the received message
+					Runnable runThread = () -> {
+						// Process the received message
 
-							String topic = publish.getTopic().toString();
-							String messageContent = new String(publish.getPayloadAsBytes());
-							LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-							System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+						String topic = publish.getTopic().toString();
+						String messageContent = new String(publish.getPayloadAsBytes());
+						LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
 
-							handleMessageHUE(topic, messageContent);
-						};
-						new Thread(runThread).start();
-					}).send().whenComplete((subAck, e) -> {
-						if (e != null) {
-							// Handle failure to subscribe
-							LogManager.getLogger(this.getClass()).error(e);
-						} else {
-							// Handle successful subscription, e.g. logging or incrementing a metric
-							LogManager.getLogger(this.getClass())
-									.debug("successfully subscribed. Type: " + subAck.getType().name());
-						}
-					});
-				}
-			});
-		}
+						handleMessageFHEM(topic, messageContent);
+					};
+					new Thread(runThread).start();
+				}).send().whenComplete((subAck, e) -> {
+					if (e != null) {
+						// Handle failure to subscribe
+						LogManager.getLogger(this.getClass()).error(e);
+					} else {
+						// Handle successful subscription, e.g. logging or incrementing a metric
+						LogManager.getLogger(this.getClass())
+								.debug("successfully subscribed. Type: " + subAck.getType().name());
+					}
+				});
 
-		if (!client.getState().isConnectedOrReconnect()) {
-			client.connect();
-		}
+			}
+		});
 
+		client.connect().whenComplete((connAck, throwable) -> {
+			if (throwable != null) {
+				// Handle connection failure
+			} else {
+
+//					topicFilter("zigbee2mqtt").topicFilter("ebusd")
+
+				client.subscribeWith().topicFilter("/sensordata").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
+
+					Runnable runThread = () -> {
+						// Process the received message
+
+						String topic = publish.getTopic().toString();
+						String messageContent = new String(publish.getPayloadAsBytes());
+						LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+
+						handleMessage(topic, messageContent);
+					};
+					new Thread(runThread).start();
+				}).send().whenComplete((subAck, e) -> {
+					if (e != null) {
+						// Handle failure to subscribe
+						LogManager.getLogger(this.getClass()).error(e);
+					} else {
+						// Handle successful subscription, e.g. logging or incrementing a metric
+						LogManager.getLogger(this.getClass())
+								.debug("successfully subscribed. Type: " + subAck.getType().name());
+					}
+				});
+			}
+		});
+
+	}
+
+	private Mqtt3AsyncClient buildAClient(String host, int port) {
+		return MqttClient.builder().useMqttVersion3().identifier(UUID.randomUUID().toString()).serverHost(host)
+				.serverPort(port).automaticReconnect().applyAutomaticReconnect().buildAsync();
 	}
 
 	void startup(@Observes StartupEvent event) {
