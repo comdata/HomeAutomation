@@ -44,7 +44,7 @@ public class ReactiveMQTTReceiverClient {
 				// Handle connection failure
 			} else {
 
-				zigbeeClient.subscribeWith().topicFilter("zigbee2mqtt/#").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
+				zigbeeClient.subscribeWith().topicFilter("zigbee2mqtt/#").callback(publish -> {
 
 					Runnable runThread = () -> {
 						// Process the received message
@@ -77,7 +77,7 @@ public class ReactiveMQTTReceiverClient {
 			} else {
 
 //					topicFilter("zigbee2mqtt").topicFilter("ebusd")
-				ebusClient.subscribeWith().topicFilter("ebusd/#").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
+				ebusClient.subscribeWith().topicFilter("ebusd/#").callback(publish -> {
 
 					Runnable runThread = () -> {
 						// Process the received message
@@ -111,7 +111,7 @@ public class ReactiveMQTTReceiverClient {
 
 //					topicFilter("zigbee2mqtt").topicFilter("ebusd")
 
-				hueClient.subscribeWith().topicFilter("hueinterface/#").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
+				hueClient.subscribeWith().topicFilter("hueinterface/#").callback(publish -> {
 
 					Runnable runThread = () -> {
 						// Process the received message
@@ -142,7 +142,7 @@ public class ReactiveMQTTReceiverClient {
 				// Handle connection failure
 			} else {
 
-				fhemClient.subscribeWith().topicFilter("/fhem/#").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
+				fhemClient.subscribeWith().topicFilter("/fhem/#").callback(publish -> {
 
 					Runnable runThread = () -> {
 						// Process the received message
@@ -176,7 +176,7 @@ public class ReactiveMQTTReceiverClient {
 
 //					topicFilter("zigbee2mqtt").topicFilter("ebusd")
 
-				client.subscribeWith().topicFilter("/sensordata/#").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
+				client.subscribeWith().topicFilter("/sensordata/#").callback(publish -> {
 
 					Runnable runThread = () -> {
 						// Process the received message
