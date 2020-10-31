@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.ws.rs.GET;
@@ -16,14 +18,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.device.DeviceService;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.Switch;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.RFEvent;
 import cm.homeautomation.sensors.SensorDataRoomSaveRequest;
@@ -34,523 +34,529 @@ import cm.homeautomation.sensors.SensorValues;
 import cm.homeautomation.services.actor.SwitchEvent;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
+import io.vertx.core.eventbus.EventBus;
+import io.vertx.reactivex.servicediscovery.types.EventBusService;
 
+@Singleton
 @Path("sensors")
 public class Sensors extends BaseService {
 
-    class DataLoadThread extends Thread {
-        private SensorDatas sensorDatas;
-        private final EntityManager em;
-        private final Date now;
-        private final Sensor sensor;
-        private final CountDownLatch latch;
+	@Inject
+	EventBus bus;
 
-        public DataLoadThread(final SensorDatas sensorDatas, final EntityManager em, final Date now,
-                final Sensor sensor, final CountDownLatch latch) {
-            this.sensorDatas = sensorDatas;
-            this.em = em;
-            this.now = now;
-            this.sensor = sensor;
-            this.latch = latch;
+	class DataLoadThread extends Thread {
+		private SensorDatas sensorDatas;
+		private final EntityManager em;
+		private final Date now;
+		private final Sensor sensor;
+		private final CountDownLatch latch;
 
-        }
+		public DataLoadThread(final SensorDatas sensorDatas, final EntityManager em, final Date now,
+				final Sensor sensor, final CountDownLatch latch) {
+			this.sensorDatas = sensorDatas;
+			this.em = em;
+			this.now = now;
+			this.sensor = sensor;
+			this.latch = latch;
 
-        public SensorDatas getSensorDatas() {
-            return sensorDatas;
-        }
+		}
 
-        @Override
-        public void run() {
-            loadSensorData(sensorDatas, em, now, sensor);
-            this.latch.countDown();
-        }
+		public SensorDatas getSensorDatas() {
+			return sensorDatas;
+		}
 
-        public void setSensorDatas(final SensorDatas sensorDatas) {
-            this.sensorDatas = sensorDatas;
-        }
-    }
+		@Override
+		public void run() {
+			loadSensorData(sensorDatas, em, now, sensor);
+			this.latch.countDown();
+		}
 
-    private static Sensors instance;
+		public void setSensorDatas(final SensorDatas sensorDatas) {
+			this.sensorDatas = sensorDatas;
+		}
+	}
 
-    public static Sensors getInstance() {
-        if (instance == null) {
-            instance = new Sensors();
-        }
-        return instance;
-    }
+	private static Sensors instance;
 
-    private static Map<Long, Sensor> sensorsList = new HashMap<>();
-    private static Map<Long, SensorData> sensorDataMap = new HashMap<>();
-    private EntityManager em;
+	public static Sensors getInstance() {
+		if (instance == null) {
+			instance = new Sensors();
+		}
+		return instance;
+	}
 
-    public Sensors() {
-        instance = this;
-        em = EntityManagerService.getManager();
-    }
+	private static Map<Long, Sensor> sensorsList = new HashMap<>();
+	private static Map<Long, SensorData> sensorDataMap = new HashMap<>();
+	private EntityManager em;
 
-    /**
-     * load sensor data for a room
-     *
-     * @param room
-     * @return
-     */
-    @Path("forroom/{room}")
-    @GET
-    public SensorDatas getDataForRoom(@PathParam("room") final String room) {
-        final SensorDatas sensorDatas = new SensorDatas();
+	public Sensors() {
+		instance = this;
+		em = EntityManagerService.getManager();
+	}
 
-        final List<Sensor> sensors = em.createQuery(
-                "select s FROM Sensor s where s.showData=true and s.room=(select r from Room r where r.id=:room)",
-                Sensor.class).setParameter("room", Long.parseLong(room)).getResultList();
+	/**
+	 * load sensor data for a room
+	 *
+	 * @param room
+	 * @return
+	 */
+	@Path("forroom/{room}")
+	@GET
+	public SensorDatas getDataForRoom(@PathParam("room") final String room) {
+		final SensorDatas sensorDatas = new SensorDatas();
 
-        final Date now = new Date();
+		final List<Sensor> sensors = em.createQuery(
+				"select s FROM Sensor s where s.showData=true and s.room=(select r from Room r where r.id=:room)",
+				Sensor.class).setParameter("room", Long.parseLong(room)).getResultList();
 
-        if (sensors!=null && sensors.size() > 0) {
-            final CountDownLatch latch = new CountDownLatch(sensors.size());
+		final Date now = new Date();
 
-            for (final Sensor sensor : sensors) {
-                final DataLoadThread dataLoadThread = new DataLoadThread(sensorDatas, em, now, sensor, latch);
-                dataLoadThread.start();
-            }
+		if (sensors != null && sensors.size() > 0) {
+			final CountDownLatch latch = new CountDownLatch(sensors.size());
 
-            try {
-                latch.await();
-            } catch (final InterruptedException e) {
+			for (final Sensor sensor : sensors) {
+				final DataLoadThread dataLoadThread = new DataLoadThread(sensorDatas, em, now, sensor, latch);
+				dataLoadThread.start();
+			}
+
+			try {
+				latch.await();
+			} catch (final InterruptedException e) {
 //                LogManager.getLogger(this.getClass()).error(e);
-            }
-        }
-        return sensorDatas;
-    }
+			}
+		}
+		return sensorDatas;
+	}
 
-    /**
-     * TODO refactor filtering
-     *
-     * @param sensorDatas
-     * @param em
-     * @param now
-     * @param sensor
-     */
-    public void loadSensorData(final SensorDatas sensorDatas, final EntityManager em, final Date now,
-            final Sensor sensor) {
+	/**
+	 * TODO refactor filtering
+	 *
+	 * @param sensorDatas
+	 * @param em
+	 * @param now
+	 * @param sensor
+	 */
+	public void loadSensorData(final SensorDatas sensorDatas, final EntityManager em, final Date now,
+			final Sensor sensor) {
 
-        final EntityManager emSensor = em;
+		final EntityManager emSensor = em;
 
-        emSensor.getTransaction().begin();
+		emSensor.getTransaction().begin();
 
-        final SensorValues sensorData = new SensorValues();
+		final SensorValues sensorData = new SensorValues();
 
-        sensorData.setSensorName(sensor.getSensorName());
+		sensorData.setSensorName(sensor.getSensorName());
 
-        final String queryString = "select sd from SensorData sd where sd.sensor=:sensor and sd.dateTime>=:timeframe";
+		final String queryString = "select sd from SensorData sd where sd.sensor=:sensor and sd.dateTime>=:timeframe";
 
-        final Date twoDaysAgo = new Date((new Date()).getTime() - (86400 * 1000));
+		final Date twoDaysAgo = new Date((new Date()).getTime() - (86400 * 1000));
 
-        final List<SensorData> data = emSensor.createQuery(queryString, SensorData.class).setParameter("sensor", sensor)
-                .setParameter("timeframe", twoDaysAgo).getResultList();
+		final List<SensorData> data = emSensor.createQuery(queryString, SensorData.class).setParameter("sensor", sensor)
+				.setParameter("timeframe", twoDaysAgo).getResultList();
 
-        String latestValue = "";
-        SensorValue lastSensorValue = null;
+		String latestValue = "";
+		SensorValue lastSensorValue = null;
 
-        // filter pressure by 0.2 percent changes only
-        if ("PRESSURE".equals(sensor.getSensorType())) {
-            for (final SensorData sData : data) {
-                final String currentValue = sData.getValue().replace(",", ".");
-                String lastValue = "0";
+		// filter pressure by 0.2 percent changes only
+		if ("PRESSURE".equals(sensor.getSensorType())) {
+			for (final SensorData sData : data) {
+				final String currentValue = sData.getValue().replace(",", ".");
+				String lastValue = "0";
 
-                if (lastSensorValue != null) {
-                    lastValue = lastSensorValue.getValue().replace(",", ".");
-                }
+				if (lastSensorValue != null) {
+					lastValue = lastSensorValue.getValue().replace(",", ".");
+				}
 
-                final double floatCurrentValue = Double.parseDouble(currentValue);
+				final double floatCurrentValue = Double.parseDouble(currentValue);
 
-                final double floatLastValue = Double.parseDouble(lastValue);
+				final double floatLastValue = Double.parseDouble(lastValue);
 
-                if (floatLastValue != floatCurrentValue) {
-                    final double diff = floatLastValue - floatCurrentValue;
-                    final double diffAbsolute = Math.sqrt(diff * diff);
+				if (floatLastValue != floatCurrentValue) {
+					final double diff = floatLastValue - floatCurrentValue;
+					final double diffAbsolute = Math.sqrt(diff * diff);
 
-                    if (diffAbsolute >= 1) {
+					if (diffAbsolute >= 1) {
 
-                        final SensorValue sensorValue = new SensorValue();
-                        sensorValue.setDateTime(sData.getDateTime());
+						final SensorValue sensorValue = new SensorValue();
+						sensorValue.setDateTime(sData.getDateTime());
 
-                        sensorValue.setValue(currentValue);
+						sensorValue.setValue(currentValue);
 
-                        latestValue = sData.getValue();
-                        lastSensorValue = sensorValue;
-                        sensorData.getValues().add(sensorValue);
+						latestValue = sData.getValue();
+						lastSensorValue = sensorValue;
+						sensorData.getValues().add(sensorValue);
 
-                    }
-                }
-            }
-        } else {
-            for (final SensorData sData : data) {
-                if ((lastSensorValue == null) || !(lastSensorValue.getValue().equals(sData.getValue()))) {
-                    if (lastSensorValue != null) {
-                        final SensorValue tempSensorValue = new SensorValue();
-                        tempSensorValue.setValue(lastSensorValue.getValue());
-                        tempSensorValue.setDateTime(new Date(sData.getDateTime().getTime() - 1000));
-                    }
+					}
+				}
+			}
+		} else {
+			for (final SensorData sData : data) {
+				if ((lastSensorValue == null) || !(lastSensorValue.getValue().equals(sData.getValue()))) {
+					if (lastSensorValue != null) {
+						final SensorValue tempSensorValue = new SensorValue();
+						tempSensorValue.setValue(lastSensorValue.getValue());
+						tempSensorValue.setDateTime(new Date(sData.getDateTime().getTime() - 1000));
+					}
 
-                    final SensorValue sensorValue = new SensorValue();
-                    sensorValue.setDateTime(sData.getDateTime());
-                    sensorValue.setValue(sData.getValue());
+					final SensorValue sensorValue = new SensorValue();
+					sensorValue.setDateTime(sData.getDateTime());
+					sensorValue.setValue(sData.getValue());
 
-                    latestValue = sData.getValue();
-                    lastSensorValue = sensorValue;
-                    sensorData.getValues().add(sensorValue);
-                }
-            }
-        }
+					latestValue = sData.getValue();
+					lastSensorValue = sensorValue;
+					sensorData.getValues().add(sensorValue);
+				}
+			}
+		}
 
-        // add a last value for the charts
-        final SensorValue latestInterpolatedValue = new SensorValue();
-        latestInterpolatedValue.setDateTime(now);
-        latestInterpolatedValue.setValue(latestValue);
-        sensorData.getValues().add(latestInterpolatedValue);
+		// add a last value for the charts
+		final SensorValue latestInterpolatedValue = new SensorValue();
+		latestInterpolatedValue.setDateTime(now);
+		latestInterpolatedValue.setValue(latestValue);
+		sensorData.getValues().add(latestInterpolatedValue);
 
-        sensorDatas.getSensorData().add(sensorData);
+		sensorDatas.getSensorData().add(sensorData);
 
-        emSensor.getTransaction().commit();
+		emSensor.getTransaction().commit();
 
-    }
+	}
 
-    /**
-     * @param existingSensorData
-     * @param requestSensorData
-     * @param isNumeric
-     * @param valueAsDouble
-     * @return
-     */
-    public boolean mergeExistingData(SensorData existingSensorData, final SensorData requestSensorData,
-            boolean isNumeric) {
+	/**
+	 * @param existingSensorData
+	 * @param requestSensorData
+	 * @param isNumeric
+	 * @param valueAsDouble
+	 * @return
+	 */
+	public boolean mergeExistingData(SensorData existingSensorData, final SensorData requestSensorData,
+			boolean isNumeric) {
 
-        boolean mergeExisting = false;
-        if ((existingSensorData != null)) {
+		boolean mergeExisting = false;
+		if ((existingSensorData != null)) {
 
-            if (existingSensorData.getValue().equals(requestSensorData.getValue())) {
-                mergeExisting = true;
-            } else {
-                String sensorValue = requestSensorData.getValue().replace(",", ".");
-                boolean secondNumericCheck = NumberUtils.isCreatable(sensorValue);
-                if (isNumeric && secondNumericCheck) {
-                    final double valueAsDouble = Double.parseDouble(sensorValue);
-                    final double deadbandPercent = existingSensorData.getSensor().getDeadbandPercent();
+			if (existingSensorData.getValue().equals(requestSensorData.getValue())) {
+				mergeExisting = true;
+			} else {
+				String sensorValue = requestSensorData.getValue().replace(",", ".");
+				boolean secondNumericCheck = NumberUtils.isCreatable(sensorValue);
+				if (isNumeric && secondNumericCheck) {
+					final double valueAsDouble = Double.parseDouble(sensorValue);
+					final double deadbandPercent = existingSensorData.getSensor().getDeadbandPercent();
 
-                    String existingValue = existingSensorData.getValue().replace(",", ".");
+					String existingValue = existingSensorData.getValue().replace(",", ".");
 
-                    if (NumberUtils.isCreatable(existingValue)) {
+					if (NumberUtils.isCreatable(existingValue)) {
 
-                        final double existingValueAsDouble = Double.parseDouble(existingValue);
+						final double existingValueAsDouble = Double.parseDouble(existingValue);
 
-                        final double difference = existingValueAsDouble * (deadbandPercent / 1000);
+						final double difference = existingValueAsDouble * (deadbandPercent / 1000);
 
-                        final double lowerLimit = existingValueAsDouble - difference;
-                        final double higherLimit = existingValueAsDouble + difference;
+						final double lowerLimit = existingValueAsDouble - difference;
+						final double higherLimit = existingValueAsDouble + difference;
 
-                        if ((lowerLimit <= valueAsDouble) && (valueAsDouble <= higherLimit)) {
-                            mergeExisting = true;
-                        }
-                    }
-                }
+						if ((lowerLimit <= valueAsDouble) && (valueAsDouble <= higherLimit)) {
+							mergeExisting = true;
+						}
+					}
+				}
 
-            }
+			}
 
-        }
-        return mergeExisting;
-    }
+		}
+		return mergeExisting;
+	}
 
-    @POST
-    @Path("rfsniffer")
-    public void registerRFEvent(final RFEvent event) throws SensorDataLimitViolationException {
-        final String code = Integer.toString(event.getCode());
+	@POST
+	@Path("rfsniffer")
+	public void registerRFEvent(final RFEvent event) throws SensorDataLimitViolationException {
+		final String code = Integer.toString(event.getCode());
 //        LogManager.getLogger(this.getClass()).info("RF Event: " + code);
-        final EntityManager em = EntityManagerService.getManager();
+		final EntityManager em = EntityManagerService.getManager();
 
-        try {
-            final Switch sw = em
-                    .createQuery("select sw from Switch sw where sw.onCode=:code or sw.offCode=:code", Switch.class)
-                    .setParameter("code", code).getSingleResult();
+		try {
+			final Switch sw = em
+					.createQuery("select sw from Switch sw where sw.onCode=:code or sw.offCode=:code", Switch.class)
+					.setParameter("code", code).getSingleResult();
 
-            if (sw != null) {
-                em.getTransaction().begin();
+			if (sw != null) {
+				em.getTransaction().begin();
 
-                String status = "";
+				String status = "";
 
-                if (sw.getOnCode().equals(code)) {
-                    status = "ON";
-                } else if (sw.getOffCode().equals(code)) {
-                    status = "OFF";
-                } else {
-                    status = "UNKNOWN " + code;
-                }
+				if (sw.getOnCode().equals(code)) {
+					status = "ON";
+				} else if (sw.getOffCode().equals(code)) {
+					status = "OFF";
+				} else {
+					status = "UNKNOWN " + code;
+				}
 
-                final SwitchEvent switchEvent = new SwitchEvent();
-                switchEvent.setSwitchId(Long.toString(sw.getId()));
-                switchEvent.setStatus(status);
+				final SwitchEvent switchEvent = new SwitchEvent();
+				switchEvent.setSwitchId(Long.toString(sw.getId()));
+				switchEvent.setStatus(status);
 
-                EventBusService.getEventBus().post(switchEvent);
+				bus.send("SwitchEvent", switchEvent);
 
-                sw.setLatestStatus(status);
-                sw.setLatestStatusFrom(new Date());
+				sw.setLatestStatus(status);
+				sw.setLatestStatusFrom(new Date());
 
-                em.persist(sw);
-                em.getTransaction().commit();
+				em.persist(sw);
+				em.getTransaction().commit();
 
-                // save switch changes
-                final Sensor sensor = sw.getSensor();
-                if (sensor != null) {
+				// save switch changes
+				final Sensor sensor = sw.getSensor();
+				if (sensor != null) {
 
-                    final SensorDataSaveRequest sensorSaveRequest = new SensorDataSaveRequest();
+					final SensorDataSaveRequest sensorSaveRequest = new SensorDataSaveRequest();
 
-                    sensorSaveRequest.setSensorId(sensor.getId());
-                    final SensorData sensorData = new SensorData();
-                    sensorData.setValue((("ON".equals(status)) ? "1" : "0"));
-                    sensorSaveRequest.setSensorData(sensorData);
+					sensorSaveRequest.setSensorId(sensor.getId());
+					final SensorData sensorData = new SensorData();
+					sensorData.setValue((("ON".equals(status)) ? "1" : "0"));
+					sensorSaveRequest.setSensorData(sensorData);
 
-                    this.saveSensorData(sensorSaveRequest);
-                }
+					this.saveSensorData(sensorSaveRequest);
+				}
 
-            }
-        } catch (final NoResultException e) {
+			}
+		} catch (final NoResultException e) {
 //            LogManager.getLogger(this.getClass()).error(e);
-        }
+		}
 
-    }
+	}
 
-    @POST
-    @Path("save")
-    public GenericStatus save(final SensorDataRoomSaveRequest request) throws SensorDataLimitViolationException {
+	@POST
+	@Path("save")
+	public GenericStatus save(final SensorDataRoomSaveRequest request) throws SensorDataLimitViolationException {
 
-        if (request == null) {
+		if (request == null) {
 //            LogManager.getLogger(this.getClass()).info("got null request");
-            return new GenericStatus(false);
-        }
+			return new GenericStatus(false);
+		}
 
-        Long roomID = request.getRoomID();
+		Long roomID = request.getRoomID();
 
-        final EntityManager em = EntityManagerService.getManager();
+		final EntityManager em = EntityManagerService.getManager();
 
-        final String mac = request.getMac();
-        if ((roomID == null) && (mac != null)) {
+		final String mac = request.getMac();
+		if ((roomID == null) && (mac != null)) {
 
-            roomID = DeviceService.getRoomIdForMac(mac);
-            if (roomID == null) {
-                // mac given but no room found
-                return new GenericStatus(false);
-            }
-        }
+			roomID = DeviceService.getRoomIdForMac(mac);
+			if (roomID == null) {
+				// mac given but no room found
+				return new GenericStatus(false);
+			}
+		}
 
 //        LogManager.getLogger(this.getClass()).info("Found roomId" + roomID);
 
-        final List<Sensor> sensorList = em
-                .createQuery("select s from Sensor s where s.room=(select r from Room r where r.id=:roomId)",
-                        Sensor.class)
-                .setParameter("roomId", roomID).getResultList();
+		final List<Sensor> sensorList = em
+				.createQuery("select s from Sensor s where s.room=(select r from Room r where r.id=:roomId)",
+						Sensor.class)
+				.setParameter("roomId", roomID).getResultList();
 
-        // fix empty or wrong timestamps
-        if ((request.getTimestamp() == null) || (request.getTimestamp().getTime() < (10000 * 1000))) {
-            request.setTimestamp(new Date());
-        }
+		// fix empty or wrong timestamps
+		if ((request.getTimestamp() == null) || (request.getTimestamp().getTime() < (10000 * 1000))) {
+			request.setTimestamp(new Date());
+		}
 
-        saveSensorData(request, roomID, sensorList);
-        return new GenericStatus(true);
-    }
+		saveSensorData(request, roomID, sensorList);
+		return new GenericStatus(true);
+	}
 
-    private void saveSensorData(final SensorDataRoomSaveRequest request, Long roomID, final List<Sensor> sensorList)
-            throws SensorDataLimitViolationException {
-        if (sensorList != null) {
-            for (final Sensor sensor : sensorList) {
+	private void saveSensorData(final SensorDataRoomSaveRequest request, Long roomID, final List<Sensor> sensorList)
+			throws SensorDataLimitViolationException {
+		if (sensorList != null) {
+			for (final Sensor sensor : sensorList) {
 
-                saveSingleSensorData(request, sensor);
-            }
+				saveSingleSensorData(request, sensor);
+			}
 
-        } else {
+		} else {
 //            LogManager.getLogger(this.getClass()).info("found no sensors for room " + roomID);
-        }
-    }
+		}
+	}
 
-    private void saveSingleSensorData(final SensorDataRoomSaveRequest request, final Sensor sensor)
-            throws SensorDataLimitViolationException {
-        if ("TEMPERATURE".equals(sensor.getSensorType())) {
+	private void saveSingleSensorData(final SensorDataRoomSaveRequest request, final Sensor sensor)
+			throws SensorDataLimitViolationException {
+		if ("TEMPERATURE".equals(sensor.getSensorType())) {
 //            LogManager.getLogger(this.getClass()).info("Saving temperature to sensor: " + sensor.getId());
-            saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getTemperature()),
-                    request.getTimestamp());
-        } else if ("HUMIDITY".equals(sensor.getSensorType())) {
+			saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getTemperature()),
+					request.getTimestamp());
+		} else if ("HUMIDITY".equals(sensor.getSensorType())) {
 //            LogManager.getLogger(this.getClass()).info("Saving humidity to sensor: " + sensor.getId());
-            saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getHumidity()),
-                    request.getTimestamp());
-        } else if ("PRESSURE".equals(sensor.getSensorType())) {
-            saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getPressure()),
-                    request.getTimestamp());
-        } else if ("VCC".equals(sensor.getSensorType())) {
-            saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getVcc()), request.getTimestamp());
-        }
-    }
+			saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getHumidity()),
+					request.getTimestamp());
+		} else if ("PRESSURE".equals(sensor.getSensorType())) {
+			saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getPressure()),
+					request.getTimestamp());
+		} else if ("VCC".equals(sensor.getSensorType())) {
+			saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getVcc()), request.getTimestamp());
+		}
+	}
 
-    @GET
-    @Path("forroom/save/{sensorId}/{value}")
-    public boolean saveSensorData(@PathParam("sensorId") final Long sensorId, @PathParam("value") final String value)
-            throws SensorDataLimitViolationException {
-        return saveSensorDataWithTime(sensorId, value, new Date());
-    }
+	@GET
+	@Path("forroom/save/{sensorId}/{value}")
+	public boolean saveSensorData(@PathParam("sensorId") final Long sensorId, @PathParam("value") final String value)
+			throws SensorDataLimitViolationException {
+		return saveSensorDataWithTime(sensorId, value, new Date());
+	}
 
-    @POST
-    @Path("forroom/save")
-    public void saveSensorData(final SensorDataSaveRequest request) throws SensorDataLimitViolationException {
-        final EntityManager em = EntityManagerService.getManager();
+	@POST
+	@Path("forroom/save")
+	public void saveSensorData(final SensorDataSaveRequest request) throws SensorDataLimitViolationException {
+		final EntityManager em = EntityManagerService.getManager();
 
-        Sensor sensor = null;
-        if (request.getSensorId() != null) {
-            Long sensorId = request.getSensorId();
-            if (sensorsList.containsKey(sensorId)) {
-                sensor = sensorsList.get(sensorId);
+		Sensor sensor = null;
+		if (request.getSensorId() != null) {
+			Long sensorId = request.getSensorId();
+			if (sensorsList.containsKey(sensorId)) {
+				sensor = sensorsList.get(sensorId);
 //                LogManager.getLogger(this.getClass()).debug("got sensor from cache");
-            } else {
+			} else {
 //                LogManager.getLogger(this.getClass()).debug("looking for sensorId: " + sensorId);
 
-                sensor = em.createQuery("select s from Sensor s where s.id=:sensorId", Sensor.class)
-                        .setParameter("sensorId", sensorId).getSingleResult();
+				sensor = em.createQuery("select s from Sensor s where s.id=:sensorId", Sensor.class)
+						.setParameter("sensorId", sensorId).getSingleResult();
 
-                sensorsList.put(sensorId, sensor);
-            }
+				sensorsList.put(sensorId, sensor);
+			}
 
-        } else if (request.getSensorData() != null && request.getSensorData().getSensor() != null) {
-            String sensorTechnicalType = request.getSensorData().getSensor().getSensorTechnicalType();
-            List<Sensor> sensors = em
-                    .createQuery("select s from Sensor s where s.sensorTechnicalType=:sensorTechnicalType",
-                            Sensor.class)
-                    .setParameter("sensorTechnicalType", sensorTechnicalType).getResultList();
+		} else if (request.getSensorData() != null && request.getSensorData().getSensor() != null) {
+			String sensorTechnicalType = request.getSensorData().getSensor().getSensorTechnicalType();
+			List<Sensor> sensors = em
+					.createQuery("select s from Sensor s where s.sensorTechnicalType=:sensorTechnicalType",
+							Sensor.class)
+					.setParameter("sensorTechnicalType", sensorTechnicalType).getResultList();
 
-            if (sensors != null && !sensors.isEmpty()) {
-                sensor = sensors.get(0);
-            } else {
+			if (sensors != null && !sensors.isEmpty()) {
+				sensor = sensors.get(0);
+			} else {
 //                LogManager.getLogger(this.getClass())
 //                        .debug("found no sensor for technical type: " + sensorTechnicalType);
 
-                em.getTransaction().begin();
+				em.getTransaction().begin();
 
-                sensor = new Sensor();
-                sensor.setSensorTechnicalType(sensorTechnicalType);
-                sensor.setSensorName(sensorTechnicalType);
-                sensor.setDeadbandPercent(0);
+				sensor = new Sensor();
+				sensor.setSensorTechnicalType(sensorTechnicalType);
+				sensor.setSensorName(sensorTechnicalType);
+				sensor.setDeadbandPercent(0);
 
-                em.persist(sensor);
+				em.persist(sensor);
 
-                em.getTransaction().commit();
+				em.getTransaction().commit();
 
-                List<Sensor> sensorsNew = em
-                        .createQuery("select s from Sensor s where s.sensorTechnicalType=:sensorTechnicalType",
-                                Sensor.class)
-                        .setParameter("sensorTechnicalType", sensorTechnicalType).getResultList();
-                if (sensorsNew != null && !sensorsNew.isEmpty()) {
-                    sensor = sensorsNew.get(0);
+				List<Sensor> sensorsNew = em
+						.createQuery("select s from Sensor s where s.sensorTechnicalType=:sensorTechnicalType",
+								Sensor.class)
+						.setParameter("sensorTechnicalType", sensorTechnicalType).getResultList();
+				if (sensorsNew != null && !sensorsNew.isEmpty()) {
+					sensor = sensorsNew.get(0);
 
-                } else {
-                    throw new NoResultException("No sensor found for technicalType: " + sensorTechnicalType);
-                }
-            }
-        } else {
-            throw new NoResultException("sensor id not set and no sensor provided");
-        }
+				} else {
+					throw new NoResultException("No sensor found for technicalType: " + sensorTechnicalType);
+				}
+			}
+		} else {
+			throw new NoResultException("sensor id not set and no sensor provided");
+		}
 
-        if (sensor != null) {
+		if (sensor != null) {
 //            LogManager.getLogger(this.getClass()).debug("found a sensor. id: " + sensor.getId());
-            em.getTransaction().begin();
+			em.getTransaction().begin();
 
-            final SensorData sensorData;
-            Long sensorId = sensor.getId();
-            SensorData existingSensorData = null;
+			final SensorData sensorData;
+			Long sensorId = sensor.getId();
+			SensorData existingSensorData = null;
 
-            if (sensorDataMap.containsKey(sensorId)) {
-                existingSensorData = sensorDataMap.get(sensorId);
-            } else {
+			if (sensorDataMap.containsKey(sensorId)) {
+				existingSensorData = sensorDataMap.get(sensorId);
+			} else {
 
-                final List<SensorData> existingSensorDataList = em.createQuery(
-                        "select sd from SensorData sd where sd.sensor IN (select s from Sensor s where s.id=:sensorId) order by sd.dateTime desc",
-                        SensorData.class).setMaxResults(1).setParameter("sensorId", sensorId).getResultList();
+				final List<SensorData> existingSensorDataList = em.createQuery(
+						"select sd from SensorData sd where sd.sensor IN (select s from Sensor s where s.id=:sensorId) order by sd.dateTime desc",
+						SensorData.class).setMaxResults(1).setParameter("sensorId", sensorId).getResultList();
 
-                if (!existingSensorDataList.isEmpty()) {
-                    existingSensorData = existingSensorDataList.get(0);
-                }
-            }
+				if (!existingSensorDataList.isEmpty()) {
+					existingSensorData = existingSensorDataList.get(0);
+				}
+			}
 
-            final SensorData requestSensorData = request.getSensorData();
-            String currentValue = requestSensorData.getValue();
+			final SensorData requestSensorData = request.getSensorData();
+			String currentValue = requestSensorData.getValue();
 
-            boolean isNumeric = NumberUtils.isCreatable(currentValue.replace(",", "."));
-            if (isNumeric) {
-                final double valueAsDouble = Double.parseDouble(currentValue.replace(",", "."));
-                final DecimalFormat df = new DecimalFormat("#.##");
-                df.setRoundingMode(RoundingMode.CEILING);
+			boolean isNumeric = NumberUtils.isCreatable(currentValue.replace(",", "."));
+			if (isNumeric) {
+				final double valueAsDouble = Double.parseDouble(currentValue.replace(",", "."));
+				final DecimalFormat df = new DecimalFormat("#.##");
+				df.setRoundingMode(RoundingMode.CEILING);
 
-                requestSensorData.setValue(df.format(valueAsDouble));
+				requestSensorData.setValue(df.format(valueAsDouble));
 
-                // checking minimum value limit
-                if (sensor.getMinValue() != null) {
-                    double minValue = Double.parseDouble(sensor.getMinValue());
-                    if (valueAsDouble < minValue) {
+				// checking minimum value limit
+				if (sensor.getMinValue() != null) {
+					double minValue = Double.parseDouble(sensor.getMinValue());
+					if (valueAsDouble < minValue) {
 //                        LogManager.getLogger(this.getClass())
 //                                .debug("Sensor ID: " + sensor.getId() + " Name: " + sensor.getSensorName() + " Value: "
 //                                        + valueAsDouble + " less than minimum: " + minValue);
-                        throw new SensorDataLimitViolationException();
-                    }
-                }
+						throw new SensorDataLimitViolationException();
+					}
+				}
 
-                // checking maximum value limit
-                if (sensor.getMaxValue() != null) {
-                    double maxValue = Double.parseDouble(sensor.getMaxValue());
-                    if (valueAsDouble > maxValue) {
+				// checking maximum value limit
+				if (sensor.getMaxValue() != null) {
+					double maxValue = Double.parseDouble(sensor.getMaxValue());
+					if (valueAsDouble > maxValue) {
 //                        LogManager.getLogger(this.getClass())
 //                                .debug("Sensor ID: " + sensor.getId() + " Name: " + sensor.getSensorName() + " Value: "
 //                                        + valueAsDouble + " more than maxmum: " + maxValue);
-                        throw new SensorDataLimitViolationException();
-                    }
-                }
-            } else {
-                requestSensorData.setValue(currentValue);
-            }
+						throw new SensorDataLimitViolationException();
+					}
+				}
+			} else {
+				requestSensorData.setValue(currentValue);
+			}
 
-            final boolean mergeExisting = mergeExistingData(existingSensorData, requestSensorData, isNumeric);
+			final boolean mergeExisting = mergeExistingData(existingSensorData, requestSensorData, isNumeric);
 
-            if (mergeExisting && existingSensorData != null) {
+			if (mergeExisting && existingSensorData != null) {
 //                LogManager.getLogger(this.getClass()).debug("merging data");
-                existingSensorData.setValidThru(new Date());
-                em.merge(existingSensorData);
+				existingSensorData.setValidThru(new Date());
+				em.merge(existingSensorData);
 //                LogManager.getLogger(this.getClass()).debug("Committing data: " + existingSensorData.getValue());
-            } else {
-                if ((existingSensorData != null) && (requestSensorData.getDateTime() != null)) {
-                    existingSensorData.setValidThru(new Date(requestSensorData.getDateTime().getTime() - 1000));
-                    em.merge(existingSensorData);
-                }
+			} else {
+				if ((existingSensorData != null) && (requestSensorData.getDateTime() != null)) {
+					existingSensorData.setValidThru(new Date(requestSensorData.getDateTime().getTime() - 1000));
+					em.merge(existingSensorData);
+				}
 
 //                LogManager.getLogger(this.getClass()).debug("saving new data point");
-                sensorData = requestSensorData;
-                sensorData.setSensor(sensor);
-                em.persist(sensorData);
-                sensorDataMap.put(sensorId, sensorData);
+				sensorData = requestSensorData;
+				sensorData.setSensor(sensor);
+				em.persist(sensorData);
+				sensorDataMap.put(sensorId, sensorData);
 
-                EventBusService.getEventBus().post(new EventObject(sensorData));
+				bus.send("EventObject", new EventObject(sensorData));
 //                LogManager.getLogger(this.getClass()).debug("Committing data: " + sensorData.getValue());
-            }
+			}
 
-            em.getTransaction().commit();
-        } else {
+			em.getTransaction().commit();
+		} else {
 //            LogManager.getLogger(this.getClass()).error("sensor is null");
-        }
-    }
+		}
+	}
 
-    private boolean saveSensorDataWithTime(final Long sensorId, final String value, final Date timestamp)
-            throws SensorDataLimitViolationException {
-        final SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
-        sensorDataSaveRequest.setSensorId(sensorId);
-        final SensorData sensorData = new SensorData();
-        sensorData.setValue(value);
-        sensorData.setDateTime(timestamp);
-        sensorDataSaveRequest.setSensorData(sensorData);
+	private boolean saveSensorDataWithTime(final Long sensorId, final String value, final Date timestamp)
+			throws SensorDataLimitViolationException {
+		final SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
+		sensorDataSaveRequest.setSensorId(sensorId);
+		final SensorData sensorData = new SensorData();
+		sensorData.setValue(value);
+		sensorData.setDateTime(timestamp);
+		sensorDataSaveRequest.setSensorData(sensorData);
 
-        saveSensorData(sensorDataSaveRequest);
+		saveSensorData(sensorDataSaveRequest);
 
-        return true;
-    }
+		return true;
+	}
 }

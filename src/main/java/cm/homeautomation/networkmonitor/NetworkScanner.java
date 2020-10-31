@@ -7,17 +7,28 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.entities.NetworkDevice;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
+import io.vertx.core.eventbus.EventBus;
 
+@Singleton
 public class NetworkScanner {
 
-	private static NetworkScanner networkScanner;
+	@Inject
+	EventBus bus;
+	
+	private static NetworkScanner instance;
 	private static Map<String, Boolean> runningScans = new HashMap<>();
 	private Map<String, NetworkDevice> availableHosts;
+
+	public NetworkScanner() {
+		instance = this;
+	}
 
 	/**
 	 * check for the availability of a host
@@ -27,7 +38,7 @@ public class NetworkScanner {
 	 */
 	public Map<String, NetworkDevice> checkHosts(String subnet) {
 		setAvailableHosts(new HashMap<String, NetworkDevice>());
-		
+
 		NetworkDeviceDatabaseUpdater networkDeviceDatabaseUpdater = new NetworkDeviceDatabaseUpdater();
 
 		int timeout = 200;
@@ -35,7 +46,7 @@ public class NetworkScanner {
 			String host = subnet + "." + i;
 			try {
 				InetAddress currentHost = InetAddress.getByName(host);
-				//System.err.println("current host: "+currentHost);
+				// System.err.println("current host: "+currentHost);
 				if (currentHost.isReachable(timeout)) {
 					LogManager.getLogger(this.getClass()).info(host + " is reachable");
 
@@ -43,7 +54,7 @@ public class NetworkScanner {
 
 					String key = host + "-" + macFromArpCache;
 					if (!getAvailableHosts().keySet().contains(key)) {
-						//System.out.println("new host: "+host);
+						// System.out.println("new host: "+host);
 						NetworkDevice device = new NetworkDevice();
 						device.setIp(host);
 						device.setHostname(currentHost.getHostName());
@@ -57,7 +68,7 @@ public class NetworkScanner {
 						EventObject newHostEvent = new EventObject(newHostMessage);
 						networkDeviceDatabaseUpdater.handleNetworkDeviceFound(newHostEvent);
 
-						EventBusService.getEventBus().post(newHostEvent);
+						bus.send("EventObject", newHostEvent);
 					}
 				}
 			} catch (IOException e) {
@@ -69,8 +80,8 @@ public class NetworkScanner {
 	}
 
 	/**
-	 * Try to extract a hardware MAC address from a given IP address using the
-	 * ARP cache (/proc/net/arp).<br>
+	 * Try to extract a hardware MAC address from a given IP address using the ARP
+	 * cache (/proc/net/arp).<br>
 	 * <br>
 	 * We assume that the file has this structure:<br>
 	 * <br>
@@ -85,8 +96,7 @@ public class NetworkScanner {
 			return null;
 		}
 
-		try (	FileReader fr = new FileReader("/proc/net/arp");
-				BufferedReader br = new BufferedReader(fr)) {
+		try (FileReader fr = new FileReader("/proc/net/arp"); BufferedReader br = new BufferedReader(fr)) {
 
 			String line;
 			while ((line = br.readLine()) != null) {
@@ -118,11 +128,7 @@ public class NetworkScanner {
 	 * @return
 	 */
 	public static NetworkScanner getInstance() {
-
-		if (networkScanner == null) {
-			networkScanner = new NetworkScanner();
-		}
-		return networkScanner;
+		return instance;
 	}
 
 	/**
@@ -131,6 +137,10 @@ public class NetworkScanner {
 	 * @param args
 	 */
 	public static void scanNetwork(String[] args) {
+		instance.scanNetworkInternal(args);
+	}
+		
+	public void scanNetworkInternal(String[] args) {
 		String subnet = args[0];
 
 		Boolean scanRunningObject = runningScans.get(subnet);
@@ -147,7 +157,7 @@ public class NetworkScanner {
 
 			NetworkScanResult data = new NetworkScanResult();
 			data.setHosts(checkHosts);
-			EventBusService.getEventBus().post(new EventObject(data));
+			bus.send("EventObject", new EventObject(data));
 			runningScans.put(subnet, Boolean.valueOf(false));
 		}
 

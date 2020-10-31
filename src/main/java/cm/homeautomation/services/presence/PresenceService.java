@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -12,14 +14,18 @@ import javax.ws.rs.PathParam;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Person;
 import cm.homeautomation.entities.PresenceState;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
+import io.vertx.core.eventbus.EventBus;
 
+@Singleton
 @Path("presence/")
 public class PresenceService extends BaseService {
 
+	@Inject
+	EventBus bus;
+	
 	public GenericStatus purgeStates() {
 		EntityManager em = EntityManagerService.getManager();
 		
@@ -71,7 +77,7 @@ public class PresenceService extends BaseService {
 				
 				em.persist(newState);
 				
-				EventBusService.getEventBus().post(new EventObject(newState));
+				bus.send("EventObject", new EventObject(newState));
 
 				em.getTransaction().commit();
 			}

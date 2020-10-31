@@ -9,7 +9,6 @@ import javax.persistence.EntityManager;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.MQTTTopic;
-import cm.homeautomation.eventbus.EventBusService;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.ConsumeEvent;

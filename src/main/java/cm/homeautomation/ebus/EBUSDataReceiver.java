@@ -3,8 +3,6 @@ package cm.homeautomation.ebus;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import cm.homeautomation.eventbus.EventBusService;
-import cm.homeautomation.eventbus.EventObject;
 import io.vertx.core.eventbus.EventBus;
 import lombok.extern.log4j.Log4j2;
 

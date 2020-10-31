@@ -29,7 +29,6 @@ import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.entities.ZigBeeDevice;
 import cm.homeautomation.entities.ZigbeeLight;
 import cm.homeautomation.entities.ZigbeeMotionSensor;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.events.RemoteControlEvent.EventType;
 import cm.homeautomation.mqtt.client.MQTTSender;

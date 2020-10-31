@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -33,12 +34,20 @@ import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Camera;
 import cm.homeautomation.entities.CameraImageHistory;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
+import io.vertx.core.eventbus.EventBus;
 
 @Path("camera/")
 public class CameraService extends BaseService {
+
+	@Inject
+	EventBus bus;
+	private static CameraService instance;
+
+	public CameraService() {
+		instance = this;
+	}
 
 	@Path("getAll")
 	@GET
@@ -67,8 +76,6 @@ public class CameraService extends BaseService {
 
 		List<Camera> resultList = em.createQuery("select c from Camera c where c.id=:id", Camera.class)
 				.setParameter("id", id).getResultList();
-
-
 
 		if (resultList != null && !resultList.isEmpty()) {
 			Camera camera = resultList.get(0);
@@ -108,6 +115,10 @@ public class CameraService extends BaseService {
 	}
 
 	private static void singleCameraUpdate(String[] args, EntityManager em, Camera camera) {
+		instance.singleCameraUpdateInternal(args, em, camera);
+	}
+
+	private void singleCameraUpdateInternal(String[] args, EntityManager em, Camera camera) {
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream();) {
 			em.getTransaction().begin();
 
@@ -141,7 +152,7 @@ public class CameraService extends BaseService {
 			cameraEvent.setCamera(camera);
 			EventObject event = new EventObject(cameraEvent);
 
-			EventBusService.getEventBus().post(event);
+			bus.send("EventObject", event);
 		} catch (Exception e) {
 			em.getTransaction().rollback();
 			loadNoImage(args, em, camera);
@@ -201,7 +212,6 @@ public class CameraService extends BaseService {
 
 				}
 
-
 			}
 
 			private void write(final InputStream inputStream, final OutputStream outputStream) throws IOException {
@@ -214,9 +224,7 @@ public class CameraService extends BaseService {
 			}
 
 		};
-		return Response.ok(streamingOutput, MediaType
-				.valueOf(
-						"video/x-motion-jpeg"))
+		return Response.ok(streamingOutput, MediaType.valueOf("video/x-motion-jpeg"))
 				// .header("content-disposition", "attachment; filename = myfile.pdf")
 				.build();
 	}

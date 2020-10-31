@@ -5,11 +5,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import org.apache.logging.log4j.LogManager;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -19,16 +19,18 @@ import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.TelegramFilter;
 import cm.homeautomation.entities.TelegramUser;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
-import cm.homeautomation.services.base.AutoCreateInstance;
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
 
-@AutoCreateInstance
+@Singleton
 public class TelegramBotService {
 
+	@Inject
+	EventBus bus;
+	
 	private static final String USER = "user";
 	private static final String TOKEN = "token";
 	private static final String TELEGRAM = "telegram";

@@ -13,13 +13,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.WindowBlind;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.services.base.BaseService;
@@ -28,6 +24,8 @@ import cm.homeautomation.services.base.HTTPHelper;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
+import io.vertx.reactivex.servicediscovery.types.EventBusService;
 
 @Singleton
 @Path("windowBlinds/")
@@ -35,7 +33,8 @@ public class WindowBlindService extends BaseService {
 	@Inject
 	MQTTSender mqttSender;
 	
-	
+	@Inject
+	EventBus bus;
 
 	private Map<Long, List<WindowBlind>> windowBlindList;
 	private Map<Long, WindowBlind> windowBlindMap;
@@ -193,7 +192,7 @@ public class WindowBlindService extends BaseService {
 				final WindowBlindStatus eventData1 = new WindowBlindStatus();
 				eventData1.setWindowBlind(singleWindowBlind1);
 				final EventObject eventObject1 = new EventObject(eventData1);
-				EventBusService.getEventBus().post(eventObject1);
+				bus.send("EventObject",eventObject1);
 			} else if (WindowBlind.ALL_AT_ONCE.equals(type)) {
 				final List<WindowBlind> windowBlinds = windowBlindList.get(roomId);
 
@@ -220,7 +219,7 @@ public class WindowBlindService extends BaseService {
 					final WindowBlindStatus eventData2 = new WindowBlindStatus();
 					eventData2.setWindowBlind(singleWindowBlind2);
 					final EventObject eventObject2 = new EventObject(eventData2);
-					EventBusService.getEventBus().post(eventObject2);
+					bus.send("EventObject", eventObject2);
 
 				}
 			}

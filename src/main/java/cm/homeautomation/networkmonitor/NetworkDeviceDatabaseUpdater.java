@@ -7,12 +7,9 @@ import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import org.apache.log4j.LogManager;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.NetworkDevice;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import io.quarkus.vertx.ConsumeEvent;
 

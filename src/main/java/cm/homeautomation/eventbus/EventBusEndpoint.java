@@ -16,10 +16,10 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import org.apache.logging.log4j.LogManager;
-import org.greenrobot.eventbus.EventBus;
 
 import cm.homeautomation.logging.WebSocketEvent;
 import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
         
 @Singleton
 

@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-
-import org.apache.log4j.LogManager;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.device.DeviceService;
@@ -17,7 +16,6 @@ import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.Window;
 import cm.homeautomation.entities.WindowState;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.sensors.window.WindowStateData;
@@ -25,10 +23,13 @@ import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
+import io.vertx.core.eventbus.EventBus;
+import io.vertx.reactivex.servicediscovery.types.EventBusService;
 
 @Path("window")
 public class WindowStateService extends BaseService {
-
+	@Inject
+	EventBus bus;
 	
 	private static WindowStateService instance;
 
@@ -150,7 +151,7 @@ public class WindowStateService extends BaseService {
 		windowStateData.setWindow(window);
 
 		final EventObject intervalEventObject = new EventObject(windowStateData);
-		EventBusService.getEventBus().post(intervalEventObject);
+		bus.send("EventObject", intervalEventObject);
 	}
 
 	private WindowState createWIndowState(String state, final EntityManager em, final Window window) {

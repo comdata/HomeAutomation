@@ -3,7 +3,6 @@ package cm.homeautomation.services.trips;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
-import java.util.EventObject;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -13,7 +12,6 @@ import org.joda.time.format.DateTimeFormatterBuilder;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.CalendarEntry;
-import cm.homeautomation.eventbus.EventBusService;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
@@ -114,7 +112,7 @@ public class TripsICalReader {
 
 		em.getTransaction().commit();
 		
-		EventBusService.getEventBus().post(new EventObject(new TripsUpdateEvent()));
+		//EventBusService.getEventBus().post(new EventObject(new TripsUpdateEvent()));
 
 	}
 

@@ -6,25 +6,26 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.logging.log4j.LogManager;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.dashbutton.DashButtonEvent;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DashButton;
 import cm.homeautomation.entities.NetworkDevice;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.networkmonitor.NetworkScanner;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
+import io.vertx.reactivex.servicediscovery.types.EventBusService;
 
 /**
  * service to get all hosts from the {@link NetworkScanner} internal list
@@ -32,8 +33,12 @@ import io.quarkus.vertx.ConsumeEvent;
  * @author christoph
  *
  */
+@Singleton
 @Path("networkdevices/")
 public class NetworkDevicesService extends BaseService {
+
+	@Inject
+	EventBus bus;
 
 	private static NetworkDevicesService instance = null;
 
@@ -72,11 +77,6 @@ public class NetworkDevicesService extends BaseService {
 		em.getTransaction().commit();
 
 		return new GenericStatus(true);
-	}
-
-	public void destroy() {
-		EventBusService.getEventBus().unregister(this);
-
 	}
 
 	private byte[] getMacBytes(final String macStr) {
@@ -171,7 +171,7 @@ public class NetworkDevicesService extends BaseService {
 			}
 
 			// send post wake up message
-			EventBusService.getEventBus().post(new EventObject(new NetworkWakeupEvent(macStr)));
+			bus.send("EventObject", new EventObject(new NetworkWakeupEvent(macStr)));
 
 			LogManager.getLogger(this.getClass()).info("Wake-on-LAN packet sent.");
 			return new GenericStatus(true);

@@ -4,25 +4,26 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.logging.log4j.LogManager;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.PhoneCallEvent;
 import cm.homeautomation.entities.Switch;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.tv.panasonic.PanasonicTVBinding;
 import cm.homeautomation.tv.panasonic.TVNotReachableException;
+import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
 
 /**
  * base TV service for PanasonicTVs currently only
@@ -30,18 +31,22 @@ import cm.homeautomation.tv.panasonic.TVNotReachableException;
  * @author christoph
  *
  */
+@Singleton
 @Path("tv/")
 public class TVService extends BaseService {
 
 	private static TVService instance;
 	private static boolean muted = false;
 
+	@Inject
+	EventBus bus;
+
 	public static void getCurrentStatus(final String[] args) {
 		final boolean aliveStatus = getInstance().getAliveStatus();
 
 		LogManager.getLogger(TVService.class).debug("TVService got arguments: {}", Arrays.toString(args));
 		LogManager.getLogger(TVService.class).debug("TV status: {}", aliveStatus);
-		
+
 		final EntityManager em = EntityManagerService.getManager();
 
 		@SuppressWarnings("unchecked")
@@ -77,7 +82,6 @@ public class TVService extends BaseService {
 	public TVService() {
 		tvBinding = new PanasonicTVBinding();
 		tvIp = ConfigurationService.getConfigurationProperty("tv", "tvIp");
-		EventBusService.getEventBus().register(this);
 		TVService.setInstance(this);
 	}
 
@@ -87,7 +91,7 @@ public class TVService extends BaseService {
 		return tvBinding.checkAlive(tvIp);
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value = "EventObject", blocking = true)
 	public void phoneEventHandler(final EventObject eventObject) {
 
 		final Object eventData = eventObject.getData();
@@ -153,7 +157,7 @@ public class TVService extends BaseService {
 
 			// and tell everyone about it
 			final TVCommandEvent tvCommandEvent = new TVCommandEvent(tvIp, command);
-			EventBusService.getEventBus().post(new EventObject(tvCommandEvent));
+			bus.send("EventObject", new EventObject(tvCommandEvent));
 		} catch (final TVNotReachableException e) {
 			LogManager.getLogger(this.getClass()).error(e);
 		}

@@ -2,20 +2,18 @@ package cm.homeautomation.sensors.window;
 
 import java.util.Date;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
-
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.device.DeviceService;
 import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.WindowState;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.WindowSensorData;
 import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
 
 /**
  * receiver power meter data and save it to the database
@@ -27,6 +25,9 @@ import io.quarkus.vertx.ConsumeEvent;
 public class WindowStateSensor {
 
 	private final EntityManager em;
+	
+	@Inject
+	EventBus bus;
 
 	public WindowStateSensor() {
 		em = EntityManagerService.getNewManager();
@@ -59,7 +60,7 @@ public class WindowStateSensor {
 			windowStateData.setRoom(room);
 
 			final EventObject intervalEventObject = new EventObject(windowStateData);
-			EventBusService.getEventBus().post(intervalEventObject);
+			bus.send("EventObject", intervalEventObject);
 
 		}
 	}

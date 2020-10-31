@@ -9,6 +9,8 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -19,10 +21,10 @@ import org.apache.logging.log4j.LogManager;
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.PhoneCallEvent;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
+import io.vertx.core.eventbus.EventBus;
 
 /**
  * Phone Call recording and event handling
@@ -30,9 +32,13 @@ import cm.homeautomation.services.base.GenericStatus;
  * @author christoph
  *
  */
+@Singleton
 @Path("phone")
 public class Phone extends BaseService {
 
+	@Inject
+	EventBus bus;
+	
 	/**
 	 * accepts call events from external systems and creates a {@link EventObject}
 	 * message of type {@link PhoneCallEvent} to all interested systems
@@ -60,7 +66,7 @@ public class Phone extends BaseService {
 
 		em.getTransaction().commit();
 
-		EventBusService.getEventBus().post(new EventObject(phoneCallEvent));
+		bus.send("EventObject", new EventObject(phoneCallEvent));
 
 		return new GenericStatus(true);
 	}

@@ -10,17 +10,15 @@ import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import org.apache.logging.log4j.LogManager;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.PowerMeterPing;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.PowerMeterData;
 import es.moki.ratelimitj.core.limiter.request.RequestLimitRule;
@@ -28,6 +26,7 @@ import es.moki.ratelimitj.core.limiter.request.RequestRateLimiter;
 import es.moki.ratelimitj.inmemory.request.InMemorySlidingWindowRequestRateLimiter;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
 
 /**
  * receiver power meter data and save it to the database
@@ -38,6 +37,9 @@ import io.quarkus.vertx.ConsumeEvent;
 @Singleton
 public class PowerMeterSensor {
 
+	@Inject
+	EventBus bus;
+	
 	/**
 	 * perform compression by aggregating the data for one hour blocks
 	 * 
@@ -101,12 +103,11 @@ public class PowerMeterSensor {
 																													// per
 		// 2 minutes
 		requestRateLimiter = new InMemorySlidingWindowRequestRateLimiter(rules);
-		EventBusService.getEventBus().register(this);
+
 	}
 
 	public void destroy() {
 		requestRateLimiter = null;
-		EventBusService.getEventBus().unregister(this);
 
 	}
 
@@ -227,6 +228,6 @@ public class PowerMeterSensor {
 		powerMeterIntervalData.setLastSevenDaysTrend(lastSevenDays.compareTo(lastEightDaysBeforeTillYesterday));
 
 		final EventObject intervalEventObject = new EventObject(powerMeterIntervalData);
-		EventBusService.getEventBus().post(intervalEventObject);
+		bus.send("EventObject", intervalEventObject);
 	}
 }

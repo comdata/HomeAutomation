@@ -7,20 +7,23 @@ import java.net.SocketException;
 import java.util.Date;
 import java.util.HashMap;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
-import org.apache.log4j.LogManager;
 import org.dhcp4java.DHCPPacket;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DashButtonRange;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
-import cm.homeautomation.services.base.AutoCreateInstance;
+import io.vertx.core.eventbus.EventBus;
 
-@AutoCreateInstance
+@Singleton
 public class DashButtonService {
+
+	@Inject
+	EventBus bus;
 
 	private final class DashButtonRunnable implements Runnable {
 		HashMap<String, Date> timeFilter = new HashMap<>();
@@ -45,7 +48,7 @@ public class DashButtonService {
 					listenAndReceive(listenPort, socket, p);
 				}
 			} catch (final SocketException e) {
-				//LogManager.getLogger(this.getClass()).error("socket exeception", e);
+				// LogManager.getLogger(this.getClass()).error("socket exeception", e);
 			}
 		}
 
@@ -75,7 +78,7 @@ public class DashButtonService {
 
 					if (((filterTime.getTime()) + 1000) < (new Date()).getTime()) {
 						timeFilter.put(mac, new Date());
-						EventBusService.getEventBus().post(new EventObject(new DashButtonEvent(mac)));
+						bus.send("EventObject", new EventObject(new DashButtonEvent(mac)));
 //						LogManager.getLogger(this.getClass()).debug("send dashbutton event");
 					}
 
@@ -121,17 +124,17 @@ public class DashButtonService {
 	}
 
 	public DashButtonService() {
-    	this.run();
+		this.run();
 	}
 
 	public void run() {
-		//LogManager.getLogger(this.getClass()).debug("Creating runner");
+		// LogManager.getLogger(this.getClass()).debug("Creating runner");
 		final Runnable dashbuttonRunner = new DashButtonRunnable();
 
-		//LogManager.getLogger(this.getClass()).debug("Triggering start");
+		// LogManager.getLogger(this.getClass()).debug("Triggering start");
 		new Thread(dashbuttonRunner).start();
 
-		//LogManager.getLogger(this.getClass()).debug("Start triggered");
+		// LogManager.getLogger(this.getClass()).debug("Start triggered");
 	}
 
 }

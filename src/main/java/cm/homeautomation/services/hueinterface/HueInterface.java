@@ -2,7 +2,6 @@ package cm.homeautomation.services.hueinterface;
 
 import java.util.List;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.CacheRetrieveMode;
@@ -10,8 +9,6 @@ import javax.persistence.EntityManager;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.jboss.logging.Logger;
 
 import cm.homeautomation.db.EntityManagerService;
@@ -20,7 +17,6 @@ import cm.homeautomation.entities.HueDeviceType;
 import cm.homeautomation.entities.Light;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.entities.WindowBlind;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.events.RemoteControlEvent.EventType;
 import cm.homeautomation.services.actor.ActorPressSwitchEvent;
@@ -29,7 +25,6 @@ import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.light.LightService;
 import cm.homeautomation.services.light.LightStates;
 import cm.homeautomation.services.windowblind.WindowBlindDimMessage;
-import io.quarkus.runtime.StartupEvent;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 

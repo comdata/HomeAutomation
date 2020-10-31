@@ -2,24 +2,17 @@ package cm.homeautomation.sensors.rainmeter;
 
 import java.util.Date;
 
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
-
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.RainPing;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.RainData;
 import io.quarkus.vertx.ConsumeEvent;
 
+@Singleton
 public class RainMeter {
-
-	public RainMeter() {
-
-		EventBusService.getEventBus().register(this);
-	}
 
 	@ConsumeEvent(value = "EventObject", blocking = true)
 	public void handlePowerMeterData(final EventObject eventObject) {

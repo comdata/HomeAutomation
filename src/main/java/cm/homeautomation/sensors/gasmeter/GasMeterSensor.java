@@ -2,14 +2,13 @@ package cm.homeautomation.sensors.gasmeter;
 
 import java.util.Date;
 
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.GasMeterPing;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.GasmeterData;
-import cm.homeautomation.services.base.AutoCreateInstance;
 import io.quarkus.vertx.ConsumeEvent;
 
 /**
@@ -18,7 +17,7 @@ import io.quarkus.vertx.ConsumeEvent;
  * @author christoph
  *
  */
-@AutoCreateInstance
+@Singleton
 public class GasMeterSensor {
 
 	private final EntityManager em;

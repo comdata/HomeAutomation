@@ -2,27 +2,23 @@ package cm.homeautomation.services.security;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.apache.log4j.LogManager;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.SecurityZone;
 import cm.homeautomation.entities.SecurityZoneMember;
 import cm.homeautomation.entities.Window;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.window.WindowStateData;
-import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
 
 /**
  * Manage Security Services
@@ -34,6 +30,9 @@ import io.quarkus.vertx.ConsumeEvent;
 @Singleton
 public class SecurityService extends BaseService {
 
+	@Inject
+	EventBus bus;
+	
 	private final EntityManager em;
 
 	public SecurityService() {
@@ -76,7 +75,7 @@ public class SecurityService extends BaseService {
 				if (windowStateData.getState() == 1) {
 
 					final Object securityEvent = new EventObject(new SecurityAlarmEvent(securityZone, window));
-					EventBusService.getEventBus().post(securityEvent);
+					bus.send("EventObject", securityEvent);
 				}
 
 			}

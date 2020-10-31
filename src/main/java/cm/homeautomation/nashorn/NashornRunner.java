@@ -2,6 +2,7 @@ package cm.homeautomation.nashorn;
 
 import java.util.List;
 
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -10,18 +11,14 @@ import javax.script.ScriptException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.ScriptingEntity;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
-import cm.homeautomation.services.base.AutoCreateInstance;
 import io.quarkus.vertx.ConsumeEvent;
 
-@AutoCreateInstance
+@Singleton
 public class NashornRunner {
 
 	private static final String ENABLED = "enabled";
@@ -50,7 +47,6 @@ public class NashornRunner {
 			engine = factory.getEngineByName(NASHORN);
 
 			setInstance(this);
-			EventBusService.getEventBus().register(this);
 		}
 	}
 
@@ -98,7 +94,6 @@ public class NashornRunner {
 
 	public static void stopInstance() {
 		if (instance != null) {
-			EventBusService.getEventBus().unregister(instance);
 			instance = null;
 		}
 

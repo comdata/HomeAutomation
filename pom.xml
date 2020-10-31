@@ -113,11 +113,6 @@
 			<version>1.6.2</version>
 		</dependency>
 		<dependency>
-			<groupId>org.greenrobot</groupId>
-			<artifactId>eventbus</artifactId>
-			<version>3.2.0</version>
-		</dependency>
-		<dependency>
 			<groupId>org.jboss.logmanager</groupId>
 			<artifactId>log4j-jboss-logmanager</artifactId>
 		</dependency>

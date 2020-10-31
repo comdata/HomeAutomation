@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.mail.Folder;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -13,15 +15,25 @@ import javax.ws.rs.Path;
 
 import org.apache.logging.log4j.LogManager;
 
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
+import io.vertx.core.eventbus.EventBus;
 import lombok.NonNull;
 
+@Singleton
 @Path("mail/")
 public class MailStatistics extends BaseService {
 
+	@Inject
+	EventBus bus;
+
+	private static MailStatistics instance;
+
 	private static List<MailData> mailDataList = new ArrayList<>();
+
+	public MailStatistics() {
+		instance = this;
+	}
 
 	@GET
 	@Path("get")
@@ -45,6 +57,10 @@ public class MailStatistics extends BaseService {
 	}
 
 	public static void updateMailData(String[] args) {
+		instance.updateMailDataInternal(args);
+	}
+
+	public void updateMailDataInternal(String[] args) {
 
 		String account = args[0];
 		MailData mailData = findOrCreateMailEntryInList(account);
@@ -62,10 +78,10 @@ public class MailStatistics extends BaseService {
 			mailData.setNewMessages(folder.getNewMessageCount());
 			mailData.setUnreadMessages(folder.getUnreadMessageCount());
 			EventObject eventObject = new EventObject(mailData);
-			EventBusService.getEventBus().post(eventObject);
+			bus.send("EventObject", eventObject);
 		} catch (MessagingException e) {
 			LogManager.getLogger(MailStatistics.class).error(e);
-		} 
+		}
 
 	}
 
