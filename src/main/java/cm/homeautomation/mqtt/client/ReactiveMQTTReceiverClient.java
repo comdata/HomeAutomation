@@ -42,8 +42,10 @@ public class ReactiveMQTTReceiverClient {
 				if (throwable != null) {
 					// Handle connection failure
 				} else {
-					client.subscribeWith().topicFilter("hueinterface").topicFilter("zigbee2mqtt").topicFilter("ebusd").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
-						
+
+//					topicFilter("zigbee2mqtt").topicFilter("ebusd")
+					client.subscribeWith().topicFilter("ebusd").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
+
 						Runnable runThread = () -> {
 							// Process the received message
 
@@ -52,7 +54,76 @@ public class ReactiveMQTTReceiverClient {
 							LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
 							System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
 
-							handleMessage(topic, messageContent);
+							handleMessageEBUS(topic, messageContent);
+						};
+						new Thread(runThread).start();
+					}).send().whenComplete((subAck, e) -> {
+						if (e != null) {
+							// Handle failure to subscribe
+							LogManager.getLogger(this.getClass()).error(e);
+						} else {
+							// Handle successful subscription, e.g. logging or incrementing a metric
+							LogManager.getLogger(this.getClass())
+									.debug("successfully subscribed. Type: " + subAck.getType().name());
+						}
+					});
+					client.subscribeWith().topicFilter("/fhem").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
+
+						Runnable runThread = () -> {
+							// Process the received message
+
+							String topic = publish.getTopic().toString();
+							String messageContent = new String(publish.getPayloadAsBytes());
+							LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+							System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+
+							handleMessageFHEM(topic, messageContent);
+						};
+						new Thread(runThread).start();
+					}).send().whenComplete((subAck, e) -> {
+						if (e != null) {
+							// Handle failure to subscribe
+							LogManager.getLogger(this.getClass()).error(e);
+						} else {
+							// Handle successful subscription, e.g. logging or incrementing a metric
+							LogManager.getLogger(this.getClass())
+									.debug("successfully subscribed. Type: " + subAck.getType().name());
+						}
+					});
+					client.subscribeWith().topicFilter("zigbee2mqtt").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
+
+						Runnable runThread = () -> {
+							// Process the received message
+
+							String topic = publish.getTopic().toString();
+							String messageContent = new String(publish.getPayloadAsBytes());
+							LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+							System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+
+							handleMessageMQTT(topic, messageContent);
+						};
+						new Thread(runThread).start();
+					}).send().whenComplete((subAck, e) -> {
+						if (e != null) {
+							// Handle failure to subscribe
+							LogManager.getLogger(this.getClass()).error(e);
+						} else {
+							// Handle successful subscription, e.g. logging or incrementing a metric
+							LogManager.getLogger(this.getClass())
+									.debug("successfully subscribed. Type: " + subAck.getType().name());
+						}
+					});
+					client.subscribeWith().topicFilter("hueinterface").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
+
+						Runnable runThread = () -> {
+							// Process the received message
+
+							String topic = publish.getTopic().toString();
+							String messageContent = new String(publish.getPayloadAsBytes());
+							LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+							System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+
+							handleMessageHUE(topic, messageContent);
 						};
 						new Thread(runThread).start();
 					}).send().whenComplete((subAck, e) -> {
@@ -81,25 +152,56 @@ public class ReactiveMQTTReceiverClient {
 		EventBusService.getEventBus().register(this);
 	}
 
+	private void handleMessageMQTT(String topic, String messageContent) {
+
+		try {
+
+			EventBusService.getEventBus().post(new MQTTTopicEvent(topic, messageContent));
+
+		} catch (Exception e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		}
+
+	}
+
+	private void handleMessageFHEM(String topic, String messageContent) {
+		try {
+			EventBusService.getEventBus().post(new FHEMDataEvent(topic, messageContent));
+			handleMessageMQTT(topic, messageContent);
+		} catch (Exception e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		}
+
+	}
+
+	private void handleMessageEBUS(String topic, String messageContent) {
+		try {
+			EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
+			EventBusService.getEventBus().post(new EventObject(ebusMessageEvent));
+			handleMessageMQTT(topic, messageContent);
+		} catch (Exception e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		}
+
+	}
+
+	private void handleMessageHUE(String topic, String messageContent) {
+		try {
+			sendHueInterfaceMessage(messageContent);
+		} catch (Exception e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		}
+
+	}
+
 	private void handleMessage(String topic, String messageContent) {
 
 		try {
 
-			if (topic.startsWith("/fhem")) {
-				EventBusService.getEventBus().post(new FHEMDataEvent(topic, messageContent));
-			} else if (topic.startsWith("ebusd/")) {
-				EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
-				EventBusService.getEventBus().post(new EventObject(ebusMessageEvent));
-			} else if (topic.startsWith("hueinterface")) {
-				sendHueInterfaceMessage(messageContent);
-			} else {
-				if (messageContent.startsWith("{")) {
-					EventBusService.getEventBus().post(new JSONDataEvent(messageContent));
-				}
+			if (messageContent.startsWith("{")) {
+				EventBusService.getEventBus().post(new JSONDataEvent(messageContent));
+				handleMessageMQTT(topic, messageContent);
 			}
-
-			EventBusService.getEventBus().post(new MQTTTopicEvent(topic, messageContent));
-
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass()).error(e);
 		}
