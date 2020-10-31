@@ -2,6 +2,7 @@ package cm.homeautomation.mqtt.client;
 
 import java.util.UUID;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -14,6 +15,8 @@ import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.eventbus.EventBusService;
+import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
 
 /**
  * generic MQTT sender
@@ -26,8 +29,10 @@ public class MQTTSender {
 
 	private Mqtt3AsyncClient publishClient = null;
 
+	@Inject
+	EventBus bus;
+
 	public MQTTSender() {
-		EventBusService.getEventBus().register(this);
 	}
 
 	private void initClient() {
@@ -36,14 +41,14 @@ public class MQTTSender {
 			String host = ConfigurationService.getConfigurationProperty("mqtt", "host");
 			int port = Integer.parseInt(ConfigurationService.getConfigurationProperty("mqtt", "port"));
 
-			publishClient = MqttClient.builder().useMqttVersion3().identifier(UUID.randomUUID().toString()).serverHost(host)
-					.serverPort(port).automaticReconnect().applyAutomaticReconnect().buildAsync();
+			publishClient = MqttClient.builder().useMqttVersion3().identifier(UUID.randomUUID().toString())
+					.serverHost(host).serverPort(port).automaticReconnect().applyAutomaticReconnect().buildAsync();
 
 			publishClient.connect().whenComplete((connAck, throwable) -> {
 				if (throwable != null) {
 					// Handle connection failure
 				} else {
-					
+
 				}
 			});
 		}
@@ -63,11 +68,12 @@ public class MQTTSender {
 
 	public void doSendSyncMQTTMessage(String topic, String messagePayload) {
 		System.out.println("MQTT OUTBOUND" + topic + " " + messagePayload);
-		EventBusService.getEventBus().post(new MQTTSendEvent(topic, messagePayload));
+	
+		bus.send("MQTTSendEvent", new MQTTSendEvent(topic, messagePayload));
 
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value = "MQTTSendEvent", blocking=true)
 	public void send(MQTTSendEvent mqttSendEvent) {
 		String topic = mqttSendEvent.getTopic();
 		String messagePayload = mqttSendEvent.getPayload();

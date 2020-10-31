@@ -222,7 +222,7 @@ public class ReactiveMQTTReceiverClient {
 		try {
 
 			MQTTTopicEvent mqttTopicEvent = new MQTTTopicEvent(topic, messageContent);
-			bus.send(MQTTTopicEvent.class.getName(), mqttTopicEvent);
+			bus.send("MQTTTopicEvent", mqttTopicEvent);
 
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass()).error(e);
@@ -233,7 +233,7 @@ public class ReactiveMQTTReceiverClient {
 	private void handleMessageFHEM(String topic, String messageContent) {
 		try {
 			FHEMDataEvent fhemDataEvent = new FHEMDataEvent(topic, messageContent);			
-			bus.send(FHEMDataEvent.class.getName(), fhemDataEvent);
+			bus.send("FHEMDataEvent", fhemDataEvent);
 			
 			handleMessageMQTT(topic, messageContent);
 			
@@ -248,7 +248,7 @@ public class ReactiveMQTTReceiverClient {
 		try {
 			EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
 			EventObject eventObject = new EventObject(ebusMessageEvent);
-			bus.send(EventObject.class.getName(), eventObject);
+			bus.send("EventObject", eventObject);
 			
 			handleMessageMQTT(topic, messageContent);
 		} catch (Exception e) {
@@ -272,7 +272,7 @@ public class ReactiveMQTTReceiverClient {
 
 			if (messageContent.startsWith("{")) {
 				JSONDataEvent jsonDataEvent = new JSONDataEvent(messageContent);
-				bus.send(JSONDataEvent.class.getName(), jsonDataEvent);
+				bus.send("JSONDataEvent", jsonDataEvent);
 				handleMessageMQTT(topic, messageContent);
 			}
 		} catch (Exception e) {
@@ -286,7 +286,7 @@ public class ReactiveMQTTReceiverClient {
 		try {
 			hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
 			
-			bus.send(HueEmulatorMessage.class.getName(), hueMessage);
+			bus.send("HueEmulatorMessage", hueMessage);
 		} catch (JsonProcessingException e) {
 			LogManager.getLogger(this.getClass()).error(e);
 		}
