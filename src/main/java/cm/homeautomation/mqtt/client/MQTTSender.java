@@ -5,16 +5,12 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 
 import cm.homeautomation.configuration.ConfigurationService;
-import cm.homeautomation.eventbus.EventBusService;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 

@@ -2,6 +2,8 @@ package cm.homeautomation.mqtt.humanmessageemitter;
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -16,12 +18,17 @@ import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
 import cm.homeautomation.mqtt.client.MQTTSendEvent;
 import cm.homeautomation.services.base.AutoCreateInstance;
 import io.quarkus.scheduler.Scheduled;
+import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
 
-@AutoCreateInstance
+@Singleton
 public class MQTTHumanMessageEmitter {
 
 	private String humanMessageTopic;
 	private static List<HumanMessageEmitterFilter> filterList;
+	
+	@Inject
+	EventBus bus;
 
 	public MQTTHumanMessageEmitter() {
 		humanMessageTopic = ConfigurationService.getConfigurationProperty("mqtt", "humanMessageTopic");
@@ -51,7 +58,7 @@ public class MQTTHumanMessageEmitter {
 				.getResultList();
 	}
 
-	@Subscribe(threadMode = ThreadMode.ASYNC)
+	@ConsumeEvent(value="EventObject", blocking=true)
 	public void handleEvent(final EventObject eventObject) {
 		Runnable eventThread = () -> {
 			if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
@@ -64,7 +71,7 @@ public class MQTTHumanMessageEmitter {
 
 				// message must not be set to ignore and not be filtered
 				if (!filtered) {
-					EventBusService.getEventBus().post(new MQTTSendEvent(humanMessageTopic, message));
+					bus.send("MQTTSendEvent", new MQTTSendEvent(humanMessageTopic, message));
 				}
 			}
 		};

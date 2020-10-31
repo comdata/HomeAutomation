@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
@@ -13,8 +14,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.logging.log4j.LogManager;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -34,6 +33,8 @@ import cm.homeautomation.services.ir.InfraredService;
 import cm.homeautomation.services.light.LightService;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
+import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
 
 /**
  * everything necessary for handling actors and reading the statuses
@@ -48,11 +49,14 @@ public class ActorService extends BaseService {
 	private static Map<Long, List<Switch>> switchList = new HashMap<>();
 
 	private static ActorService instance;
-	
+
+	@Inject
+	EventBus bus;
+
 	void startup(@Observes StartupEvent event) {
 		EventBusService.getEventBus().register(this);
 	}
-	
+
 	public void performSwitch(String targetStatus, String switchId) {
 
 		final String upperCaseTargetStatus = targetStatus.toUpperCase();
@@ -105,17 +109,16 @@ public class ActorService extends BaseService {
 
 				LogManager.getLogger(this.getClass()).debug("MQTT: " + topic + " - " + message);
 
-				EventBusService.getEventBus().post(new MQTTSendEvent(topic, message));
-
+				bus.send("MQTTSendEvent", new MQTTSendEvent(topic, message));
 
 			} else {
 
 				if (singleSwitch.getHouseCode() != null) {
-					
+
 					String topic = "ESP_RC/cmd";
 					String message = "RC," + ("1".equals(actorMessage.getStatus()) ? "ON" : "OFF") + "="
 							+ actorMessage.getHouseCode().trim() + actorMessage.getSwitchNo().trim();
-					EventBusService.getEventBus().post(new MQTTSendEvent(topic, message));
+					bus.send("MQTTSendEvent", new MQTTSendEvent(topic, message));
 				}
 
 				if (singleSwitch.getSwitchSetUrl() != null) {
@@ -160,7 +163,6 @@ public class ActorService extends BaseService {
 
 		HTTPHelper.performHTTPRequest(switchSetUrl);
 	}
-
 
 	public ActorService() {
 		initSwitchList();
@@ -261,11 +263,11 @@ public class ActorService extends BaseService {
 		return switchStatuses;
 	}
 
-	@Subscribe(threadMode=ThreadMode.ASYNC)
+	@ConsumeEvent(value = "ActorPressSwitchEvent", blocking = true)
 	public void subscribePressSwitch(ActorPressSwitchEvent event) {
 		pressSwitch(event.getSwitchId(), event.getTargetStatus());
 	}
-	
+
 	/**
 	 * press a switch
 	 *
@@ -279,7 +281,7 @@ public class ActorService extends BaseService {
 			@PathParam("status") String targetStatus) {
 
 		performSwitch(targetStatus, switchId);
-		
+
 		final SwitchPressResponse switchPressResponse = new SwitchPressResponse();
 		switchPressResponse.setSuccess(true);
 		return switchPressResponse;
@@ -327,7 +329,8 @@ public class ActorService extends BaseService {
 		switchEvent.setStatus(targetStatus);
 		switchEvent.setSwitchId(switchId);
 		switchEvent.setUsedSwitch(singleSwitch);
-		EventBusService.getEventBus().post(new EventObject(switchEvent));
+		bus.send("EventObject", new EventObject(switchEvent));
+
 		return singleSwitch;
 	}
 
