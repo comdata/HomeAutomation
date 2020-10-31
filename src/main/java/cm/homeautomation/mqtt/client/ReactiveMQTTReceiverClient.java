@@ -15,7 +15,6 @@ import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.ebus.EBusMessageEvent;
-import cm.homeautomation.eventbus.EventBusService;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.fhem.FHEMDataEvent;
 import cm.homeautomation.jeromq.server.JSONDataEvent;
@@ -216,7 +215,6 @@ public class ReactiveMQTTReceiverClient {
 	void startup(@Observes StartupEvent event) {
 		initClient();
 
-		EventBusService.getEventBus().register(this);
 	}
 
 	private void handleMessageMQTT(String topic, String messageContent) {
@@ -224,8 +222,6 @@ public class ReactiveMQTTReceiverClient {
 		try {
 
 			MQTTTopicEvent mqttTopicEvent = new MQTTTopicEvent(topic, messageContent);
-			EventBusService.getEventBus().post(mqttTopicEvent);
-
 			bus.send(MQTTTopicEvent.class.getName(), mqttTopicEvent);
 
 		} catch (Exception e) {
@@ -236,9 +232,7 @@ public class ReactiveMQTTReceiverClient {
 
 	private void handleMessageFHEM(String topic, String messageContent) {
 		try {
-			FHEMDataEvent fhemDataEvent = new FHEMDataEvent(topic, messageContent);
-			EventBusService.getEventBus().post(fhemDataEvent);
-			
+			FHEMDataEvent fhemDataEvent = new FHEMDataEvent(topic, messageContent);			
 			bus.send(FHEMDataEvent.class.getName(), fhemDataEvent);
 			
 			handleMessageMQTT(topic, messageContent);
@@ -254,7 +248,6 @@ public class ReactiveMQTTReceiverClient {
 		try {
 			EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
 			EventObject eventObject = new EventObject(ebusMessageEvent);
-			EventBusService.getEventBus().post(eventObject);
 			bus.send(EventObject.class.getName(), eventObject);
 			
 			handleMessageMQTT(topic, messageContent);
@@ -279,7 +272,6 @@ public class ReactiveMQTTReceiverClient {
 
 			if (messageContent.startsWith("{")) {
 				JSONDataEvent jsonDataEvent = new JSONDataEvent(messageContent);
-				EventBusService.getEventBus().post(jsonDataEvent);
 				bus.send(JSONDataEvent.class.getName(), jsonDataEvent);
 				handleMessageMQTT(topic, messageContent);
 			}
@@ -293,7 +285,6 @@ public class ReactiveMQTTReceiverClient {
 		HueEmulatorMessage hueMessage;
 		try {
 			hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
-			EventBusService.getEventBus().post(hueMessage);
 			
 			bus.send(HueEmulatorMessage.class.getName(), hueMessage);
 		} catch (JsonProcessingException e) {

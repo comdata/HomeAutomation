@@ -62,8 +62,6 @@ public class ZigbeeMQTTReceiver {
 	private String zigbeeMqttTopic = ConfigurationService.getConfigurationProperty("zigbee", "mqttTopic");
 
 	private void init() {
-		//EventBusService.getEventBus().register(this);
-
 		updateDeviceList();
 	}
 
