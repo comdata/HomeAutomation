@@ -82,6 +82,9 @@ public class ZigbeeMQTTReceiver {
 
 			// do zigbee magic
 			String message = event.getMessage();
+			
+			System.out.println("ZIGBEE: "+topic+" "+message);
+			
 			LogManager.getLogger(this.getClass()).debug("Got Zigbee message: " + message);
 
 			if (topic.equals(zigbeeMqttTopic + "/bridge/config/devices")) {
@@ -500,7 +503,6 @@ public class ZigbeeMQTTReceiver {
 
 			remoteControlEvent.setPoweredOnState(occupancyNodeBoolean);
 
-			//EventBusService.getEventBus().post(remoteControlEvent);
 			bus.send("RemoteControlEvent", remoteControlEvent);
 			
 			MotionEvent motionDetectionEvent = new MotionEvent();

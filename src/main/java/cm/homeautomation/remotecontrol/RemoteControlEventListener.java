@@ -86,6 +86,8 @@ public class RemoteControlEventListener {
 		String technicalId = event.getTechnicalId();
 		EntityManager em = EntityManagerService.getManager();
 
+		System.out.println("RC "+name+" "+technicalId);
+		
 		// LogManager.getLogger(this.getClass()).error("got remote event: " + name + "/"
 		// + technicalId);
 
