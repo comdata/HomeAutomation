@@ -2,70 +2,62 @@ package cm.homeautomation.services.motion;
 
 import java.util.List;
 
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
-
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.MotionDetection;
-import cm.homeautomation.eventbus.EventBusService;
-import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.base.BaseService;
+import io.quarkus.vertx.ConsumeEvent;
 
-@AutoCreateInstance
+@Singleton
 public class MotionDetectionService extends BaseService {
 
-    public MotionDetectionService() {
-        EventBusService.getEventBus().register(this);
+	@ConsumeEvent(value = "MotionEvent", blocking = true)
+	public void registerMotionEvent(final MotionEvent motionEvent) {
 
-    }
+		EntityManager em = EntityManagerService.getManager();
 
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void registerMotionEvent(final MotionEvent motionEvent) {
+		final boolean state = motionEvent.isState();
 
-        EntityManager em = EntityManagerService.getManager();
+		System.out.println(motionEvent.getMessageString());
 
-        final boolean state = motionEvent.isState();
+		List<MotionDetection> openEventList = em
+				.createQuery("select m from MotionDetection m where m.externalId=:externalId and m.end is null",
+						MotionDetection.class)
+				.setParameter("externalId", motionEvent.getMac()).getResultList();
 
-        System.out.println(motionEvent.getMessageString());
+		if (state) {
+			// motion active
 
-        List<MotionDetection> openEventList = em
-                .createQuery("select m from MotionDetection m where m.externalId=:externalId and m.end is null",
-                        MotionDetection.class)
-                .setParameter("externalId", motionEvent.getMac()).getResultList();
+			if (openEventList == null || openEventList.isEmpty()) {
+				em.getTransaction().begin();
 
-        if (state) {
-            // motion active
+				MotionDetection motionDetection = new MotionDetection();
+				motionDetection.setStart(motionEvent.getTimestamp());
+				motionDetection.setExternalId(motionEvent.getMac());
+				motionDetection.setType(motionEvent.getType());
 
-            if (openEventList == null || openEventList.isEmpty()) {
-                em.getTransaction().begin();
+				em.persist(motionDetection);
+				em.getTransaction().commit();
+			} else {
+				// we already have an open event, so do nothing
+			}
 
-                MotionDetection motionDetection = new MotionDetection();
-                motionDetection.setStart(motionEvent.getTimestamp());
-                motionDetection.setExternalId(motionEvent.getMac());
-                motionDetection.setType(motionEvent.getType());
+		} else {
+			// motion stopped
 
-                em.persist(motionDetection);
-                em.getTransaction().commit();
-            } else {
-                // we already have an open event, so do nothing
-            }
+			if (openEventList != null && !openEventList.isEmpty() && openEventList.size() == 1) {
+				em.getTransaction().begin();
+				// get first element
+				MotionDetection motionDetection = openEventList.get(0);
+				motionDetection.setEnd(motionEvent.getTimestamp());
+				em.merge(motionDetection);
 
-        } else {
-            // motion stopped
+				em.getTransaction().commit();
+			}
 
-            if (openEventList != null && !openEventList.isEmpty() && openEventList.size()==1) {
-                em.getTransaction().begin();
-                // get first element
-                MotionDetection motionDetection = openEventList.get(0);
-                motionDetection.setEnd(motionEvent.getTimestamp());
-                em.merge(motionDetection);
-
-                em.getTransaction().commit();
-            }
-
-        }
-    }
+		}
+	}
 
 }
