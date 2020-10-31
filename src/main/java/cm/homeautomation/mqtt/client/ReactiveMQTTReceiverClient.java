@@ -67,6 +67,29 @@ public class ReactiveMQTTReceiverClient {
 									.debug("successfully subscribed. Type: " + subAck.getType().name());
 						}
 					});
+					client.subscribeWith().topicFilter("/sensordata").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
+
+						Runnable runThread = () -> {
+							// Process the received message
+
+							String topic = publish.getTopic().toString();
+							String messageContent = new String(publish.getPayloadAsBytes());
+							LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+							System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+
+							handleMessage(topic, messageContent);
+						};
+						new Thread(runThread).start();
+					}).send().whenComplete((subAck, e) -> {
+						if (e != null) {
+							// Handle failure to subscribe
+							LogManager.getLogger(this.getClass()).error(e);
+						} else {
+							// Handle successful subscription, e.g. logging or incrementing a metric
+							LogManager.getLogger(this.getClass())
+									.debug("successfully subscribed. Type: " + subAck.getType().name());
+						}
+					});
 					client.subscribeWith().topicFilter("/fhem").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
 
 						Runnable runThread = () -> {
