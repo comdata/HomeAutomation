@@ -10,6 +10,7 @@ import org.apache.log4j.LogManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hivemq.client.mqtt.MqttClient;
+import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 
 import cm.homeautomation.configuration.ConfigurationService;
@@ -41,7 +42,7 @@ public class ReactiveMQTTReceiverClient {
 				if (throwable != null) {
 					// Handle connection failure
 				} else {
-					client.subscribeWith().topicFilter("#").callback(publish -> {
+					client.subscribeWith().topicFilter("#").qos(MqttQos.AT_LEAST_ONCE).callback(publish -> {
 						
 						Runnable runThread = () -> {
 							// Process the received message
