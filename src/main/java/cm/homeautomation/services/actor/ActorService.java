@@ -13,6 +13,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.logging.log4j.LogManager;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -259,6 +261,11 @@ public class ActorService extends BaseService {
 		return switchStatuses;
 	}
 
+	@Subscribe(threadMode=ThreadMode.POSTING)
+	public void subscribePressSwitch(ActorPressSwitchEvent event) {
+		pressSwitch(event.getSwitchId(), event.getTargetStatus());
+	}
+	
 	/**
 	 * press a switch
 	 *

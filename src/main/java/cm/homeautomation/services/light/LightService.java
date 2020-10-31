@@ -64,8 +64,7 @@ public class LightService extends BaseService {
 		initLightList();
 		setInstance(this);
 	}
-	
-	
+
 	void startup(@Observes StartupEvent event) {
 		EventBusService.getEventBus().register(this);
 	}
@@ -320,17 +319,18 @@ public class LightService extends BaseService {
 
 	@Scheduled(every = "120s")
 	public void initLightList() {
-		rooms = new HashMap<>();
-		lightRoomList = new HashMap<>();
-		lightExternalList = new HashMap<>();
-		lightList = new HashMap<>();
+
+		Map<Long, Room> roomsTemp = new HashMap<>();
+		Map<Long, List<Light>> lightRoomListTemp = new HashMap<>();
+		Map<String, Light> lightExternalListTemp = new HashMap<>();
+		Map<Long, Light> lightListTemp = new HashMap<>();
 
 		final EntityManager em = EntityManagerService.getManager();
 
 		final List<Room> roomsList = em.createQuery("select r from Room r", Room.class).getResultList();
 
 		for (Room room : roomsList) {
-			rooms.put(room.getId(), room);
+			roomsTemp.put(room.getId(), room);
 		}
 
 		if (roomsList != null && !roomsList.isEmpty()) {
@@ -342,14 +342,19 @@ public class LightService extends BaseService {
 						.setParameter("room", roomId).getResultList();
 
 				for (Light light : lightPerRoomList) {
-					lightExternalList.put(light.getExternalId(), light);
-					lightList.put(light.getId(), light);
+					lightExternalListTemp.put(light.getExternalId(), light);
+					lightListTemp.put(light.getId(), light);
 				}
 
-				lightRoomList.put(roomId, lightPerRoomList);
+				lightRoomListTemp.put(roomId, lightPerRoomList);
 			}
 
 		}
+
+		rooms = roomsTemp;
+		lightRoomList = lightRoomListTemp;
+		lightExternalList = lightExternalListTemp;
+		lightList = lightListTemp;
 	}
 
 }

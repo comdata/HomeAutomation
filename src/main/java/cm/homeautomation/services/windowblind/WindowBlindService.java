@@ -5,14 +5,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.apache.commons.collections4.map.HashedMap;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Room;
@@ -23,9 +25,10 @@ import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.base.HTTPHelper;
+import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
 
-@ApplicationScoped
+@Singleton
 @Path("windowBlinds/")
 public class WindowBlindService extends BaseService {
 	@Inject
@@ -36,8 +39,10 @@ public class WindowBlindService extends BaseService {
 
 	private static final String DIMVALUE = "{DIMVALUE}";
 
-	public WindowBlindService() {
+	void startup(@Observes StartupEvent event) {
 		initWindowBlindList();
+
+		EventBusService.getEventBus().register(this);
 	}
 
 	public enum DimDirection {
@@ -135,6 +140,11 @@ public class WindowBlindService extends BaseService {
 	public GenericStatus setDim(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value) {
 		setDim(windowBlindId, value, WindowBlind.SINGLE, null);
 		return new GenericStatus(true);
+	}
+
+	@Subscribe(threadMode = ThreadMode.POSTING)
+	public void callDim(WindowBlindDimMessage message) {
+		setDim(message.getWindowBlindId(), message.getValue(), message.getType(), message.getRoomId());
 	}
 
 	@GET
@@ -264,7 +274,6 @@ public class WindowBlindService extends BaseService {
 			windowBlindMapTemp.put(windowBlind.getId(), windowBlind);
 		}
 
-		
 		Map<Long, List<WindowBlind>> windowBlindListTemp = new HashMap<>();
 		if (rooms != null && !rooms.isEmpty()) {
 
