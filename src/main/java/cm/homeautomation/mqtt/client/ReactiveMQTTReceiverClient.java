@@ -42,13 +42,18 @@ public class ReactiveMQTTReceiverClient {
 					// Handle connection failure
 				} else {
 					client.subscribeWith().topicFilter("#").callback(publish -> {
-						// Process the received message
-
-						String topic = publish.getTopic().toString();
-						String messageContent = new String(publish.getPayloadAsBytes());
-						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
 						
-						handleMessage(topic, messageContent);
+						Runnable runThread = () -> {
+							// Process the received message
+
+							String topic = publish.getTopic().toString();
+							String messageContent = new String(publish.getPayloadAsBytes());
+							LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+							System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+
+							handleMessage(topic, messageContent);
+						};
+						new Thread(runThread).start();
 					}).send().whenComplete((subAck, e) -> {
 						if (e != null) {
 							// Handle failure to subscribe
@@ -76,30 +81,28 @@ public class ReactiveMQTTReceiverClient {
 	}
 
 	private void handleMessage(String topic, String messageContent) {
-		LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-		Runnable runThread = () -> {
-			try {
 
-				if (topic.startsWith("/fhem")) {
-					EventBusService.getEventBus().post(new FHEMDataEvent(topic, messageContent));
-				} else if (topic.startsWith("ebusd/")) {
-					EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
-					EventBusService.getEventBus().post(new EventObject(ebusMessageEvent));
-				} else if (topic.startsWith("hueinterface")) {
-					sendHueInterfaceMessage(messageContent);
-				} else {
-					if (messageContent.startsWith("{")) {
-						EventBusService.getEventBus().post(new JSONDataEvent(messageContent));
-					}
+		try {
+
+			if (topic.startsWith("/fhem")) {
+				EventBusService.getEventBus().post(new FHEMDataEvent(topic, messageContent));
+			} else if (topic.startsWith("ebusd/")) {
+				EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
+				EventBusService.getEventBus().post(new EventObject(ebusMessageEvent));
+			} else if (topic.startsWith("hueinterface")) {
+				sendHueInterfaceMessage(messageContent);
+			} else {
+				if (messageContent.startsWith("{")) {
+					EventBusService.getEventBus().post(new JSONDataEvent(messageContent));
 				}
-
-				EventBusService.getEventBus().post(new MQTTTopicEvent(topic, messageContent));
-
-			} catch (Exception e) {
-				LogManager.getLogger(this.getClass()).error(e);
 			}
-		};
-		new Thread(runThread).start();
+
+			EventBusService.getEventBus().post(new MQTTTopicEvent(topic, messageContent));
+
+		} catch (Exception e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		}
+
 	}
 
 	private void sendHueInterfaceMessage(String messageContent) {
