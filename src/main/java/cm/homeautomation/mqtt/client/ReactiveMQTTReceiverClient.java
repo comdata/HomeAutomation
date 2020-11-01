@@ -41,6 +41,9 @@ public class ReactiveMQTTReceiverClient {
 		Mqtt3AsyncClient ebusClient = buildAClient(host, port);
 		Mqtt3AsyncClient hueClient = buildAClient(host, port);
 		Mqtt3AsyncClient fhemClient = buildAClient(host, port);
+		Mqtt3AsyncClient shellyClient = buildAClient(host, port);
+		Mqtt3AsyncClient tasmotaClient = buildAClient(host, port);
+
 
 		zigbeeClient.connect().whenComplete((connAck, throwable) -> {
 			if (throwable != null) {
@@ -74,6 +77,70 @@ public class ReactiveMQTTReceiverClient {
 			}
 		});
 
+		shellyClient.connect().whenComplete((connAck, throwable) -> {
+			if (throwable != null) {
+				// Handle connection failure
+			} else {
+
+				shellyClient.subscribeWith().topicFilter("shellies/#").callback(publish -> {
+
+					Runnable runThread = () -> {
+						// Process the received message
+
+						String topic = publish.getTopic().toString();
+						String messageContent = new String(publish.getPayloadAsBytes());
+						LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+
+						handleMessageMQTT(topic, messageContent);
+					};
+					new Thread(runThread).start();
+				}).send().whenComplete((subAck, e) -> {
+					if (e != null) {
+						// Handle failure to subscribe
+						LogManager.getLogger(this.getClass()).error(e);
+					} else {
+						// Handle successful subscription, e.g. logging or incrementing a metric
+						LogManager.getLogger(this.getClass())
+								.debug("successfully subscribed. Type: " + subAck.getType().name());
+					}
+				});
+
+			}
+		});
+		
+		tasmotaClient.connect().whenComplete((connAck, throwable) -> {
+			if (throwable != null) {
+				// Handle connection failure
+			} else {
+
+				tasmotaClient.subscribeWith().topicFilter("tasmota/#").callback(publish -> {
+
+					Runnable runThread = () -> {
+						// Process the received message
+
+						String topic = publish.getTopic().toString();
+						String messageContent = new String(publish.getPayloadAsBytes());
+						LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+
+						handleMessageMQTT(topic, messageContent);
+					};
+					new Thread(runThread).start();
+				}).send().whenComplete((subAck, e) -> {
+					if (e != null) {
+						// Handle failure to subscribe
+						LogManager.getLogger(this.getClass()).error(e);
+					} else {
+						// Handle successful subscription, e.g. logging or incrementing a metric
+						LogManager.getLogger(this.getClass())
+								.debug("successfully subscribed. Type: " + subAck.getType().name());
+					}
+				});
+
+			}
+		});
+		
 		ebusClient.connect().whenComplete((connAck, throwable) -> {
 			if (throwable != null) {
 				// Handle connection failure
