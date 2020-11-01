@@ -3,7 +3,9 @@ package cm.homeautomation.zigbee;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -41,6 +43,7 @@ import cm.homeautomation.services.sensors.Sensors;
 import cm.homeautomation.services.windowblind.WindowBlindService;
 import cm.homeautomation.zigbee.entities.ZigBeeTradfriRemoteControl;
 import io.quarkus.runtime.StartupEvent;
+import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 import lombok.NonNull;
@@ -60,7 +63,11 @@ public class ZigbeeMQTTReceiver {
 	@NonNull
 	private String zigbeeMqttTopic = ConfigurationService.getConfigurationProperty("zigbee", "mqttTopic");
 
+
+	private Map<String, ZigBeeDevice> deviceMap=new HashMap<>();
+
 	private void init() {
+		initDeviceList();
 		updateDeviceList();
 	}
 
@@ -708,19 +715,23 @@ public class ZigbeeMQTTReceiver {
 	}
 
 	private ZigBeeDevice getZigbeeDevice(String device) {
-		EntityManager em = EntityManagerService.getManager();
-		List<ZigBeeDevice> resultList = em
-				.createQuery("select zb from ZigBeeDevice zb where zb.friendlyName=:friendlyName", ZigBeeDevice.class)
-				.setParameter("friendlyName", device).getResultList();
+		return deviceMap.get(device);
+	}
+	
+	@Scheduled(every = "120s")
+	public void initDeviceList() {
+		final EntityManager em = EntityManagerService.getManager();
 
-		if (resultList != null && !resultList.isEmpty()) {
-
-			ZigBeeDevice zigBeeDevice = resultList.get(0);
-
-			return zigBeeDevice;
-		} else {
-			return null;
+		List<ZigBeeDevice> devices = em.createQuery("select zb from ZigBeeDevice zb", ZigBeeDevice.class).getResultList();
+		
+		Map<String, ZigBeeDevice> deviceMapTemp=new HashMap<>();
+		
+		for (ZigBeeDevice zigBeeDevice : devices) {
+			
+			deviceMapTemp.put(zigBeeDevice.getFriendlyName(), zigBeeDevice);
 		}
+
+		deviceMap=deviceMapTemp;
 	}
 
 	private void handleDeviceMessage(String message) {

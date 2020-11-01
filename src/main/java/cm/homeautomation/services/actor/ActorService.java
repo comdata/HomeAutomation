@@ -160,6 +160,7 @@ public class ActorService extends BaseService {
 	}
 
 	public ActorService() {
+		instance=this;
 		initSwitchList();
 	}
 
