@@ -30,7 +30,7 @@ public class TelegramBotService {
 
 	@Inject
 	EventBus bus;
-	
+
 	private static final String USER = "user";
 	private static final String TOKEN = "token";
 	private static final String TELEGRAM = "telegram";
@@ -61,22 +61,25 @@ public class TelegramBotService {
 
 	@ConsumeEvent(value = "EventObject", blocking = true)
 	public void handleEvent(final EventObject eventObject) {
-		if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
-			final HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventObject
-					.getData();
 
-			boolean ignore = humanMessage.getClass().isAnnotationPresent(TelegramIgnore.class);
+		if (enabled) {
+			if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
+				final HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventObject
+						.getData();
 
-			String messageString = humanMessage.getMessageString();
-			if (!ignore) {
-				boolean filtered = checkMessageFiltered(messageString);
+				boolean ignore = humanMessage.getClass().isAnnotationPresent(TelegramIgnore.class);
 
-				// message must not be set to ignore and not be filtered
-				if (!filtered) {
-					TelegramBotService.getInstance().sendMessage(messageString);
+				String messageString = humanMessage.getMessageString();
+				if (!ignore) {
+					boolean filtered = checkMessageFiltered(messageString);
+
+					// message must not be set to ignore and not be filtered
+					if (!filtered) {
+						TelegramBotService.getInstance().sendMessage(messageString);
+					}
 				}
-			}
 
+			}
 		}
 	}
 
