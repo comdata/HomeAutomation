@@ -48,7 +48,7 @@ public class SchedulerService extends BaseService {
 		try {
 			initialize();
 		} catch (SchedulerException e) {
-//			LogManager.getLogger(this.getClass()).error(e);
+			LogManager.getLogger(this.getClass()).error(e);
 		}
 	}
 
@@ -94,7 +94,7 @@ public class SchedulerService extends BaseService {
 						jobMap.put(taskId, jobKey);
 					}
 				} catch (SchedulerException e) {
-//					LogManager.getLogger(this.getClass()).error(e);
+					LogManager.getLogger(this.getClass()).error(e);
 				}
 			}
 
@@ -112,7 +112,7 @@ public class SchedulerService extends BaseService {
 		try {
 			this.initialize();
 		} catch (SchedulerException e) {
-//			LogManager.getLogger(this.getClass()).error(e);
+			LogManager.getLogger(this.getClass()).error(e);
 		}
 
 		SchedulerResponse schedulerResponse = new SchedulerResponse();
@@ -151,11 +151,10 @@ public class SchedulerService extends BaseService {
 		EntityManager em = EntityManagerService.getManager();
 
 		File cronFile = new File("/Users/christoph/git/HomeAutomation/schedule.cron");
-		
+
 		try (BufferedReader reader = new BufferedReader(new FileReader(cronFile));) {
 			String line = reader.readLine();
 			while (line != null) {
-				System.out.println(line);
 				// read next line
 				line = reader.readLine();
 
@@ -165,7 +164,6 @@ public class SchedulerService extends BaseService {
 					} else if ("".equals(line.trim())) {
 						continue;
 					} else {
-						// System.out.println(line);
 
 						String[] lineParts = line.split("\\s+");
 						System.out.println("Line parts: " + lineParts.length);
@@ -198,7 +196,7 @@ public class SchedulerService extends BaseService {
 
 			}
 		} catch (IOException e) {
-//			LogManager.getLogger(this.getClass()).error(e);
+			LogManager.getLogger(this.getClass()).error(e);
 		}
 
 	}

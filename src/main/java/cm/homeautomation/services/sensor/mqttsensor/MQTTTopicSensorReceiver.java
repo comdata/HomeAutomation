@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import org.jboss.logging.Logger;
@@ -12,14 +12,12 @@ import org.jboss.logging.Logger;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
-import cm.homeautomation.services.base.AutoCreateInstance;
 import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.ConsumeEvent;
 
-@ApplicationScoped
-@AutoCreateInstance
+@Singleton
 public class MQTTTopicSensorReceiver {
 
 	private static final Logger LOG = Logger.getLogger(MQTTTopicSensorReceiver.class);

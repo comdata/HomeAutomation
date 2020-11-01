@@ -25,7 +25,6 @@ import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
-import io.vertx.reactivex.servicediscovery.types.EventBusService;
 
 /**
  * service to get all hosts from the {@link NetworkScanner} internal list

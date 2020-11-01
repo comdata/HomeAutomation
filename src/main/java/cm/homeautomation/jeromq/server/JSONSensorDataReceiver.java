@@ -9,6 +9,8 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.logging.log4j.LogManager;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cm.homeautomation.eventbus.EventObject;
@@ -63,7 +65,7 @@ public class JSONSensorDataReceiver {
 				messageContent = split[0];
 			}
 
-//            LogManager.getLogger(JSONSensorDataReceiver.class).info(MESSAGE_FOR_DESERIALIZATION_S, messageContent);
+            LogManager.getLogger(JSONSensorDataReceiver.class).info(MESSAGE_FOR_DESERIALIZATION_S, messageContent);
 
 			JSONSensorDataBase sensorData = mapper.readValue(messageContent, JSONSensorDataBase.class);
 
@@ -84,17 +86,17 @@ public class JSONSensorDataReceiver {
 			} else {
 				for (Class<?> clazz : classList) {
 					if (clazz.isInstance(sensorData)) {
-//                        LogManager.getLogger(JSONSensorDataReceiver.class).debug("Casting to: {}",
-//                                clazz.getSimpleName());
+                        LogManager.getLogger(JSONSensorDataReceiver.class).debug("Casting to: {}",
+                                clazz.getSimpleName());
 						EventObject eventObject = new EventObject(clazz.cast(sensorData));
 						bus.publish("EventObject", eventObject);
 					}
 				}
 			}
 		} catch (IOException e) {
-//            LogManager.getLogger(JSONSensorDataReceiver.class).error(RECEIVED_IO_EXCEPTION, e);
+            LogManager.getLogger(JSONSensorDataReceiver.class).error(RECEIVED_IO_EXCEPTION, e);
 		} catch (SensorDataLimitViolationException e) {
-//            LogManager.getLogger(JSONSensorDataReceiver.class).error(RECEIVED_SENSOR_DATA_LIMIT_VIOLATION_EXCEPTION, e);
+            LogManager.getLogger(JSONSensorDataReceiver.class).error(RECEIVED_SENSOR_DATA_LIMIT_VIOLATION_EXCEPTION, e);
 		}
 	}
 

@@ -22,6 +22,7 @@ public class GasMeterService extends BaseService {
 		EntityManager em = EntityManagerService.getManager();
 		String minutes="60";
 
+		@SuppressWarnings("unchecked")
 		List<Object[]> rawResultList = em.createNativeQuery(
 				"select count(*)/100 as QM, FROM_UNIXTIME(ROUND(UNIX_TIMESTAMP(TIMESTAMP)/("+minutes+" * 60))*"+minutes+"*60) as TIMESLICE from GASMETERPING where date(TIMESTAMP)>=date(now()- interval 7 day) GROUP BY ROUND(UNIX_TIMESTAMP(TIMESTAMP)/("+minutes+" * 60));", Object[].class).getResultList();
 		

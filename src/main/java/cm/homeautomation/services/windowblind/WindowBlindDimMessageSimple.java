@@ -1,7 +1,5 @@
 package cm.homeautomation.services.windowblind;
 
-import javax.ws.rs.PathParam;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
