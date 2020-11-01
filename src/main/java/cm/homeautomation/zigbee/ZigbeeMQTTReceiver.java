@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DimmableLight;
+import cm.homeautomation.entities.Light;
 import cm.homeautomation.entities.MQTTSwitch;
 import cm.homeautomation.entities.RGBLight;
 import cm.homeautomation.entities.Sensor;
@@ -56,7 +57,7 @@ public class ZigbeeMQTTReceiver {
 
 	@Inject
 	Sensors sensorsService;
-	
+
 	private static final String SELECT_S_FROM_SENSOR_S_WHERE_S_EXTERNAL_ID_EXTERNAL_ID_AND_S_SENSOR_TYPE_SENSOR_TYPE = "select s from Sensor s where s.externalId=:externalId and s.sensorType=:sensorType";
 	private static final int brightnessChangeIncrement = 10;
 
@@ -168,7 +169,7 @@ public class ZigbeeMQTTReceiver {
 									}
 								}
 							} else {
-								System.out.println("Device not found: "+device);
+								System.out.println("Device not found: " + device);
 								// we did not find the device so update the device list
 								updateDeviceList();
 							}
@@ -360,8 +361,6 @@ public class ZigbeeMQTTReceiver {
 		}
 	}
 
-
-	
 	private void recordLinkQualityForDevice(ZigBeeDevice zigbeeDevice, int linkQuality) {
 		EntityManager em = EntityManagerService.getManager();
 
@@ -555,40 +554,50 @@ public class ZigbeeMQTTReceiver {
 			brightness = brightnessNode.intValue();
 		}
 
+		String ieeeAddr = zigbeeDevice.getIeeeAddr();
 		EntityManager em = EntityManagerService.getManager();
 
 		ZigbeeLight existingLight = em.find(ZigbeeLight.class, zigbeeDevice.getIeeeAddr());
 		// create new light if not existing
 		if (existingLight == null) {
 			existingLight = new ZigbeeLight(zigbeeDevice.getIeeeAddr(), false, brightness);
+			List<Light> lightList = em.createQuery("select l from Light l where l.externalId=:externalId", Light.class)
+					.setParameter("externalId", ieeeAddr).getResultList();
 
 			DimmableLight newLight = null;
 
-			if (color) {
-				RGBLight rgbLight = new RGBLight();
-				newLight = rgbLight;
+			if (lightList == null || lightList.isEmpty()) {
 
-				rgbLight.setMqttColorTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
-				rgbLight.setMqttColorMessage(
-						"{\"state\": \"ON\", \"brightness\": {DIMVALUE}, \"xy\": [{colorX}, {colorY}]}");
-			} else {
-				newLight = new DimmableLight();
+				if (color) {
+					RGBLight rgbLight = new RGBLight();
+					newLight = rgbLight;
+
+					rgbLight.setMqttColorTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
+					rgbLight.setMqttColorMessage(
+							"{\"state\": \"ON\", \"brightness\": {DIMVALUE}, \"xy\": [{colorX}, {colorY}]}");
+				} else {
+					newLight = new DimmableLight();
+				}
+
+				newLight.setName(zigbeeDevice.getFriendlyName());
+
+				newLight.setExternalId(ieeeAddr);
+				newLight.setLightType("ZIGBEE");
+				newLight.setMaximumValue(254);
+				newLight.setMinimumValue(0);
+				newLight.setMqttPowerOnTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
+
+				newLight.setMqttPowerOffTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
+
+				newLight.setMqttPowerOnMessage("{\"state\": \"ON\", \"brightness\": {DIMVALUE}}");
+				newLight.setMqttPowerOffMessage("{\"state\": \"OFF\"}");
+
 			}
 
-			newLight.setName(zigbeeDevice.getFriendlyName());
-			newLight.setExternalId(zigbeeDevice.getIeeeAddr());
-			newLight.setLightType("ZIGBEE");
-			newLight.setMaximumValue(254);
-			newLight.setMinimumValue(0);
-			newLight.setMqttPowerOnTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
-
-			newLight.setMqttPowerOffTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
-
-			newLight.setMqttPowerOnMessage("{\"state\": \"ON\", \"brightness\": {DIMVALUE}}");
-			newLight.setMqttPowerOffMessage("{\"state\": \"OFF\"}");
-
 			em.getTransaction().begin();
-			em.persist(newLight);
+			if (newLight != null) {
+				em.persist(newLight);
+			}
 			em.persist(existingLight);
 			em.getTransaction().commit();
 		}
