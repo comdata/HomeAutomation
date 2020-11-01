@@ -50,12 +50,11 @@ import lombok.NonNull;
 
 @Singleton
 public class ZigbeeMQTTReceiver {
-	@Inject MQTTSender mqttSender;
-	
+	@Inject
+	MQTTSender mqttSender;
 
 	@Inject
 	EventBus bus;
-	
 
 	private static final String SELECT_S_FROM_SENSOR_S_WHERE_S_EXTERNAL_ID_EXTERNAL_ID_AND_S_SENSOR_TYPE_SENSOR_TYPE = "select s from Sensor s where s.externalId=:externalId and s.sensorType=:sensorType";
 	private static final int brightnessChangeIncrement = 10;
@@ -63,8 +62,7 @@ public class ZigbeeMQTTReceiver {
 	@NonNull
 	private String zigbeeMqttTopic = ConfigurationService.getConfigurationProperty("zigbee", "mqttTopic");
 
-
-	private Map<String, ZigBeeDevice> deviceMap=new HashMap<>();
+	private Map<String, ZigBeeDevice> deviceMap = new HashMap<>();
 
 	private void init() {
 		initDeviceList();
@@ -75,102 +73,111 @@ public class ZigbeeMQTTReceiver {
 		init();
 	}
 
-	
 	private void updateDeviceList() {
 		mqttSender.sendMQTTMessage(zigbeeMqttTopic + "/bridge/config/devices/get", "");
 	}
 
-	@ConsumeEvent(value="MQTTTopicEvent", blocking = true)
-	public void receiveMQTTTopicEvents(MQTTTopicEvent event) throws JsonMappingException, JsonProcessingException {
+	@ConsumeEvent(value = "MQTTTopicEvent", blocking = true)
+	public void receiveMQTTTopicEvents(MQTTTopicEvent event) {
 		@NonNull
 		String topic = event.getTopic();
 
-		System.out.println("ZIGBEE: "+topic);
+		System.out.println("ZIGBEE: " + topic);
 		if (topic.startsWith(zigbeeMqttTopic)) {
 
-			// do zigbee magic
-			String message = event.getMessage();
-			
-			System.out.println("ZIGBEE: "+topic+" "+message);
-			
-			LogManager.getLogger(this.getClass()).debug("Got Zigbee message: " + message);
+			Runnable thread = () -> {
 
-			if (topic.equals(zigbeeMqttTopic + "/bridge/config/devices")) {
-				handleDeviceMessage(message);
-			} else if (topic.startsWith(zigbeeMqttTopic + "/bridge")) {
+				try {
 
-			} else {
-				String[] topicSplit = topic.split("/");
+					// do zigbee magic
+					String message = event.getMessage();
 
-				if (topicSplit.length > 1) {
-					String device = topicSplit[1];
+					System.out.println("ZIGBEE: " + topic + " " + message);
 
-					ZigBeeDevice zigbeeDevice = getZigbeeDevice(device);
+					LogManager.getLogger(this.getClass()).debug("Got Zigbee message: " + message);
 
-					if (zigbeeDevice != null) {
-						String modelID = zigbeeDevice.getModelID();
+					if (topic.equals(zigbeeMqttTopic + "/bridge/config/devices")) {
+						handleDeviceMessage(message);
+					} else if (topic.startsWith(zigbeeMqttTopic + "/bridge")) {
 
-						ObjectMapper mapper = new ObjectMapper();
-						JsonNode messageObject = mapper.readTree(message);
-
-						recordBatteryLevel(zigbeeDevice, messageObject);
-						recordLinkQuality(zigbeeDevice, messageObject);
-
-						saveUpdateAvailableInformation(zigbeeDevice, messageObject);
-
-						if (zigbeeDevice.getManufacturerID().equals("4476")) {
-
-							if (modelID.equals("TRADFRI remote control")) {
-								handleTradfriRemoteControl(message, zigbeeDevice, messageObject);
-							} else if (modelID.equals("TRADFRI open/close remote")) {
-								handleOpenCloseRemote(message, zigbeeDevice, messageObject);
-							} else if (modelID.startsWith("TRADFRI bulb")) {
-
-								if ("TRADFRI bulb E27 CWS opal 600lm".equals(modelID)) {
-									handleTradfriLight(message, zigbeeDevice, messageObject, true);
-								} else {
-									handleTradfriLight(message, zigbeeDevice, messageObject, false);
-								}
-							} else if (modelID.startsWith("FLOALT panel")) {
-
-								handleTradfriLight(message, zigbeeDevice, messageObject, false);
-							} else if (modelID.startsWith("TRADFRI Driver")) {
-								handleTradfriLight(message, zigbeeDevice, messageObject, false);
-							} else if (modelID.startsWith("TRADFRI motion")) {
-								handleMotionSensor(message, zigbeeDevice, messageObject);
-							} else if (modelID.startsWith("TRADFRI control")) {
-								handlePowerSocket(message, zigbeeDevice, messageObject);
-							} else if (modelID.startsWith("FYRTUR block-out roller blind")) {
-								handleWindowBlind(message, zigbeeDevice, messageObject);
-							}
-
-						}
-
-						if (zigbeeDevice.getManufacturerID().equals("4416")) {
-							if (modelID.equals("LWB006")) {
-								handleTradfriLight(message, zigbeeDevice, messageObject, false);
-							}
-						}
-
-						if (zigbeeDevice.getManufacturerID().equals("4151")) {
-							if (modelID.equals("lumi.sensor_motion.aq2")) {
-								handleMotionSensor(message, zigbeeDevice, messageObject);
-							} else if (modelID.equals("lumi.sensor_wleak.aq1")) {
-								handleWaterSensor(message, zigbeeDevice, messageObject);
-							}
-						}
-
-						if (zigbeeDevice.getManufacturerID().equals("48042")) {
-							if (modelID.equals("Plug 01")) {
-								handlePowerSocket(message, zigbeeDevice, messageObject);
-							}
-						}
 					} else {
-						// we did not find the device so update the device list
-						updateDeviceList();
+						String[] topicSplit = topic.split("/");
+
+						if (topicSplit.length > 1) {
+							String device = topicSplit[1];
+
+							ZigBeeDevice zigbeeDevice = getZigbeeDevice(device);
+
+							if (zigbeeDevice != null) {
+								String modelID = zigbeeDevice.getModelID();
+
+								ObjectMapper mapper = new ObjectMapper();
+								JsonNode messageObject = mapper.readTree(message);
+
+								recordBatteryLevel(zigbeeDevice, messageObject);
+								recordLinkQuality(zigbeeDevice, messageObject);
+
+								saveUpdateAvailableInformation(zigbeeDevice, messageObject);
+
+								if (zigbeeDevice.getManufacturerID().equals("4476")) {
+
+									if (modelID.equals("TRADFRI remote control")) {
+										handleTradfriRemoteControl(message, zigbeeDevice, messageObject);
+									} else if (modelID.equals("TRADFRI open/close remote")) {
+										handleOpenCloseRemote(message, zigbeeDevice, messageObject);
+									} else if (modelID.startsWith("TRADFRI bulb")) {
+
+										if ("TRADFRI bulb E27 CWS opal 600lm".equals(modelID)) {
+											handleTradfriLight(message, zigbeeDevice, messageObject, true);
+										} else {
+											handleTradfriLight(message, zigbeeDevice, messageObject, false);
+										}
+									} else if (modelID.startsWith("FLOALT panel")) {
+
+										handleTradfriLight(message, zigbeeDevice, messageObject, false);
+									} else if (modelID.startsWith("TRADFRI Driver")) {
+										handleTradfriLight(message, zigbeeDevice, messageObject, false);
+									} else if (modelID.startsWith("TRADFRI motion")) {
+										handleMotionSensor(message, zigbeeDevice, messageObject);
+									} else if (modelID.startsWith("TRADFRI control")) {
+										handlePowerSocket(message, zigbeeDevice, messageObject);
+									} else if (modelID.startsWith("FYRTUR block-out roller blind")) {
+										handleWindowBlind(message, zigbeeDevice, messageObject);
+									}
+
+								}
+
+								if (zigbeeDevice.getManufacturerID().equals("4416")) {
+									if (modelID.equals("LWB006")) {
+										handleTradfriLight(message, zigbeeDevice, messageObject, false);
+									}
+								}
+
+								if (zigbeeDevice.getManufacturerID().equals("4151")) {
+									if (modelID.equals("lumi.sensor_motion.aq2")) {
+										handleMotionSensor(message, zigbeeDevice, messageObject);
+									} else if (modelID.equals("lumi.sensor_wleak.aq1")) {
+										handleWaterSensor(message, zigbeeDevice, messageObject);
+									}
+								}
+
+								if (zigbeeDevice.getManufacturerID().equals("48042")) {
+									if (modelID.equals("Plug 01")) {
+										handlePowerSocket(message, zigbeeDevice, messageObject);
+									}
+								}
+							} else {
+								// we did not find the device so update the device list
+								updateDeviceList();
+							}
+						}
 					}
+				} catch (JsonProcessingException e) {
+					LogManager.getLogger(this.getClass()).error(e);
 				}
-			}
+			};
+
+			new Thread(thread).start();
 		}
 
 	}
@@ -512,16 +519,16 @@ public class ZigbeeMQTTReceiver {
 			remoteControlEvent.setPoweredOnState(occupancyNodeBoolean);
 
 			bus.send("RemoteControlEvent", remoteControlEvent);
-			
+
 			MotionEvent motionDetectionEvent = new MotionEvent();
 			motionDetectionEvent.setMac(ieeeAddr);
 			motionDetectionEvent.setName(zigbeeDevice.getFriendlyName());
-            motionDetectionEvent.setState(occupancyNodeBoolean);
-            motionDetectionEvent.setTimestamp(new Date());
-            motionDetectionEvent.setType("ZIGBEE");
+			motionDetectionEvent.setState(occupancyNodeBoolean);
+			motionDetectionEvent.setTimestamp(new Date());
+			motionDetectionEvent.setType("ZIGBEE");
 
-			//EventBusService.getEventBus().post(motionDetectionEvent);
-			
+			// EventBusService.getEventBus().post(motionDetectionEvent);
+
 			bus.send("MotionEvent", motionDetectionEvent);
 		}
 
@@ -717,21 +724,22 @@ public class ZigbeeMQTTReceiver {
 	private ZigBeeDevice getZigbeeDevice(String device) {
 		return deviceMap.get(device);
 	}
-	
+
 	@Scheduled(every = "120s")
 	public void initDeviceList() {
 		final EntityManager em = EntityManagerService.getManager();
 
-		List<ZigBeeDevice> devices = em.createQuery("select zb from ZigBeeDevice zb", ZigBeeDevice.class).getResultList();
-		
-		Map<String, ZigBeeDevice> deviceMapTemp=new HashMap<>();
-		
+		List<ZigBeeDevice> devices = em.createQuery("select zb from ZigBeeDevice zb", ZigBeeDevice.class)
+				.getResultList();
+
+		Map<String, ZigBeeDevice> deviceMapTemp = new HashMap<>();
+
 		for (ZigBeeDevice zigBeeDevice : devices) {
-			
+
 			deviceMapTemp.put(zigBeeDevice.getFriendlyName(), zigBeeDevice);
 		}
 
-		deviceMap=deviceMapTemp;
+		deviceMap = deviceMapTemp;
 	}
 
 	private void handleDeviceMessage(String message) {
