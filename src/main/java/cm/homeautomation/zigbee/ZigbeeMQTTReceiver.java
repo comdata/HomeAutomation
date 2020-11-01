@@ -93,7 +93,7 @@ public class ZigbeeMQTTReceiver {
 					// do zigbee magic
 					String message = event.getMessage();
 
-					System.out.println("ZIGBEE: " + topic + " " + message);
+					System.out.println("ZIGBEE2: " + topic + " " + message);
 
 					LogManager.getLogger(this.getClass()).debug("Got Zigbee message: " + message);
 
@@ -168,6 +168,7 @@ public class ZigbeeMQTTReceiver {
 									}
 								}
 							} else {
+								System.out.println("Device not found: "+device);
 								// we did not find the device so update the device list
 								updateDeviceList();
 							}
