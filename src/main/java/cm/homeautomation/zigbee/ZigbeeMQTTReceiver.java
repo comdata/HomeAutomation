@@ -16,7 +16,6 @@ import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,7 +34,6 @@ import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.events.RemoteControlEvent.EventType;
 import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
-import cm.homeautomation.remotecontrol.RemoteControlEventListener;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.services.motion.MotionEvent;
 import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
@@ -56,6 +54,9 @@ public class ZigbeeMQTTReceiver {
 	@Inject
 	EventBus bus;
 
+	@Inject
+	Sensors sensorsService;
+	
 	private static final String SELECT_S_FROM_SENSOR_S_WHERE_S_EXTERNAL_ID_EXTERNAL_ID_AND_S_SENSOR_TYPE_SENSOR_TYPE = "select s from Sensor s where s.externalId=:externalId and s.sensorType=:sensorType";
 	private static final int brightnessChangeIncrement = 10;
 
@@ -358,6 +359,8 @@ public class ZigbeeMQTTReceiver {
 		}
 	}
 
+
+	
 	private void recordLinkQualityForDevice(ZigBeeDevice zigbeeDevice, int linkQuality) {
 		EntityManager em = EntityManagerService.getManager();
 
@@ -392,7 +395,7 @@ public class ZigbeeMQTTReceiver {
 			sensorData.setDateTime(new Date());
 			saveRequest.setSensorData(sensorData);
 			try {
-				Sensors.getInstance().saveSensorData(saveRequest);
+				sensorsService.saveSensorData(saveRequest);
 			} catch (SensorDataLimitViolationException e) {
 				LogManager.getLogger(this.getClass()).error(e);
 			}
@@ -773,21 +776,4 @@ public class ZigbeeMQTTReceiver {
 		}
 	}
 
-	public static void main(String[] args) throws JsonMappingException, JsonProcessingException {
-		ZigbeeMQTTReceiver zigbeeMQTTReceiver = new ZigbeeMQTTReceiver();
-
-		new RemoteControlEventListener();
-
-		MQTTTopicEvent zigbeeDeviceEvent = new MQTTTopicEvent();
-		zigbeeDeviceEvent.setTopic("zigbee2mqtt" + "/bridge/config/devices");
-		zigbeeDeviceEvent.setMessage(
-				"[{\"ieeeAddr\":\"0x00124b0018e27f02\",\"type\":\"Coordinator\",\"networkAddress\":0,\"friendly_name\":\"Coordinator\",\"softwareBuildID\":\"zStack12\",\"dateCode\":\"20190608\",\"lastSeen\":1587295440005},{\"ieeeAddr\":\"0x00158d000451907f\",\"type\":\"EndDevice\",\"networkAddress\":44744,\"model\":\"RTCGQ11LM\",\"vendor\":\"Xiaomi\",\"description\":\"Aqara human body movement and illuminance sensor\",\"friendly_name\":\"0x00158d000451907f\",\"manufacturerID\":4151,\"manufacturerName\":\"LUMI\",\"powerSource\":\"Battery\",\"modelID\":\"lumi.sensor_motion.aq2\",\"lastSeen\":1587294981305},{\"ieeeAddr\":\"0x000b57fffe521310\",\"type\":\"EndDevice\",\"networkAddress\":9892,\"model\":\"E1524/E1810\",\"vendor\":\"IKEA\",\"description\":\"TRADFRI remote control\",\"friendly_name\":\"0x000b57fffe521310\",\"manufacturerID\":4476,\"manufacturerName\":\"IKEA of Sweden\",\"powerSource\":\"Battery\",\"modelID\":\"TRADFRI remote control\",\"hardwareVersion\":1,\"softwareBuildID\":\"2.3.014\",\"dateCode\":\"20190708\",\"lastSeen\":1587292304389},{\"ieeeAddr\":\"0xec1bbdfffe85e485\",\"type\":\"Router\",\"networkAddress\":673,\"model\":\"ICPSHC24-10EU-IL-1\",\"vendor\":\"IKEA\",\"description\":\"TRADFRI driver for wireless control (10 watt)\",\"friendly_name\":\"Arbeitsleuchte\",\"manufacturerID\":4476,\"manufacturerName\":\"IKEA of Sweden\",\"powerSource\":\"Mains (single phase)\",\"modelID\":\"TRADFRI Driver 10W\",\"hardwareVersion\":1,\"softwareBuildID\":\"1.2.245\",\"dateCode\":\"20170529\",\"lastSeen\":1587293860058}]");
-		zigbeeMQTTReceiver.receiveMQTTTopicEvents(zigbeeDeviceEvent);
-
-		MQTTTopicEvent zigbeeDeviceEvent2 = new MQTTTopicEvent();
-		zigbeeDeviceEvent2.setTopic("zigbee2mqtt" + "/0x000b57fffe521310");
-		zigbeeDeviceEvent2.setMessage("{\"linkquality\":86,\"battery\":60,\"action\":\"toggle\"}");
-		zigbeeMQTTReceiver.receiveMQTTTopicEvents(zigbeeDeviceEvent2);
-
-	}
 }
