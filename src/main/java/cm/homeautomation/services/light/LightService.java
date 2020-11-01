@@ -178,7 +178,7 @@ public class LightService extends BaseService {
 					}
 
 					dimmableLight.setBrightnessLevel(dimValue);
-					em.persist(dimmableLight);
+					em.merge(dimmableLight);
 					dimUrl = dimmableLight.getDimUrl();
 				} else {
 					light.setPowerState(OFF.equals(powerState));

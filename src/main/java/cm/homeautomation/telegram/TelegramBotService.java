@@ -51,7 +51,7 @@ public class TelegramBotService {
 
 	public TelegramBotService() {
 
-		this.enabled = Boolean.parseBoolean(ConfigurationService.getConfigurationProperty(TELEGRAM, "enabled"));
+		enabled = Boolean.parseBoolean(ConfigurationService.getConfigurationProperty(TELEGRAM, "enabled"));
 
 		if (enabled) {
 			instance = this;
@@ -100,7 +100,7 @@ public class TelegramBotService {
 
 			updateTelegramFilter();
 
-			if (this.enabled) {
+			if (enabled) {
 				ApiContextInitializer.init();
 				telegramBotApi = new TelegramBotsApi();
 				registerBot();

@@ -25,7 +25,6 @@ import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
-import io.vertx.reactivex.servicediscovery.types.EventBusService;
 
 @Singleton
 @Path("windowBlinds/")

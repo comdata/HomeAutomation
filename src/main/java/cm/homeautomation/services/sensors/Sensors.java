@@ -35,7 +35,6 @@ import cm.homeautomation.services.actor.SwitchEvent;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import io.vertx.core.eventbus.EventBus;
-import io.vertx.reactivex.servicediscovery.types.EventBusService;
 
 @Singleton
 @Path("sensors")
