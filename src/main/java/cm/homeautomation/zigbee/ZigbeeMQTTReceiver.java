@@ -84,7 +84,7 @@ public class ZigbeeMQTTReceiver {
 		@NonNull
 		String topic = event.getTopic();
 
-		System.out.println("ZIGBEE: " + topic);
+		//System.out.println("ZIGBEE: " + topic);
 		if (topic.startsWith(zigbeeMqttTopic)) {
 
 			Runnable thread = () -> {
@@ -94,7 +94,7 @@ public class ZigbeeMQTTReceiver {
 					// do zigbee magic
 					String message = event.getMessage();
 
-					System.out.println("ZIGBEE2: " + topic + " " + message);
+					//System.out.println("ZIGBEE2: " + topic + " " + message);
 
 					LogManager.getLogger(this.getClass()).debug("Got Zigbee message: " + message);
 
