@@ -152,7 +152,7 @@ public class CameraService extends BaseService {
 			cameraEvent.setCamera(camera);
 			EventObject event = new EventObject(cameraEvent);
 
-			bus.send("EventObject", event);
+			bus.publish("EventObject", event);
 		} catch (Exception e) {
 			em.getTransaction().rollback();
 			loadNoImage(args, em, camera);

@@ -68,7 +68,7 @@ public class NetworkScanner {
 						EventObject newHostEvent = new EventObject(newHostMessage);
 						networkDeviceDatabaseUpdater.handleNetworkDeviceFound(newHostEvent);
 
-						bus.send("EventObject", newHostEvent);
+						bus.publish("EventObject", newHostEvent);
 					}
 				}
 			} catch (IOException e) {
@@ -157,7 +157,7 @@ public class NetworkScanner {
 
 			NetworkScanResult data = new NetworkScanResult();
 			data.setHosts(checkHosts);
-			bus.send("EventObject", new EventObject(data));
+			bus.publish("EventObject", new EventObject(data));
 			runningScans.put(subnet, Boolean.valueOf(false));
 		}
 

@@ -171,7 +171,7 @@ public class NetworkDevicesService extends BaseService {
 			}
 
 			// send post wake up message
-			bus.send("EventObject", new EventObject(new NetworkWakeupEvent(macStr)));
+			bus.publish("EventObject", new EventObject(new NetworkWakeupEvent(macStr)));
 
 			LogManager.getLogger(this.getClass()).info("Wake-on-LAN packet sent.");
 			return new GenericStatus(true);

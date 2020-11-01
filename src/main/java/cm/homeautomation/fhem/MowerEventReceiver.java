@@ -27,7 +27,7 @@ public class MowerEventReceiver {
 
 			if (!"no_message".equals(messageContent)) {
 //				LogManager.getLogger(this.getClass()).info("Mower: error: {}", messageContent);
-				bus.send("EventObject", new EventObject(new MowerErrorEvent(messageContent)));
+				bus.publish("EventObject", new EventObject(new MowerErrorEvent(messageContent)));
 			} else {
 //				LogManager.getLogger(this.getClass()).info("Mower: not an error: {}", messageContent);
 			}

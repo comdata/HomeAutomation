@@ -295,7 +295,7 @@ public class Sensors extends BaseService {
 				switchEvent.setSwitchId(Long.toString(sw.getId()));
 				switchEvent.setStatus(status);
 
-				bus.send("SwitchEvent", switchEvent);
+				bus.publish("SwitchEvent", switchEvent);
 
 				sw.setLatestStatus(status);
 				sw.setLatestStatusFrom(new Date());
@@ -536,7 +536,7 @@ public class Sensors extends BaseService {
 				em.persist(sensorData);
 				sensorDataMap.put(sensorId, sensorData);
 
-				bus.send("EventObject", new EventObject(sensorData));
+				bus.publish("EventObject", new EventObject(sensorData));
 //                LogManager.getLogger(this.getClass()).debug("Committing data: " + sensorData.getValue());
 			}
 

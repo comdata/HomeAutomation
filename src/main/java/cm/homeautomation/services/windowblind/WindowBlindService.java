@@ -192,7 +192,7 @@ public class WindowBlindService extends BaseService {
 				final WindowBlindStatus eventData1 = new WindowBlindStatus();
 				eventData1.setWindowBlind(singleWindowBlind1);
 				final EventObject eventObject1 = new EventObject(eventData1);
-				bus.send("EventObject",eventObject1);
+				bus.publish("EventObject",eventObject1);
 			} else if (WindowBlind.ALL_AT_ONCE.equals(type)) {
 				final List<WindowBlind> windowBlinds = windowBlindList.get(roomId);
 
@@ -219,7 +219,7 @@ public class WindowBlindService extends BaseService {
 					final WindowBlindStatus eventData2 = new WindowBlindStatus();
 					eventData2.setWindowBlind(singleWindowBlind2);
 					final EventObject eventObject2 = new EventObject(eventData2);
-					bus.send("EventObject", eventObject2);
+					bus.publish("EventObject", eventObject2);
 
 				}
 			}

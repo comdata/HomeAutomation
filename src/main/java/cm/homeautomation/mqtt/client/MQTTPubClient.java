@@ -26,7 +26,7 @@ public class MQTTPubClient {
 	}
 
 	public void publish(MQTTSendEvent event) {
-		bus.send("MQTTSendEvent", event);
+		bus.publish("MQTTSendEvent", event);
 	}
 
 	public static void publish(String[] args) {

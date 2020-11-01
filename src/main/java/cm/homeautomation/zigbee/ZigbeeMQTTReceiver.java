@@ -200,7 +200,7 @@ public class ZigbeeMQTTReceiver {
 		remoteControlEvent.setEventType(EventType.ON_OFF);
 		remoteControlEvent.setClick(click);
 
-		bus.send("RemoteControlEvent", remoteControlEvent);
+		bus.publish("RemoteControlEvent", remoteControlEvent);
 
 	}
 
@@ -314,7 +314,7 @@ public class ZigbeeMQTTReceiver {
 
 			if (leakNodeBoolean) {
 				WaterLeakEvent waterLeakEvent = WaterLeakEvent.builder().device(zigbeeDevice.getFriendlyName()).build();
-				bus.send("WaterLeakEvent", waterLeakEvent);
+				bus.publish("WaterLeakEvent", waterLeakEvent);
 			}
 		}
 
@@ -521,7 +521,7 @@ public class ZigbeeMQTTReceiver {
 
 			remoteControlEvent.setPoweredOnState(occupancyNodeBoolean);
 
-			bus.send("RemoteControlEvent", remoteControlEvent);
+			bus.publish("RemoteControlEvent", remoteControlEvent);
 
 			MotionEvent motionDetectionEvent = new MotionEvent();
 			motionDetectionEvent.setMac(ieeeAddr);
@@ -532,7 +532,7 @@ public class ZigbeeMQTTReceiver {
 
 			// EventBusService.getEventBus().post(motionDetectionEvent);
 
-			bus.send("MotionEvent", motionDetectionEvent);
+			bus.publish("MotionEvent", motionDetectionEvent);
 		}
 
 		JsonNode illuminanceNode = messageObject.get("illuminance");
@@ -641,7 +641,7 @@ public class ZigbeeMQTTReceiver {
 
 				remoteControlEvent.setPoweredOnState(existingRemote.isPowerOnState());
 
-				bus.send("RemoteControlEvent", remoteControlEvent);
+				bus.publish("RemoteControlEvent", remoteControlEvent);
 
 				// update changed object in database
 				em.getTransaction().begin();
@@ -670,7 +670,7 @@ public class ZigbeeMQTTReceiver {
 				int newBrightness = brightnessChange(existingRemote, brightnessChangeIncrement);
 
 				remoteControlBrightnessChangeEvent.setBrightness(newBrightness);
-				bus.send("RemoteControlBrightnessChangeEvent", remoteControlBrightnessChangeEvent);
+				bus.publish("RemoteControlBrightnessChangeEvent", remoteControlBrightnessChangeEvent);
 
 				// update changed object in database
 				em.getTransaction().begin();
@@ -692,7 +692,7 @@ public class ZigbeeMQTTReceiver {
 					int newBrightness = brightnessChange(existingRemote, -1 * brightnessChangeIncrement);
 
 					remoteControlBrightnessChangeEvent.setBrightness(newBrightness);
-					bus.send("RemoteControlBrightnessChangeEvent", remoteControlBrightnessChangeEvent);
+					bus.publish("RemoteControlBrightnessChangeEvent", remoteControlBrightnessChangeEvent);
 
 					// update changed object in database
 					em.getTransaction().begin();

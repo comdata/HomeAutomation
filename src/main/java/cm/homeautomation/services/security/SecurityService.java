@@ -75,7 +75,7 @@ public class SecurityService extends BaseService {
 				if (windowStateData.getState() == 1) {
 
 					final Object securityEvent = new EventObject(new SecurityAlarmEvent(securityZone, window));
-					bus.send("EventObject", securityEvent);
+					bus.publish("EventObject", securityEvent);
 				}
 
 			}

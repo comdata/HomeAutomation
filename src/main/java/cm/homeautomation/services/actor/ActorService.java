@@ -64,7 +64,7 @@ public class ActorService extends BaseService {
 
 		switchSockets(singleSwitch, actorMessage);
 
-		bus.send("EventObject", new EventObject(actorMessage));
+		bus.publish("EventObject", new EventObject(actorMessage));
 
 	}
 
@@ -104,7 +104,7 @@ public class ActorService extends BaseService {
 
 				LogManager.getLogger(this.getClass()).debug("MQTT: " + topic + " - " + message);
 
-				bus.send("MQTTSendEvent", new MQTTSendEvent(topic, message));
+				bus.publish("MQTTSendEvent", new MQTTSendEvent(topic, message));
 
 			} else {
 
@@ -113,7 +113,7 @@ public class ActorService extends BaseService {
 					String topic = "ESP_RC/cmd";
 					String message = "RC," + ("1".equals(actorMessage.getStatus()) ? "ON" : "OFF") + "="
 							+ actorMessage.getHouseCode().trim() + actorMessage.getSwitchNo().trim();
-					bus.send("MQTTSendEvent", new MQTTSendEvent(topic, message));
+					bus.publish("MQTTSendEvent", new MQTTSendEvent(topic, message));
 				}
 
 				if (singleSwitch.getSwitchSetUrl() != null) {
@@ -325,7 +325,7 @@ public class ActorService extends BaseService {
 		switchEvent.setStatus(targetStatus);
 		switchEvent.setSwitchId(switchId);
 		switchEvent.setUsedSwitch(singleSwitch);
-		bus.send("EventObject", new EventObject(switchEvent));
+		bus.publish("EventObject", new EventObject(switchEvent));
 
 		return singleSwitch;
 	}

@@ -228,6 +228,6 @@ public class PowerMeterSensor {
 		powerMeterIntervalData.setLastSevenDaysTrend(lastSevenDays.compareTo(lastEightDaysBeforeTillYesterday));
 
 		final EventObject intervalEventObject = new EventObject(powerMeterIntervalData);
-		bus.send("EventObject", intervalEventObject);
+		bus.publish("EventObject", intervalEventObject);
 	}
 }

@@ -77,7 +77,7 @@ public class PresenceService extends BaseService {
 				
 				em.persist(newState);
 				
-				bus.send("EventObject", new EventObject(newState));
+				bus.publish("EventObject", new EventObject(newState));
 
 				em.getTransaction().commit();
 			}

@@ -23,7 +23,7 @@ public class HumanMessageEventTranslator {
 			if (!eventData.getClass().isAnnotationPresent(EventBusHumanMessageIgnore.class)) {
 
 				final HumanMessageGenerationInterface humanMessage = (HumanMessageGenerationInterface) eventData;
-				bus.send("EventObject", new EventObject(new HumanMessageEvent(humanMessage.getMessageString())));
+				bus.publish("EventObject", new EventObject(new HumanMessageEvent(humanMessage.getMessageString())));
 			}
 		}
 

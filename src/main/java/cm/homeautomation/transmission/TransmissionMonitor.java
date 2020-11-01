@@ -74,7 +74,7 @@ public class TransmissionMonitor {
 
 					// remove done torrents, keeping local data
 					rpcClient.removeTorrent(new RemoveTorrentInfo(new NumberListIds(torrentInfo.getId()), false));
-					bus.send("EventObject", new EventObject(new TransmissionDownloadFinishedEvent(name)));
+					bus.publish("EventObject", new EventObject(new TransmissionDownloadFinishedEvent(name)));
 
 				}
 			}
@@ -87,7 +87,7 @@ public class TransmissionMonitor {
 			torrentData.setTorrents(numberOfTorrents);
 			torrentData.setDoneTorrents(numberOfDoneTorrents);
 			EventObject eventObject = new EventObject(torrentData);
-			bus.send("EventObject", eventObject);
+			bus.publish("EventObject", eventObject);
 		} catch (RpcException | Exception e) {
 			LogManager.getLogger(TransmissionMonitor.class).error(e);
 		}

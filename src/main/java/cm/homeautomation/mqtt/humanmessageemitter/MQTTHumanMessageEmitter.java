@@ -66,7 +66,7 @@ public class MQTTHumanMessageEmitter {
 
 				// message must not be set to ignore and not be filtered
 				if (!filtered) {
-					bus.send("MQTTSendEvent", new MQTTSendEvent(humanMessageTopic, message));
+					bus.publish("MQTTSendEvent", new MQTTSendEvent(humanMessageTopic, message));
 				}
 			}
 		};

@@ -65,7 +65,7 @@ public class MQTTSender {
 	public void doSendSyncMQTTMessage(String topic, String messagePayload) {
 		System.out.println("MQTT OUTBOUND" + topic + " " + messagePayload);
 	
-		bus.send("MQTTSendEvent", new MQTTSendEvent(topic, messagePayload));
+		bus.publish("MQTTSendEvent", new MQTTSendEvent(topic, messagePayload));
 
 	}
 

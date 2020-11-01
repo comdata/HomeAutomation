@@ -78,7 +78,7 @@ public class MailStatistics extends BaseService {
 			mailData.setNewMessages(folder.getNewMessageCount());
 			mailData.setUnreadMessages(folder.getUnreadMessageCount());
 			EventObject eventObject = new EventObject(mailData);
-			bus.send("EventObject", eventObject);
+			bus.publish("EventObject", eventObject);
 		} catch (MessagingException e) {
 			LogManager.getLogger(MailStatistics.class).error(e);
 		}

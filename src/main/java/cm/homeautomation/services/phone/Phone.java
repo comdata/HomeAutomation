@@ -66,7 +66,7 @@ public class Phone extends BaseService {
 
 		em.getTransaction().commit();
 
-		bus.send("EventObject", new EventObject(phoneCallEvent));
+		bus.publish("EventObject", new EventObject(phoneCallEvent));
 
 		return new GenericStatus(true);
 	}

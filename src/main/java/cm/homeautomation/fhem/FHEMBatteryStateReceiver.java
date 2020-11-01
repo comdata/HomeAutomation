@@ -41,7 +41,7 @@ public class FHEMBatteryStateReceiver {
 			} else {
 				BatteryLowEvent batteryLowEvent = new BatteryLowEvent();
 				batteryLowEvent.setBatteryStateResult(batteryStateResult);
-				bus.send("BatteryLowEvent", batteryLowEvent);
+				bus.publish("BatteryLowEvent", batteryLowEvent);
 
 				createTaskForBatteryDevice(fhemDevice);
 

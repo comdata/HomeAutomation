@@ -21,7 +21,7 @@ public class EBUSDataReceiver {
 		log.debug("EBUS. Topic: " + topic + " message: " + messageContent);
 
 		EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
-		//bus.send("EventObject", new EventObject(ebusMessageEvent));
+		//bus.publish("EventObject", new EventObject(ebusMessageEvent));
 
 	}
 

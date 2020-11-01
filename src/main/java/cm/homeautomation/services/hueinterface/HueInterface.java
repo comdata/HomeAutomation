@@ -167,7 +167,7 @@ public class HueInterface extends BaseService {
 				hueDevice.getId().toString(), EventType.REMOTE);
 
 		remoteControlEvent.setPoweredOnState("on".equals(message.getPayload()));
-		bus.send("RemoteControlEvent", remoteControlEvent);
+		bus.publish("RemoteControlEvent", remoteControlEvent);
 	}
 
 	private void handleWindowBlind(HueEmulatorMessage message, HueDevice hueDevice) {
@@ -189,7 +189,7 @@ public class HueInterface extends BaseService {
 					(hueDevice.isGroupDevice() ? hueDevice.getRoom().getId() : null));
 			
 
-			bus.send("WindowBlindDimMessage", windowBlindDimMessage);
+			bus.publish("WindowBlindDimMessage", windowBlindDimMessage);
 
 		}
 	}
@@ -198,7 +198,7 @@ public class HueInterface extends BaseService {
 		ActorPressSwitchEvent actorPressSwitchEvent = new ActorPressSwitchEvent(
 				Long.toString(hueDevice.getExternalId()), ("on".equals(message.getPayload()) ? "ON" : "OFF"));
 
-		bus.send("ActorPressSwitchEvent", actorPressSwitchEvent);
+		bus.publish("ActorPressSwitchEvent", actorPressSwitchEvent);
 	}
 
 	private void handleLight(HueEmulatorMessage message, HueDevice hueDevice) {

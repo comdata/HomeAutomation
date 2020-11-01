@@ -157,7 +157,7 @@ public class TVService extends BaseService {
 
 			// and tell everyone about it
 			final TVCommandEvent tvCommandEvent = new TVCommandEvent(tvIp, command);
-			bus.send("EventObject", new EventObject(tvCommandEvent));
+			bus.publish("EventObject", new EventObject(tvCommandEvent));
 		} catch (final TVNotReachableException e) {
 			LogManager.getLogger(this.getClass()).error(e);
 		}

@@ -60,7 +60,7 @@ public class WindowStateSensor {
 			windowStateData.setRoom(room);
 
 			final EventObject intervalEventObject = new EventObject(windowStateData);
-			bus.send("EventObject", intervalEventObject);
+			bus.publish("EventObject", intervalEventObject);
 
 		}
 	}

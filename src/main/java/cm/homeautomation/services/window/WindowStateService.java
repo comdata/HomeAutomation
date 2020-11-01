@@ -151,7 +151,7 @@ public class WindowStateService extends BaseService {
 		windowStateData.setWindow(window);
 
 		final EventObject intervalEventObject = new EventObject(windowStateData);
-		bus.send("EventObject", intervalEventObject);
+		bus.publish("EventObject", intervalEventObject);
 	}
 
 	private WindowState createWIndowState(String state, final EntityManager em, final Window window) {

@@ -142,7 +142,7 @@ public class RemoteControlEventListener {
 									WindowBlindDimMessageSimple windowBlindDimMessage = new WindowBlindDimMessageSimple(
 											remoteControlGroupMember.getExternalId(),
 											(event.isPoweredOnState() ? "99" : "0"));
-									bus.send("WindowBlindDimMessageSimple", windowBlindDimMessage);
+									bus.publish("WindowBlindDimMessageSimple", windowBlindDimMessage);
 									break;
 								}
 

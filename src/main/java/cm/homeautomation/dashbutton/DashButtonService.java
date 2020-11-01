@@ -78,7 +78,7 @@ public class DashButtonService {
 
 					if (((filterTime.getTime()) + 1000) < (new Date()).getTime()) {
 						timeFilter.put(mac, new Date());
-						bus.send("EventObject", new EventObject(new DashButtonEvent(mac)));
+						bus.publish("EventObject", new EventObject(new DashButtonEvent(mac)));
 //						LogManager.getLogger(this.getClass()).debug("send dashbutton event");
 					}
 

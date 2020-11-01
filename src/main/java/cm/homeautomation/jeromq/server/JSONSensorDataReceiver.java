@@ -87,7 +87,7 @@ public class JSONSensorDataReceiver {
 //                        LogManager.getLogger(JSONSensorDataReceiver.class).debug("Casting to: {}",
 //                                clazz.getSimpleName());
 						EventObject eventObject = new EventObject(clazz.cast(sensorData));
-						bus.send("EventObject", eventObject);
+						bus.publish("EventObject", eventObject);
 					}
 				}
 			}
