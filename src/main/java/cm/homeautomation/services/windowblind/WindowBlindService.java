@@ -40,6 +40,10 @@ public class WindowBlindService extends BaseService {
 
 	private static final String DIMVALUE = "{DIMVALUE}";
 
+	public WindowBlindService() {
+		initWindowBlindList();
+	}
+	
 	void startup(@Observes StartupEvent event) {
 		initWindowBlindList();
 
@@ -243,6 +247,11 @@ public class WindowBlindService extends BaseService {
 		em.getTransaction().commit();
 
 		return new GenericStatus(true);
+	}
+	
+	@ConsumeEvent(value="WindowBlindPosition", blocking=true)
+	public void setPositionEvent(WindowBlindPositionEvent event) {
+		setPosition(event.getWindowBlindId(), event.getPosition());
 	}
 
 	public void dim(DimDirection dimDirection, long externalId) {

@@ -39,7 +39,7 @@ import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.services.motion.MotionEvent;
 import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
-import cm.homeautomation.services.windowblind.WindowBlindService;
+import cm.homeautomation.services.windowblind.WindowBlindPositionEvent;
 import cm.homeautomation.zigbee.entities.ZigBeeTradfriRemoteControl;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
@@ -84,7 +84,7 @@ public class ZigbeeMQTTReceiver {
 		@NonNull
 		String topic = event.getTopic();
 
-		//System.out.println("ZIGBEE: " + topic);
+		// System.out.println("ZIGBEE: " + topic);
 		if (topic.startsWith(zigbeeMqttTopic)) {
 
 			Runnable thread = () -> {
@@ -94,7 +94,7 @@ public class ZigbeeMQTTReceiver {
 					// do zigbee magic
 					String message = event.getMessage();
 
-					//System.out.println("ZIGBEE2: " + topic + " " + message);
+					// System.out.println("ZIGBEE2: " + topic + " " + message);
 
 					LogManager.getLogger(this.getClass()).debug("Got Zigbee message: " + message);
 
@@ -218,8 +218,9 @@ public class ZigbeeMQTTReceiver {
 
 			if (positionNode != null) {
 				WindowBlind windowBlind = resultList.get(0);
-				WindowBlindService windowBlindService = new WindowBlindService();
-				windowBlindService.setPosition(windowBlind.getId(), positionNode.asText());
+
+				bus.publish("WindowBlindPosition",
+						new WindowBlindPositionEvent(windowBlind.getId(), positionNode.asText()));
 			}
 		} else {
 			WindowBlind windowBlind = new WindowBlind();
@@ -549,7 +550,7 @@ public class ZigbeeMQTTReceiver {
 		int brightness = 0;
 
 		JsonNode brightnessNode = messageObject.get("brightness");
-		
+
 		JsonNode stateNode = messageObject.get("state");
 
 		if (brightnessNode != null) {
@@ -615,8 +616,8 @@ public class ZigbeeMQTTReceiver {
 			existingLight.setX(Float.parseFloat(Double.toString(xyNodeList.get(0).asDouble())));
 			existingLight.setY(Float.parseFloat(Double.toString(xyNodeList.get(1).asDouble())));
 		}
-		
-		if (stateNode!=null) {
+
+		if (stateNode != null) {
 			existingLight.setPowerOnState("ON".equalsIgnoreCase(stateNode.asText()));
 		}
 
