@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
+import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.ebus.EBusMessageEvent;
@@ -55,12 +56,7 @@ public class ReactiveMQTTReceiverClient {
 					Runnable runThread = () -> {
 						// Process the received message
 
-						String topic = publish.getTopic().toString();
-						String messageContent = new String(publish.getPayloadAsBytes());
-						LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
-
-						handleMessageMQTT(topic, messageContent);
+						mqttHandler(publish);
 					};
 					new Thread(runThread).start();
 				}).send().whenComplete((subAck, e) -> {
@@ -87,12 +83,7 @@ public class ReactiveMQTTReceiverClient {
 					Runnable runThread = () -> {
 						// Process the received message
 
-						String topic = publish.getTopic().toString();
-						String messageContent = new String(publish.getPayloadAsBytes());
-						LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
-
-						handleMessageMQTT(topic, messageContent);
+						mqttHandler(publish);
 					};
 					new Thread(runThread).start();
 				}).send().whenComplete((subAck, e) -> {
@@ -119,12 +110,7 @@ public class ReactiveMQTTReceiverClient {
 					Runnable runThread = () -> {
 						// Process the received message
 
-						String topic = publish.getTopic().toString();
-						String messageContent = new String(publish.getPayloadAsBytes());
-						LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
-
-						handleMessageMQTT(topic, messageContent);
+						mqttHandler(publish);
 					};
 					new Thread(runThread).start();
 				}).send().whenComplete((subAck, e) -> {
@@ -151,12 +137,7 @@ public class ReactiveMQTTReceiverClient {
 					Runnable runThread = () -> {
 						// Process the received message
 
-						String topic = publish.getTopic().toString();
-						String messageContent = new String(publish.getPayloadAsBytes());
-						LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
-
-						handleMessageMQTT(topic, messageContent);
+						mqttHandler(publish);
 					};
 					new Thread(runThread).start();
 				}).send().whenComplete((subAck, e) -> {
@@ -187,7 +168,7 @@ public class ReactiveMQTTReceiverClient {
 						String topic = publish.getTopic().toString();
 						String messageContent = new String(publish.getPayloadAsBytes());
 						LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+						//System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
 
 						handleMessageEBUS(topic, messageContent);
 					};
@@ -221,7 +202,7 @@ public class ReactiveMQTTReceiverClient {
 						String topic = publish.getTopic().toString();
 						String messageContent = new String(publish.getPayloadAsBytes());
 						LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+//						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
 
 						handleMessageHUE(topic, messageContent);
 					};
@@ -252,7 +233,7 @@ public class ReactiveMQTTReceiverClient {
 						String topic = publish.getTopic().toString();
 						String messageContent = new String(publish.getPayloadAsBytes());
 						LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+//						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
 
 						handleMessageFHEM(topic, messageContent);
 					};
@@ -286,7 +267,7 @@ public class ReactiveMQTTReceiverClient {
 						String topic = publish.getTopic().toString();
 						String messageContent = new String(publish.getPayloadAsBytes());
 						LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+//						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
 
 						handleMessage(topic, messageContent);
 					};
@@ -304,6 +285,15 @@ public class ReactiveMQTTReceiverClient {
 			}
 		});
 
+	}
+
+	private void mqttHandler(Mqtt3Publish publish) {
+		String topic = publish.getTopic().toString();
+		String messageContent = new String(publish.getPayloadAsBytes());
+		LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+//		System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+
+		handleMessageMQTT(topic, messageContent);
 	}
 
 	private Mqtt3AsyncClient buildAClient(String host, int port) {
