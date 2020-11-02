@@ -549,6 +549,8 @@ public class ZigbeeMQTTReceiver {
 		int brightness = 0;
 
 		JsonNode brightnessNode = messageObject.get("brightness");
+		
+		JsonNode stateNode = messageObject.get("state");
 
 		if (brightnessNode != null) {
 			brightness = brightnessNode.intValue();
@@ -612,6 +614,10 @@ public class ZigbeeMQTTReceiver {
 
 			existingLight.setX(Float.parseFloat(Double.toString(xyNodeList.get(0).asDouble())));
 			existingLight.setY(Float.parseFloat(Double.toString(xyNodeList.get(1).asDouble())));
+		}
+		
+		if (stateNode!=null) {
+			existingLight.setPowerOnState("ON".equalsIgnoreCase(stateNode.asText()));
 		}
 
 		em.getTransaction().begin();
