@@ -570,7 +570,7 @@ public class Sensors extends BaseService {
 			influxSensorData.dateTime = sensorData.getDateTime().toInstant();
 
 			writeApi.writeMeasurement(WritePrecision.MS, influxSensorData);
-			System.out.println("Wrote to influx");
+//			System.out.println("Wrote to influx");
 		}
 	}
 
