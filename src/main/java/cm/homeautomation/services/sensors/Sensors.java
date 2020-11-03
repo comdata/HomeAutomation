@@ -47,7 +47,7 @@ public class Sensors extends BaseService {
 
 	@Inject
 	EventBus bus;
-	
+
 	@Inject
 	InfluxDBService influxDBService;
 
@@ -559,17 +559,18 @@ public class Sensors extends BaseService {
 		InfluxDBClient influxDBClient = influxDBService.getClient();
 
 		try (WriteApi writeApi = influxDBClient.getWriteApi()) {
-			
+
 			InfluxSensorData influxSensorData = new InfluxSensorData();
-			
-			influxSensorData.room=sensorData.getSensor().getRoom().getRoomName();
-			influxSensorData.roomId=sensorData.getSensor().getRoom().getId();
-			influxSensorData.value=sensorData.getValue();
-			influxSensorData.sensorName=sensorData.getSensor().getSensorName();
-			influxSensorData.sensorId=sensorData.getSensor().getId();
-			influxSensorData.dateTime=sensorData.getDateTime().toInstant();
+
+			influxSensorData.room = sensorData.getSensor().getRoom().getRoomName();
+			influxSensorData.roomId = sensorData.getSensor().getRoom().getId();
+			influxSensorData.value = sensorData.getValue();
+			influxSensorData.sensorName = sensorData.getSensor().getSensorName();
+			influxSensorData.sensorId = sensorData.getSensor().getId();
+			influxSensorData.dateTime = sensorData.getDateTime().toInstant();
 
 			writeApi.writeMeasurement(WritePrecision.MS, influxSensorData);
+			System.out.println("Wrote to influx");
 		}
 	}
 
