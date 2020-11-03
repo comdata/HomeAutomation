@@ -562,8 +562,11 @@ public class Sensors extends BaseService {
 
 			InfluxSensorData influxSensorData = new InfluxSensorData();
 
-			influxSensorData.room = sensorData.getSensor().getRoom().getRoomName();
-			influxSensorData.roomId = sensorData.getSensor().getRoom().getId();
+			if (sensorData.getSensor() != null && sensorData.getSensor().getRoom() != null) {
+				influxSensorData.room = sensorData.getSensor().getRoom().getRoomName();
+				influxSensorData.roomId = sensorData.getSensor().getRoom().getId();
+			}
+
 			influxSensorData.value = sensorData.getValue();
 			influxSensorData.sensorName = sensorData.getSensor().getSensorName();
 			influxSensorData.sensorId = sensorData.getSensor().getId();
