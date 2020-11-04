@@ -16,11 +16,17 @@ import javax.persistence.EntityManager;
 
 import org.apache.logging.log4j.LogManager;
 
+import com.influxdb.client.InfluxDBClient;
+import com.influxdb.client.WriteApi;
+import com.influxdb.client.domain.WritePrecision;
+
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.db.InfluxDBService;
 import cm.homeautomation.entities.PowerMeterPing;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.PowerMeterData;
+import cm.homeautomation.services.sensors.InfluxSensorData;
 import es.moki.ratelimitj.core.limiter.request.RequestLimitRule;
 import es.moki.ratelimitj.core.limiter.request.RequestRateLimiter;
 import es.moki.ratelimitj.inmemory.request.InMemorySlidingWindowRequestRateLimiter;
@@ -39,7 +45,10 @@ public class PowerMeterSensor {
 
 	@Inject
 	EventBus bus;
-	
+
+	@Inject
+	InfluxDBService influxDBService;
+
 	/**
 	 * perform compression by aggregating the data for one hour blocks
 	 * 
@@ -113,6 +122,22 @@ public class PowerMeterSensor {
 
 	void startup(@Observes StartupEvent event) {
 		init();
+	}
+
+	public void saveToInflux(PowerMeterPing powerMeterPing) {
+		InfluxDBClient influxDBClient = influxDBService.getClient();
+
+		try (WriteApi writeApi = influxDBClient.getWriteApi()) {
+
+			InfluxSensorData influxSensorData = new InfluxSensorData();
+
+			influxSensorData.setValue(Integer.toString(powerMeterPing.getPowerCounter()));
+			influxSensorData.setSensorName("PowerMeterPing");
+
+			influxSensorData.setDateTime(powerMeterPing.getTimestamp().toInstant());
+
+			writeApi.writeMeasurement(WritePrecision.MS, influxSensorData);
+		}
 	}
 
 	/**
