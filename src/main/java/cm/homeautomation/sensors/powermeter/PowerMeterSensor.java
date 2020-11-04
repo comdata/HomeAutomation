@@ -166,6 +166,8 @@ public class PowerMeterSensor {
 
 				em.persist(powerMeterPing);
 				em.getTransaction().commit();
+				
+				saveToInflux(powerMeterPing);
 
 			} catch (final Exception e) {
 				LogManager.getLogger(PowerMeterSensor.class).error("error persisting power data", e);
