@@ -1,4 +1,4 @@
-package cm.homeautomation.services.sensors;
+package cm.homeautomation.services.motion;
 
 import java.time.Instant;
 
