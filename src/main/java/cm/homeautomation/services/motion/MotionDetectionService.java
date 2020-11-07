@@ -5,6 +5,13 @@ import java.util.List;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
+
+import com.influxdb.client.InfluxDBClient;
+import com.influxdb.client.WriteApi;
+import com.influxdb.client.domain.WritePrecision;
+import cm.homeautomation.db.InfluxDBService;
+
+
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.MotionDetection;
 import cm.homeautomation.services.base.BaseService;
@@ -12,6 +19,9 @@ import io.quarkus.vertx.ConsumeEvent;
 
 @Singleton
 public class MotionDetectionService extends BaseService {
+
+    @Inject
+	InfluxDBService influxDBService;
 
 	@ConsumeEvent(value = "MotionEvent", blocking = true)
 	public void registerMotionEvent(final MotionEvent motionEvent) {
@@ -58,6 +68,24 @@ public class MotionDetectionService extends BaseService {
 			}
 
 		}
+    }
+    
+    @ConsumeEvent(value = "MotionEvent", blocking = true)
+	public void saveToInflux(MotionEvent motionEvent) {
+		InfluxDBClient influxDBClient = influxDBService.getClient();
+
+		try (WriteApi writeApi = influxDBClient.getWriteApi()) {
+
+			InfluxMotionEvent influxMotionEvent = new InfluxMotionEvent();
+
+			influxMotionEvent.setState(motionEvent.isState());
+            influxMotionEvent.setRoomId(motionEvent.getRoomId());
+            influxMotionEvent.setExternalId(motionEvent.getMac());
+			influxMotionEvent.setDateTime(motionDetectionEvent.getTimestamp().toInstant());
+
+			writeApi.writeMeasurement(WritePrecision.MS, influxMotionEvent);
+		}
 	}
+
 
 }
