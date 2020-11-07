@@ -2,6 +2,7 @@ package cm.homeautomation.services.motion;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
