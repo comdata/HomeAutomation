@@ -9,9 +9,8 @@ import javax.persistence.EntityManager;
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.HumanMessageEmitterFilter;
-import cm.homeautomation.eventbus.EventObject;
-import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
 import cm.homeautomation.mqtt.client.MQTTSendEvent;
+import cm.homeautomation.services.messaging.HumanMessageEvent;
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
@@ -53,14 +52,11 @@ public class MQTTHumanMessageEmitter {
 				.getResultList();
 	}
 
-	@ConsumeEvent(value="EventObject", blocking=true)
-	public void handleEvent(final EventObject eventObject) {
+	@ConsumeEvent(value="HumanMessageEvent", blocking=true)
+	public void handleEvent(final HumanMessageEvent eventObject) {
 		Runnable eventThread = () -> {
-			if (eventObject.getData() instanceof HumanMessageGenerationInterface) {
-				HumanMessageGenerationInterface humanMessageGenerationInterface = (HumanMessageGenerationInterface) eventObject
-						.getData();
-				String message = humanMessageGenerationInterface.getTitle() + ": "
-						+ humanMessageGenerationInterface.getMessageString();
+			
+				String message = eventObject.getMessage();
 
 				boolean filtered = checkMessageFiltered(message);
 
@@ -68,7 +64,7 @@ public class MQTTHumanMessageEmitter {
 				if (!filtered) {
 					bus.publish("MQTTSendEvent", new MQTTSendEvent(humanMessageTopic, message));
 				}
-			}
+	
 		};
 		new Thread(eventThread).start();
 	}
