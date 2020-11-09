@@ -16,7 +16,7 @@ import cm.homeautomation.entities.ScriptingEntity;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.nashorn.NashornRunner;
-import cm.homeautomation.services.actor.ActorService;
+import cm.homeautomation.services.actor.ActorPressSwitchEvent;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
@@ -82,7 +82,7 @@ public class DashButtonEventListener {
 					LogManager.getLogger(this.getClass()).info(message, switchId,
 							newStatus);
 
-					ActorService.getInstance().pressSwitch(switchId, newStatus);
+					bus.publish("ActorPressSwitchEvent",new ActorPressSwitchEvent(switchId, newStatus));
 				}
 
 			}
