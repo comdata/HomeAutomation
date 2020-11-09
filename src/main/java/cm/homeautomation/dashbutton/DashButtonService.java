@@ -27,96 +27,94 @@ public class DashButtonService {
 	@Inject
 	EventBus bus;
 
-	private final class DashButtonRunnable implements Runnable {
-		HashMap<String, Date> timeFilter = new HashMap<>();
+	HashMap<String, Date> timeFilter = new HashMap<>();
 
-		@Override
-		public void run() {
-			Thread.currentThread().setName(DashButtonRunnable.class.getName());
+	void startup(@Observes StartupEvent event) {
 
-			final int listenPort = 67;
-			final int MAX_BUFFER_SIZE = 1000;
+		final int listenPort = 67;
+		final int MAX_BUFFER_SIZE = 1000;
 
-			try (DatagramSocket socket = new DatagramSocket(listenPort);) {
+		try (DatagramSocket socket = new DatagramSocket(listenPort);) {
 //				LogManager.getLogger(this.getClass()).debug("start listening");
+			System.out.println("Start listening.");
+			final byte[] payload = new byte[MAX_BUFFER_SIZE];
 
-				final byte[] payload = new byte[MAX_BUFFER_SIZE];
+			final DatagramPacket p = new DatagramPacket(payload, payload.length);
 
-				final DatagramPacket p = new DatagramPacket(payload, payload.length);
-
-				// server is always listening
-				final boolean listening = true;
-				while (listening) {
-					listenAndReceive(listenPort, socket, p);
-				}
-			} catch (final SocketException e) {
-				// LogManager.getLogger(this.getClass()).error("socket exeception", e);
+			// server is always listening
+			final boolean listening = true;
+			while (listening) {
+				System.out.println("listening");
+				listenAndReceive(listenPort, socket, p);
 			}
+		} catch (final SocketException e) {
+			e.printStackTrace();
+			// LogManager.getLogger(this.getClass()).error("socket exeception", e);
 		}
+	}
 
-		private void listenAndReceive(final int listenPort, DatagramSocket socket, final DatagramPacket p) {
-			try {
+	private void listenAndReceive(final int listenPort, DatagramSocket socket, final DatagramPacket p) {
+		try {
 //				LogManager.getLogger(this.getClass()).debug("Listening on port " + listenPort + "...");
 
-				socket.receive(p); // throws i/o exception
+			socket.receive(p); // throws i/o exception
 //				LogManager.getLogger(this.getClass()).debug("Received data");
 
-				final DHCPPacket packet = DHCPPacket.getPacket(p);
+			final DHCPPacket packet = DHCPPacket.getPacket(p);
 
-				final String mac = packet.getHardwareAddress().getHardwareAddressHex();
+			final String mac = packet.getHardwareAddress().getHardwareAddressHex();
 //				LogManager.getLogger(this.getClass()).debug("checking mac: " + mac);
-				if (isDashButton(mac)) {
+			if (isDashButton(mac)) {
 //					LogManager.getLogger(this.getClass()).debug("found a dashbutton mac: " + mac);
 
-					/*
-					 * suppress events if they are to fast
-					 *
-					 */
-					if (!timeFilter.containsKey(mac)) {
-						timeFilter.put(mac, new Date(1));
-					}
+				/*
+				 * suppress events if they are to fast
+				 *
+				 */
+				if (!timeFilter.containsKey(mac)) {
+					timeFilter.put(mac, new Date(1));
+				}
 
-					final Date filterTime = timeFilter.get(mac);
+				final Date filterTime = timeFilter.get(mac);
 
-					if (((filterTime.getTime()) + 1000) < (new Date()).getTime()) {
-						timeFilter.put(mac, new Date());
-						bus.publish("EventObject", new EventObject(new DashButtonEvent(mac)));
+				if (((filterTime.getTime()) + 1000) < (new Date()).getTime()) {
+					timeFilter.put(mac, new Date());
+					bus.publish("EventObject", new EventObject(new DashButtonEvent(mac)));
 //						LogManager.getLogger(this.getClass()).debug("send dashbutton event");
-					}
+				}
 
-				} else {
+			} else {
 //					LogManager.getLogger(this.getClass()).debug("not a dashbutton: " + mac);
-				}
-			} catch (final SocketException e) {
+			}
+		} catch (final SocketException e) {
 //				LogManager.getLogger(this.getClass()).error("socket exeception", e);
-			} catch (final IOException e) {
+		} catch (final IOException e) {
 //				LogManager.getLogger(this.getClass()).error("IO exeception", e);
-			}
 		}
+	}
 
-		private boolean isDashButton(String mac) {
-			if (mac == null) {
-				throw new IllegalArgumentException("MAC is NULL");
+	private boolean isDashButton(String mac) {
+		if (mac == null) {
+			throw new IllegalArgumentException("MAC is NULL");
+		}
+		final String vendorCode = mac.substring(0, 6);
+
+		final EntityManager em = EntityManagerService.getManager();
+
+		try {
+			final DashButtonRange singleResult = (DashButtonRange) em
+					.createQuery("select dbr from DashButtonRange dbr where dbr.range=:vendor")
+					.setParameter("vendor", vendorCode).getSingleResult();
+
+			if (singleResult != null) {
+				return true;
 			}
-			final String vendorCode = mac.substring(0, 6);
-
-			final EntityManager em = EntityManagerService.getManager();
-
-			try {
-				final DashButtonRange singleResult = (DashButtonRange) em
-						.createQuery("select dbr from DashButtonRange dbr where dbr.range=:vendor")
-						.setParameter("vendor", vendorCode).getSingleResult();
-
-				if (singleResult != null) {
-					return true;
-				}
-			} catch (final NoResultException e) {
+		} catch (final NoResultException e) {
 //				LogManager.getLogger(this.getClass()).error(e);
-			}
+		}
 //			LogManager.getLogger(this.getClass()).trace("vendorCode: " + vendorCode);
 
-			return false;
-		}
+		return false;
 	}
 
 	public static void main(String[] args) {
@@ -125,22 +123,17 @@ public class DashButtonService {
 
 	}
 
-	
-	void startup(@Observes StartupEvent event) {
-		run();
-	}
-	
-	public DashButtonService() {
-	}
-
-	public void run() {
-		// LogManager.getLogger(this.getClass()).debug("Creating runner");
-		final Runnable dashbuttonRunner = new DashButtonRunnable();
-
-		// LogManager.getLogger(this.getClass()).debug("Triggering start");
-		new Thread(dashbuttonRunner).start();
-
-		// LogManager.getLogger(this.getClass()).debug("Start triggered");
-	}
+//
+//	public void run() {
+//		// LogManager.getLogger(this.getClass()).debug("Creating runner");
+//		final Runnable dashbuttonRunner = new DashButtonRunnable();
+//
+//		System.out.println("Starting dashbutton runner");
+//		// LogManager.getLogger(this.getClass()).debug("Triggering start");
+//		new Thread(dashbuttonRunner).start();
+//
+//		
+//		// LogManager.getLogger(this.getClass()).debug("Start triggered");
+//	}
 
 }
