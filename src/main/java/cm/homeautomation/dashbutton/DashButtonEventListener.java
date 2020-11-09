@@ -75,7 +75,11 @@ public class DashButtonEventListener {
 
 					String switchId = referencedSwitch.getId().toString();
 
-					LogManager.getLogger(this.getClass()).info("Dashbutton: Pressing switch {} to status: {}", switchId,
+					String message = "Dashbutton: Pressing switch {} to status: {}";
+					
+					System.out.println(message);
+					
+					LogManager.getLogger(this.getClass()).info(message, switchId,
 							newStatus);
 
 					ActorService.getInstance().pressSwitch(switchId, newStatus);
