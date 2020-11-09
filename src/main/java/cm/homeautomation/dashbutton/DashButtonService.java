@@ -7,6 +7,7 @@ import java.net.SocketException;
 import java.util.Date;
 import java.util.HashMap;
 
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -17,6 +18,7 @@ import org.dhcp4java.DHCPPacket;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DashButtonRange;
 import cm.homeautomation.eventbus.EventObject;
+import io.quarkus.runtime.StartupEvent;
 import io.vertx.core.eventbus.EventBus;
 
 @Singleton
@@ -123,8 +125,12 @@ public class DashButtonService {
 
 	}
 
+	
+	void startup(@Observes StartupEvent event) {
+		run();
+	}
+	
 	public DashButtonService() {
-		this.run();
 	}
 
 	public void run() {
