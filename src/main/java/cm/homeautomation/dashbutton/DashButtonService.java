@@ -18,10 +18,11 @@ import org.dhcp4java.DHCPPacket;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DashButtonRange;
 import cm.homeautomation.eventbus.EventObject;
+import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import io.vertx.core.eventbus.EventBus;
 
-@Singleton
+@Startup
 public class DashButtonService {
 
 	@Inject
