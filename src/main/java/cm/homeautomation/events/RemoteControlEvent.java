@@ -17,6 +17,12 @@ public class RemoteControlEvent {
 	public enum EventType {
 		REMOTE, ON_OFF
 	}
+	
+	public enum RemoteType {
+		ZIGBEE, DASHBUTTON, HUE
+	}
+
+
 
 	@NonNull
 	String name;
@@ -30,4 +36,7 @@ public class RemoteControlEvent {
 
 	@NonNull
 	EventType eventType;
+	
+	@NonNull
+	RemoteType remoteType;
 }

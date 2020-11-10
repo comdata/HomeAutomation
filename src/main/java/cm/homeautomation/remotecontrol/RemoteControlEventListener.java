@@ -69,6 +69,12 @@ public class RemoteControlEventListener {
 									break;
 								case WINDOWBLIND:
 									break;
+								case NETWORKDEVICE:
+									break;
+								case SCRIPT:
+									break;
+								default:
+									break;
 								}
 							};
 

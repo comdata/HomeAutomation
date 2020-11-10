@@ -14,8 +14,14 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Entity
 @XmlRootElement
+@Getter
+@Setter
+
 public class DashButton {
 
 	@Id
@@ -44,69 +50,8 @@ public class DashButton {
 	@ManyToOne
 	private NetworkDevice referencedNetworkDevice;
 
+	private boolean state;
+
 	private Date lastSeen = new Date();
 
-	public String getActionEvent() {
-		return actionEvent;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public Date getLastSeen() {
-		return lastSeen;
-	}
-
-	public String getMac() {
-		return mac;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public NetworkDevice getReferencedNetworkDevice() {
-		return referencedNetworkDevice;
-	}
-
-	public ScriptingEntity getReferencedScript() {
-		return referencedScript;
-	}
-
-	public Switch getReferencedSwitch() {
-		return referencedSwitch;
-	}
-
-	public void setActionEvent(final String actionEvent) {
-		this.actionEvent = actionEvent;
-	}
-
-	public void setId(final Long id) {
-		this.id = id;
-	}
-
-	public void setLastSeen(Date lastSeen) {
-		this.lastSeen = lastSeen;
-	}
-
-	public void setMac(final String mac) {
-		this.mac = mac;
-	}
-
-	public void setName(final String name) {
-		this.name = name;
-	}
-
-	public void setReferencedNetworkDevice(final NetworkDevice referencedNetworkDevice) {
-		this.referencedNetworkDevice = referencedNetworkDevice;
-	}
-
-	public void setReferencedScript(ScriptingEntity referencedScript) {
-		this.referencedScript = referencedScript;
-	}
-
-	public void setReferencedSwitch(final Switch referencedSwitch) {
-		this.referencedSwitch = referencedSwitch;
-	}
 }

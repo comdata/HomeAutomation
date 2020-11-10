@@ -33,6 +33,7 @@ import cm.homeautomation.entities.ZigbeeLight;
 import cm.homeautomation.entities.ZigbeeMotionSensor;
 import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.events.RemoteControlEvent.EventType;
+import cm.homeautomation.events.RemoteControlEvent.RemoteType;
 import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
@@ -198,6 +199,7 @@ public class ZigbeeMQTTReceiver {
 		remoteControlEvent.setName(zigbeeDevice.getFriendlyName());
 		remoteControlEvent.setTechnicalId(existingRemote.getIeeeAddr());
 		remoteControlEvent.setEventType(EventType.ON_OFF);
+		remoteControlEvent.setRemoteType(RemoteType.ZIGBEE);
 		remoteControlEvent.setClick(click);
 
 		bus.publish("RemoteControlEvent", remoteControlEvent);
@@ -518,7 +520,7 @@ public class ZigbeeMQTTReceiver {
 			em.getTransaction().commit();
 
 			RemoteControlEvent remoteControlEvent = new RemoteControlEvent(zigbeeDevice.getFriendlyName(), ieeeAddr,
-					RemoteControlEvent.EventType.REMOTE);
+					RemoteControlEvent.EventType.REMOTE, RemoteType.ZIGBEE);
 
 			remoteControlEvent.setPoweredOnState(occupancyNodeBoolean);
 
@@ -644,7 +646,7 @@ public class ZigbeeMQTTReceiver {
 				existingRemote.setBrightness(targetPowerState ? 254 : 0);
 				// TODO hold events
 				RemoteControlEvent remoteControlEvent = new RemoteControlEvent(zigbeeDevice.getFriendlyName(), ieeeAddr,
-						RemoteControlEvent.EventType.REMOTE);
+						RemoteControlEvent.EventType.REMOTE, RemoteType.ZIGBEE);
 
 				remoteControlEvent.setPoweredOnState(existingRemote.isPowerOnState());
 

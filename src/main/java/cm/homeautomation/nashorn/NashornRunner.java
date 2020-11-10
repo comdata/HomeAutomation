@@ -24,29 +24,19 @@ public class NashornRunner {
 	private static final String ENABLED = "enabled";
 	private static final String NASHORN = "nashorn";
 	private static final String TRUE = "true";
-	private static NashornRunner instance;
+
 	private ScriptEngine engine = null;
-
-	public static NashornRunner getInstance() {
-		if (instance == null) {
-			instance = new NashornRunner();
-		}
-
-		return instance;
-	}
-
-	public static void setInstance(final NashornRunner instance) {
-		NashornRunner.instance = instance;
-	}
 
 	public NashornRunner() {
 		String nashornEnabled = ConfigurationService.getConfigurationProperty(NASHORN, ENABLED);
 
+		enableEngine(nashornEnabled);
+	}
+
+	public void enableEngine(String nashornEnabled) {
 		if (TRUE.equalsIgnoreCase(nashornEnabled)) {
 			final ScriptEngineManager factory = new ScriptEngineManager();
 			engine = factory.getEngineByName(NASHORN);
-
-			setInstance(this);
 		}
 	}
 
@@ -85,17 +75,13 @@ public class NashornRunner {
 		} else {
 			logger.debug("nashorn engine not enabled");
 		}
-
 	}
 
 	public void run(final String jsCode) throws ScriptException {
 		engine.eval(jsCode);
 	}
 
-	public static void stopInstance() {
-		if (instance != null) {
-			instance = null;
-		}
-
+	public void stopEngine() {
+		engine = null;
 	}
 }

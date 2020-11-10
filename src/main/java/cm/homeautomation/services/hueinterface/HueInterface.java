@@ -19,6 +19,7 @@ import cm.homeautomation.entities.Switch;
 import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.events.RemoteControlEvent.EventType;
+import cm.homeautomation.events.RemoteControlEvent.RemoteType;
 import cm.homeautomation.services.actor.ActorPressSwitchEvent;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
@@ -164,7 +165,7 @@ public class HueInterface extends BaseService {
 
 	private void handleRemote(HueEmulatorMessage message, HueDevice hueDevice) {
 		RemoteControlEvent remoteControlEvent = new RemoteControlEvent(hueDevice.getName(),
-				hueDevice.getId().toString(), EventType.REMOTE);
+				hueDevice.getId().toString(), EventType.REMOTE, RemoteType.HUE);
 
 		remoteControlEvent.setPoweredOnState("on".equals(message.getPayload()));
 		bus.publish("RemoteControlEvent", remoteControlEvent);

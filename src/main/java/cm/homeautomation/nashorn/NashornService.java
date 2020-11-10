@@ -2,6 +2,7 @@ package cm.homeautomation.nashorn;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.script.ScriptException;
 import javax.ws.rs.GET;
@@ -17,6 +18,9 @@ import cm.homeautomation.services.base.BaseService;
 @Path("admin/nashorn")
 public class NashornService extends BaseService {
 
+	@Inject
+	NashornRunner nashornRunner;
+	
 	@GET
 	@Path("getAll")
 	public List<ScriptingEntity> getAllEntities() {
@@ -34,7 +38,7 @@ public class NashornService extends BaseService {
 
 		final ScriptingEntity scriptingEntity = em.find(ScriptingEntity.class, id);
 
-		NashornRunner.getInstance().run(scriptingEntity.getJsCode());
+		nashornRunner.run(scriptingEntity.getJsCode());
 	}
 
 	@POST
@@ -67,7 +71,7 @@ public class NashornService extends BaseService {
 		String property = "enabled";
 		String value = "true";
 		ConfigurationService.createOrUpdate(group, property, value);
-		NashornRunner.getInstance();
+		nashornRunner.enableEngine(value);
 	}
 	
 	@GET
@@ -77,7 +81,7 @@ public class NashornService extends BaseService {
 		String property = "enabled";
 		String value = "true";
 		ConfigurationService.createOrUpdate(group, property, value);
-		NashornRunner.stopInstance();
+		nashornRunner.stopEngine();
 	}
 }
 

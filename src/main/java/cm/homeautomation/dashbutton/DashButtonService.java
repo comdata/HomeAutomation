@@ -102,8 +102,8 @@ public class DashButtonService {
 		final EntityManager em = EntityManagerService.getManager();
 
 		try {
-			final DashButtonRange singleResult = (DashButtonRange) em
-					.createQuery("select dbr from DashButtonRange dbr where dbr.range=:vendor")
+			final DashButtonRange singleResult = em
+					.createQuery("select dbr from DashButtonRange dbr where dbr.range=:vendor", DashButtonRange.class)
 					.setParameter("vendor", vendorCode).getSingleResult();
 
 			if (singleResult != null) {
@@ -122,18 +122,5 @@ public class DashButtonService {
 		new DashButtonService();
 
 	}
-
-//
-//	public void run() {
-//		// LogManager.getLogger(this.getClass()).debug("Creating runner");
-//		final Runnable dashbuttonRunner = new DashButtonRunnable();
-//
-//		System.out.println("Starting dashbutton runner");
-//		// LogManager.getLogger(this.getClass()).debug("Triggering start");
-//		new Thread(dashbuttonRunner).start();
-//
-//		
-//		// LogManager.getLogger(this.getClass()).debug("Start triggered");
-//	}
 
 }

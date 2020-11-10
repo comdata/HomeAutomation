@@ -15,6 +15,8 @@ import cm.homeautomation.entities.DashButton;
 import cm.homeautomation.entities.ScriptingEntity;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.eventbus.EventObject;
+import cm.homeautomation.events.RemoteControlEvent;
+import cm.homeautomation.events.RemoteControlEvent.RemoteType;
 import cm.homeautomation.nashorn.NashornRunner;
 import cm.homeautomation.services.actor.ActorPressSwitchEvent;
 import io.quarkus.vertx.ConsumeEvent;
@@ -31,6 +33,9 @@ public class DashButtonEventListener {
 
 	@Inject
 	EventBus bus;
+	
+	@Inject
+	NashornRunner nashornRunner;
 
 	@ConsumeEvent(value = "EventObject", blocking = true)
 	public void handleEvent(final EventObject event) {
@@ -54,14 +59,26 @@ public class DashButtonEventListener {
 
 	private void handleDashbuttonAction(EntityManager em, DashButton dashButton) {
 		if (dashButton != null) {
+			boolean dashButtonState = dashButton.isState();
+			
 			em.getTransaction().begin();
 			dashButton.setLastSeen(new Date());
+			
+			dashButton.setState(!dashButtonState);
 			em.merge(dashButton);
 			em.getTransaction().commit();
 
 			final Switch referencedSwitch = dashButton.getReferencedSwitch();
 			final ScriptingEntity referencedScript = dashButton.getReferencedScript();
 
+			RemoteControlEvent remoteControlEvent = new RemoteControlEvent(dashButton.getName(), dashButton.getMac(),
+					RemoteControlEvent.EventType.REMOTE, RemoteType.DASHBUTTON);
+
+			remoteControlEvent.setPoweredOnState(!dashButtonState);
+
+			bus.publish("RemoteControlEvent", remoteControlEvent);
+			
+			
 			if (referencedSwitch != null) {
 
 				final String latestStatus = referencedSwitch.getLatestStatus();
@@ -91,7 +108,7 @@ public class DashButtonEventListener {
 				final String jsCode = referencedScript.getJsCode();
 				try {
 
-					NashornRunner.getInstance().run(jsCode);
+					nashornRunner.run(jsCode);
 				} catch (final ScriptException e) {
 					LogManager.getLogger(this.getClass()).error("error running code: {}", jsCode, e);
 				}
