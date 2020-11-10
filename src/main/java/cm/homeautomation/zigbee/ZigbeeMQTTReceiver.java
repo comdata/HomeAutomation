@@ -25,6 +25,7 @@ import cm.homeautomation.entities.DimmableLight;
 import cm.homeautomation.entities.Light;
 import cm.homeautomation.entities.MQTTSwitch;
 import cm.homeautomation.entities.RGBLight;
+import cm.homeautomation.entities.RemoteControl.RemoteType;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.WindowBlind;
@@ -33,7 +34,7 @@ import cm.homeautomation.entities.ZigbeeLight;
 import cm.homeautomation.entities.ZigbeeMotionSensor;
 import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.events.RemoteControlEvent.EventType;
-import cm.homeautomation.events.RemoteControlEvent.RemoteType;
+
 import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.sensors.SensorDataSaveRequest;

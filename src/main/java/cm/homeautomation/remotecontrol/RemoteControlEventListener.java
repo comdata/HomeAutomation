@@ -175,6 +175,7 @@ public class RemoteControlEventListener {
 
 			remoteControl.setTechnicalId(technicalId);
 			remoteControl.setName(name);
+			remoteControl.setRemoteType(event.getRemoteType());
 			List<RemoteControlGroup> groups = new ArrayList<>();
 			RemoteControlGroup group = new RemoteControlGroup();
 			group.setName(name);

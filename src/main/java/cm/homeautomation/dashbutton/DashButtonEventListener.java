@@ -12,11 +12,11 @@ import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DashButton;
+import cm.homeautomation.entities.RemoteControl.RemoteType;
 import cm.homeautomation.entities.ScriptingEntity;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.events.RemoteControlEvent;
-import cm.homeautomation.events.RemoteControlEvent.RemoteType;
 import cm.homeautomation.nashorn.NashornRunner;
 import cm.homeautomation.services.actor.ActorPressSwitchEvent;
 import io.quarkus.vertx.ConsumeEvent;

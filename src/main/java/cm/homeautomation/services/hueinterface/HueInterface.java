@@ -15,11 +15,12 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.HueDevice;
 import cm.homeautomation.entities.HueDeviceType;
 import cm.homeautomation.entities.Light;
+import cm.homeautomation.entities.RemoteControl.RemoteType;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.events.RemoteControlEvent.EventType;
-import cm.homeautomation.events.RemoteControlEvent.RemoteType;
+
 import cm.homeautomation.services.actor.ActorPressSwitchEvent;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;

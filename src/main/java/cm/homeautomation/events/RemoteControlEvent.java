@@ -1,5 +1,6 @@
 package cm.homeautomation.events;
 
+import cm.homeautomation.entities.RemoteControl.RemoteType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,9 +19,6 @@ public class RemoteControlEvent {
 		REMOTE, ON_OFF
 	}
 	
-	public enum RemoteType {
-		ZIGBEE, DASHBUTTON, HUE
-	}
 
 
 
