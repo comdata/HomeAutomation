@@ -9,7 +9,6 @@ import java.util.HashMap;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
@@ -32,6 +31,7 @@ public class DashButtonService {
 
 	void startup(@Observes StartupEvent event) {
 
+		Runnable runner=()-> {
 		final int listenPort = 67;
 		final int MAX_BUFFER_SIZE = 1000;
 
@@ -52,6 +52,8 @@ public class DashButtonService {
 			e.printStackTrace();
 			// LogManager.getLogger(this.getClass()).error("socket exeception", e);
 		}
+		};
+		new Thread(runner).start();
 	}
 
 	private void listenAndReceive(final int listenPort, DatagramSocket socket, final DatagramPacket p) {
