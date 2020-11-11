@@ -21,7 +21,7 @@ public class NetworkScanner {
 
 	@Inject
 	EventBus bus;
-	
+
 	private static NetworkScanner instance;
 	private static Map<String, Boolean> runningScans = new HashMap<>();
 	private Map<String, NetworkDevice> availableHosts;
@@ -37,43 +37,45 @@ public class NetworkScanner {
 	 * @return
 	 */
 	public Map<String, NetworkDevice> checkHosts(String subnet) {
-		setAvailableHosts(new HashMap<String, NetworkDevice>());
-
-		NetworkDeviceDatabaseUpdater networkDeviceDatabaseUpdater = new NetworkDeviceDatabaseUpdater();
+		setAvailableHosts(new HashMap<>());
 
 		int timeout = 200;
 		for (int i = 1; i < 255; i++) {
 			String host = subnet + "." + i;
-			try {
-				InetAddress currentHost = InetAddress.getByName(host);
-				// System.err.println("current host: "+currentHost);
-				if (currentHost.isReachable(timeout)) {
-					LogManager.getLogger(this.getClass()).info(host + " is reachable");
 
-					String macFromArpCache = getMacFromArpCache(host);
+			Runnable runner = () -> {
+				try {
+					InetAddress currentHost = InetAddress.getByName(host);
 
-					String key = host + "-" + macFromArpCache;
-					if (!getAvailableHosts().keySet().contains(key)) {
-						// System.out.println("new host: "+host);
-						NetworkDevice device = new NetworkDevice();
-						device.setIp(host);
-						device.setHostname(currentHost.getHostName());
+					System.err.println("current host: " + currentHost);
+					if (currentHost.isReachable(timeout)) {
+						LogManager.getLogger(this.getClass()).info(host + " is reachable");
 
-						device.setMac(macFromArpCache);
+						String macFromArpCache = getMacFromArpCache(host);
 
-						getAvailableHosts().put(key, device);
+						String key = host + "-" + macFromArpCache;
+						if (!getAvailableHosts().keySet().contains(key)) {
+							System.out.println("new host: " + host);
+							NetworkDevice device = new NetworkDevice();
+							device.setIp(host);
+							device.setHostname(currentHost.getHostName());
 
-						NetworkScannerHostFoundMessage newHostMessage = new NetworkScannerHostFoundMessage();
-						newHostMessage.setHost(device);
-						EventObject newHostEvent = new EventObject(newHostMessage);
-						networkDeviceDatabaseUpdater.handleNetworkDeviceFound(newHostEvent);
+							device.setMac(macFromArpCache);
 
-						bus.publish("EventObject", newHostEvent);
+							getAvailableHosts().put(key, device);
+
+							NetworkScannerHostFoundMessage newHostMessage = new NetworkScannerHostFoundMessage();
+							newHostMessage.setHost(device);
+
+							bus.publish("NetworkScannerHostFoundMessage", newHostMessage);
+						}
 					}
+				} catch (IOException e) {
+					LogManager.getLogger(this.getClass()).info(e);
 				}
-			} catch (IOException e) {
-				LogManager.getLogger(this.getClass()).info(e);
-			}
+			};
+			new Thread(runner).start();
+
 		}
 
 		return getAvailableHosts();
@@ -139,7 +141,7 @@ public class NetworkScanner {
 	public static void scanNetwork(String[] args) {
 		instance.scanNetworkInternal(args);
 	}
-		
+
 	public void scanNetworkInternal(String[] args) {
 		String subnet = args[0];
 
