@@ -94,47 +94,6 @@ public class NetworkDevicesService extends BaseService {
 		return bytes;
 	}
 
-	/**
-	 * wake up based on a dashbutton event
-	 *
-	 * @param event
-	 */
-	@ConsumeEvent(value = "EventObject", blocking = true)
-
-	public void handleEvent(final EventObject event) {
-
-		final Object data = event.getData();
-
-		if (data instanceof DashButtonEvent) {
-
-			EntityManager em = EntityManagerService.getManager();
-
-			final DashButtonEvent dbEvent = (DashButtonEvent) data;
-
-			final String mac = dbEvent.getMac();
-
-			final List<DashButton> resultList = em
-					.createQuery("select db from DashButton db where db.mac=:mac", DashButton.class)
-					.setParameter("mac", mac).getResultList();
-
-			DashButton dashButton = null;
-			if ((resultList != null) && !resultList.isEmpty()) {
-				dashButton = resultList.get(0);
-			}
-
-			if (dashButton != null) {
-				final NetworkDevice referencedNetworkDevice = dashButton.getReferencedNetworkDevice();
-
-				if (referencedNetworkDevice != null) {
-
-					final String networkDeviceMac = referencedNetworkDevice.getMac();
-
-					this.wakeUp(networkDeviceMac);
-				}
-			}
-		}
-	}
-
 	@Path("getAll")
 	@GET
 	public List<NetworkDevice> readAll() {
@@ -151,7 +110,13 @@ public class NetworkDevicesService extends BaseService {
 	@GET
 	@Path("wake/{mac}")
 	public GenericStatus wakeUp(@PathParam("mac") final String macStr) {
+		return wakeUp(new NetworkWakeupEvent(macStr));
+	}
+	
+	@ConsumeEvent(value="NetworkWakeUpEvent", blocking=true)
+	public GenericStatus wakeUp(NetworkWakeupEvent event) {
 		try (DatagramSocket socket = new DatagramSocket();) {
+			String macStr=event.getMac();
 			final byte[] macBytes = getMacBytes(macStr);
 			final byte[] bytes = new byte[6 + (16 * macBytes.length)];
 			for (int i = 0; i < 6; i++) {
@@ -168,9 +133,6 @@ public class NetworkDevicesService extends BaseService {
 				socket.send(packet);
 				Thread.sleep(1000);
 			}
-
-			// send post wake up message
-			bus.publish("EventObject", new EventObject(new NetworkWakeupEvent(macStr)));
 
 			LogManager.getLogger(this.getClass()).info("Wake-on-LAN packet sent.");
 			return new GenericStatus(true);

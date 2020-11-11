@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 import org.apache.log4j.LogManager;
 
 import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.entities.NetworkDevice;
 import cm.homeautomation.entities.RemoteControl;
 import cm.homeautomation.entities.RemoteControlGroup;
 import cm.homeautomation.entities.RemoteControlGroupMember;
@@ -17,6 +18,7 @@ import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.services.actor.ActorService;
 import cm.homeautomation.services.light.LightService;
 import cm.homeautomation.services.light.LightStates;
+import cm.homeautomation.services.networkmonitor.NetworkWakeupEvent;
 import cm.homeautomation.services.windowblind.WindowBlindDimMessageSimple;
 import cm.homeautomation.services.windowblind.WindowBlindService;
 import cm.homeautomation.services.windowblind.WindowBlindService.DimDirection;
@@ -27,10 +29,9 @@ import io.vertx.core.eventbus.EventBus;
 @Singleton
 public class RemoteControlEventListener {
 
-
 	@Inject
 	EventBus bus;
-	
+
 	@ConsumeEvent(value = "RemoteControlBrightnessChangeEvent", blocking = true)
 	public void subscribe(RemoteControlBrightnessChangeEvent event) {
 		String name = event.getName();
@@ -92,8 +93,8 @@ public class RemoteControlEventListener {
 		String technicalId = event.getTechnicalId();
 		EntityManager em = EntityManagerService.getManager();
 
-		System.out.println("RC "+name+" "+technicalId);
-		
+		System.out.println("RC " + name + " " + technicalId);
+
 		// LogManager.getLogger(this.getClass()).error("got remote event: " + name + "/"
 		// + technicalId);
 
@@ -152,6 +153,16 @@ public class RemoteControlEventListener {
 									break;
 								}
 
+								break;
+							case NETWORKDEVICE:
+
+								NetworkDevice networkDevice = em.find(NetworkDevice.class,
+										remoteControlGroupMember.getExternalId());
+
+								if (networkDevice != null) {
+									bus.publish("NetworkWakeUpEvent", new NetworkWakeupEvent(networkDevice.getMac()));
+
+								}
 								break;
 							default:
 								break;
