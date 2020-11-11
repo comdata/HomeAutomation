@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -18,8 +17,10 @@ import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.services.base.BaseService;
+import io.quarkus.runtime.Startup;
+import io.quarkus.scheduler.Scheduled;
 
-@ApplicationScoped
+@Startup
 @Default
 @Path("overview/")
 public class OverviewService extends BaseService {
@@ -31,7 +32,6 @@ public class OverviewService extends BaseService {
 
 	public OverviewService() {
 		super();
-
 	}
 
 	private void decorateRoomTile(OverviewTile roomTile) {
@@ -156,24 +156,24 @@ public class OverviewService extends BaseService {
 		return overviewTiles;
 	}
 
+	@Scheduled(every = "60s")
 	private void init() {
 
-		if (overviewTiles == null) {
-			overviewTiles = new OverviewTiles();
+		OverviewTiles overviewTilesTemp = new OverviewTiles();
 
-			final List<Room> results = em
-					.createQuery("select r FROM Room r where r.visible=true order by r.sortOrder", Room.class)
-					.getResultList();
+		final List<Room> results = em
+				.createQuery("select r FROM Room r where r.visible=true order by r.sortOrder", Room.class)
+				.getResultList();
 
-			for (final Room room : results) {
+		for (final Room room : results) {
 
-				final OverviewTile roomTile = getOverviewTileForRoom(em, room);
+			final OverviewTile roomTile = getOverviewTileForRoom(em, room);
 
-				overviewTiles.getOverviewTiles().add(roomTile);
-
-			}
+			overviewTilesTemp.getOverviewTiles().add(roomTile);
 
 		}
+
+		overviewTiles = overviewTilesTemp;
 	}
 
 	public OverviewTile updateOverviewTile(SensorData sensorData) {
