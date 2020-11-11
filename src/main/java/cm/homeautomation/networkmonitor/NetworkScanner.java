@@ -14,8 +14,10 @@ import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.entities.NetworkDevice;
 import cm.homeautomation.eventbus.EventObject;
+import io.quarkus.runtime.Startup;
 import io.vertx.core.eventbus.EventBus;
 
+@Startup
 @Singleton
 public class NetworkScanner {
 
@@ -37,6 +39,7 @@ public class NetworkScanner {
 	 * @return
 	 */
 	public Map<String, NetworkDevice> checkHosts(String subnet) {
+		System.out.println("Checking subnet: "+subnet);
 		setAvailableHosts(new HashMap<>());
 
 		int timeout = 200;
