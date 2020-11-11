@@ -31,27 +31,27 @@ public class DashButtonService {
 
 	void startup(@Observes StartupEvent event) {
 
-		Runnable runner=()-> {
-		final int listenPort = 67;
-		final int MAX_BUFFER_SIZE = 1000;
+		Runnable runner = () -> {
+			final int listenPort = 67;
+			final int MAX_BUFFER_SIZE = 1000;
 
-		try (DatagramSocket socket = new DatagramSocket(listenPort);) {
+			try (DatagramSocket socket = new DatagramSocket(listenPort);) {
 //				LogManager.getLogger(this.getClass()).debug("start listening");
-			System.out.println("Start listening.");
-			final byte[] payload = new byte[MAX_BUFFER_SIZE];
+				System.out.println("Start listening.");
+				final byte[] payload = new byte[MAX_BUFFER_SIZE];
 
-			final DatagramPacket p = new DatagramPacket(payload, payload.length);
+				final DatagramPacket p = new DatagramPacket(payload, payload.length);
 
-			// server is always listening
-			final boolean listening = true;
-			while (listening) {
-				System.out.println("listening");
-				listenAndReceive(listenPort, socket, p);
+				// server is always listening
+				final boolean listening = true;
+				while (listening) {
+					System.out.println("listening");
+					listenAndReceive(listenPort, socket, p);
+				}
+			} catch (final SocketException e) {
+				e.printStackTrace();
+				// LogManager.getLogger(this.getClass()).error("socket exeception", e);
 			}
-		} catch (final SocketException e) {
-			e.printStackTrace();
-			// LogManager.getLogger(this.getClass()).error("socket exeception", e);
-		}
 		};
 		new Thread(runner).start();
 	}
@@ -65,30 +65,34 @@ public class DashButtonService {
 
 			final DHCPPacket packet = DHCPPacket.getPacket(p);
 
-			final String mac = packet.getHardwareAddress().getHardwareAddressHex();
+			Runnable runner = () -> {
+
+				final String mac = packet.getHardwareAddress().getHardwareAddressHex();
 //				LogManager.getLogger(this.getClass()).debug("checking mac: " + mac);
-			if (isDashButton(mac)) {
+				if (isDashButton(mac)) {
 //					LogManager.getLogger(this.getClass()).debug("found a dashbutton mac: " + mac);
 
-				/*
-				 * suppress events if they are to fast
-				 *
-				 */
-				if (!timeFilter.containsKey(mac)) {
-					timeFilter.put(mac, new Date(1));
-				}
+					/*
+					 * suppress events if they are to fast
+					 *
+					 */
+					if (!timeFilter.containsKey(mac)) {
+						timeFilter.put(mac, new Date(1));
+					}
 
-				final Date filterTime = timeFilter.get(mac);
+					final Date filterTime = timeFilter.get(mac);
 
-				if (((filterTime.getTime()) + 1000) < (new Date()).getTime()) {
-					timeFilter.put(mac, new Date());
-					bus.publish("EventObject", new EventObject(new DashButtonEvent(mac)));
+					if (((filterTime.getTime()) + 1000) < (new Date()).getTime()) {
+						timeFilter.put(mac, new Date());
+						bus.publish("EventObject", new EventObject(new DashButtonEvent(mac)));
 //						LogManager.getLogger(this.getClass()).debug("send dashbutton event");
-				}
+					}
 
-			} else {
+				} else {
 //					LogManager.getLogger(this.getClass()).debug("not a dashbutton: " + mac);
-			}
+				}
+			};
+			new Thread(runner).start();
 		} catch (final SocketException e) {
 //				LogManager.getLogger(this.getClass()).error("socket exeception", e);
 		} catch (final IOException e) {
