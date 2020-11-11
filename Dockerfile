@@ -14,7 +14,7 @@
 # docker run -i --rm -p 8080:8080 quarkus/getting-started-jvm
 #
 ###
-FROM comdata456/docker-image
+FROM docker.pkg.github.com/comdata/docker-image/docker-image:master
 ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
 ENV AB_ENABLED=jmx_exporter
 COPY target/lib/* /lib/
