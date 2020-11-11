@@ -67,9 +67,8 @@ public class NetworkScanner {
 
 							getAvailableHosts().put(key, device);
 
-							NetworkScannerHostFoundMessage newHostMessage = new NetworkScannerHostFoundMessage();
-							newHostMessage.setHost(device);
-
+							NetworkScannerHostFoundMessage newHostMessage = new NetworkScannerHostFoundMessage(device);
+				
 							bus.publish("NetworkScannerHostFoundMessage", newHostMessage);
 						}
 					}

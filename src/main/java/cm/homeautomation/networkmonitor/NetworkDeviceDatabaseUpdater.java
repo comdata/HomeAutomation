@@ -10,8 +10,10 @@ import org.apache.log4j.LogManager;
 
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.NetworkDevice;
+import io.quarkus.runtime.Startup;
 import io.quarkus.vertx.ConsumeEvent;
 
+@Startup
 @Singleton
 public class NetworkDeviceDatabaseUpdater {
 
@@ -23,7 +25,7 @@ public class NetworkDeviceDatabaseUpdater {
 		List<NetworkDevice> resultList = null;
 
 		final String mac = networkDevice.getMac();
-
+		System.out.println("got device for mac: " + mac);
 //			LogManager.getLogger(this.getClass()).debug("got device for mac: "+mac);
 
 		if (mac != null) {
@@ -40,6 +42,7 @@ public class NetworkDeviceDatabaseUpdater {
 
 			final NetworkDevice existingNetworkDevice = resultList.get(0);
 			LogManager.getLogger(this.getClass()).debug("updating existing entry: " + existingNetworkDevice.getId());
+		System.out.println("updating existing entry: " + existingNetworkDevice.getId());
 			existingNetworkDevice.setIp(networkDevice.getIp());
 			existingNetworkDevice.setHostname(networkDevice.getHostname());
 			existingNetworkDevice.setMac(networkDevice.getMac());
@@ -47,14 +50,17 @@ public class NetworkDeviceDatabaseUpdater {
 			em.getTransaction().begin();
 			em.merge(existingNetworkDevice);
 			em.getTransaction().commit();
+			System.out.println("done updating existing entry: "+existingNetworkDevice.getId());
 //				LogManager.getLogger(this.getClass()).debug("done updating existing entry: "+existingNetworkDevice.getId());
 		} else {
 			// this is a new device, so save it
+			System.out.println("creating new entry: "+networkDevice.getIp());
 //				LogManager.getLogger(this.getClass()).debug("creating new entry: "+networkDevice.getIp());
 			em.getTransaction().begin();
 			networkDevice.setLastSeen(new Date());
 			em.persist(networkDevice);
 			em.getTransaction().commit();
+			System.out.println("done creating new entry: "+networkDevice.getIp());
 //				LogManager.getLogger(this.getClass()).debug("done creating new entry: "+networkDevice.getIp());
 		}
 
