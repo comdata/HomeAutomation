@@ -1,8 +1,5 @@
 package cm.homeautomation.services.networkmonitor;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,13 +10,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.apache.logging.log4j.LogManager;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import cm.homeautomation.dashbutton.DashButtonEvent;
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DashButton;
 import cm.homeautomation.entities.NetworkDevice;
-import cm.homeautomation.eventbus.EventObject;
+import cm.homeautomation.mqtt.client.MQTTSendEvent;
 import cm.homeautomation.networkmonitor.NetworkScanner;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
@@ -94,37 +91,21 @@ public class NetworkDevicesService extends BaseService {
 	public GenericStatus wakeUp(@PathParam("mac") final String macStr) {
 		return wakeUp(new NetworkWakeupEvent(macStr));
 	}
-	
-	@ConsumeEvent(value="NetworkWakeUpEvent", blocking=true)
+
+	@ConsumeEvent(value = "NetworkWakeUpEvent", blocking = true)
 	public GenericStatus wakeUp(NetworkWakeupEvent event) {
-		System.out.println("Sending wakeup");
-		try (DatagramSocket socket = new DatagramSocket();) {
-			String macStr=event.getMac();
-			final byte[] macBytes = getMacBytes(macStr);
-			final byte[] bytes = new byte[6 + (16 * macBytes.length)];
-			for (int i = 0; i < 6; i++) {
-				bytes[i] = (byte) 0xff;
-			}
-			for (int i = 6; i < bytes.length; i += macBytes.length) {
-				System.arraycopy(macBytes, 0, bytes, i, macBytes.length);
-			}
 
-			final InetAddress address = InetAddress.getByName(BROADCAST_IP_ADDRESS);
-			final DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address, PORT);
+		try {
+			String topic = "networkServices/wakeup";
+			ObjectMapper objectMapper = new ObjectMapper();
+			String payload = objectMapper.writeValueAsString(event);
 
-			for (int i = 0; i < 10; i++) {
-				socket.send(packet);
-				Thread.sleep(1000);
-			}
-
-			LogManager.getLogger(this.getClass()).info("Wake-on-LAN packet sent.");
-			System.out.println("wakeup sent.");
+			MQTTSendEvent mqttSendEvent = new MQTTSendEvent(topic, payload);
+			bus.publish("MQTTSendEvent", mqttSendEvent);
 			return new GenericStatus(true);
-		} catch (final Exception e) {
-			LogManager.getLogger(this.getClass()).info("Failed to send Wake-on-LAN packet: + e");
+		} catch (JsonProcessingException e) {
 			return new GenericStatus(false);
 		}
-
 	}
 
 }
