@@ -79,6 +79,7 @@ public class NetworkDevicesService extends BaseService {
 			String topic = "networkServices/wakeup";
 			ObjectMapper objectMapper = new ObjectMapper();
 			String payload = objectMapper.writeValueAsString(event);
+			System.out.println(payload);
 
 			MQTTSendEvent mqttSendEvent = new MQTTSendEvent(topic, payload);
 			bus.publish("MQTTSendEvent", mqttSendEvent);
