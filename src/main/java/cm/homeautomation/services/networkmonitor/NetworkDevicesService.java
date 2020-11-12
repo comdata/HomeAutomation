@@ -107,5 +107,4 @@ public class NetworkDevicesService extends BaseService {
 			return new GenericStatus(false);
 		}
 	}
-
 }
