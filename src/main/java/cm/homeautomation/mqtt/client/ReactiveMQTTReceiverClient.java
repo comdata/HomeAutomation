@@ -47,7 +47,8 @@ public class ReactiveMQTTReceiverClient {
 		Mqtt3AsyncClient tasmotaClient = buildAClient(host, port);
 		Mqtt3AsyncClient wledClient = buildAClient(host, port);
 		Mqtt3AsyncClient networkServicesClient = buildAClient(host, port);
-
+		Mqtt3AsyncClient espClient = buildAClient(host, port);
+		
 		wledClient.connect().whenComplete((connAck, throwable) -> {
 			if (throwable != null) {
 				// Handle connection failure
@@ -135,6 +136,33 @@ public class ReactiveMQTTReceiverClient {
 			} else {
 
 				tasmotaClient.subscribeWith().topicFilter("tasmota/#").callback(publish -> {
+
+					Runnable runThread = () -> {
+						// Process the received message
+
+						mqttHandler(publish);
+					};
+					new Thread(runThread).start();
+				}).send().whenComplete((subAck, e) -> {
+					if (e != null) {
+						// Handle failure to subscribe
+						LogManager.getLogger(this.getClass()).error(e);
+					} else {
+						// Handle successful subscription, e.g. logging or incrementing a metric
+						LogManager.getLogger(this.getClass())
+								.debug("successfully subscribed. Type: " + subAck.getType().name());
+					}
+				});
+
+			}
+		});
+		
+		espClient.connect().whenComplete((connAck, throwable) -> {
+			if (throwable != null) {
+				// Handle connection failure
+			} else {
+
+				tasmotaClient.subscribeWith().topicFilter("esp/#").callback(publish -> {
 
 					Runnable runThread = () -> {
 						// Process the received message
