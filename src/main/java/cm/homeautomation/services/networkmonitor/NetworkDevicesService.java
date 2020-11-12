@@ -39,27 +39,9 @@ public class NetworkDevicesService extends BaseService {
 	@Inject
 	EventBus bus;
 
-	private static NetworkDevicesService instance = null;
-
-	public static NetworkDevicesService getInstance() {
-		if (instance == null) {
-			instance = new NetworkDevicesService();
-		}
-
-		return instance;
-	}
-
-	public static void setInstance(final NetworkDevicesService instance) {
-		NetworkDevicesService.instance = instance;
-	}
-
 	private static final int PORT = 9;
 
 	private static final String BROADCAST_IP_ADDRESS = "192.168.1.255";
-
-	public NetworkDevicesService() {
-		setInstance(this);
-	}
 
 	@GET
 	@Path("delete/{name}/{ip}/{mac}")
@@ -115,6 +97,7 @@ public class NetworkDevicesService extends BaseService {
 	
 	@ConsumeEvent(value="NetworkWakeUpEvent", blocking=true)
 	public GenericStatus wakeUp(NetworkWakeupEvent event) {
+		System.out.println("Sending wakeup");
 		try (DatagramSocket socket = new DatagramSocket();) {
 			String macStr=event.getMac();
 			final byte[] macBytes = getMacBytes(macStr);
@@ -135,6 +118,7 @@ public class NetworkDevicesService extends BaseService {
 			}
 
 			LogManager.getLogger(this.getClass()).info("Wake-on-LAN packet sent.");
+			System.out.println("wakeup sent.");
 			return new GenericStatus(true);
 		} catch (final Exception e) {
 			LogManager.getLogger(this.getClass()).info("Failed to send Wake-on-LAN packet: + e");
