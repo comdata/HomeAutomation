@@ -238,7 +238,7 @@ public class ReactiveMQTTReceiverClient {
 						String messageContent = new String(publish.getPayloadAsBytes());
 						LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
 
-						if ("networkSevices/scanResult".equals(topic)) {
+						if ("networkServices/scanResult".equals(topic)) {
 							sendNetworkScanResult(messageContent);
 						}
 					};
