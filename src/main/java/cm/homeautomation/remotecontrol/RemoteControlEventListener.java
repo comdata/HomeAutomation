@@ -156,12 +156,15 @@ public class RemoteControlEventListener {
 								break;
 							case NETWORKDEVICE:
 
-								NetworkDevice networkDevice = em.find(NetworkDevice.class,
-										remoteControlGroupMember.getExternalId());
+								if (event.isPoweredOnState()) {
+									NetworkDevice networkDevice = em.find(NetworkDevice.class,
+											remoteControlGroupMember.getExternalId());
 
-								if (networkDevice != null) {
-									bus.publish("NetworkWakeUpEvent", new NetworkWakeupEvent(networkDevice.getMac()));
+									if (networkDevice != null) {
+										bus.publish("NetworkWakeUpEvent",
+												new NetworkWakeupEvent(networkDevice.getMac()));
 
+									}
 								}
 								break;
 							default:
