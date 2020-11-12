@@ -57,22 +57,6 @@ public class NetworkDevicesService extends BaseService {
 		return new GenericStatus(true);
 	}
 
-	private byte[] getMacBytes(final String macStr) {
-		final byte[] bytes = new byte[6];
-		final String[] hex = macStr.split("(\\:|\\-)");
-		if (hex.length != 6) {
-			throw new IllegalArgumentException("Invalid MAC address.");
-		}
-		try {
-			for (int i = 0; i < 6; i++) {
-				bytes[i] = (byte) Integer.parseInt(hex[i], 16);
-			}
-		} catch (final NumberFormatException e) {
-			throw new IllegalArgumentException("Invalid hex digit in MAC address.");
-		}
-		return bytes;
-	}
-
 	@Path("getAll")
 	@GET
 	public List<NetworkDevice> readAll() {
