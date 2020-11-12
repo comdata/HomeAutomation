@@ -156,7 +156,7 @@ public class RemoteControlEventListener {
 								break;
 							case NETWORKDEVICE:
 
-								if (event.isPoweredOnState()) {
+								if (!event.isPoweredOnState()) {
 									NetworkDevice networkDevice = em.find(NetworkDevice.class,
 											remoteControlGroupMember.getExternalId());
 
