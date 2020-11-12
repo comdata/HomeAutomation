@@ -36,10 +36,6 @@ public class NetworkDevicesService extends BaseService {
 	@Inject
 	EventBus bus;
 
-	private static final int PORT = 9;
-
-	private static final String BROADCAST_IP_ADDRESS = "192.168.1.255";
-
 	@GET
 	@Path("delete/{name}/{ip}/{mac}")
 	public GenericStatus delete(@PathParam("name") final String name, @PathParam("ip") final String ip,
