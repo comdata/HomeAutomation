@@ -2,7 +2,10 @@ package cm.homeautomation.networkmonitor;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
@@ -12,10 +15,32 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.NetworkDevice;
 import io.quarkus.runtime.Startup;
 import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
 
 @Startup
 @Singleton
 public class NetworkDeviceDatabaseUpdater {
+
+	@Inject
+	EventBus bus;
+	
+	@ConsumeEvent(value = "NetworkScanResult", blocking = true)
+	public void handleNetworkScanResult(NetworkScanResult result) {
+		
+		Map<String, NetworkDevice> hosts = result.getHosts();
+		
+		Set<String> keySet = hosts.keySet();
+		
+		for (String hostKey : keySet) {
+			NetworkDevice networkDevice = hosts.get(hostKey);
+			
+
+			NetworkScannerHostFoundMessage newHostMessage = new NetworkScannerHostFoundMessage(networkDevice);
+
+			bus.publish("NetworkScannerHostFoundMessage", newHostMessage);
+		}
+		
+	}
 
 	@ConsumeEvent(value = "NetworkScannerHostFoundMessage", blocking = true)
 	public void handleNetworkDeviceFound(NetworkScannerHostFoundMessage foundHostMessage) {

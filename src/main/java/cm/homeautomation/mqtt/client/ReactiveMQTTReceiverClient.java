@@ -20,6 +20,7 @@ import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.fhem.FHEMDataEvent;
 import cm.homeautomation.jeromq.server.JSONDataEvent;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
+import cm.homeautomation.networkmonitor.NetworkScanResult;
 import cm.homeautomation.services.hueinterface.HueEmulatorMessage;
 import io.quarkus.runtime.StartupEvent;
 import io.vertx.core.eventbus.EventBus;
@@ -30,7 +31,7 @@ public class ReactiveMQTTReceiverClient {
 
 	@Inject
 	EventBus bus;
-	
+
 	private void initClient() {
 
 		String host = ConfigurationService.getConfigurationProperty("mqtt", "host");
@@ -45,6 +46,7 @@ public class ReactiveMQTTReceiverClient {
 		Mqtt3AsyncClient shellyClient = buildAClient(host, port);
 		Mqtt3AsyncClient tasmotaClient = buildAClient(host, port);
 		Mqtt3AsyncClient wledClient = buildAClient(host, port);
+		Mqtt3AsyncClient networkServicesClient = buildAClient(host, port);
 
 		wledClient.connect().whenComplete((connAck, throwable) -> {
 			if (throwable != null) {
@@ -126,7 +128,7 @@ public class ReactiveMQTTReceiverClient {
 
 			}
 		});
-		
+
 		tasmotaClient.connect().whenComplete((connAck, throwable) -> {
 			if (throwable != null) {
 				// Handle connection failure
@@ -153,7 +155,7 @@ public class ReactiveMQTTReceiverClient {
 
 			}
 		});
-		
+
 		ebusClient.connect().whenComplete((connAck, throwable) -> {
 			if (throwable != null) {
 				// Handle connection failure
@@ -168,7 +170,7 @@ public class ReactiveMQTTReceiverClient {
 						String topic = publish.getTopic().toString();
 						String messageContent = new String(publish.getPayloadAsBytes());
 						LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-						//System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+						// System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
 
 						handleMessageEBUS(topic, messageContent);
 					};
@@ -205,6 +207,40 @@ public class ReactiveMQTTReceiverClient {
 //						System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
 
 						handleMessageHUE(topic, messageContent);
+					};
+					new Thread(runThread).start();
+				}).send().whenComplete((subAck, e) -> {
+					if (e != null) {
+						// Handle failure to subscribe
+						LogManager.getLogger(this.getClass()).error(e);
+					} else {
+						// Handle successful subscription, e.g. logging or incrementing a metric
+						LogManager.getLogger(this.getClass())
+								.debug("successfully subscribed. Type: " + subAck.getType().name());
+					}
+				});
+			}
+		});
+
+		networkServicesClient.connect().whenComplete((connAck, throwable) -> {
+			if (throwable != null) {
+				// Handle connection failure
+			} else {
+
+//					topicFilter("zigbee2mqtt").topicFilter("ebusd")
+
+				hueClient.subscribeWith().topicFilter("networkServices/#").callback(publish -> {
+
+					Runnable runThread = () -> {
+						// Process the received message
+
+						String topic = publish.getTopic().toString();
+						String messageContent = new String(publish.getPayloadAsBytes());
+						LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+
+						if ("networkSevices/scanResult".equals(topic)) {
+							sendNetworkScanResult(messageContent);
+						}
 					};
 					new Thread(runThread).start();
 				}).send().whenComplete((subAck, e) -> {
@@ -321,12 +357,11 @@ public class ReactiveMQTTReceiverClient {
 
 	private void handleMessageFHEM(String topic, String messageContent) {
 		try {
-			FHEMDataEvent fhemDataEvent = new FHEMDataEvent(topic, messageContent);			
+			FHEMDataEvent fhemDataEvent = new FHEMDataEvent(topic, messageContent);
 			bus.publish("FHEMDataEvent", fhemDataEvent);
-			
+
 			handleMessageMQTT(topic, messageContent);
-			
-			
+
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass()).error(e);
 		}
@@ -338,7 +373,7 @@ public class ReactiveMQTTReceiverClient {
 			EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
 			EventObject eventObject = new EventObject(ebusMessageEvent);
 			bus.publish("EventObject", eventObject);
-			
+
 			handleMessageMQTT(topic, messageContent);
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass()).error(e);
@@ -374,8 +409,19 @@ public class ReactiveMQTTReceiverClient {
 		HueEmulatorMessage hueMessage;
 		try {
 			hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
-			
+
 			bus.publish("HueEmulatorMessage", hueMessage);
+		} catch (JsonProcessingException e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		}
+	}
+
+	private void sendNetworkScanResult(String messageContent) {
+		NetworkScanResult networkScanResult;
+		try {
+			networkScanResult = mapper.readValue(messageContent, NetworkScanResult.class);
+
+			bus.publish("NetworkScanResult", networkScanResult);
 		} catch (JsonProcessingException e) {
 			LogManager.getLogger(this.getClass()).error(e);
 		}
