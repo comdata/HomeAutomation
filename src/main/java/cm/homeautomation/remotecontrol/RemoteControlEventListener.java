@@ -173,7 +173,6 @@ public class RemoteControlEventListener {
 							}
 
 						}
-
 					}
 
 				} else {

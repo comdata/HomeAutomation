@@ -313,8 +313,8 @@ public class ActorService extends BaseService {
 				.setParameter("switchId", Float.parseFloat(switchId)).getSingleResult();
 
 		em.getTransaction().begin();
-		singleSwitch.setLatestStatus(targetStatus);
-		singleSwitch.setLatestStatusFrom(new Date());
+		singleSwitch.setTargetStatus(targetStatus);
+		singleSwitch.setTargetStatusFrom(new Date());
 		em.merge(singleSwitch);
 		em.getTransaction().commit();
 

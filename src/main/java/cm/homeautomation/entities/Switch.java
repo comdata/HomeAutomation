@@ -52,6 +52,7 @@ public class Switch {
 	private String latestStatus;
 	private Date latestStatusFrom;
 	private String targetStatus;
+	private Date targetStatusFrom;
 	private String houseCode;
 	private String switchNo;
 	private String switchOnCode;
