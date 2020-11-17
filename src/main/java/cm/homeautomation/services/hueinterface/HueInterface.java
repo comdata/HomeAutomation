@@ -15,6 +15,7 @@ import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.HueDevice;
 import cm.homeautomation.entities.HueDeviceType;
 import cm.homeautomation.entities.Light;
+import cm.homeautomation.entities.RemoteControl;
 import cm.homeautomation.entities.RemoteControl.RemoteType;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.entities.WindowBlind;
@@ -104,6 +105,16 @@ public class HueInterface extends BaseService {
 								WindowBlind windowBlind = windowBlindList.get(0);
 								externalId = windowBlind.getId();
 								type = HueDeviceType.WINDOWBLIND;
+							} else {
+								List<RemoteControl> remoteList = em
+										.createQuery("select r from RemoteControl r where r.name=:name",
+												RemoteControl.class)
+										.setParameter("name", message.getDeviceName()).getResultList();
+
+								if (remoteList!=null && !remoteList.isEmpty()) {
+									externalId=remoteList.get(0).getId();
+									type=HueDeviceType.REMOTE;
+								}
 							}
 						}
 					}
@@ -189,7 +200,6 @@ public class HueInterface extends BaseService {
 					("on".equals(message.getPayload()) ? dimValue : "0"),
 					hueDevice.isGroupDevice() ? WindowBlind.ALL_AT_ONCE : WindowBlind.SINGLE,
 					(hueDevice.isGroupDevice() ? hueDevice.getRoom().getId() : null));
-			
 
 			bus.publish("WindowBlindDimMessage", windowBlindDimMessage);
 
