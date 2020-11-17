@@ -75,6 +75,5 @@ public class MQTTSender {
 		Mqtt3Publish publishMessage = Mqtt3Publish.builder().topic(topic).qos(MqttQos.AT_LEAST_ONCE)
 				.payload(messagePayload.getBytes()).build();
 		publishClient.publish(publishMessage);
-		System.out.println("sending: " + topic + " " + messagePayload);
 	}
 }
