@@ -48,8 +48,10 @@ public class Sensor {
 
 	private String sensorTechnicalType;
 
+    @Builder.Default
 	private String sensorPosition = "LOCAL";
 
+    @Builder.Default
 	private int deadbandPercent = 0;
 
 	@Column(name = "MIN_VALUE", nullable = true)
@@ -75,8 +77,11 @@ public class Sensor {
 	@JsonIgnore
 	private List<SensorData> sensorData;
 
+    @Builder.Default
 	private float reportingFactor = 1f;
-	private String reportingUoM = "";
+
+    @Builder.Default
+    private String reportingUoM = "";
 
 	@XmlTransient
 	@JsonIgnore
