@@ -41,20 +41,27 @@ public class SensorMonitor {
 			Date date = (Date) result[0];
 			Sensor sensor = (Sensor) result[1];
 
+			String roomName="";
+					
+			if (sensor.getRoom()) {
+				roomName=sensor.getRoom().getRoomName();
+			}
+
 			if (date != null) {
 				Instant latestSensorDate = date.toInstant();
 				Duration difference = Duration.between(latestSensorDate, now);
 
 				if (difference.toSeconds() > oldTimeout) {
 
-					String message = "Sensor: " + sensor.getSensorName() + " is to old. Latest Date: "
+					
+					String message = "Sensor: " + sensor.getSensorName() + " in room: "++" is to old. Latest Date: "
 							+ latestSensorDate.toString();
 					System.out.println(message);
 					bus.publish("HumanMessageEvent", new HumanMessageEvent(message));
 
 				}
 			} else {
-				String message = "Sensor: " + sensor.getSensorName() + " has never delivered values";
+				String message = "Sensor: " + sensor.getSensorName() + " in room: "+roomName+" has never delivered values";
 				System.out.println(message);
 				bus.publish("HumanMessageEvent", new HumanMessageEvent(message));
 			}
