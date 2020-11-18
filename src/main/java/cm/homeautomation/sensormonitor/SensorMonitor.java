@@ -40,7 +40,7 @@ public class SensorMonitor {
 
       String roomName = "";
 
-      if (sensor.getRoom()) {
+      if (sensor.getRoom()!=null) {
         roomName = sensor.getRoom().getRoomName();
       }
 
