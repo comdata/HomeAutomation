@@ -157,7 +157,7 @@ public class OverviewService extends BaseService {
 	}
 
 	@Scheduled(every = "60s")
-	private void init() {
+	public void init() {
 
 		OverviewTiles overviewTilesTemp = new OverviewTiles();
 
