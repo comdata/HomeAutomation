@@ -9,6 +9,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.services.messaging.HumanMessageEvent;
@@ -20,6 +22,9 @@ public class SensorMonitor {
 
 	@Inject
 	EventBus bus;
+
+	@ConfigProperty(name = "sensors.monitor.oldtimeout")
+	Long oldTimeout;
 
 	@Scheduled(every = "300s")
 	public void checkSensors() {
@@ -40,7 +45,7 @@ public class SensorMonitor {
 				Instant latestSensorDate = date.toInstant();
 				Duration difference = Duration.between(latestSensorDate, now);
 
-				if (difference.toSeconds() > 300) {
+				if (difference.toSeconds() > oldTimeout) {
 
 					String message = "Sensor: " + sensor.getSensorName() + " is to old. Latest Date: "
 							+ latestSensorDate.toString();
