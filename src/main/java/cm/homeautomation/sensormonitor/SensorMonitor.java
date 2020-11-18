@@ -1,33 +1,58 @@
 package cm.homeautomation.sensormonitor;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.entities.Sensor;
+import cm.homeautomation.services.messaging.HumanMessageEvent;
+import io.quarkus.scheduler.Scheduled;
+import io.vertx.core.eventbus.EventBus;
 
+@Singleton
 public class SensorMonitor {
 
-	public static void checkSensors() {
-		
+	@Inject
+	EventBus bus;
+
+	@Scheduled(every = "300s")
+	public void checkSensors() {
+
 		EntityManager em = EntityManagerService.getManager();
-		
-		String qlString = "select (select max(sd.validThru) from SensorData sd where sd.sensor=s) from Sensor s";
-		System.out.println("SQL: "+qlString);
-		List<Date> resultList = em.createQuery(qlString, Date.class).getResultList();
-		
-		for (Date date : resultList) {
-			if (date!=null) { 
-			System.out.println("Date: "+date.toLocaleString());
+
+		String qlString = "select (select max(sd.validThru) from SensorData sd where sd.sensor=s), s from Sensor s";
+		System.out.println("SQL: " + qlString);
+		List<Object[]> resultList = em.createQuery(qlString, Object[].class).getResultList();
+
+		Instant now = new Date().toInstant();
+
+		for (Object[] result : resultList) {
+			Date date = (Date) result[0];
+			Sensor sensor = (Sensor) result[1];
+
+			if (date != null) {
+				Instant latestSensorDate = date.toInstant();
+				Duration difference = Duration.between(latestSensorDate, now);
+
+				if (difference.toSeconds() > 300) {
+
+					String message = "Sensor: " + sensor.getSensorName() + " is to old. Latest Date: "
+							+ latestSensorDate.toString();
+					System.out.println(message);
+					bus.publish("HumanMessageEvent", new HumanMessageEvent(message));
+
+				}
 			} else {
 				System.out.println("Date is null");
 			}
 		}
 
 	}
-	
-	public static void main(String[] args) {
-		SensorMonitor.checkSensors();
-	}
+
 }
