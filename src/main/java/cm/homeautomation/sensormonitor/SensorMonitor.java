@@ -49,7 +49,9 @@ public class SensorMonitor {
 
 				}
 			} else {
-				System.out.println("Date is null");
+				String message = "Sensor: " + sensor.getSensorName() + " has never delivered values";
+				System.out.println(message);
+				bus.publish("HumanMessageEvent", new HumanMessageEvent(message));
 			}
 		}
 
