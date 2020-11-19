@@ -9,9 +9,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.control.ActivateRequestContext;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.transaction.HeuristicMixedException;
@@ -19,7 +17,7 @@ import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -67,8 +65,6 @@ public class Sensors extends BaseService {
 
 	@Inject
 	DeviceService deviceService;
-	
-	@Inject UserTransaction transaction;
 
 	class DataLoadThread extends Thread {
 		private SensorDatas sensorDatas;
@@ -182,19 +178,18 @@ public class Sensors extends BaseService {
 	 * @param em
 	 * @param now
 	 * @param sensor
-	 * @throws SystemException 
-	 * @throws NotSupportedException 
-	 * @throws HeuristicRollbackException 
-	 * @throws HeuristicMixedException 
-	 * @throws RollbackException 
-	 * @throws IllegalStateException 
-	 * @throws SecurityException 
+	 * @throws SystemException
+	 * @throws NotSupportedException
+	 * @throws HeuristicRollbackException
+	 * @throws HeuristicMixedException
+	 * @throws RollbackException
+	 * @throws IllegalStateException
+	 * @throws SecurityException
 	 */
+	@Transactional
 	public void loadSensorData(final SensorDatas sensorDatas, final EntityManager em, final Date now,
-			final Sensor sensor) throws NotSupportedException, SystemException, SecurityException, IllegalStateException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
-
-
-		transaction.begin();
+			final Sensor sensor) throws NotSupportedException, SystemException, SecurityException,
+			IllegalStateException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 
 		final SensorValues sensorData = new SensorValues();
 
@@ -270,8 +265,6 @@ public class Sensors extends BaseService {
 
 		sensorDatas.getSensorData().add(sensorData);
 
-		transaction.commit();
-
 	}
 
 	/**
@@ -321,7 +314,10 @@ public class Sensors extends BaseService {
 
 	@POST
 	@Path("rfsniffer")
-	public void registerRFEvent(final RFEvent event) throws SensorDataLimitViolationException, NotSupportedException, SystemException, SecurityException, IllegalStateException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+	@Transactional
+	public void registerRFEvent(final RFEvent event)
+			throws SensorDataLimitViolationException, NotSupportedException, SystemException, SecurityException,
+			IllegalStateException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		final String code = Integer.toString(event.getCode());
 //        LogManager.getLogger(this.getClass()).info("RF Event: " + code);
 
@@ -331,7 +327,6 @@ public class Sensors extends BaseService {
 					.setParameter("code", code).getSingleResult();
 
 			if (sw != null) {
-				transaction.begin();
 
 				String status = "";
 
@@ -353,7 +348,6 @@ public class Sensors extends BaseService {
 				sw.setLatestStatusFrom(new Date());
 
 				em.persist(sw);
-				transaction.commit();
 
 				// save switch changes
 				final Sensor sensor = sw.getSensor();
@@ -453,8 +447,10 @@ public class Sensors extends BaseService {
 
 	@POST
 	@Path("forroom/save")
-	@ActivateRequestContext
-	public void saveSensorData(final SensorDataSaveRequest request) throws SensorDataLimitViolationException, SecurityException, IllegalStateException, RollbackException, HeuristicMixedException, HeuristicRollbackException, SystemException, NotSupportedException {
+	@Transactional
+	public void saveSensorData(final SensorDataSaveRequest request)
+			throws SensorDataLimitViolationException, SecurityException, IllegalStateException, RollbackException,
+			HeuristicMixedException, HeuristicRollbackException, SystemException, NotSupportedException {
 
 		Sensor sensor = null;
 		if (request.getSensorId() != null) {
@@ -484,16 +480,12 @@ public class Sensors extends BaseService {
 //                LogManager.getLogger(this.getClass())
 //                        .debug("found no sensor for technical type: " + sensorTechnicalType);
 
-				transaction.begin();
-
 				sensor = new Sensor();
 				sensor.setSensorTechnicalType(sensorTechnicalType);
 				sensor.setSensorName(sensorTechnicalType);
 				sensor.setDeadbandPercent(0);
 
 				em.persist(sensor);
-
-				transaction.commit();
 
 				List<Sensor> sensorsNew = em
 						.createQuery("select s from Sensor s where s.sensorTechnicalType=:sensorTechnicalType",
@@ -512,7 +504,6 @@ public class Sensors extends BaseService {
 
 		if (sensor != null) {
 //            LogManager.getLogger(this.getClass()).debug("found a sensor. id: " + sensor.getId());
-			transaction.begin();
 
 			final SensorData sensorData;
 			Long sensorId = sensor.getId();
@@ -591,8 +582,6 @@ public class Sensors extends BaseService {
 				bus.publish("EventObject", new EventObject(sensorData));
 //                LogManager.getLogger(this.getClass()).debug("Committing data: " + sensorData.getValue());
 			}
-
-			transaction.commit();
 		} else {
 //            LogManager.getLogger(this.getClass()).error("sensor is null");
 		}
