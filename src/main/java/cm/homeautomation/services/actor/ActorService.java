@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -31,6 +31,7 @@ import cm.homeautomation.services.base.HTTPHelper;
 import cm.homeautomation.services.ir.InfraredService;
 import cm.homeautomation.services.light.LightService;
 import io.quarkus.runtime.Startup;
+import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
@@ -55,10 +56,9 @@ public class ActorService extends BaseService {
 
 	@Inject
 	EntityManager em;
-	
+
 	@Inject
 	ConfigurationService configurationService;
-	
 
 	public void performSwitch(String targetStatus, String switchId) {
 
@@ -74,6 +74,10 @@ public class ActorService extends BaseService {
 
 		bus.publish("EventObject", new EventObject(actorMessage));
 
+	}
+
+	void startup(@Observes StartupEvent event) {
+		initSwitchList();
 	}
 
 	private ActorMessage createActorMessage(final String targetStatus, final Switch singleSwitch) {
@@ -168,7 +172,7 @@ public class ActorService extends BaseService {
 	}
 
 	public ActorService() {
-		instance=this;
+		instance = this;
 	}
 
 	@Scheduled(every = "120s")

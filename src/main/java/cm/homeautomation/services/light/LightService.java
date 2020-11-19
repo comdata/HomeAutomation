@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
@@ -24,6 +25,7 @@ import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.base.HTTPHelper;
 import io.quarkus.runtime.Startup;
+import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
 import io.vertx.core.eventbus.EventBus;
 
@@ -357,6 +359,11 @@ public class LightService extends BaseService {
 		lightRoomList = lightRoomListTemp;
 		lightExternalList = lightExternalListTemp;
 		lightList = lightListTemp;
+	}
+	
+	void startup(@Observes StartupEvent event) {
+		initLightList();
+
 	}
 
 }
