@@ -4,9 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -22,11 +23,13 @@ import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.base.HTTPHelper;
+import io.quarkus.runtime.Startup;
 import io.quarkus.scheduler.Scheduled;
 import io.vertx.core.eventbus.EventBus;
 
 @Path("light")
-@Singleton
+@ApplicationScoped
+@Startup
 public class LightService extends BaseService {
 	@Inject
 	MQTTSender mqttSender;
@@ -151,12 +154,13 @@ public class LightService extends BaseService {
 		return lightRoomList.get(roomId);
 	}
 
+	@Transactional
 	private GenericStatus internalDimLight(final long lightId, final int dimPercentValue, boolean calledForGroup,
 			boolean isAbsoluteValue) {
 		final Runnable requestThread = () -> {
 			String powerState = getPowerStateFromDimValue(dimPercentValue);
 
-			em.getTransaction().begin();
+			
 			final Light light = lightList.get(lightId);
 
 			if (light != null) {
@@ -188,7 +192,7 @@ public class LightService extends BaseService {
 					light.setPowerState(OFF.equals(powerState));
 				}
 
-				em.getTransaction().commit();
+				
 
 				sendMessageToDevice(powerState, light, dimValue, dimUrl);
 			}

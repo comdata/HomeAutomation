@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -29,6 +30,7 @@ import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.HTTPHelper;
 import cm.homeautomation.services.ir.InfraredService;
 import cm.homeautomation.services.light.LightService;
+import io.quarkus.runtime.Startup;
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
@@ -39,7 +41,8 @@ import io.vertx.core.eventbus.EventBus;
  * @author mertins
  *
  */
-@Singleton
+@ApplicationScoped
+@Startup
 @Path("actor")
 public class ActorService extends BaseService {
 

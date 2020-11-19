@@ -3,13 +3,15 @@ package cm.homeautomation.mqtt.topicrecorder;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.MQTTTopic;
+import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.ConsumeEvent;
@@ -23,15 +25,16 @@ import lombok.extern.log4j.Log4j2;
  *
  */
 @Log4j2
-@Singleton
+@ApplicationScoped
+@Startup
 public class MQTTTopicRecorder {
 
 	@Inject
 	EntityManager em;
-	
+
 	@Inject
 	ConfigurationService configurationService;
-	
+
 	private static List<String> topicList = new ArrayList<>();
 
 	void startup(@Observes StartupEvent event) {
@@ -40,6 +43,7 @@ public class MQTTTopicRecorder {
 	}
 
 	@ConsumeEvent(value = "MQTTTopicEvent", blocking = true)
+	@Transactional
 	public void receiverMQTTTopicEvents(MQTTTopicEvent event) {
 
 		@NonNull
@@ -48,11 +52,10 @@ public class MQTTTopicRecorder {
 
 		if (!topicList.contains(topic)) {
 
-			em.getTransaction().begin();
 			MQTTTopic mqttTopic = new MQTTTopic(topic);
 
 			em.persist(mqttTopic);
-			em.getTransaction().commit();
+
 			log.debug("MQTT topic created. Topic: " + topic);
 
 			topicList.add(topic);

@@ -15,6 +15,7 @@ import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
+import javax.transaction.Transactional;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -69,7 +70,7 @@ public class ZigbeeMQTTReceiver {
 
 	@Inject
 	ConfigurationService configurationService;
-	
+
 	@Inject
 	Sensors sensors;
 
@@ -270,6 +271,7 @@ public class ZigbeeMQTTReceiver {
 		}
 	}
 
+	@Transactional
 	private void recordBatteryLevel(ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
 		if ("Battery".equals(zigbeeDevice.getPowerSource())) {
 			LogManager.getLogger(this.getClass()).debug("Device is battery powered");
@@ -331,6 +333,7 @@ public class ZigbeeMQTTReceiver {
 
 	}
 
+	@Transactional
 	private void recordBatteryLevelForDevice(ZigBeeDevice zigbeeDevice, int batteryLevel) {
 
 		List<Sensor> sensorList = em
@@ -347,9 +350,7 @@ public class ZigbeeMQTTReceiver {
 			sensor.setSensorType("battery");
 			sensor.setShowData(true);
 
-			em.getTransaction().begin();
 			em.persist(sensor);
-			em.getTransaction().commit();
 
 			recordBatteryLevelForDevice(zigbeeDevice, batteryLevel);
 		} else {
@@ -364,7 +365,9 @@ public class ZigbeeMQTTReceiver {
 			saveRequest.setSensorData(sensorData);
 			try {
 				sensors.saveSensorData(saveRequest);
-			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException | NotSupportedException e) {
+			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException | RollbackException
+					| HeuristicMixedException | HeuristicRollbackException | SystemException
+					| NotSupportedException e) {
 				LogManager.getLogger(this.getClass()).error(e);
 			}
 
@@ -405,7 +408,9 @@ public class ZigbeeMQTTReceiver {
 			saveRequest.setSensorData(sensorData);
 			try {
 				sensorsService.saveSensorData(saveRequest);
-			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException | NotSupportedException e) {
+			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException | RollbackException
+					| HeuristicMixedException | HeuristicRollbackException | SystemException
+					| NotSupportedException e) {
 				LogManager.getLogger(this.getClass()).error(e);
 			}
 
@@ -445,9 +450,11 @@ public class ZigbeeMQTTReceiver {
 			saveRequest.setSensorData(sensorData);
 			try {
 				sensors.saveSensorData(saveRequest);
-			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException | NotSupportedException e) {
+			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException | RollbackException
+					| HeuristicMixedException | HeuristicRollbackException | SystemException
+					| NotSupportedException e) {
 				LogManager.getLogger(this.getClass()).error(e);
-			} 
+			}
 
 		}
 	}
