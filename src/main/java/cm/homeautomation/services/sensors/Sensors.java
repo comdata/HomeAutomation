@@ -66,6 +66,9 @@ public class Sensors extends BaseService {
 	@Inject
 	DeviceService deviceService;
 
+	@Inject
+	InfluxDBClient influxDBClient;
+
 	class DataLoadThread extends Thread {
 		private SensorDatas sensorDatas;
 		private final EntityManager em;
@@ -588,7 +591,6 @@ public class Sensors extends BaseService {
 	}
 
 	public void saveToInflux(SensorData sensorData) {
-		InfluxDBClient influxDBClient = influxDBService.getClient();
 
 		try (WriteApi writeApi = influxDBClient.getWriteApi()) {
 

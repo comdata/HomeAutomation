@@ -1,6 +1,8 @@
 package cm.homeautomation.db;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Produces;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -25,14 +27,10 @@ public class InfluxDBService {
 	@ConfigProperty(name = "influx.bucket")
 	String bucket;
 
-	private InfluxDBClient influxDBClient;
-
-	void startup(@Observes StartupEvent event) {
-		influxDBClient = InfluxDBClientFactory.create(serverURL, token.toCharArray(), org, bucket);
+	@ApplicationScoped
+	InfluxDBClient produceService() {
+		return InfluxDBClientFactory.create(serverURL, token.toCharArray(), org, bucket);
 	}
 	
-	public InfluxDBClient getClient() {
-		return influxDBClient;
-	}
 
 }

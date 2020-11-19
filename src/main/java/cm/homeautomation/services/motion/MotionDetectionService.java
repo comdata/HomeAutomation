@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
@@ -29,6 +28,9 @@ public class MotionDetectionService extends BaseService {
 
 	@Inject
 	ConfigurationService configurationService;
+	
+	@Inject
+	InfluxDBClient influxDBClient;
 
 	@ConsumeEvent(value = "MotionEvent", blocking = true)
 	@Transactional
@@ -76,7 +78,7 @@ public class MotionDetectionService extends BaseService {
 
 	@ConsumeEvent(value = "MotionEvent", blocking = true)
 	public void saveToInflux(MotionEvent motionEvent) {
-		InfluxDBClient influxDBClient = influxDBService.getClient();
+		
 
 		try (WriteApi writeApi = influxDBClient.getWriteApi()) {
 

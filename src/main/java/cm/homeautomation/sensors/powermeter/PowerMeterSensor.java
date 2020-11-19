@@ -62,6 +62,9 @@ public class PowerMeterSensor {
 	ConfigurationService configurationService;
 	
 	@Inject UserTransaction transaction;
+	
+	@Inject
+	InfluxDBClient influxDBClient;
 
 	/**
 	 * perform compression by aggregating the data for one hour blocks
@@ -144,7 +147,6 @@ public class PowerMeterSensor {
 	}
 
 	public void saveToInflux(PowerMeterPing powerMeterPing) {
-		InfluxDBClient influxDBClient = influxDBService.getClient();
 
 		try (WriteApi writeApi = influxDBClient.getWriteApi()) {
 
