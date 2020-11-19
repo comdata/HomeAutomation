@@ -4,11 +4,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.apache.log4j.LogManager;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+@ApplicationScoped
 public class SingleJobClass implements Job {
 
 	public SingleJobClass() {
