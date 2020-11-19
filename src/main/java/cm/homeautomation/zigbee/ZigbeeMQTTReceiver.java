@@ -282,6 +282,7 @@ public class ZigbeeMQTTReceiver {
 		}
 	}
 
+	@Transactional
 	private void recordLinkQuality(ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
 
 		JsonNode linkQualityNode = messageObject.get("linkquality");
