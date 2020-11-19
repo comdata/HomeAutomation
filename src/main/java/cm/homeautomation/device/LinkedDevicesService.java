@@ -2,21 +2,21 @@ package cm.homeautomation.device;
 
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.LinkedDevices;
 
 public class LinkedDevicesService {
 
-	
-	public Map<Long, String> getLinkedDevice(Long id) {
+	@Inject
+	EntityManager em;
 
-		EntityManager em = EntityManagerService.getManager();
+	public Map<Long, String> getLinkedDevice(Long id) {
 
 		LinkedDevices linkedDevice = em.find(LinkedDevices.class, id);
 
 		return linkedDevice.getLinkedDevices();
 	}
-	
+
 }

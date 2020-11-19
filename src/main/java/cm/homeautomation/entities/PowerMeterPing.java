@@ -10,11 +10,9 @@ import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.eclipse.persistence.annotations.Index;
-
 @Entity
-@Index(name = "ix_timestamp", columnNames = { "timestamp", "powerCounter" })
-@Index(name = "ix_timestamp_compress", columnNames = { "timestamp", "powerCounter", "compressed" })
+//@Index(name = "ix_timestamp", columnNames = { "timestamp", "powerCounter" })
+//@Index(name = "ix_timestamp_compress", columnNames = { "timestamp", "powerCounter", "compressed" })
 public class PowerMeterPing {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

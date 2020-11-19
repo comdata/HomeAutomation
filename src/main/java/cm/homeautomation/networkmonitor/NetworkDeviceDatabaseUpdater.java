@@ -11,7 +11,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.log4j.LogManager;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.NetworkDevice;
 import io.quarkus.runtime.Startup;
 import io.quarkus.vertx.ConsumeEvent;
@@ -23,6 +23,12 @@ public class NetworkDeviceDatabaseUpdater {
 
 	@Inject
 	EventBus bus;
+	
+	@Inject
+	EntityManager em;
+	
+	@Inject
+	ConfigurationService configurationService;
 	
 	@ConsumeEvent(value = "NetworkScanResult", blocking = true)
 	public void handleNetworkScanResult(NetworkScanResult result) {
@@ -45,8 +51,6 @@ public class NetworkDeviceDatabaseUpdater {
 	@ConsumeEvent(value = "NetworkScannerHostFoundMessage", blocking = true)
 	public void handleNetworkDeviceFound(NetworkScannerHostFoundMessage foundHostMessage) {
 		final NetworkDevice networkDevice = foundHostMessage.getHost();
-
-		final EntityManager em = EntityManagerService.getManager();
 		List<NetworkDevice> resultList = null;
 
 		final String mac = networkDevice.getMac();

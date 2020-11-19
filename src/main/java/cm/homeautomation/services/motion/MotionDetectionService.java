@@ -10,7 +10,7 @@ import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.WriteApi;
 import com.influxdb.client.domain.WritePrecision;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.InfluxDBService;
 import cm.homeautomation.entities.MotionDetection;
 import cm.homeautomation.services.base.BaseService;
@@ -22,10 +22,16 @@ public class MotionDetectionService extends BaseService {
     @Inject
 	InfluxDBService influxDBService;
 
+    @Inject
+	EntityManager em;
+	
+	@Inject
+	ConfigurationService configurationService;
+    
 	@ConsumeEvent(value = "MotionEvent", blocking = true)
 	public void registerMotionEvent(final MotionEvent motionEvent) {
 
-		EntityManager em = EntityManagerService.getManager();
+		
 
 		final boolean state = motionEvent.isState();
 

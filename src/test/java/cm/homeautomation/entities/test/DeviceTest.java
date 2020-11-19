@@ -7,7 +7,7 @@ import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import cm.homeautomation.db.EntityManagerService;
+
 import cm.homeautomation.entities.Device;
 import cm.homeautomation.entities.Room;
 

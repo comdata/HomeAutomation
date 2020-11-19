@@ -10,8 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.eclipse.persistence.annotations.Index;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
@@ -23,11 +21,11 @@ public class CameraImageHistory {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Index(name="ix_camera")
+	//@Index(name="ix_camera")
 	@ManyToOne
 	private Camera camera;
 	
-	@Index(name="ix_date")
+	//@Index(name="ix_date")
 	private Date dateTaken;
 
 	@XmlTransient

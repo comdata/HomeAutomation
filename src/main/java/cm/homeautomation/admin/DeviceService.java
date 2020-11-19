@@ -2,12 +2,12 @@ package cm.homeautomation.admin;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Device;
 import cm.homeautomation.entities.Room;
 import cm.homeautomation.services.base.BaseService;
@@ -22,6 +22,9 @@ import cm.homeautomation.services.base.GenericStatus;
 @Path("admin/device")
 public class DeviceService extends BaseService {
 
+	@Inject
+	EntityManager em;
+	
 	/**
 	 * list all devices
 	 * 
@@ -30,8 +33,6 @@ public class DeviceService extends BaseService {
 	@GET
 	@Path("getAll")
 	public List<Device> getAll() {
-
-		EntityManager em = EntityManagerService.getManager();
 
 		@SuppressWarnings("unchecked")
 		List<Device> resultList = em.createQuery("select d from Device d").getResultList();
@@ -52,7 +53,6 @@ public class DeviceService extends BaseService {
 	public GenericStatus createDevice(@PathParam("roomId") Long roomId, @PathParam("name") String name,
 			@PathParam("mac") String mac) {
 
-		EntityManager em = EntityManagerService.getManager();
 
 		Room room = (Room) em.createQuery("select r from Room r where r.id=:roomId").setParameter("roomId", roomId)
 				.getSingleResult();
@@ -86,7 +86,6 @@ public class DeviceService extends BaseService {
 	public GenericStatus update(@PathParam("roomId") String roomId, @PathParam("name") String name,
 			@PathParam("oldMac") String mac, @PathParam("newMac") String newMac) {
 
-		EntityManager em = EntityManagerService.getManager();
 
 		Device device = (Device) em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac)
 				.getSingleResult();
@@ -111,7 +110,6 @@ public class DeviceService extends BaseService {
 	@GET
 	@Path("delete/{mac}")
 	public GenericStatus delete(@PathParam("mac") String mac) {
-		EntityManager em = EntityManagerService.getManager();
 
 		@SuppressWarnings("unchecked")
 		List<Device> devices = em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac)

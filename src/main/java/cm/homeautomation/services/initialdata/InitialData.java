@@ -1,21 +1,27 @@
 package cm.homeautomation.services.initialdata;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.services.base.BaseService;
 
 @Path("initialdata/")
 public class InitialData extends BaseService{
-
+	@Inject
+	EntityManager em;
+	
+	@Inject
+	ConfigurationService configurationService;
+	
 	@GET
 	@Path("load")
 	public void createData() {
-		EntityManager em = EntityManagerService.getManager();
+		
 
 		em.getTransaction().begin();
 		em.createQuery("delete from SensorData" ).executeUpdate();

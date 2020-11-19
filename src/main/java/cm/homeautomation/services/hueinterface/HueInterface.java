@@ -11,7 +11,7 @@ import javax.ws.rs.Path;
 
 import org.jboss.logging.Logger;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.HueDevice;
 import cm.homeautomation.entities.HueDeviceType;
 import cm.homeautomation.entities.Light;
@@ -21,7 +21,6 @@ import cm.homeautomation.entities.Switch;
 import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.events.RemoteControlEvent.EventType;
-
 import cm.homeautomation.services.actor.ActorPressSwitchEvent;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
@@ -39,6 +38,12 @@ public class HueInterface extends BaseService {
 	LightService lightService;
 
 	@Inject
+	EntityManager em;
+	
+	@Inject
+	ConfigurationService configurationService;
+	
+	@Inject
 	EventBus bus;
 
 	private static final Logger LOG = Logger.getLogger(HueInterface.class);
@@ -51,7 +56,7 @@ public class HueInterface extends BaseService {
 	@POST
 	@Path("send")
 	public GenericStatus handleMessage(HueEmulatorMessage message) {
-		EntityManager em = EntityManagerService.getManager();
+		
 
 		String lightId = message.getLightId();
 
@@ -184,7 +189,7 @@ public class HueInterface extends BaseService {
 	}
 
 	private void handleWindowBlind(HueEmulatorMessage message, HueDevice hueDevice) {
-		EntityManager em = EntityManagerService.getManager();
+		
 
 		WindowBlind windowBlind = em.find(WindowBlind.class, hueDevice.getExternalId());
 

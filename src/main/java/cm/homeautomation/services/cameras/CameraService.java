@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -31,19 +32,27 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.LogManager;
 
 import cm.homeautomation.configuration.ConfigurationService;
-import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Camera;
 import cm.homeautomation.entities.CameraImageHistory;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
+import io.quarkus.runtime.Startup;
 import io.vertx.core.eventbus.EventBus;
 
+@ApplicationScoped
+@Startup
 @Path("camera/")
 public class CameraService extends BaseService {
 
 	@Inject
 	EventBus bus;
 	private static CameraService instance;
+	
+	@Inject
+	EntityManager em;
+	
+	@Inject
+	ConfigurationService configurationService;
 
 	public CameraService() {
 		instance = this;
@@ -52,7 +61,7 @@ public class CameraService extends BaseService {
 	@Path("getAll")
 	@GET
 	public List<Camera> getAll() {
-		EntityManager em = EntityManagerService.getManager();
+		
 
 		@SuppressWarnings("unchecked")
 		List<Camera> resultList = em.createQuery("select c from Camera c where c.enabled=true").getResultList();
@@ -72,7 +81,7 @@ public class CameraService extends BaseService {
 	@Produces("image/jpeg")
 	@GET
 	public Response getSnapshot(@PathParam("id") Long id) {
-		EntityManager em = EntityManagerService.getManager();
+	
 
 		List<Camera> resultList = em.createQuery("select c from Camera c where c.id=:id", Camera.class)
 				.setParameter("id", id).getResultList();
@@ -98,16 +107,15 @@ public class CameraService extends BaseService {
 		return Response.serverError().build();
 	}
 
-	public static void prepareCameraImage(String[] args) {
-		EntityManager em = EntityManagerService.getManager();
-		@SuppressWarnings("unchecked")
-		List<Camera> resultList = em.createQuery("select c from Camera c where c.id=:id")
+	public void prepareCameraImage(String[] args) {
+		
+		List<Camera> resultList = em.createQuery("select c from Camera c where c.id=:id", Camera.class)
 				.setParameter("id", Long.parseLong(args[0])).getResultList();
 		if (resultList != null) {
 
 			for (Camera camera : resultList) {
 				if (camera.isEnabled()) {
-					singleCameraUpdate(args, em, camera);
+					singleCameraUpdateInternal(args, em, camera);
 				}
 			}
 		}
@@ -129,7 +137,7 @@ public class CameraService extends BaseService {
 			camera.setImageSnapshot(cameraSnapshot);
 			em.merge(camera);
 
-			String historyEnabledString = ConfigurationService.getConfigurationProperty("camera", "historyEnabled");
+			String historyEnabledString = configurationService.getConfigurationProperty("camera", "historyEnabled");
 
 			if (historyEnabledString == null || "".equals(historyEnabledString)) {
 				historyEnabledString = "false";
@@ -160,8 +168,8 @@ public class CameraService extends BaseService {
 		}
 	}
 
-	private static void cleanOldImages() {
-		EntityManager em = EntityManagerService.getManager();
+	private void cleanOldImages() {
+		
 
 		em.getTransaction().begin();
 
@@ -195,7 +203,7 @@ public class CameraService extends BaseService {
 			@Override
 			public void write(OutputStream output) throws IOException, WebApplicationException {
 
-				EntityManager em = EntityManagerService.getManager();
+				
 
 				Camera camera = em.find(Camera.class, id);
 

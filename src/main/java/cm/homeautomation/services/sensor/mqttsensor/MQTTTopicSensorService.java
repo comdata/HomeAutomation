@@ -2,12 +2,13 @@ package cm.homeautomation.services.sensor.mqttsensor;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.MQTTTopic;
 import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.Sensor;
@@ -23,11 +24,17 @@ import cm.homeautomation.services.base.GenericStatus;
 @Path("sensor/mqtt")
 public class MQTTTopicSensorService extends BaseService {
 
+	@Inject
+	EntityManager em;
+
+	@Inject
+	ConfigurationService configurationService;
+	
 	@GET
 	@Path("getAll")
 	public List<MQTTTopic> getAllTopics() {
 
-		EntityManager em = EntityManagerService.getManager();
+		
 
 		return em.createQuery("select t from MQTTTopic t", MQTTTopic.class).getResultList();
 	}
@@ -37,7 +44,7 @@ public class MQTTTopicSensorService extends BaseService {
 	public GenericStatus createSensorForTopic(@PathParam("topicId") Long topicId, @PathParam("roomId") Long roomId,
 			@PathParam("sensorName") String sensorName) {
 
-		EntityManager em = EntityManagerService.getManager();
+		
 
 		em.getTransaction().begin();
 

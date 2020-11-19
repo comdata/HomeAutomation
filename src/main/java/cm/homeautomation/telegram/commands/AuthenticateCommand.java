@@ -2,6 +2,7 @@ package cm.homeautomation.telegram.commands;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import org.apache.logging.log4j.LogManager;
@@ -14,21 +15,24 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 import org.telegram.telegrambots.logging.BotLogger;
 
 import cm.homeautomation.configuration.ConfigurationService;
-import cm.homeautomation.db.EntityManagerService;
+
 import cm.homeautomation.entities.TelegramUser;
 
 public class AuthenticateCommand extends BotCommand {
 
 	private static final String LOGTAG = "AUTHENTICATECOMMAND";
 	private String authSecret;
-	private EntityManager em;
+
+	@Inject
+	EntityManager em;
+
+	@Inject
+	ConfigurationService configurationService;
 
 	public AuthenticateCommand() {
 		super("authenticate", "Authenticate using a token");
 
-		authSecret = ConfigurationService.getConfigurationProperty("telegram", "auth-secret");
-
-		em = EntityManagerService.getManager();
+		authSecret = configurationService.getConfigurationProperty("telegram", "auth-secret");
 	}
 
 	@Override
@@ -47,7 +51,8 @@ public class AuthenticateCommand extends BotCommand {
 
 				answer.setText("user authenticated: " + user.getId());
 
-				List<TelegramUser> result = em.createQuery("select u from TelegramUser u where u.userId=:userId", TelegramUser.class)
+				List<TelegramUser> result = em
+						.createQuery("select u from TelegramUser u where u.userId=:userId", TelegramUser.class)
 						.setParameter("userId", userId).getResultList();
 
 				if (result == null || result.isEmpty()) {

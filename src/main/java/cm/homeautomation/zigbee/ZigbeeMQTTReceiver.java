@@ -1,4 +1,3 @@
-
 package cm.homeautomation.zigbee;
 
 import java.util.Arrays;
@@ -7,10 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -20,7 +24,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cm.homeautomation.configuration.ConfigurationService;
-import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DimmableLight;
 import cm.homeautomation.entities.Light;
 import cm.homeautomation.entities.MQTTSwitch;
@@ -34,7 +37,6 @@ import cm.homeautomation.entities.ZigbeeLight;
 import cm.homeautomation.entities.ZigbeeMotionSensor;
 import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.events.RemoteControlEvent.EventType;
-
 import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
@@ -43,13 +45,15 @@ import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
 import cm.homeautomation.services.windowblind.WindowBlindPositionEvent;
 import cm.homeautomation.zigbee.entities.ZigBeeTradfriRemoteControl;
+import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 import lombok.NonNull;
 
-@Singleton
+@Startup
+@ApplicationScoped
 public class ZigbeeMQTTReceiver {
 	@Inject
 	MQTTSender mqttSender;
@@ -60,11 +64,20 @@ public class ZigbeeMQTTReceiver {
 	@Inject
 	Sensors sensorsService;
 
+	@Inject
+	EntityManager em;
+
+	@Inject
+	ConfigurationService configurationService;
+	
+	@Inject
+	Sensors sensors;
+
 	private static final String SELECT_S_FROM_SENSOR_S_WHERE_S_EXTERNAL_ID_EXTERNAL_ID_AND_S_SENSOR_TYPE_SENSOR_TYPE = "select s from Sensor s where s.externalId=:externalId and s.sensorType=:sensorType";
 	private static final int brightnessChangeIncrement = 10;
 
 	@NonNull
-	private String zigbeeMqttTopic = ConfigurationService.getConfigurationProperty("zigbee", "mqttTopic");
+	private String zigbeeMqttTopic;
 
 	private Map<String, ZigBeeDevice> deviceMap = new HashMap<>();
 
@@ -74,7 +87,9 @@ public class ZigbeeMQTTReceiver {
 	}
 
 	void startup(@Observes StartupEvent event) {
+		zigbeeMqttTopic = configurationService.getConfigurationProperty("zigbee", "mqttTopic");
 		init();
+
 	}
 
 	private void updateDeviceList() {
@@ -191,8 +206,6 @@ public class ZigbeeMQTTReceiver {
 
 		String click = messageObject.get("click").asText();
 
-		EntityManager em = EntityManagerService.getManager();
-
 		String ieeeAddr = zigbeeDevice.getIeeeAddr();
 		ZigBeeTradfriRemoteControl existingRemote = getOrCreateRemote(zigbeeDevice, em, ieeeAddr);
 
@@ -208,8 +221,6 @@ public class ZigbeeMQTTReceiver {
 	}
 
 	private void handleWindowBlind(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
-
-		EntityManager em = EntityManagerService.getManager();
 
 		List<WindowBlind> resultList = em
 				.createQuery("select w from WindowBlind w where w.externalId=:externalId", WindowBlind.class)
@@ -248,8 +259,6 @@ public class ZigbeeMQTTReceiver {
 
 		if (updateNode != null) {
 			boolean updateAvailable = updateNode.asBoolean();
-
-			EntityManager em = EntityManagerService.getManager();
 
 			em.getTransaction().begin();
 
@@ -291,8 +300,6 @@ public class ZigbeeMQTTReceiver {
 	private void handleWaterSensor(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
 		JsonNode leakNode = messageObject.get("leak");
 
-		EntityManager em = EntityManagerService.getManager();
-
 		if (leakNode != null) {
 
 			boolean leakNodeBoolean = leakNode.asBoolean();
@@ -325,7 +332,6 @@ public class ZigbeeMQTTReceiver {
 	}
 
 	private void recordBatteryLevelForDevice(ZigBeeDevice zigbeeDevice, int batteryLevel) {
-		EntityManager em = EntityManagerService.getManager();
 
 		List<Sensor> sensorList = em
 				.createQuery(SELECT_S_FROM_SENSOR_S_WHERE_S_EXTERNAL_ID_EXTERNAL_ID_AND_S_SENSOR_TYPE_SENSOR_TYPE,
@@ -357,8 +363,8 @@ public class ZigbeeMQTTReceiver {
 			sensorData.setDateTime(new Date());
 			saveRequest.setSensorData(sensorData);
 			try {
-				Sensors.getInstance().saveSensorData(saveRequest);
-			} catch (SensorDataLimitViolationException e) {
+				sensors.saveSensorData(saveRequest);
+			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException | NotSupportedException e) {
 				LogManager.getLogger(this.getClass()).error(e);
 			}
 
@@ -366,7 +372,6 @@ public class ZigbeeMQTTReceiver {
 	}
 
 	private void recordLinkQualityForDevice(ZigBeeDevice zigbeeDevice, int linkQuality) {
-		EntityManager em = EntityManagerService.getManager();
 
 		String linkQualityType = "linkquality";
 		List<Sensor> sensorList = em
@@ -400,7 +405,7 @@ public class ZigbeeMQTTReceiver {
 			saveRequest.setSensorData(sensorData);
 			try {
 				sensorsService.saveSensorData(saveRequest);
-			} catch (SensorDataLimitViolationException e) {
+			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException | NotSupportedException e) {
 				LogManager.getLogger(this.getClass()).error(e);
 			}
 
@@ -408,7 +413,6 @@ public class ZigbeeMQTTReceiver {
 	}
 
 	private void recordIlluminanceLevelForDevice(ZigBeeDevice zigbeeDevice, int illuminance) {
-		EntityManager em = EntityManagerService.getManager();
 
 		List<Sensor> sensorList = em
 				.createQuery(SELECT_S_FROM_SENSOR_S_WHERE_S_EXTERNAL_ID_EXTERNAL_ID_AND_S_SENSOR_TYPE_SENSOR_TYPE,
@@ -440,17 +444,15 @@ public class ZigbeeMQTTReceiver {
 			sensorData.setDateTime(new Date());
 			saveRequest.setSensorData(sensorData);
 			try {
-				Sensors.getInstance().saveSensorData(saveRequest);
-			} catch (SensorDataLimitViolationException e) {
+				sensors.saveSensorData(saveRequest);
+			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException | NotSupportedException e) {
 				LogManager.getLogger(this.getClass()).error(e);
-			}
+			} 
 
 		}
 	}
 
 	private void handlePowerSocket(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
-
-		EntityManager em = EntityManagerService.getManager();
 
 		List<MQTTSwitch> existingDeviceList = em
 				.createQuery("select sw from MQTTSwitch sw where sw.externalId=:externalId", MQTTSwitch.class)
@@ -495,8 +497,6 @@ public class ZigbeeMQTTReceiver {
 		// {"battery":100,"voltage":3015,"illuminance":558,"illuminance_lux":558,"linkquality":18,"occupancy":false}
 
 		JsonNode occupancyNode = messageObject.get("occupancy");
-
-		EntityManager em = EntityManagerService.getManager();
 
 		if (occupancyNode != null) {
 
@@ -561,7 +561,6 @@ public class ZigbeeMQTTReceiver {
 		}
 
 		String ieeeAddr = zigbeeDevice.getIeeeAddr();
-		EntityManager em = EntityManagerService.getManager();
 
 		ZigbeeLight existingLight = em.find(ZigbeeLight.class, zigbeeDevice.getIeeeAddr());
 		// create new light if not existing
@@ -634,8 +633,6 @@ public class ZigbeeMQTTReceiver {
 		JsonNode actionNode = messageObject.get("action");
 		if (actionNode != null) {
 			String action = actionNode.asText();
-
-			EntityManager em = EntityManagerService.getManager();
 
 			String ieeeAddr = zigbeeDevice.getIeeeAddr();
 			ZigBeeTradfriRemoteControl existingRemote = getOrCreateRemote(zigbeeDevice, em, ieeeAddr);
@@ -750,7 +747,7 @@ public class ZigbeeMQTTReceiver {
 
 	@Scheduled(every = "120s")
 	public void initDeviceList() {
-		final EntityManager em = EntityManagerService.getManager();
+		final
 
 		List<ZigBeeDevice> devices = em.createQuery("select zb from ZigBeeDevice zb", ZigBeeDevice.class)
 				.getResultList();
@@ -771,8 +768,6 @@ public class ZigbeeMQTTReceiver {
 
 			List<ZigBeeDevice> deviceList = mapper.readValue(message, new TypeReference<List<ZigBeeDevice>>() {
 			});
-
-			EntityManager em = EntityManagerService.getManager();
 
 			for (ZigBeeDevice zigBeeDevice : deviceList) {
 				try {

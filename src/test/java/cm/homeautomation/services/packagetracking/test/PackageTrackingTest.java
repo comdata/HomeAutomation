@@ -12,7 +12,7 @@ import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.Test;
 
-import cm.homeautomation.db.EntityManagerService;
+
 import cm.homeautomation.entities.Package;
 import cm.homeautomation.entities.PackageHistory;
 import cm.homeautomation.entities.PackageHistoryPK;
@@ -28,7 +28,7 @@ class PackageTrackingTest {
 
     @Test
     void testPackagesGetAllOpenWithEntity() {
-        EntityManager em = EntityManagerService.getManager();
+        
 
         em.getTransaction().begin();
 
@@ -54,7 +54,7 @@ class PackageTrackingTest {
 
     @Test
     void testPackagesGetAllOpenWithEntityAndHistory() {
-        EntityManager em = EntityManagerService.getManager();
+        
 
         em.getTransaction().begin();
 

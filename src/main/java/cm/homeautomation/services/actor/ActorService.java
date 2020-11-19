@@ -16,7 +16,7 @@ import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.DimmableLight;
 import cm.homeautomation.entities.Light;
 import cm.homeautomation.entities.MQTTSwitch;
@@ -50,6 +50,11 @@ public class ActorService extends BaseService {
 	@Inject
 	EventBus bus;
 
+	@Inject
+	EntityManager em;
+	
+	@Inject
+	ConfigurationService configurationService;
 	
 
 	public void performSwitch(String targetStatus, String switchId) {
@@ -161,12 +166,10 @@ public class ActorService extends BaseService {
 
 	public ActorService() {
 		instance=this;
-		initSwitchList();
 	}
 
 	@Scheduled(every = "120s")
 	public void initSwitchList() {
-		final EntityManager em = EntityManagerService.getManager();
 
 		final List<Room> rooms = em.createQuery("select r from Room r", Room.class).getResultList();
 
@@ -247,7 +250,6 @@ public class ActorService extends BaseService {
 	@GET
 	@Path("thermostat/forroom/{room}")
 	public SwitchStatuses getThermostatStatusesForRoom(@PathParam("room") final String room) {
-		final EntityManager em = EntityManagerService.getManager();
 		final SwitchStatuses switchStatuses = new SwitchStatuses();
 
 		@SuppressWarnings("unchecked")
@@ -306,8 +308,6 @@ public class ActorService extends BaseService {
 			@PathParam("status") String targetStatus) {
 
 		targetStatus = targetStatus.toUpperCase();
-
-		final EntityManager em = EntityManagerService.getManager();
 
 		final Switch singleSwitch = (Switch) em.createQuery("select sw from Switch sw where sw.id=:switchId")
 				.setParameter("switchId", Float.parseFloat(switchId)).getSingleResult();

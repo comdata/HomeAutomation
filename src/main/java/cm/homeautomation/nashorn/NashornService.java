@@ -11,7 +11,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import cm.homeautomation.configuration.ConfigurationService;
-import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.ScriptingEntity;
 import cm.homeautomation.services.base.BaseService;
 
@@ -21,10 +20,15 @@ public class NashornService extends BaseService {
 	@Inject
 	NashornRunner nashornRunner;
 	
+	@Inject
+	EntityManager em;
+	
+	@Inject
+	ConfigurationService configurationService;
+	
 	@GET
 	@Path("getAll")
 	public List<ScriptingEntity> getAllEntities() {
-		final EntityManager em = EntityManagerService.getNewManager();
 
 		final List<ScriptingEntity> resultList = em.createQuery("select se from ScriptingEntity se", ScriptingEntity.class).getResultList();
 
@@ -34,8 +38,6 @@ public class NashornService extends BaseService {
 	@GET
 	@Path("run/{id}")
 	public void run(@PathParam("id") Long id) throws ScriptException {
-		final EntityManager em = EntityManagerService.getNewManager();
-
 		final ScriptingEntity scriptingEntity = em.find(ScriptingEntity.class, id);
 
 		nashornRunner.run(scriptingEntity.getJsCode());
@@ -44,8 +46,6 @@ public class NashornService extends BaseService {
 	@POST
 	@Path("update")
 	public void updateEntity(ScriptingEntity entity) {
-		final EntityManager em = EntityManagerService.getNewManager();
-
 		em.getTransaction().begin();
 		ScriptingEntity modifiedEntity = entity;
 
@@ -70,7 +70,7 @@ public class NashornService extends BaseService {
 		String group = "nashorn";
 		String property = "enabled";
 		String value = "true";
-		ConfigurationService.createOrUpdate(group, property, value);
+		configurationService.createOrUpdate(group, property, value);
 		nashornRunner.enableEngine(value);
 	}
 	
@@ -80,7 +80,7 @@ public class NashornService extends BaseService {
 		String group = "nashorn";
 		String property = "enabled";
 		String value = "true";
-		ConfigurationService.createOrUpdate(group, property, value);
+		configurationService.createOrUpdate(group, property, value);
 		nashornRunner.stopEngine();
 	}
 }

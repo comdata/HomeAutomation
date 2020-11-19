@@ -14,7 +14,6 @@ import javax.persistence.NoResultException;
 
 import org.dhcp4java.DHCPPacket;
 
-import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DashButtonRange;
 import cm.homeautomation.eventbus.EventObject;
 import io.quarkus.runtime.Startup;
@@ -26,6 +25,9 @@ public class DashButtonService {
 
 	@Inject
 	EventBus bus;
+	
+	@Inject
+	EntityManager em;
 
 	HashMap<String, Date> timeFilter = new HashMap<>();
 
@@ -105,8 +107,6 @@ public class DashButtonService {
 			throw new IllegalArgumentException("MAC is NULL");
 		}
 		final String vendorCode = mac.substring(0, 6);
-
-		final EntityManager em = EntityManagerService.getManager();
 
 		try {
 			final DashButtonRange singleResult = em

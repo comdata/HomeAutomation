@@ -26,7 +26,7 @@ import org.quartz.JobKey;
 import org.quartz.SchedulerException;
 import org.quartz.TriggerBuilder;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.Task;
 import cm.homeautomation.services.base.BaseService;
 import io.quarkus.runtime.StartupEvent;
@@ -37,6 +37,12 @@ public class SchedulerService extends BaseService {
 
 	Map<Long, JobKey> jobMap = new HashedMap<>();
 
+	@Inject
+	EntityManager em;
+
+	@Inject
+	ConfigurationService configurationService;
+	
 	@Inject
 	org.quartz.Scheduler quartz;
 
@@ -54,7 +60,7 @@ public class SchedulerService extends BaseService {
 
 	private void initialize() throws SchedulerException {
 
-		EntityManager em = EntityManagerService.getManager();
+		
 
 		List<Task> tasks = em.createQuery("select t from Task t", Task.class)
 				.setHint("javax.persistence.cache.storeMode", "REFRESH").getResultList();
@@ -130,7 +136,7 @@ public class SchedulerService extends BaseService {
 	@GET
 	@Path("sampleTask")
 	public void createSampleTask() {
-		EntityManager em = EntityManagerService.getManager();
+		
 
 		Task task = new Task();
 		List<String> arguments = new ArrayList<>();
@@ -148,7 +154,7 @@ public class SchedulerService extends BaseService {
 	@Path("import")
 	public void importScheduleFile() {
 
-		EntityManager em = EntityManagerService.getManager();
+		
 
 		File cronFile = new File("/Users/christoph/git/HomeAutomation/schedule.cron");
 

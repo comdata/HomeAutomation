@@ -10,7 +10,6 @@ import javax.script.ScriptException;
 
 import org.apache.logging.log4j.LogManager;
 
-import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.DashButton;
 import cm.homeautomation.entities.RemoteControl.RemoteType;
 import cm.homeautomation.entities.ScriptingEntity;
@@ -35,6 +34,9 @@ public class DashButtonEventListener {
 	EventBus bus;
 	
 	@Inject
+	EntityManager em;
+	
+	@Inject
 	NashornRunner nashornRunner;
 
 	@ConsumeEvent(value = "EventObject", blocking = true)
@@ -44,20 +46,18 @@ public class DashButtonEventListener {
 
 		if (data instanceof DashButtonEvent) {
 
-			EntityManager em = EntityManagerService.getManager();
-
 			final DashButtonEvent dbEvent = (DashButtonEvent) data;
 
 			final String mac = dbEvent.getMac().replace(":", "").toUpperCase();
 
-			DashButton dashButton = findOrCreateDashbutton(em, mac);
+			DashButton dashButton = findOrCreateDashbutton(mac);
 
-			handleDashbuttonAction(em, dashButton);
+			handleDashbuttonAction(dashButton);
 
 		}
 	}
 
-	private void handleDashbuttonAction(EntityManager em, DashButton dashButton) {
+	private void handleDashbuttonAction(DashButton dashButton) {
 		if (dashButton != null) {
 			boolean dashButtonState = dashButton.isState();
 			
@@ -117,7 +117,7 @@ public class DashButtonEventListener {
 		}
 	}
 
-	private DashButton findOrCreateDashbutton(EntityManager em, final String mac) {
+	private DashButton findOrCreateDashbutton(final String mac) {
 
 		final List<DashButton> resultList = em
 				.createQuery("select db from DashButton db where db.mac=:mac", DashButton.class)

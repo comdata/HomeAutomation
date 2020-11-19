@@ -2,30 +2,30 @@ package cm.homeautomation.device;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
-import org.apache.logging.log4j.LogManager;
-
-import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Device;
 import cm.homeautomation.entities.Room;
 
+@ApplicationScoped
 public class DeviceService {
-
-	private static final String MAC = "Mac: {}";
+	
+	@Inject
+	EntityManager em;
 
 	private DeviceService() {
 		// do nothing
 	}
 
-	public static Device getDeviceForMac(String mac) {
+	public Device getDeviceForMac(String mac) {
 		if (mac == null) {
 			return null;
 		}
 
 		try {
-			final EntityManager em = EntityManagerService.getManager();
 			mac = mac.toLowerCase();
 //			LogManager.getLogger(DeviceService.class).info(MAC, mac);
 			final List<Device> devices = em.createQuery("select d from Device d where d.mac=:mac", Device.class)
@@ -41,7 +41,7 @@ public class DeviceService {
 		}
 	}
 
-	public static Room getRoomForMac(final String mac) {
+	public Room getRoomForMac(final String mac) {
 		try {
 			final Device device = getDeviceForMac(mac);
 
@@ -58,7 +58,7 @@ public class DeviceService {
 		}
 	}
 
-	public static Long getRoomIdForMac(final String mac) {
+	public Long getRoomIdForMac(final String mac) {
 		Long roomId = null;
 
 		final Room room = getRoomForMac(mac);

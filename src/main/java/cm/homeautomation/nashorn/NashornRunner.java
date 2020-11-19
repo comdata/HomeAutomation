@@ -2,6 +2,7 @@ package cm.homeautomation.nashorn;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.script.Invocable;
@@ -13,7 +14,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import cm.homeautomation.configuration.ConfigurationService;
-import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.ScriptingEntity;
 import cm.homeautomation.eventbus.EventObject;
 import io.quarkus.vertx.ConsumeEvent;
@@ -26,9 +26,15 @@ public class NashornRunner {
 	private static final String TRUE = "true";
 
 	private ScriptEngine engine = null;
+	
+	@Inject
+	EntityManager em;
+	
+	@Inject
+	ConfigurationService configurationService;
 
 	public NashornRunner() {
-		String nashornEnabled = ConfigurationService.getConfigurationProperty(NASHORN, ENABLED);
+		String nashornEnabled = configurationService.getConfigurationProperty(NASHORN, ENABLED);
 
 		enableEngine(nashornEnabled);
 	}
@@ -44,8 +50,6 @@ public class NashornRunner {
 	public void handleEvent(final EventObject event) {
 		Logger logger = LogManager.getLogger(this.getClass());
 		if (engine != null) {
-
-			final EntityManager em = EntityManagerService.getManager();
 
 			final List<ScriptingEntity> resultList = em
 					.createQuery("select se from ScriptingEntity se where se.scriptType=:scriptType",

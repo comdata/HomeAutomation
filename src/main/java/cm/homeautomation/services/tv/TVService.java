@@ -14,7 +14,7 @@ import javax.ws.rs.PathParam;
 import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.configuration.ConfigurationService;
-import cm.homeautomation.db.EntityManagerService;
+
 import cm.homeautomation.entities.PhoneCallEvent;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.eventbus.EventObject;
@@ -39,15 +39,24 @@ public class TVService extends BaseService {
 	private static boolean muted = false;
 
 	@Inject
+	EntityManager em;
+
+	@Inject
+	ConfigurationService configurationService;
+
+	@Inject
 	EventBus bus;
 
 	public static void getCurrentStatus(final String[] args) {
+		instance.internalGetCurrentStatus(args);
+
+	}
+
+	public void internalGetCurrentStatus(final String[] args) {
 		final boolean aliveStatus = getInstance().getAliveStatus();
 
 		LogManager.getLogger(TVService.class).debug("TVService got arguments: {}", Arrays.toString(args));
 		LogManager.getLogger(TVService.class).debug("TV status: {}", aliveStatus);
-
-		final EntityManager em = EntityManagerService.getManager();
 
 		@SuppressWarnings("unchecked")
 		final List<Switch> resultList = (em
@@ -81,7 +90,7 @@ public class TVService extends BaseService {
 
 	public TVService() {
 		tvBinding = new PanasonicTVBinding();
-		tvIp = ConfigurationService.getConfigurationProperty("tv", "tvIp");
+		tvIp = configurationService.getConfigurationProperty("tv", "tvIp");
 		TVService.setInstance(this);
 	}
 

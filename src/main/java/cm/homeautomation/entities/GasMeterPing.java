@@ -9,8 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.eclipse.persistence.annotations.Index;
-
 @Entity
 public class GasMeterPing {
 
@@ -18,7 +16,7 @@ public class GasMeterPing {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Index(name = "ix_timestamp")
+	//@Index(name = "ix_timestamp")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date timestamp;
 

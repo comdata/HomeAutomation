@@ -5,12 +5,14 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.CalendarEntry;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
@@ -21,7 +23,21 @@ import net.fortuna.ical4j.model.PropertyList;
 import net.fortuna.ical4j.model.component.CalendarComponent;
 import net.fortuna.ical4j.util.MapTimeZoneCache;
 
+@Singleton
 public class TripsICalReader {
+	
+	@Inject
+	EntityManager em;
+
+	@Inject
+	ConfigurationService configurationService;
+
+	private static TripsICalReader instance;
+
+	public TripsICalReader() {
+		instance=this;
+	}
+	
 	private static final DateTimeFormatter DATE_FORMATTER = new DateTimeFormatterBuilder().appendYear(4, 4)
 			.appendMonthOfYear(2).appendDayOfMonth(2).appendHourOfDay(2).appendMinuteOfHour(2).appendSecondOfMinute(2).toFormatter();
 
@@ -30,10 +46,14 @@ public class TripsICalReader {
 	}
 
 	public static void loadTrips(String[] args) throws IOException, ParserException {
+		instance.internalLoadTrips(args);
+	}
+		
+	public void internalLoadTrips(String[] args) throws IOException, ParserException {
 		System.setProperty("net.fortuna.ical4j.timezone.cache.impl", MapTimeZoneCache.class.getName());
 		CalendarBuilder calendarBuilder = new CalendarBuilder();
 
-		EntityManager em = EntityManagerService.getManager();
+		
 		em.getTransaction().begin();
 		// em.createQuery("delete from CalendarEntry").executeUpdate();
 

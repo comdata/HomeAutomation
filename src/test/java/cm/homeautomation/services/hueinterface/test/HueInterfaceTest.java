@@ -11,7 +11,7 @@ import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.Test;
 
-import cm.homeautomation.db.EntityManagerService;
+
 import cm.homeautomation.entities.HueDevice;
 import cm.homeautomation.services.hueinterface.HueEmulatorMessage;
 import io.quarkus.test.junit.QuarkusTest;
@@ -22,7 +22,7 @@ class HueInterfaceTest {
 
 	@Test
 	void testBasicSend() {
-        EntityManager em = EntityManagerService.getManager();
+        
 
 		HueEmulatorMessage hueEmulatorMessage = new HueEmulatorMessage();
 

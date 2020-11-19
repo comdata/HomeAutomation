@@ -27,12 +27,15 @@ public class MQTTSender {
 
 	@Inject
 	EventBus bus;
+	
+	@Inject
+	ConfigurationService configurationService;
 
 	private void initClient() {
 		if (publishClient == null) {
 
-			String host = ConfigurationService.getConfigurationProperty("mqtt", "host");
-			int port = Integer.parseInt(ConfigurationService.getConfigurationProperty("mqtt", "port"));
+			String host = configurationService.getConfigurationProperty("mqtt", "host");
+			int port = Integer.parseInt(configurationService.getConfigurationProperty("mqtt", "port"));
 
 			publishClient = MqttClient.builder().useMqttVersion3().identifier(UUID.randomUUID().toString())
 					.serverHost(host).serverPort(port).automaticReconnect().applyAutomaticReconnect().buildAsync();

@@ -9,7 +9,6 @@ import javax.persistence.EntityManager;
 
 import org.apache.logging.log4j.LogManager;
 
-import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.FHEMDevice;
 import cm.homeautomation.entities.FHEMDevice.FHEMDeviceType;
 import io.quarkus.vertx.ConsumeEvent;
@@ -25,20 +24,23 @@ public class FHEMDataReceiver {
 
 	@Inject
 	FHEMBatteryStateReceiver batteryStateReceiver;
-	
-	@ConsumeEvent(value="FHEMDataEvent", blocking=true)
+
+	@Inject
+	FHEMDeviceDataReceiver fhemDeviceDataReceiver;
+
+	@Inject
+	EntityManager em;
+
+	@ConsumeEvent(value = "FHEMDataEvent", blocking = true)
 	public void handleFHEMData(FHEMDataEvent fhemDataEvent) {
-		String messageContent=fhemDataEvent.getPayload();
-		String topic=fhemDataEvent.getTopic();
-		
+		String messageContent = fhemDataEvent.getPayload();
+		String topic = fhemDataEvent.getTopic();
+
 		receiveFHEMData(topic, messageContent);
 	}
-	
-	
-	public  void receiveFHEMData(String topic, String messageContent) {
-//		LogManager.getLogger(FHEMDataReceiver.class).debug("FHEM message for topic: {} message: {}", topic,  messageContent);
 
-		EntityManager em = EntityManagerService.getManager();
+	public void receiveFHEMData(String topic, String messageContent) {
+//		LogManager.getLogger(FHEMDataReceiver.class).debug("FHEM message for topic: {} message: {}", topic,  messageContent);
 
 		if (topic != null) {
 			String[] topicParts = topic.split("/");
@@ -47,7 +49,8 @@ public class FHEMDataReceiver {
 
 				String device = topicParts[2];
 
-				List<FHEMDevice> resultList = em.createQuery("select f from FHEMDevice f where f.name=:name", FHEMDevice.class)
+				List<FHEMDevice> resultList = em
+						.createQuery("select f from FHEMDevice f where f.name=:name", FHEMDevice.class)
 						.setParameter("name", device).getResultList();
 
 				if (resultList != null && !resultList.isEmpty()) {
@@ -58,7 +61,7 @@ public class FHEMDataReceiver {
 					}
 				} else {
 //					LogManager.getLogger(FHEMDataReceiver.class).error("FHEM Device not found for device: {}", device);
-					createNewFHEMDevices(device);					
+					createNewFHEMDevices(device);
 				}
 
 			}
@@ -71,7 +74,7 @@ public class FHEMDataReceiver {
 		if (deviceType != null) {
 
 			batteryStateReceiver.receive(topic, messageContent, fhemDevice);
-			
+
 			switch (deviceType) {
 			case WINDOW:
 				FHEMWindowDataReceiver.receive(topic, messageContent, fhemDevice);
@@ -83,9 +86,9 @@ public class FHEMDataReceiver {
 				FHEMWindowBlindDataReceiver.receive(topic, messageContent, fhemDevice);
 				break;
 			case DEVICE:
-				FHEMDeviceDataReceiver.receive(topic, messageContent, fhemDevice);
+				fhemDeviceDataReceiver.receive(topic, messageContent, fhemDevice);
 				break;
-				
+
 			default:
 //				LogManager.getLogger(FHEMDataReceiver.class).error(
 //						"Device type: " + deviceType + " for device: " + device + " not mapped.");
@@ -97,16 +100,15 @@ public class FHEMDataReceiver {
 		}
 	}
 
-	private static void createNewFHEMDevices(String device) {
-		EntityManager em = EntityManagerService.getManager();
-		
+	private void createNewFHEMDevices(String device) {
+
 		em.getTransaction().begin();
-		
-		FHEMDevice fhemDevice=new FHEMDevice();
-		
+
+		FHEMDevice fhemDevice = new FHEMDevice();
+
 		fhemDevice.setName(device);
 		em.persist(fhemDevice);
-		
+
 		em.getTransaction().commit();
 	}
 

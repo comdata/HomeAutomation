@@ -8,6 +8,11 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -43,10 +48,13 @@ public class JSONSensorDataReceiver {
 	private static final String RECEIVED_IO_EXCEPTION = "received IOException";
 	private static final String MESSAGE_FOR_DESERIALIZATION_S = "message for deserialization: {}";
 	private static final ObjectMapper mapper = new ObjectMapper();
-	private static final Sensors sensorsService = new Sensors();
+
 	
 	@Inject
 	EventBus bus;
+	
+	@Inject
+	Sensors sensors;
 
 	@ConsumeEvent(value = "JSONDataEvent", blocking = true)
 	public void receiveSensorData(JSONDataEvent jsonDataEvent) {
@@ -80,9 +88,9 @@ public class JSONSensorDataReceiver {
 			classList.add(IRData.class);
 
 			if (sensorData instanceof SensorDataSaveRequest) {
-				sensorsService.saveSensorData((SensorDataSaveRequest) sensorData);
+				sensors.saveSensorData((SensorDataSaveRequest) sensorData);
 			} else if (sensorData instanceof SensorDataRoomSaveRequest) {
-				sensorsService.save((SensorDataRoomSaveRequest) sensorData);
+				sensors.save((SensorDataRoomSaveRequest) sensorData);
 			} else {
 				for (Class<?> clazz : classList) {
 					if (clazz.isInstance(sensorData)) {
@@ -97,6 +105,27 @@ public class JSONSensorDataReceiver {
             LogManager.getLogger(JSONSensorDataReceiver.class).error(RECEIVED_IO_EXCEPTION, e);
 		} catch (SensorDataLimitViolationException e) {
             LogManager.getLogger(JSONSensorDataReceiver.class).error(RECEIVED_SENSOR_DATA_LIMIT_VIOLATION_EXCEPTION, e);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RollbackException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (HeuristicMixedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (HeuristicRollbackException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SystemException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.eventbus.EventObject;
@@ -21,29 +21,33 @@ import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.base.HTTPHelper;
+import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
-@Singleton
+@Startup
+@ApplicationScoped
 @Path("windowBlinds/")
 public class WindowBlindService extends BaseService {
 	@Inject
 	MQTTSender mqttSender;
-	
+
 	@Inject
 	EventBus bus;
+
+	@Inject
+	EntityManager em;
+
+	@Inject
+	ConfigurationService configurationService;
 
 	private Map<Long, List<WindowBlind>> windowBlindList;
 	private Map<Long, WindowBlind> windowBlindMap;
 
 	private static final String DIMVALUE = "{DIMVALUE}";
 
-	public WindowBlindService() {
-		initWindowBlindList();
-	}
-	
 	void startup(@Observes StartupEvent event) {
 		initWindowBlindList();
 
@@ -81,7 +85,6 @@ public class WindowBlindService extends BaseService {
 	public WindowBlindsList getAll() {
 		final WindowBlindsList windowBlindsList = new WindowBlindsList();
 
-		final EntityManager em = EntityManagerService.getManager();
 		em.getTransaction().begin();
 
 		final Set<Long> windowBlindIds = windowBlindMap.keySet();
@@ -102,7 +105,6 @@ public class WindowBlindService extends BaseService {
 	public WindowBlindsList getAllForRoom(@PathParam("roomId") Long roomId) {
 		final WindowBlindsList windowBlindsList = new WindowBlindsList();
 
-		final EntityManager em = EntityManagerService.getManager();
 		em.getTransaction().begin();
 
 		final List<WindowBlind> windowBlinds = windowBlindList.get(roomId);
@@ -126,7 +128,7 @@ public class WindowBlindService extends BaseService {
 	}
 
 	public void performCalibration(Long windowBlindId) {
-		final EntityManager em = EntityManagerService.getManager();
+
 		final WindowBlind windowBlind = em.find(WindowBlind.class, windowBlindId);
 
 		if (windowBlind != null) {
@@ -146,22 +148,20 @@ public class WindowBlindService extends BaseService {
 		return new GenericStatus(true);
 	}
 
-	@ConsumeEvent(value="WindowBlindDimMessage", blocking = true)
+	@ConsumeEvent(value = "WindowBlindDimMessage", blocking = true)
 	public void callDim(WindowBlindDimMessage message) {
 		setDim(message.getWindowBlindId(), message.getValue(), message.getType(), message.getRoomId());
 	}
-	
-	@ConsumeEvent(value="WindowBlindDimMessageSimple", blocking = true)
+
+	@ConsumeEvent(value = "WindowBlindDimMessageSimple", blocking = true)
 	public void setDim(WindowBlindDimMessageSimple event) {
 		setDim(event.getWindowBlindId(), event.getValue());
 	}
-
 
 	@GET
 	@Path("setDim/{windowBlind}/{value}/{type}/{roomId}")
 	public GenericStatus setDim(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value,
 			@PathParam("type") String type, @PathParam("roomId") Long roomId) {
-		final EntityManager em = EntityManagerService.getManager();
 
 		final Runnable windowBlindThread = () -> {
 
@@ -195,7 +195,7 @@ public class WindowBlindService extends BaseService {
 				final WindowBlindStatus eventData1 = new WindowBlindStatus();
 				eventData1.setWindowBlind(singleWindowBlind1);
 				final EventObject eventObject1 = new EventObject(eventData1);
-				bus.publish("EventObject",eventObject1);
+				bus.publish("EventObject", eventObject1);
 			} else if (WindowBlind.ALL_AT_ONCE.equals(type)) {
 				final List<WindowBlind> windowBlinds = windowBlindList.get(roomId);
 
@@ -236,7 +236,6 @@ public class WindowBlindService extends BaseService {
 	@GET
 	@Path("setPosition/{windowBlind}/{value}")
 	public GenericStatus setPosition(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value) {
-		final EntityManager em = EntityManagerService.getManager();
 
 		em.getTransaction().begin();
 
@@ -248,8 +247,8 @@ public class WindowBlindService extends BaseService {
 
 		return new GenericStatus(true);
 	}
-	
-	@ConsumeEvent(value="WindowBlindPosition", blocking=true)
+
+	@ConsumeEvent(value = "WindowBlindPosition", blocking = true)
 	public void setPositionEvent(WindowBlindPositionEvent event) {
 		setPosition(event.getWindowBlindId(), event.getPosition());
 	}
@@ -277,7 +276,7 @@ public class WindowBlindService extends BaseService {
 
 	@Scheduled(every = "120s")
 	public void initWindowBlindList() {
-		final EntityManager em = EntityManagerService.getManager();
+		final
 
 		List<Room> rooms = em.createQuery("select r from Room r", Room.class).getResultList();
 

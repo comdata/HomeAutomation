@@ -9,7 +9,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.log4j.LogManager;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.NetworkDevice;
 import cm.homeautomation.entities.RemoteControl;
 import cm.homeautomation.entities.RemoteControlGroup;
@@ -31,12 +31,17 @@ public class RemoteControlEventListener {
 
 	@Inject
 	EventBus bus;
+	
+	@Inject
+	EntityManager em;
+	
+	@Inject
+	ConfigurationService configurationService;
 
 	@ConsumeEvent(value = "RemoteControlBrightnessChangeEvent", blocking = true)
 	public void subscribe(RemoteControlBrightnessChangeEvent event) {
 		String name = event.getName();
 		String technicalId = event.getTechnicalId();
-		EntityManager em = EntityManagerService.getManager();
 
 		LogManager.getLogger(this.getClass()).debug("got remote event: " + name + "/" + technicalId);
 
@@ -91,7 +96,6 @@ public class RemoteControlEventListener {
 	public void subscribe(RemoteControlEvent event) {
 		String name = event.getName();
 		String technicalId = event.getTechnicalId();
-		EntityManager em = EntityManagerService.getManager();
 
 		System.out.println("RC " + name + " " + technicalId);
 

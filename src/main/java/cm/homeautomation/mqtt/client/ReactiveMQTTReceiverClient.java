@@ -2,6 +2,7 @@ package cm.homeautomation.mqtt.client;
 
 import java.util.UUID;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -22,20 +23,25 @@ import cm.homeautomation.jeromq.server.JSONDataEvent;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.networkmonitor.NetworkScanResult;
 import cm.homeautomation.services.hueinterface.HueEmulatorMessage;
+import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import io.vertx.core.eventbus.EventBus;
 
-@Singleton
+@Startup
+@ApplicationScoped
 public class ReactiveMQTTReceiverClient {
 	private static ObjectMapper mapper = new ObjectMapper();
 
 	@Inject
 	EventBus bus;
+	
+	@Inject
+	ConfigurationService configurationService;
 
 	private void initClient() {
 
-		String host = ConfigurationService.getConfigurationProperty("mqtt", "host");
-		int port = Integer.parseInt(ConfigurationService.getConfigurationProperty("mqtt", "port"));
+		String host = configurationService.getConfigurationProperty("mqtt", "host");
+		int port = Integer.parseInt(configurationService.getConfigurationProperty("mqtt", "port"));
 
 		Mqtt3AsyncClient client = buildAClient(host, port);
 

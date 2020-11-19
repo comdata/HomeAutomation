@@ -9,10 +9,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -21,7 +28,6 @@ import com.influxdb.client.WriteApi;
 import com.influxdb.client.domain.WritePrecision;
 
 import cm.homeautomation.configuration.ConfigurationService;
-import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.db.InfluxDBService;
 import cm.homeautomation.entities.PowerMeterPing;
 import cm.homeautomation.eventbus.EventObject;
@@ -40,7 +46,7 @@ import io.vertx.core.eventbus.EventBus;
  * @author christoph
  *
  */
-@Singleton
+@ApplicationScoped
 public class PowerMeterSensor {
 
 	@Inject
@@ -48,20 +54,33 @@ public class PowerMeterSensor {
 
 	@Inject
 	InfluxDBService influxDBService;
+	
+	@Inject
+	EntityManager em;
+	
+	@Inject
+	ConfigurationService configurationService;
+	
+	@Inject UserTransaction transaction;
 
 	/**
 	 * perform compression by aggregating the data for one hour blocks
 	 * 
 	 * @param args
+	 * @throws SystemException 
+	 * @throws NotSupportedException 
+	 * @throws HeuristicRollbackException 
+	 * @throws HeuristicMixedException 
+	 * @throws RollbackException 
+	 * @throws IllegalStateException 
+	 * @throws SecurityException 
 	 */
-	public static void compress(final String[] args) {
+	public void compress(final String[] args) throws NotSupportedException, SystemException, SecurityException, IllegalStateException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		if ((args != null) && (args.length > 0)) {
 
 			final int numberOfEntriesToCompress = Integer.parseInt(args[0]);
 
-			final EntityManager em = EntityManagerService.getNewManager();
-
-			em.getTransaction().begin();
+			transaction.begin();
 
 			@SuppressWarnings("unchecked")
 			final List<Object[]> rawResultList = em.createNativeQuery(
@@ -93,7 +112,7 @@ public class PowerMeterSensor {
 				em.persist(compressPowerPing);
 			}
 
-			em.getTransaction().commit();
+			transaction.commit();
 
 		} else {
 			LogManager.getLogger(PowerMeterSensor.class)
@@ -152,7 +171,6 @@ public class PowerMeterSensor {
 		if (data instanceof PowerMeterData) {
 
 			try {
-				final EntityManager em = EntityManagerService.getManager();
 
 				final PowerMeterData powerData = (PowerMeterData) data;
 
@@ -162,10 +180,10 @@ public class PowerMeterSensor {
 				powerMeterPing.setPowerCounter(powerData.getPowermeter());
 				powerMeterPing.setTimestamp(new Date());
 
-				em.getTransaction().begin();
+				transaction.begin();
 
 				em.persist(powerMeterPing);
-				em.getTransaction().commit();
+				transaction.commit();
 				
 				saveToInflux(powerMeterPing);
 
@@ -175,7 +193,7 @@ public class PowerMeterSensor {
 
 			try {
 				final boolean parseBoolean = Boolean
-						.parseBoolean(ConfigurationService.getConfigurationProperty("power", "sendSummaryData"));
+						.parseBoolean(configurationService.getConfigurationProperty("power", "sendSummaryData"));
 				if (parseBoolean) {
 					final boolean overLimit = requestRateLimiter
 							.overLimitWhenIncremented(PowerMeterData.class.getName());
@@ -210,7 +228,6 @@ public class PowerMeterSensor {
 	}
 
 	private void sendNewData() {
-		final EntityManager em = EntityManagerService.getManager();
 
 		final BigDecimal oneMinute = runQueryForBigDecimal(em,
 				"select sum(POWERCOUNTER)/10000*60 from POWERMETERPING where TIMESTAMP >= now() - INTERVAL 1 MINUTE;");

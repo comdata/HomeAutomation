@@ -8,10 +8,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import javax.enterprise.context.control.ActivateRequestContext;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -23,7 +30,7 @@ import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.WriteApi;
 import com.influxdb.client.domain.WritePrecision;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.InfluxDBService;
 import cm.homeautomation.device.DeviceService;
 import cm.homeautomation.entities.Sensor;
@@ -51,6 +58,17 @@ public class Sensors extends BaseService {
 	@Inject
 	InfluxDBService influxDBService;
 
+	@Inject
+	EntityManager em;
+
+	@Inject
+	ConfigurationService configurationService;
+
+	@Inject
+	DeviceService deviceService;
+	
+	@Inject UserTransaction transaction;
+
 	class DataLoadThread extends Thread {
 		private SensorDatas sensorDatas;
 		private final EntityManager em;
@@ -74,7 +92,30 @@ public class Sensors extends BaseService {
 
 		@Override
 		public void run() {
-			loadSensorData(sensorDatas, em, now, sensor);
+			try {
+				loadSensorData(sensorDatas, em, now, sensor);
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalStateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NotSupportedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SystemException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (RollbackException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (HeuristicMixedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (HeuristicRollbackException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			this.latch.countDown();
 		}
 
@@ -94,11 +135,9 @@ public class Sensors extends BaseService {
 
 	private static Map<Long, Sensor> sensorsList = new HashMap<>();
 	private static Map<Long, SensorData> sensorDataMap = new HashMap<>();
-	private EntityManager em;
 
 	public Sensors() {
 		instance = this;
-		em = EntityManagerService.getManager();
 	}
 
 	/**
@@ -142,13 +181,19 @@ public class Sensors extends BaseService {
 	 * @param em
 	 * @param now
 	 * @param sensor
+	 * @throws SystemException 
+	 * @throws NotSupportedException 
+	 * @throws HeuristicRollbackException 
+	 * @throws HeuristicMixedException 
+	 * @throws RollbackException 
+	 * @throws IllegalStateException 
+	 * @throws SecurityException 
 	 */
 	public void loadSensorData(final SensorDatas sensorDatas, final EntityManager em, final Date now,
-			final Sensor sensor) {
+			final Sensor sensor) throws NotSupportedException, SystemException, SecurityException, IllegalStateException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 
-		final EntityManager emSensor = em;
 
-		emSensor.getTransaction().begin();
+		transaction.begin();
 
 		final SensorValues sensorData = new SensorValues();
 
@@ -158,7 +203,7 @@ public class Sensors extends BaseService {
 
 		final Date twoDaysAgo = new Date((new Date()).getTime() - (86400 * 1000));
 
-		final List<SensorData> data = emSensor.createQuery(queryString, SensorData.class).setParameter("sensor", sensor)
+		final List<SensorData> data = em.createQuery(queryString, SensorData.class).setParameter("sensor", sensor)
 				.setParameter("timeframe", twoDaysAgo).getResultList();
 
 		String latestValue = "";
@@ -224,7 +269,7 @@ public class Sensors extends BaseService {
 
 		sensorDatas.getSensorData().add(sensorData);
 
-		emSensor.getTransaction().commit();
+		transaction.commit();
 
 	}
 
@@ -275,10 +320,9 @@ public class Sensors extends BaseService {
 
 	@POST
 	@Path("rfsniffer")
-	public void registerRFEvent(final RFEvent event) throws SensorDataLimitViolationException {
+	public void registerRFEvent(final RFEvent event) throws SensorDataLimitViolationException, NotSupportedException, SystemException, SecurityException, IllegalStateException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		final String code = Integer.toString(event.getCode());
 //        LogManager.getLogger(this.getClass()).info("RF Event: " + code);
-		final EntityManager em = EntityManagerService.getManager();
 
 		try {
 			final Switch sw = em
@@ -286,7 +330,7 @@ public class Sensors extends BaseService {
 					.setParameter("code", code).getSingleResult();
 
 			if (sw != null) {
-				em.getTransaction().begin();
+				transaction.begin();
 
 				String status = "";
 
@@ -308,7 +352,7 @@ public class Sensors extends BaseService {
 				sw.setLatestStatusFrom(new Date());
 
 				em.persist(sw);
-				em.getTransaction().commit();
+				transaction.commit();
 
 				// save switch changes
 				final Sensor sensor = sw.getSensor();
@@ -342,12 +386,10 @@ public class Sensors extends BaseService {
 
 		Long roomID = request.getRoomID();
 
-		final EntityManager em = EntityManagerService.getManager();
-
 		final String mac = request.getMac();
 		if ((roomID == null) && (mac != null)) {
 
-			roomID = DeviceService.getRoomIdForMac(mac);
+			roomID = deviceService.getRoomIdForMac(mac);
 			if (roomID == null) {
 				// mac given but no room found
 				return new GenericStatus(false);
@@ -410,8 +452,8 @@ public class Sensors extends BaseService {
 
 	@POST
 	@Path("forroom/save")
-	public void saveSensorData(final SensorDataSaveRequest request) throws SensorDataLimitViolationException {
-		final EntityManager em = EntityManagerService.getManager();
+	@ActivateRequestContext
+	public void saveSensorData(final SensorDataSaveRequest request) throws SensorDataLimitViolationException, SecurityException, IllegalStateException, RollbackException, HeuristicMixedException, HeuristicRollbackException, SystemException, NotSupportedException {
 
 		Sensor sensor = null;
 		if (request.getSensorId() != null) {
@@ -441,7 +483,7 @@ public class Sensors extends BaseService {
 //                LogManager.getLogger(this.getClass())
 //                        .debug("found no sensor for technical type: " + sensorTechnicalType);
 
-				em.getTransaction().begin();
+				transaction.begin();
 
 				sensor = new Sensor();
 				sensor.setSensorTechnicalType(sensorTechnicalType);
@@ -450,7 +492,7 @@ public class Sensors extends BaseService {
 
 				em.persist(sensor);
 
-				em.getTransaction().commit();
+				transaction.commit();
 
 				List<Sensor> sensorsNew = em
 						.createQuery("select s from Sensor s where s.sensorTechnicalType=:sensorTechnicalType",
@@ -469,7 +511,7 @@ public class Sensors extends BaseService {
 
 		if (sensor != null) {
 //            LogManager.getLogger(this.getClass()).debug("found a sensor. id: " + sensor.getId());
-			em.getTransaction().begin();
+			transaction.begin();
 
 			final SensorData sensorData;
 			Long sensorId = sensor.getId();
@@ -549,7 +591,7 @@ public class Sensors extends BaseService {
 //                LogManager.getLogger(this.getClass()).debug("Committing data: " + sensorData.getValue());
 			}
 
-			em.getTransaction().commit();
+			transaction.commit();
 		} else {
 //            LogManager.getLogger(this.getClass()).error("sensor is null");
 		}
@@ -586,7 +628,12 @@ public class Sensors extends BaseService {
 		sensorData.setDateTime(timestamp);
 		sensorDataSaveRequest.setSensorData(sensorData);
 
-		saveSensorData(sensorDataSaveRequest);
+		try {
+			saveSensorData(sensorDataSaveRequest);
+		} catch (SecurityException | IllegalStateException | SensorDataLimitViolationException | RollbackException
+				| HeuristicMixedException | HeuristicRollbackException | SystemException | NotSupportedException e) {
+			return false;
+		}
 
 		return true;
 	}
