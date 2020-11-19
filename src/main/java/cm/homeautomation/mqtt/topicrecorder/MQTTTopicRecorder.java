@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.MQTTTopic;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
@@ -25,6 +26,12 @@ import lombok.extern.log4j.Log4j2;
 @Singleton
 public class MQTTTopicRecorder {
 
+	@Inject
+	EntityManager em;
+	
+	@Inject
+	ConfigurationService configurationService;
+	
 	private static List<String> topicList = new ArrayList<>();
 
 	void startup(@Observes StartupEvent event) {
@@ -40,7 +47,6 @@ public class MQTTTopicRecorder {
 		log.debug(topic);
 
 		if (!topicList.contains(topic)) {
-			EntityManager em = EntityManagerService.getManager();
 
 			em.getTransaction().begin();
 			MQTTTopic mqttTopic = new MQTTTopic(topic);
@@ -57,7 +63,6 @@ public class MQTTTopicRecorder {
 
 	@Scheduled(every = "120s")
 	public void initTopicMap() {
-		final EntityManager em = EntityManagerService.getManager();
 
 		List<MQTTTopic> mqttTopicList = em.createQuery("select t from MQTTTopic t ", MQTTTopic.class).getResultList();
 		List<String> topicListTemp = new ArrayList<>();

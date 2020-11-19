@@ -4,19 +4,26 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.apache.log4j.Logger;
 
 import cm.homeautomation.configuration.ConfigurationService;
 
 //@AutoCreateInstance
+@ApplicationScoped
 public class CustomOutputStream extends OutputStream {
 
+	@Inject
+	ConfigurationService configurationService;
+	
 	private static CustomOutputStream instance;
 	private Logger logger = Logger.getLogger(this.getClass());
 
 	public CustomOutputStream() {
 		
-		if ("true".equalsIgnoreCase(ConfigurationService.getConfigurationProperty("logging", "logPrintStream"))) {
+		if ("true".equalsIgnoreCase(configurationService.getConfigurationProperty("logging", "logPrintStream"))) {
 			System.setOut(new PrintStream(this));
 		}
 		

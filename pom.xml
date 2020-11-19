@@ -20,7 +20,7 @@
 		<quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
 		<quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
 		<quarkus.platform.version>1.9.2.Final</quarkus.platform.version>
-		<quarkus-plugin.version>1.9.2.Final</quarkus-plugin.version><!--${quarkus.platform.version}-->
+		<quarkus-plugin.version>1.9.2.Final</quarkus-plugin.version><!--${quarkus.platform.version} -->
 		<ratelimitj-inmemory.version>0.7.0-RC1</ratelimitj-inmemory.version>
 		<ratelimitj-inmemory-core.version>0.7.0-RC3</ratelimitj-inmemory-core.version>
 		<surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
@@ -101,7 +101,6 @@
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
-			<version>${jodatime.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mnode.ical4j</groupId>
@@ -173,10 +172,7 @@
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-smallrye-health</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.quarkus</groupId>
-			<artifactId>quarkus-jdbc-mariadb</artifactId>
-		</dependency>
+
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-resteasy-jackson</artifactId>
@@ -186,11 +182,19 @@
 			<artifactId>quarkus-smallrye-metrics</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-narayana-jta</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-hibernate-orm-panache</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.hivemq</groupId>
 			<artifactId>hivemq-mqtt-client</artifactId>
 			<version>1.2.1</version>
 		</dependency>
-		  <dependency>
+		<dependency>
 			<groupId>com.purej</groupId>
 			<artifactId>purej-vminspect</artifactId>
 			<version>1.6.1</version>
@@ -234,11 +238,19 @@
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-undertow</artifactId>
 		</dependency>
+
+		<!-- Hibernate ORM specific dependencies -->
 		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>org.eclipse.persistence.jpa</artifactId>
-			<version>${eclipselink.version}</version>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-hibernate-orm</artifactId>
 		</dependency>
+
+		<!-- JDBC driver dependencies -->
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-jdbc-mariadb</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -280,6 +292,19 @@
 	</repositories>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.jboss.jandex</groupId>
+				<artifactId>jandex-maven-plugin</artifactId>
+				<version>1.0.8</version>
+				<executions>
+					<execution>
+						<id>make-index</id>
+						<goals>
+							<goal>jandex</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>io.quarkus</groupId>
 				<artifactId>quarkus-maven-plugin</artifactId>

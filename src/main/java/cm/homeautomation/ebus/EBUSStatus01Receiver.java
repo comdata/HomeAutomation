@@ -2,6 +2,8 @@ package cm.homeautomation.ebus;
 
 import java.util.Date;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.NoResultException;
 
@@ -14,7 +16,7 @@ import io.quarkus.vertx.ConsumeEvent;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@Singleton
+@ApplicationScoped
 public class EBUSStatus01Receiver {
 
 	private static final String SOLARPUMP = "SOLARPUMP";
@@ -40,11 +42,13 @@ public class EBUSStatus01Receiver {
 	private static final String SENSOR_NOT_DEFINED_FOR_S = "Sensor not defined for: {}";
 	private static final String EMPTY_EVENT_RECEIVED = "EBUS Empty event received.";
 
+	@Inject
+	Sensors sensorsInstance;
+
 	@ConsumeEvent(value = "EventObject", blocking = true)
 	public void receive(EventObject eventObject) {
 		if (eventObject.getData() instanceof EBusMessageEvent) {
 			EBusMessageEvent messageEvent = (EBusMessageEvent) eventObject.getData();
-			Sensors sensorsInstance = Sensors.getInstance();
 
 			if (EBUSD_BAI_STATUS01.equals(messageEvent.getTopic())) {
 				String[] technicalNames = { HEATINGTEMP, RETURNTEMP, OUTSIDETEMP, WARMWATERTEMP, STORAGETEMP,

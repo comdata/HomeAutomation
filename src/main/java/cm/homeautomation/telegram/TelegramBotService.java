@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
 
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -16,32 +17,34 @@ import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import cm.homeautomation.configuration.ConfigurationService;
-import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.TelegramFilter;
 import cm.homeautomation.entities.TelegramUser;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.messages.base.HumanMessageGenerationInterface;
+import io.quarkus.runtime.Startup;
+import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
 @Singleton
+@Startup
 public class TelegramBotService {
 
 	@Inject
 	EventBus bus;
 
+	@Inject
+	EntityManager em;
+
+	@Inject
+	ConfigurationService configurationService;
+
 	private static final String USER = "user";
 	private static final String TOKEN = "token";
 	private static final String TELEGRAM = "telegram";
-	private static TelegramBotService instance;
 
-	public static TelegramBotService getInstance() {
-		if (instance == null) {
-			instance = new TelegramBotService();
-		}
-		return instance;
-	}
+
 
 	private static TelegramBotsApi telegramBotApi;
 
@@ -49,12 +52,10 @@ public class TelegramBotService {
 	private static boolean enabled;
 	private static List<TelegramFilter> filterList;
 
-	public TelegramBotService() {
-
-		enabled = Boolean.parseBoolean(ConfigurationService.getConfigurationProperty(TELEGRAM, "enabled"));
-
+	public void startup(@Observes StartupEvent event) {
+				enabled = Boolean.parseBoolean(configurationService.getConfigurationProperty(TELEGRAM, "enabled"));
 		if (enabled) {
-			instance = this;
+
 			init();
 		}
 	}
@@ -75,7 +76,7 @@ public class TelegramBotService {
 
 					// message must not be set to ignore and not be filtered
 					if (!filtered) {
-						TelegramBotService.getInstance().sendMessage(messageString);
+						sendMessage(messageString);
 					}
 				}
 
@@ -112,7 +113,6 @@ public class TelegramBotService {
 
 	@Scheduled(every = "120s")
 	public void updateTelegramFilter() {
-		EntityManager em = EntityManagerService.getManager();
 
 		filterList = em.createQuery("select f from TelegramFilter f", TelegramFilter.class).getResultList();
 	}
@@ -120,8 +120,8 @@ public class TelegramBotService {
 	private void registerBot() {
 
 		try {
-			String token = ConfigurationService.getConfigurationProperty(TELEGRAM, TOKEN);
-			String user = ConfigurationService.getConfigurationProperty(TELEGRAM, USER);
+			String token = configurationService.getConfigurationProperty(TELEGRAM, TOKEN);
+			String user = configurationService.getConfigurationProperty(TELEGRAM, USER);
 			bot = new CommandsHandler(user, token);
 			telegramBotApi.registerBot(bot);
 
@@ -138,7 +138,6 @@ public class TelegramBotService {
 	 * @param message
 	 */
 	public void sendMessage(final String message) {
-		final EntityManager em = EntityManagerService.getManager();
 
 		final List<TelegramUser> resultList = em.createQuery("select t from TelegramUser t", TelegramUser.class)
 				.getResultList();

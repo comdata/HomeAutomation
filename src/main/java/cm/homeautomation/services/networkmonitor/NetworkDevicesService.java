@@ -13,7 +13,7 @@ import javax.ws.rs.PathParam;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.DashButton;
 import cm.homeautomation.entities.NetworkDevice;
 import cm.homeautomation.mqtt.client.MQTTSendEvent;
@@ -36,12 +36,16 @@ public class NetworkDevicesService extends BaseService {
 	@Inject
 	EventBus bus;
 
+	@Inject
+	EntityManager em;
+
+	@Inject
+	ConfigurationService configurationService;
+
 	@GET
 	@Path("delete/{name}/{ip}/{mac}")
 	public GenericStatus delete(@PathParam("name") final String name, @PathParam("ip") final String ip,
 			@PathParam("mac") final String mac) {
-
-		EntityManager em = EntityManagerService.getManager();
 
 		em.getTransaction().begin();
 
@@ -56,9 +60,8 @@ public class NetworkDevicesService extends BaseService {
 	@Path("getAll")
 	@GET
 	public List<NetworkDevice> readAll() {
-		final EntityManager em = EntityManagerService.getManager();
-		@SuppressWarnings("unchecked")
-		List<NetworkDevice> resultList = em.createQuery("select n from NetworkDevice n").getResultList();
+		
+		List<NetworkDevice> resultList = em.createQuery("select n from NetworkDevice n", NetworkDevice.class).getResultList();
 
 		if (resultList == null) {
 			resultList = new ArrayList<>();

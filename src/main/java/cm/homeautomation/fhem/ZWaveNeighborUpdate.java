@@ -2,6 +2,8 @@ package cm.homeautomation.fhem;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
@@ -13,6 +15,9 @@ import cm.homeautomation.services.base.HTTPHelper.HTTPHelperCallback;
 
 public class ZWaveNeighborUpdate {
 
+	@Inject
+	ConfigurationService configurationService;
+
 	public class ZWaveGetDevicesCallback implements HTTPHelperCallback {
 
 		@Override
@@ -22,7 +27,7 @@ public class ZWaveNeighborUpdate {
 				final HttpEntity entity = response.getEntity();
 				final String body = EntityUtils.toString(entity);
 
-				final String perDeviceUrl = ConfigurationService.getConfigurationProperty("zwave", "perDeviceUrl");
+				final String perDeviceUrl = configurationService.getConfigurationProperty("zwave", "perDeviceUrl");
 
 				final String[] devices = body.split(" ");
 
@@ -87,7 +92,7 @@ public class ZWaveNeighborUpdate {
 
 	private void getDevices() {
 
-		final String devicesUrl = ConfigurationService.getConfigurationProperty("zwave", "devicesUrl");
+		final String devicesUrl = configurationService.getConfigurationProperty("zwave", "devicesUrl");
 
 		HTTPHelper.performHTTPRequest(devicesUrl, new ZWaveGetDevicesCallback());
 	}

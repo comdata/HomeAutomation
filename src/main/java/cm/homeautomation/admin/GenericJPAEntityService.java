@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
@@ -16,11 +18,13 @@ import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
-import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.services.base.BaseService;
 
 @Path("admin/entityservice")
 public class GenericJPAEntityService extends BaseService {
+	
+	@Inject
+	EntityManager em;
 
 	@GET
 	@Path("getclasses")
@@ -50,11 +54,7 @@ public class GenericJPAEntityService extends BaseService {
 		return classes;
 	}
 
-	@GET
-	@Path("flushCache")
-	public void flushCache() {
-		EntityManagerService.getManager().getEntityManagerFactory().getCache().evictAll();
-	}
+
 
 	
 }

@@ -13,7 +13,7 @@ import javax.ws.rs.PathParam;
 
 import org.apache.log4j.LogManager;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.DimmableLight;
 import cm.homeautomation.entities.Light;
 import cm.homeautomation.entities.RGBLight;
@@ -30,9 +30,15 @@ import io.vertx.core.eventbus.EventBus;
 public class LightService extends BaseService {
 	@Inject
 	MQTTSender mqttSender;
-	
-	@Inject      
+
+	@Inject
 	EventBus bus;
+
+	@Inject
+	EntityManager em;
+
+	@Inject
+	ConfigurationService configurationService;
 
 	private static final String ON = "on";
 	private static final String OFF = "off";
@@ -89,7 +95,6 @@ public class LightService extends BaseService {
 
 		light.setName(name);
 
-		final EntityManager em = EntityManagerService.getManager();
 		em.getTransaction().begin();
 
 		final Room room = rooms.get(roomId);
@@ -151,7 +156,6 @@ public class LightService extends BaseService {
 		final Runnable requestThread = () -> {
 			String powerState = getPowerStateFromDimValue(dimPercentValue);
 
-			final EntityManager em = EntityManagerService.getManager();
 			em.getTransaction().begin();
 			final Light light = lightList.get(lightId);
 
@@ -265,7 +269,6 @@ public class LightService extends BaseService {
 	@Path("color/{lightId}/{hex}")
 	public GenericStatus setColor(@PathParam(LIGHT_ID) final long lightId, @PathParam("hex") final String hex) {
 		final String shortHex = hex.substring(1);
-		EntityManager em = EntityManagerService.getManager();
 
 		RGBLight rgbLight = findRGBLight(lightId);
 
@@ -321,8 +324,6 @@ public class LightService extends BaseService {
 		Map<Long, List<Light>> lightRoomListTemp = new HashMap<>();
 		Map<String, Light> lightExternalListTemp = new HashMap<>();
 		Map<Long, Light> lightListTemp = new HashMap<>();
-
-		final EntityManager em = EntityManagerService.getManager();
 
 		final List<Room> roomsList = em.createQuery("select r from Room r", Room.class).getResultList();
 

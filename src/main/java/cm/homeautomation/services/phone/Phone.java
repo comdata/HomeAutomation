@@ -19,7 +19,6 @@ import javax.ws.rs.PathParam;
 import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.configuration.ConfigurationService;
-import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.PhoneCallEvent;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
@@ -38,6 +37,12 @@ public class Phone extends BaseService {
 
 	@Inject
 	EventBus bus;
+	
+	@Inject
+	EntityManager em;
+
+	@Inject
+	ConfigurationService configurationService;
 	
 	/**
 	 * accepts call events from external systems and creates a {@link EventObject}
@@ -59,7 +64,7 @@ public class Phone extends BaseService {
 
 		PhoneCallEvent phoneCallEvent = new PhoneCallEvent(event, mode, internalNumber, externalNumber);
 
-		EntityManager em = EntityManagerService.getManager();
+		
 		em.getTransaction().begin();
 
 		em.persist(phoneCallEvent);
@@ -80,17 +85,18 @@ public class Phone extends BaseService {
 	@Path("getCallList")
 	public List<PhoneCallEvent> getCallList() {
 
-		EntityManager em = EntityManagerService.getManager();
+		
 
 		return em.createQuery("select p from PhoneCallEvent p order by p.timestamp desc", PhoneCallEvent.class).getResultList();
 
 	}
 
+	//TODO
 	/*
 	 * preparation for watching for call events internally
 	 */
-	public static void main(String[] argv) {
-		String configurationProperty = ConfigurationService.getConfigurationProperty("phone", "phoneserverip");
+	public  void main(String[] argv) {
+		String configurationProperty = configurationService.getConfigurationProperty("phone", "phoneserverip");
 		new Phone().getCall(configurationProperty, 1012);
 
 		while (true) {

@@ -2,29 +2,30 @@ package cm.homeautomation.admin;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.services.base.GenericStatus;
 
 @Path("admin/sensor")
 public class SensorAdminService {
+	@Inject
+	EntityManager em;
 
 	@GET
 	@Path("create/{roomId}/{name}/{type}")
 	public GenericStatus createSensor(@PathParam("roomId") Long roomId, @PathParam("name") String name,
 			@PathParam("type") String type) {
 		GenericStatus genericStatus = new GenericStatus(true);
-		EntityManager em = EntityManagerService.getManager();
 
 		@SuppressWarnings("unchecked")
-		List<Room> rooms = em.createQuery("select r from Room r where r.id=:roomId")
-				.setParameter("roomId", roomId).getResultList();
+		List<Room> rooms = em.createQuery("select r from Room r where r.id=:roomId").setParameter("roomId", roomId)
+				.getResultList();
 
 		for (Room room : rooms) {
 
@@ -42,7 +43,6 @@ public class SensorAdminService {
 			genericStatus.setObject(sensor);
 		}
 
-		
 		return genericStatus;
 	}
 
@@ -50,8 +50,6 @@ public class SensorAdminService {
 	@Path("update/{sensorId}/{name}/{type}")
 	public GenericStatus updateSensor(@PathParam("sensorId") Long sensorId, @PathParam("name") String name,
 			@PathParam("type") String type) {
-
-		EntityManager em = EntityManagerService.getManager();
 
 		@SuppressWarnings("unchecked")
 		List<Sensor> sensors = em.createQuery("select s from Sensor s where s.id=:sensorId")
@@ -64,7 +62,7 @@ public class SensorAdminService {
 				sensor.setSensorType(type);
 				em.persist(sensor);
 			}
-			
+
 			em.getTransaction().commit();
 		}
 		return new GenericStatus(true);
@@ -74,10 +72,7 @@ public class SensorAdminService {
 	@Path("delete/{sensorId}")
 	public GenericStatus deleteSensor(@PathParam("sensorId") Long sensorId) {
 
-		EntityManager em = EntityManagerService.getManager();
-
-		@SuppressWarnings("unchecked")
-		List<Sensor> sensors = em.createQuery("select s from Sensor s where s.id=:sensorId")
+		List<Sensor> sensors = em.createQuery("select s from Sensor s where s.id=:sensorId", Sensor.class)
 				.setParameter("sensorId", sensorId).getResultList();
 
 		if (sensors != null) {
@@ -91,8 +86,6 @@ public class SensorAdminService {
 			}
 			em.getTransaction().commit();
 		}
-		
-
 
 		return new GenericStatus(true);
 	}

@@ -2,7 +2,7 @@ package cm.homeautomation.services.windowblind.test;
 
 import org.junit.jupiter.api.Test;
 
-import cm.homeautomation.db.EntityManagerService;
+
 import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.WindowBlind;
 import io.quarkus.test.junit.QuarkusTest;
@@ -25,7 +25,7 @@ public class WindowBlindServiceTest {
 
     @Test
     public void testWindowBlindGetAllWithEntity() {
-        EntityManager em = EntityManagerService.getManager();
+        
 
         em.getTransaction().begin();
 

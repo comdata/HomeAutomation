@@ -6,11 +6,16 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.device.DeviceService;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
@@ -24,39 +29,48 @@ import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
 import io.vertx.core.eventbus.EventBus;
-import io.vertx.reactivex.servicediscovery.types.EventBusService;
 
 @Path("window")
 public class WindowStateService extends BaseService {
 	@Inject
 	EventBus bus;
+
+	@Inject
+	EntityManager em;
+
+	@Inject
+	ConfigurationService configurationService;
 	
+	@Inject
+	DeviceService deviceService;
+	
+	@Inject
+	Sensors sensors;
+
 	private static WindowStateService instance;
 
 	public WindowStateService() {
-		instance=this;
+		instance = this;
 	}
-	
+
 	public static WindowStateService getInstance() {
-		if (instance==null) {
+		if (instance == null) {
 			new WindowStateService();
 		}
-		
+
 		return instance;
 
 	}
-	
+
 	@GET
 	@Path("readAll")
 	public List<WindowStateData> get() {
 
 		final List<WindowStateData> windowStateList = new ArrayList<>();
 
-		final EntityManager em = EntityManagerService.getManager();
-
 		final List<WindowState> results = em.createQuery(
-				"select ws from WindowState ws where ws.id in (select max(w.id) from WindowState w group by w.window) order by ws.timestamp desc", WindowState.class)
-				.getResultList();
+				"select ws from WindowState ws where ws.id in (select max(w.id) from WindowState w group by w.window) order by ws.timestamp desc",
+				WindowState.class).getResultList();
 
 		for (final WindowState windowState : results) {
 			final String mac = windowState.getMac();
@@ -66,12 +80,12 @@ public class WindowStateService extends BaseService {
 			windowStateData.setMac(windowState.getMac());
 			windowStateData.setState(windowState.getState());
 			windowStateData.setWindow(windowState.getWindow());
-			
+
 			windowStateData.setRoomName(windowState.getWindow().getRoom().getRoomName());
 			windowStateData.setWindowName(windowState.getWindow().getName());
 
 			windowStateData.setRoom(windowState.getWindow().getRoom());
-			windowStateData.setDevice(DeviceService.getDeviceForMac(mac));
+			windowStateData.setDevice(deviceService.getDeviceForMac(mac));
 			windowStateData.setDate(windowState.getTimestamp());
 
 			windowStateList.add(windowStateData);
@@ -88,10 +102,8 @@ public class WindowStateService extends BaseService {
 
 //			LogManager.getLogger(this.getClass()).debug("window: " + windowId + " state: ---" + state + "---");
 
-			final EntityManager em = EntityManagerService.getManager();
-
-			final List<Window> resultList = em.createQuery("select w from Window w where w.id=:id", Window.class).setParameter("id", windowId)
-					.getResultList();
+			final List<Window> resultList = em.createQuery("select w from Window w where w.id=:id", Window.class)
+					.setParameter("id", windowId).getResultList();
 
 			if ((resultList != null) && !resultList.isEmpty()) {
 				final Window window = resultList.get(0);
@@ -105,11 +117,10 @@ public class WindowStateService extends BaseService {
 
 				state = getSanitizedState(state);
 
-
 				saveWindowStateSensor(windowId, state, window);
 
 				final WindowState windowState = createWIndowState(state, em, window);
-				
+
 				sendWindowStateEvent(window, windowState);
 
 				em.getTransaction().commit();
@@ -136,8 +147,8 @@ public class WindowStateService extends BaseService {
 			final SensorDataSaveRequest sensorDataSaveRequest = createSensorDataSaveRequest(state, stateSensor);
 
 			try {
-				Sensors.getInstance().saveSensorData(sensorDataSaveRequest);
-			} catch (SensorDataLimitViolationException e) {
+				sensors.saveSensorData(sensorDataSaveRequest);
+			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException | NotSupportedException e) {
 //				LogManager.getLogger(this.getClass()).error("window: " + windowId + " state: ---" + state + "---", e);
 			}
 		}
@@ -156,7 +167,6 @@ public class WindowStateService extends BaseService {
 
 	private WindowState createWIndowState(String state, final EntityManager em, final Window window) {
 		final WindowState windowState = new WindowState();
-
 
 		windowState.setWindow(window);
 		windowState.setState(("open".equals(state) ? 1 : 0));

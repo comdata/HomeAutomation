@@ -5,12 +5,18 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.PowerIntervalData;
 import cm.homeautomation.sensors.powermeter.PowerMeterSensor;
 import cm.homeautomation.services.base.BaseService;
@@ -18,11 +24,19 @@ import cm.homeautomation.services.base.GenericStatus;
 
 @Path("power/")
 public class PowerMeterService extends BaseService {
+	@Inject
+	EntityManager em;
 
+	@Inject
+	ConfigurationService configurationService;
+	
+	@Inject
+	PowerMeterSensor powerMeterSensor;
+	
 	@GET
 	@Path("readInterval")
 	public List<PowerIntervalData> getPowerDataForIntervals() {
-		EntityManager em = EntityManagerService.getManager();
+		
 		String minutes = "60";
 
 		List<Object[]> rawResultList = em.createNativeQuery(
@@ -47,7 +61,13 @@ public class PowerMeterService extends BaseService {
 	@GET
 	@Path("compress/{numberOfHours}")
 	public GenericStatus compress(@PathParam("numberOfHours") String hours) {
-		PowerMeterSensor.compress(new String[] {hours});
+		try {
+			powerMeterSensor.compress(new String[] {hours});
+		} catch (SecurityException | IllegalStateException | NotSupportedException | SystemException | RollbackException
+				| HeuristicMixedException | HeuristicRollbackException e) {
+			// TODO Auto-generated catch block
+			return new GenericStatus(false);
+		}
 		
 		return new GenericStatus(true);
 	}

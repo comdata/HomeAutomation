@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.device.DeviceService;
 import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.WindowState;
@@ -24,13 +24,19 @@ import io.vertx.core.eventbus.EventBus;
 @Singleton
 public class WindowStateSensor {
 
-	private final EntityManager em;
+	@Inject
+	EntityManager em;
+	
+	@Inject
+	ConfigurationService configurationService;
+	
+	@Inject
+	DeviceService deviceService;
 	
 	@Inject
 	EventBus bus;
 
 	public WindowStateSensor() {
-		em = EntityManagerService.getNewManager();
 	}
 
 	@ConsumeEvent(value = "EventObject", blocking = true)
@@ -41,7 +47,7 @@ public class WindowStateSensor {
 
 			final WindowSensorData windowSensorData = (WindowSensorData) data;
 			final String mac = windowSensorData.getMac();
-			final Room room = DeviceService.getRoomForMac(mac);
+			final Room room = deviceService.getRoomForMac(mac);
 
 			final WindowState windowState = new WindowState();
 			windowState.setState(windowSensorData.getState());

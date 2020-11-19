@@ -7,8 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import org.eclipse.persistence.annotations.Index;
-
 @Entity
 public class RainPing {
 	@Id
@@ -20,7 +18,7 @@ public class RainPing {
 	private int state;
 	private int rainCounter;
 	
-	@Index(name="ix_timestamp")
+	//@Index(name="ix_timestamp")
 	private Date timestamp;
 	
 	public Long getId() {

@@ -9,7 +9,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.SecurityZone;
 import cm.homeautomation.entities.SecurityZoneMember;
 import cm.homeautomation.entities.Window;
@@ -32,11 +32,15 @@ public class SecurityService extends BaseService {
 
 	@Inject
 	EventBus bus;
-	
-	private final EntityManager em;
+
+	@Inject
+	EntityManager em;
+
+	@Inject
+	ConfigurationService configurationService;
 
 	public SecurityService() {
-		em = EntityManagerService.getManager();
+
 	}
 
 	@SuppressWarnings("unchecked")

@@ -2,6 +2,7 @@ package cm.homeautomation.entities;
 
 import java.util.Map;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,6 +20,7 @@ public class LinkedDevices {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 
+	@ElementCollection
 	Map<Long, String> linkedDevices;
 
 }

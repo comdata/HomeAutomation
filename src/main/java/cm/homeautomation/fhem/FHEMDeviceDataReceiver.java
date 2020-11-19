@@ -2,9 +2,10 @@ package cm.homeautomation.fhem;
 
 import java.util.Map;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.Device;
 import cm.homeautomation.entities.FHEMDevice;
 import cm.homeautomation.entities.Sensor;
@@ -17,7 +18,11 @@ import cm.homeautomation.services.sensors.Sensors;
  * @author cmertins
  *
  */
+@ApplicationScoped
 public class FHEMDeviceDataReceiver {
+
+	@Inject
+	EntityManager em;
 
 	private FHEMDeviceDataReceiver() {
 		// do not create an instance
@@ -30,9 +35,7 @@ public class FHEMDeviceDataReceiver {
 	 * @param messageContent
 	 * @param fhemDevice
 	 */
-	public static void receive(String topic, String messageContent, FHEMDevice fhemDevice) {
-
-		EntityManager em = EntityManagerService.getManager();
+	public void receive(String topic, String messageContent, FHEMDevice fhemDevice) {
 
 		Long referencedId = fhemDevice.getReferencedId();
 

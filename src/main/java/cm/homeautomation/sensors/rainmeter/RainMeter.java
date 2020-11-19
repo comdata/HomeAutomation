@@ -2,10 +2,11 @@ package cm.homeautomation.sensors.rainmeter;
 
 import java.util.Date;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.RainPing;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.RainData;
@@ -13,6 +14,11 @@ import io.quarkus.vertx.ConsumeEvent;
 
 @Singleton
 public class RainMeter {
+	@Inject
+	EntityManager em;
+
+	@Inject
+	ConfigurationService configurationService;
 
 	@ConsumeEvent(value = "EventObject", blocking = true)
 	public void handlePowerMeterData(final EventObject eventObject) {
@@ -21,7 +27,6 @@ public class RainMeter {
 		if (data instanceof RainData) {
 			final RainData rainData = (RainData) data;
 
-			final EntityManager em = EntityManagerService.getNewManager();
 			em.getTransaction().begin();
 
 			final RainPing rainPing = new RainPing();

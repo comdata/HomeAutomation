@@ -7,7 +7,6 @@ import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import cm.homeautomation.configuration.ConfigurationService;
-import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.HumanMessageEmitterFilter;
 import cm.homeautomation.mqtt.client.MQTTSendEvent;
 import cm.homeautomation.services.messaging.HumanMessageEvent;
@@ -17,20 +16,16 @@ import io.vertx.core.eventbus.EventBus;
 
 @Singleton
 public class MQTTHumanMessageEmitter {
-
-	private String humanMessageTopic;
 	private static List<HumanMessageEmitterFilter> filterList;
-	
+
 	@Inject
 	EventBus bus;
 
-	public MQTTHumanMessageEmitter() {
-		humanMessageTopic = ConfigurationService.getConfigurationProperty("mqtt", "humanMessageTopic");
+	@Inject
+	EntityManager em;
 
-		if (humanMessageTopic != null && !"".equals(humanMessageTopic)) {
-			
-		}
-	}
+	@Inject
+	ConfigurationService configurationService;
 
 	private boolean checkMessageFiltered(String message) {
 		if (message != null) {
@@ -46,25 +41,25 @@ public class MQTTHumanMessageEmitter {
 
 	@Scheduled(every = "120s")
 	public void updateHumanMessageFilter() {
-		EntityManager em = EntityManagerService.getManager();
 
 		filterList = em.createQuery("select f from HumanMessageEmitterFilter f", HumanMessageEmitterFilter.class)
 				.getResultList();
 	}
 
-	@ConsumeEvent(value="HumanMessageEvent", blocking=true)
+	@ConsumeEvent(value = "HumanMessageEvent", blocking = true)
 	public void handleEvent(final HumanMessageEvent eventObject) {
 		Runnable eventThread = () -> {
-			
-				String message = eventObject.getMessage();
+			String humanMessageTopic = configurationService.getConfigurationProperty("mqtt", "humanMessageTopic");
 
-				boolean filtered = checkMessageFiltered(message);
+			String message = eventObject.getMessage();
 
-				// message must not be set to ignore and not be filtered
-				if (!filtered) {
-					bus.publish("MQTTSendEvent", new MQTTSendEvent(humanMessageTopic, message));
-				}
-	
+			boolean filtered = checkMessageFiltered(message);
+
+			// message must not be set to ignore and not be filtered
+			if (!filtered) {
+				bus.publish("MQTTSendEvent", new MQTTSendEvent(humanMessageTopic, message));
+			}
+
 		};
 		new Thread(eventThread).start();
 	}

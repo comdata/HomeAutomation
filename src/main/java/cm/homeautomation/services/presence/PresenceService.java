@@ -11,7 +11,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.Person;
 import cm.homeautomation.entities.PresenceState;
 import cm.homeautomation.eventbus.EventObject;
@@ -26,8 +26,14 @@ public class PresenceService extends BaseService {
 	@Inject
 	EventBus bus;
 	
+	@Inject
+	EntityManager em;
+
+	@Inject
+	ConfigurationService configurationService;
+	
 	public GenericStatus purgeStates() {
-		EntityManager em = EntityManagerService.getManager();
+		
 		
 		em.getTransaction().begin();
 		
@@ -42,7 +48,7 @@ public class PresenceService extends BaseService {
 	@Path("setPresence/{id}/{state}")
 	public GenericStatus setPresence(@PathParam("id") Long id, @PathParam("state") String state) {
 
-		EntityManager em = EntityManagerService.getManager();
+		
 
 		Person person = null;
 
@@ -93,7 +99,7 @@ public class PresenceService extends BaseService {
 		
 		List<PresenceState> foundPresenceStates=new ArrayList<>();
 		
-		EntityManager em = EntityManagerService.getManager();
+		
 
 
 		@SuppressWarnings("unchecked")

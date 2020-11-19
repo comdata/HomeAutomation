@@ -8,7 +8,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
-import cm.homeautomation.db.EntityManagerService;
 import cm.homeautomation.entities.FHEMDevice;
 import cm.homeautomation.entities.ManualTask;
 import cm.homeautomation.fhem.BatteryStateResult.BatteryState;
@@ -21,6 +20,9 @@ public class FHEMBatteryStateReceiver {
 	
 	@Inject
 	EventBus bus;
+	
+	@Inject
+	EntityManager em;
 
 	private FHEMBatteryStateReceiver() {
 		// do nothing
@@ -53,7 +55,6 @@ public class FHEMBatteryStateReceiver {
 	}
 
 	private void createTaskForBatteryDevice(FHEMDevice fhemDevice) {
-		EntityManager em = EntityManagerService.getManager();
 
 		List<ManualTask> resultList = em
 				.createQuery("select t from ManualTask t where t.externalId=:externalId and t.type=:type",

@@ -13,7 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.IRCommand;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.mqtt.client.MQTTSender;
@@ -32,6 +32,11 @@ import io.quarkus.vertx.ConsumeEvent;
 public class InfraredService extends BaseService {
 	@Inject
 	MQTTSender mqttSender;
+	@Inject
+	EntityManager em;
+
+	@Inject
+	ConfigurationService configurationService;
 
 	private static InfraredService instance;
 
@@ -58,7 +63,7 @@ public class InfraredService extends BaseService {
 	@GET
 	@Path("get")
 	public List<IRCommand> getIRCommands() {
-		final EntityManager em = EntityManagerService.getManager();
+
 		return em.createQuery("select ic from IRCommand ic", IRCommand.class).getResultList();
 	}
 
@@ -74,8 +79,6 @@ public class InfraredService extends BaseService {
 
 		if (data instanceof IRData) {
 			final IRData irData = (IRData) data;
-
-			final EntityManager em = EntityManagerService.getManager();
 
 			final String typeClear = irData.getTypeClear();
 			final String address = irData.getAddress();
@@ -126,7 +129,6 @@ public class InfraredService extends BaseService {
 	@GET
 	@Path("sendCommand/{id}")
 	public GenericStatus sendCommand(@PathParam("id") final Long id) throws JsonProcessingException {
-		final EntityManager em = EntityManagerService.getManager();
 		final List<IRCommand> resultList = em
 				.createQuery("select ic from IRCommand ic where ic.id=:id", IRCommand.class).setParameter("id", id)
 				.getResultList();

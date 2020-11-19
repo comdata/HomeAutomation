@@ -3,6 +3,7 @@ package cm.homeautomation.services.actor;
 import java.io.IOException;
 import java.util.Date;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -17,7 +18,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 
-import cm.homeautomation.db.EntityManagerService;
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
@@ -25,6 +26,12 @@ import cm.homeautomation.services.base.GenericStatus;
 @Path("thermostat/")
 public class ThermostatService extends BaseService {
 
+	@Inject
+	EntityManager em;
+	
+	@Inject
+	ConfigurationService configurationService;
+	
 	private static ThermostatService instance=null;
 
 	public static void cronSetStatus(final String[] args) {
@@ -71,8 +78,6 @@ public class ThermostatService extends BaseService {
 	@GET
 	@Path("setValue/{id}/{value}")
 	public GenericStatus setValue(@PathParam("id") final Long id, @PathParam("value") String value) {
-
-		final EntityManager em = EntityManagerService.getManager();
 		em.getTransaction().begin();
 		final Switch singleSwitch = (Switch) em.createQuery("select s from Switch s where s.id=:id")
 				.setParameter("id", id).getSingleResult();
