@@ -8,11 +8,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.Test;
 
-
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.Package;
 import cm.homeautomation.entities.PackageHistory;
 import cm.homeautomation.entities.PackageHistoryPK;
@@ -21,6 +22,13 @@ import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 class PackageTrackingTest {
+	
+	@Inject
+	EntityManager em;
+	
+	@Inject
+	ConfigurationService configurationService;
+	
     @Test
     void testPackagesGetAllOpen() {
         given().when().get("/packages/getAllOpen").then().statusCode(200).body(is("[]"));

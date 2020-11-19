@@ -1,12 +1,13 @@
 package cm.homeautomation.zigbee.test;
 
 import javax.inject.Inject;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
@@ -16,11 +17,17 @@ import io.quarkus.test.junit.QuarkusTest;
 @QuarkusTest
 class ZigbeeMQTTReceiverTest {
 
+	@Inject
+	EntityManager em;
+	
+	@Inject
+	ConfigurationService configurationService;
+	
     @Inject ZigbeeMQTTReceiver zigbeeMQTTReceiver;
 
     @BeforeEach
     public void setup() {
-        ConfigurationService.createOrUpdate("zigbee", "mqttTopic", "zigbee2mqtt");
+        configurationService.createOrUpdate("zigbee", "mqttTopic", "zigbee2mqtt");
     }
 
     @Test

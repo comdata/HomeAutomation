@@ -2,24 +2,30 @@ package cm.homeautomation.entities.test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.Device;
 import cm.homeautomation.entities.Room;
 
 public class DeviceTest {
 
 	private static final String TEST_DEVICE_ROOM = "Test Device Room";
-	private EntityManager em;
+
 	private Room room;
 
+	@Inject
+	EntityManager em;
+	
+	@Inject
+	ConfigurationService configurationService;
+	
 	@BeforeEach
 	public void setup() {
-		em = EntityManagerService.getNewManager();
 		em.getTransaction().begin();
 
 		em.createQuery("delete from Device").executeUpdate();
