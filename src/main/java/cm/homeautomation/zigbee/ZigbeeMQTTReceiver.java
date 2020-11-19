@@ -98,6 +98,7 @@ public class ZigbeeMQTTReceiver {
 	}
 
 	@ConsumeEvent(value = "MQTTTopicEvent", blocking = true)
+	@Transactional
 	public void receiveMQTTTopicEvents(MQTTTopicEvent event) {
 		@NonNull
 		String topic = event.getTopic();
