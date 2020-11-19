@@ -7,6 +7,7 @@ import java.net.SocketException;
 import java.util.Date;
 import java.util.HashMap;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -21,6 +22,7 @@ import io.quarkus.runtime.StartupEvent;
 import io.vertx.core.eventbus.EventBus;
 
 @Startup
+@ApplicationScoped
 public class DashButtonService {
 
 	@Inject
