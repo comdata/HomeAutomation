@@ -1,5 +1,6 @@
 package cm.homeautomation.entities.test;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
 
@@ -7,17 +8,21 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.Sensor;
 
 public class SensorTest {
-	private EntityManager em;
+	@Inject
+	EntityManager em;
+	
+	@Inject
+	ConfigurationService configurationService;
 	private Room room;
 
 	@BeforeEach
 	public void setup() {
-		em = EntityManagerService.getNewManager();
+		
 		em.getTransaction().begin();
 
 		room = new Room();

@@ -7,11 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.Test;
 
-
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.HueDevice;
 import cm.homeautomation.services.hueinterface.HueEmulatorMessage;
 import io.quarkus.test.junit.QuarkusTest;
@@ -20,6 +21,12 @@ import io.restassured.http.ContentType;
 @QuarkusTest
 class HueInterfaceTest {
 
+	@Inject
+	EntityManager em;
+	
+	@Inject
+	ConfigurationService configurationService;
+	
 	@Test
 	void testBasicSend() {
         

@@ -2,12 +2,13 @@ package cm.homeautomation.entities.test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.Room;
 
 import de.a9d3.testing.checks.*;
@@ -16,13 +17,16 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RoomTest {
-	private EntityManager em;
+
+	@Inject
+	EntityManager em;
 	
+	@Inject
+	ConfigurationService configurationService;
 
 	@BeforeEach
 	public void setup() {
-		em = EntityManagerService.getNewManager();
-		
+	
 
 	}
 	

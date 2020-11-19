@@ -2,7 +2,7 @@ package cm.homeautomation.services.windowblind.test;
 
 import org.junit.jupiter.api.Test;
 
-
+import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.Room;
 import cm.homeautomation.entities.WindowBlind;
 import io.quarkus.test.junit.QuarkusTest;
@@ -10,10 +10,18 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.containsString;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 @QuarkusTest
 public class WindowBlindServiceTest {
+	
+	@Inject
+	EntityManager em;
+	
+	@Inject
+	ConfigurationService configurationService;
+	
     @Test
     public void testWindowBlindGetAll() {
         given()
