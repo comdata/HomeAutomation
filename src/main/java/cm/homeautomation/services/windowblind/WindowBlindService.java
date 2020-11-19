@@ -276,38 +276,39 @@ public class WindowBlindService extends BaseService {
 
 	@Scheduled(every = "120s")
 	public void initWindowBlindList() {
-		final
 
-		List<Room> rooms = em.createQuery("select r from Room r", Room.class).getResultList();
+		if (em != null) {
+			List<Room> rooms = em.createQuery("select r from Room r", Room.class).getResultList();
 
-		List<WindowBlind> windowBlindFullList = em.createQuery("select b from WindowBlind b", WindowBlind.class)
-				.getResultList();
-		Map<Long, WindowBlind> windowBlindMapTemp = new HashMap<>();
+			List<WindowBlind> windowBlindFullList = em.createQuery("select b from WindowBlind b", WindowBlind.class)
+					.getResultList();
+			Map<Long, WindowBlind> windowBlindMapTemp = new HashMap<>();
 
-		for (WindowBlind windowBlind : windowBlindFullList) {
-			windowBlindMapTemp.put(windowBlind.getId(), windowBlind);
-		}
+			for (WindowBlind windowBlind : windowBlindFullList) {
+				windowBlindMapTemp.put(windowBlind.getId(), windowBlind);
+			}
 
-		Map<Long, List<WindowBlind>> windowBlindListTemp = new HashMap<>();
-		if (rooms != null && !rooms.isEmpty()) {
+			Map<Long, List<WindowBlind>> windowBlindListTemp = new HashMap<>();
+			if (rooms != null && !rooms.isEmpty()) {
 
-			for (Room room : rooms) {
+				for (Room room : rooms) {
 
-				Long roomId = room.getId();
-				final List<WindowBlind> windowBlindRoomList = em
-						.createQuery("select b from WindowBlind b where b.room=(select r from Room r where r.id=:room)",
-								WindowBlind.class)
-						.setParameter("room", roomId).getResultList();
+					Long roomId = room.getId();
+					final List<WindowBlind> windowBlindRoomList = em.createQuery(
+							"select b from WindowBlind b where b.room=(select r from Room r where r.id=:room)",
+							WindowBlind.class).setParameter("room", roomId).getResultList();
 
-				windowBlindListTemp.put(roomId, windowBlindRoomList);
+					windowBlindListTemp.put(roomId, windowBlindRoomList);
+
+				}
 
 			}
 
-		}
+			// replace once done
+			windowBlindMap = windowBlindMapTemp;
+			windowBlindList = windowBlindListTemp;
 
-		// replace once done
-		windowBlindMap = windowBlindMapTemp;
-		windowBlindList = windowBlindListTemp;
+		}
 	}
 
 }

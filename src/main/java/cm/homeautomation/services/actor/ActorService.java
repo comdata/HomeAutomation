@@ -178,21 +178,23 @@ public class ActorService extends BaseService {
 	@Scheduled(every = "120s")
 	public void initSwitchList() {
 
-		final List<Room> rooms = em.createQuery("select r from Room r", Room.class).getResultList();
+		if (em != null) {
+			List<Room> rooms = em.createQuery("select r from Room r", Room.class).getResultList();
 
-		if (rooms != null && !rooms.isEmpty()) {
+			if (rooms != null && !rooms.isEmpty()) {
 
-			for (Room room : rooms) {
+				for (Room room : rooms) {
 
-				Long roomId = room.getId();
-				final List<Switch> switchesList = em.createQuery(
-						"select sw from Switch sw where sw.switchType IN ('SOCKET', 'LIGHT', 'IR') and sw.visible=true and sw.room=(select r from Room r where r.id=:room)",
-						Switch.class).setParameter("room", roomId).getResultList();
+					Long roomId = room.getId();
+					final List<Switch> switchesList = em.createQuery(
+							"select sw from Switch sw where sw.switchType IN ('SOCKET', 'LIGHT', 'IR') and sw.visible=true and sw.room=(select r from Room r where r.id=:room)",
+							Switch.class).setParameter("room", roomId).getResultList();
 
-				switchList.put(roomId, switchesList);
+					switchList.put(roomId, switchesList);
+
+				}
 
 			}
-
 		}
 	}
 

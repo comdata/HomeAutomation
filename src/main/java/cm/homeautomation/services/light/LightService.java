@@ -162,7 +162,6 @@ public class LightService extends BaseService {
 		final Runnable requestThread = () -> {
 			String powerState = getPowerStateFromDimValue(dimPercentValue);
 
-			
 			final Light light = lightList.get(lightId);
 
 			if (light != null) {
@@ -193,8 +192,6 @@ public class LightService extends BaseService {
 				} else {
 					light.setPowerState(OFF.equals(powerState));
 				}
-
-				
 
 				sendMessageToDevice(powerState, light, dimValue, dimUrl);
 			}
@@ -331,36 +328,39 @@ public class LightService extends BaseService {
 		Map<String, Light> lightExternalListTemp = new HashMap<>();
 		Map<Long, Light> lightListTemp = new HashMap<>();
 
-		final List<Room> roomsList = em.createQuery("select r from Room r", Room.class).getResultList();
+		if (em != null) {
 
-		for (Room room : roomsList) {
-			roomsTemp.put(room.getId(), room);
-		}
+			final List<Room> roomsList = em.createQuery("select r from Room r", Room.class).getResultList();
 
-		if (roomsList != null && !roomsList.isEmpty()) {
 			for (Room room : roomsList) {
-				Long roomId = room.getId();
-				final List<Light> lightPerRoomList = em
-						.createQuery("select l from Light l where l.room=(select r from Room r where r.id=:room)",
-								Light.class)
-						.setParameter("room", roomId).getResultList();
-
-				for (Light light : lightPerRoomList) {
-					lightExternalListTemp.put(light.getExternalId(), light);
-					lightListTemp.put(light.getId(), light);
-				}
-
-				lightRoomListTemp.put(roomId, lightPerRoomList);
+				roomsTemp.put(room.getId(), room);
 			}
 
-		}
+			if (roomsList != null && !roomsList.isEmpty()) {
+				for (Room room : roomsList) {
+					Long roomId = room.getId();
+					final List<Light> lightPerRoomList = em
+							.createQuery("select l from Light l where l.room=(select r from Room r where r.id=:room)",
+									Light.class)
+							.setParameter("room", roomId).getResultList();
 
-		rooms = roomsTemp;
-		lightRoomList = lightRoomListTemp;
-		lightExternalList = lightExternalListTemp;
-		lightList = lightListTemp;
+					for (Light light : lightPerRoomList) {
+						lightExternalListTemp.put(light.getExternalId(), light);
+						lightListTemp.put(light.getId(), light);
+					}
+
+					lightRoomListTemp.put(roomId, lightPerRoomList);
+				}
+
+			}
+
+			rooms = roomsTemp;
+			lightRoomList = lightRoomListTemp;
+			lightExternalList = lightExternalListTemp;
+			lightList = lightListTemp;
+		}
 	}
-	
+
 	void startup(@Observes StartupEvent event) {
 		initLightList();
 
