@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
@@ -51,6 +50,7 @@ public class HueInterface extends BaseService {
 	private static final Logger LOG = Logger.getLogger(HueInterface.class);
 
 	@ConsumeEvent(value = "HueEmulatorMessage", blocking = true)
+	@Transactional
 	public void handleEventBusMessage(HueEmulatorMessage message) {
 		handleMessage(message);
 	}
