@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import javax.ws.rs.POST;
@@ -28,9 +27,11 @@ import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.light.LightService;
 import cm.homeautomation.services.light.LightStates;
 import cm.homeautomation.services.windowblind.WindowBlindDimMessage;
+import io.quarkus.runtime.Startup;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
+@Startup
 @ApplicationScoped
 @Path("hueInterface")
 public class HueInterface extends BaseService {
@@ -52,6 +53,7 @@ public class HueInterface extends BaseService {
 	@ConsumeEvent(value = "HueEmulatorMessage", blocking = true)
 	@Transactional
 	public void handleEventBusMessage(HueEmulatorMessage message) {
+		System.out.println("Got a hue message");
 		handleMessage(message);
 	}
 
@@ -73,7 +75,7 @@ public class HueInterface extends BaseService {
 				List<HueDevice> hueDeviceNameList = em
 						.createQuery("select hd from HueDevice hd where hd.name=:name", HueDevice.class)
 						.setParameter("name", message.getDeviceName())
-						.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS).getResultList();
+						.getResultList();
 				if (hueDeviceNameList != null && !hueDeviceNameList.isEmpty()) {
 					HueDevice hueDevice = hueDeviceNameList.get(0);
 
@@ -82,7 +84,7 @@ public class HueInterface extends BaseService {
 
 					handleMessage(message);
 				} else {
-
+					System.out.println("Found hue device");
 					// try to find existing device
 					long externalId = 0;
 					HueDeviceType type = null;
@@ -146,8 +148,9 @@ public class HueInterface extends BaseService {
 				HueDevice hueDevice = hueDeviceList.get(0);
 
 				if (hueDevice != null) {
-
+System.out.println("device name: "+hueDevice.getName());
 					HueDeviceType type = hueDevice.getType();
+					
 					if (type != null) {
 						switch (type) {
 						case LIGHT:
@@ -216,6 +219,7 @@ public class HueInterface extends BaseService {
 		bus.publish("ActorPressSwitchEvent", actorPressSwitchEvent);
 	}
 
+	@Transactional
 	private void handleLight(HueEmulatorMessage message, HueDevice hueDevice) {
 		if (!message.isOnOffCommand()) {
 			lightService.dimLight(hueDevice.getExternalId(), message.getBrightness());

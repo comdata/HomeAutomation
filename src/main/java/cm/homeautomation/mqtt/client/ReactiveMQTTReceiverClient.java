@@ -5,7 +5,6 @@ import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.apache.log4j.LogManager;
 
@@ -442,6 +441,7 @@ public class ReactiveMQTTReceiverClient {
 	private void sendHueInterfaceMessage(String messageContent) {
 		HueEmulatorMessage hueMessage;
 		try {
+			System.out.println("hue: "+messageContent);
 			hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
 
 			bus.publish("HueEmulatorMessage", hueMessage);

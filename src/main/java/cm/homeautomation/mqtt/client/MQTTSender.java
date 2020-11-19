@@ -12,6 +12,7 @@ import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 
 import cm.homeautomation.configuration.ConfigurationService;
+import io.quarkus.runtime.Startup;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
@@ -21,6 +22,7 @@ import io.vertx.core.eventbus.EventBus;
  * @author christoph
  *
  */
+@Startup
 @ApplicationScoped
 public class MQTTSender {
 
@@ -76,6 +78,7 @@ public class MQTTSender {
 		String messagePayload = mqttSendEvent.getPayload();
 
 		initClient();
+		System.out.println("sending "+topic+" - "+ messagePayload); 
 		Mqtt3Publish publishMessage = Mqtt3Publish.builder().topic(topic).qos(MqttQos.AT_LEAST_ONCE)
 				.payload(messagePayload.getBytes()).build();
 		publishClient.publish(publishMessage);

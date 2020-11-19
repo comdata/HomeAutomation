@@ -9,7 +9,13 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 import javax.transaction.Transactional;
+import javax.transaction.UserTransaction;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -43,8 +49,8 @@ import io.vertx.core.eventbus.EventBus;
  * @author mertins
  *
  */
-@ApplicationScoped
 @Startup
+@ApplicationScoped
 @Path("actor")
 public class ActorService extends BaseService {
 
@@ -59,20 +65,30 @@ public class ActorService extends BaseService {
 	EntityManager em;
 
 	@Inject
+	LightService lightService;
+
+	@Inject
 	ConfigurationService configurationService;
 
-	public void performSwitch(String targetStatus, String switchId) {
+	@Inject
+	UserTransaction transaction;
 
+	public void performSwitch(String targetStatus, String switchId) throws RollbackException, HeuristicMixedException,
+			HeuristicRollbackException, SystemException, NotSupportedException {
+		transaction.begin();
+		System.out.println(switchId + " - " + targetStatus);
 		final String upperCaseTargetStatus = targetStatus.toUpperCase();
-
-		final Switch singleSwitch = updateBackendSwitchState(switchId, upperCaseTargetStatus);
-
+		System.out.println("update backend");
+		final Switch singleSwitch = internalUpdateBackendSwitchState(switchId, upperCaseTargetStatus);
+		System.out.println("create actor");
 		final ActorMessage actorMessage = createActorMessage(upperCaseTargetStatus, singleSwitch);
-
+		System.out.println("lights");
 		switchLights(targetStatus, singleSwitch);
 
+		System.out.println("switch");
 		switchSockets(singleSwitch, actorMessage);
 
+		transaction.commit();
 		bus.publish("EventObject", new EventObject(actorMessage));
 
 	}
@@ -91,14 +107,18 @@ public class ActorService extends BaseService {
 		return actorMessage;
 	}
 
+	@Transactional
 	private void switchSockets(final Switch singleSwitch, final ActorMessage actorMessage) {
 
+		System.out.println("type:" + singleSwitch.getSwitchType());
 		// standard lights
 		if ("SOCKET".equals(singleSwitch.getSwitchType()) || "LIGHT".equals(singleSwitch.getSwitchType())) {
 
+			String debugMessage = "Actor Switch Type: " + singleSwitch.getClass().getSimpleName();
+			System.out.println(debugMessage);
 			LogManager.getLogger(this.getClass())
-					.debug("Actor Switch Type: " + singleSwitch.getClass().getSimpleName());
-
+					.debug(debugMessage);
+			
 			if (singleSwitch instanceof MQTTSwitch) {
 				LogManager.getLogger(this.getClass()).debug("Switch is MQTTSwitch");
 				MQTTSwitch singleMqttSwitch = (MQTTSwitch) singleSwitch;
@@ -142,6 +162,8 @@ public class ActorService extends BaseService {
 		}
 	}
 
+	@Transactional
+
 	private void switchLights(String targetStatus, final Switch singleSwitch) {
 		// support lights in the switches list and switch them as well
 		final List<Light> lights = singleSwitch.getLights();
@@ -150,8 +172,6 @@ public class ActorService extends BaseService {
 			if ("ON".equals(targetStatus)) {
 				on = true;
 			}
-
-			final LightService lightService = LightService.getInstance();
 
 			for (final Light light : lights) {
 				if (light instanceof DimmableLight) {
@@ -203,6 +223,13 @@ public class ActorService extends BaseService {
 	 * press a switch via cron
 	 *
 	 * @param args
+	 * @throws NotSupportedException
+	 * @throws SystemException
+	 * @throws HeuristicRollbackException
+	 * @throws HeuristicMixedException
+	 * @throws RollbackException
+	 * @throws IllegalStateException
+	 * @throws SecurityException
 	 */
 	public static synchronized void cronPressSwitch(final String[] args) {
 		final String switchId = args[0];
@@ -273,6 +300,7 @@ public class ActorService extends BaseService {
 
 	@ConsumeEvent(value = "ActorPressSwitchEvent", blocking = true)
 	public void subscribePressSwitch(ActorPressSwitchEvent event) {
+		System.out.println(event.getSwitchId());
 		pressSwitch(event.getSwitchId(), event.getTargetStatus());
 	}
 
@@ -282,13 +310,26 @@ public class ActorService extends BaseService {
 	 * @param switchId     id of the switch
 	 * @param targetStatus status ON or OFF
 	 * @return
+	 * @throws NotSupportedException
+	 * @throws SystemException
+	 * @throws HeuristicRollbackException
+	 * @throws HeuristicMixedException
+	 * @throws RollbackException
+	 * @throws IllegalStateException
+	 * @throws SecurityException
 	 */
 	@GET
 	@Path("press/{switch}/{status}")
 	public SwitchPressResponse pressSwitch(@PathParam("switch") final String switchId,
 			@PathParam("status") String targetStatus) {
 
-		performSwitch(targetStatus, switchId);
+		try {
+
+			performSwitch(targetStatus, switchId);
+		} catch (SecurityException | IllegalStateException | RollbackException | HeuristicMixedException
+				| HeuristicRollbackException | SystemException | NotSupportedException e) {
+			e.printStackTrace();
+		}
 
 		final SwitchPressResponse switchPressResponse = new SwitchPressResponse();
 		switchPressResponse.setSuccess(true);
@@ -301,6 +342,7 @@ public class ActorService extends BaseService {
 	 * @param params
 	 * @return
 	 */
+	@Transactional
 	public synchronized SwitchPressResponse pressSwitch(final String[] params) {
 		return pressSwitch(params[0], params[1]);
 	}
@@ -314,19 +356,31 @@ public class ActorService extends BaseService {
 	 */
 	@GET
 	@Path("updateBackend/{switch}/{status}")
-	@Transactional
 	public Switch updateBackendSwitchState(@PathParam("switch") final String switchId,
 			@PathParam("status") String targetStatus) {
 
+		return internalUpdateBackendSwitchState(switchId, targetStatus);
+	}
+
+	private Switch internalUpdateBackendSwitchState(final String switchId, String targetStatus) {
 		targetStatus = targetStatus.toUpperCase();
+		System.out.println("Switch id"+switchId);
+		Long id = Long.parseLong(switchId);
+		System.out.println("loading switch "+id);
+		Switch singleSwitch = null;
+		try {
+			
+			singleSwitch = em.find(Switch.class, id);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println(singleSwitch.getName());
 
-		final Switch singleSwitch = (Switch) em.createQuery("select sw from Switch sw where sw.id=:switchId")
-				.setParameter("switchId", Float.parseFloat(switchId)).getSingleResult();
-
-		
+		System.out.println("setting target status");
 		singleSwitch.setTargetStatus(targetStatus);
 		singleSwitch.setTargetStatusFrom(new Date());
 		em.merge(singleSwitch);
+		System.out.println("setting target status - post merge");
 
 		/**
 		 * post a switch information event

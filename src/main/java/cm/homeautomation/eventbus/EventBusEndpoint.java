@@ -51,19 +51,19 @@ public class EventBusEndpoint {
 	@ConsumeEvent(value="EventObject", blocking=true)
 	public void handleEvent(final EventObject eventObject) {
 		userSessions.keys();
-		try {
+		//try {
 			if (eventObject != null) {
 				if (eventTranscoder != null) {
-					eventTranscoder.encode(eventObject);
+					//eventTranscoder.encode(eventObject);
 				}
 
 				sendObjectToAllSession(eventObject);
 			} else {
 //				LogManager.getLogger(this.getClass()).error("Encoding got an empty message");
 			}
-		} catch (final EncodeException e) {
+		//} catch (final EncodeException e) {
 //			LogManager.getLogger(this.getClass()).error("Encoding failed", e);
-		}
+		//}
 	}
 
 	@ConsumeEvent(value="WebSocketEvent", blocking=true)
