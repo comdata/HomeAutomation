@@ -8,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
 import org.jboss.logging.Logger;
 
@@ -34,6 +35,7 @@ public class MQTTTopicSensorReceiver {
 	private Map<String, Sensor> sensorTechnicalTypeMap = new HashMap<>();
 
 	@ConsumeEvent(value = "MQTTTopicEvent", blocking = true)
+	@Transactional
 	public void receiveMQTTTopic(MQTTTopicEvent topicEvent) {
 		Runnable mqttTopicThread = () -> {
 			LOG.debug("got topic: " + topicEvent.getTopic() + " -  message: " + topicEvent.getMessage());
@@ -63,8 +65,7 @@ public class MQTTTopicSensorReceiver {
 	}
 
 	@Scheduled(every = "120s")
-	public void initSensorMap() {
-		final 
+	public void initSensorMap() { 
 
 		List<Sensor> sensorFullList = em.createQuery("select s from Sensor s", Sensor.class).getResultList();
 
