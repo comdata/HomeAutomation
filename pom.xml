@@ -185,10 +185,7 @@
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-narayana-jta</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.quarkus</groupId>
-			<artifactId>quarkus-hibernate-orm-panache</artifactId>
-		</dependency>
+
 		<dependency>
 			<groupId>com.hivemq</groupId>
 			<artifactId>hivemq-mqtt-client</artifactId>
