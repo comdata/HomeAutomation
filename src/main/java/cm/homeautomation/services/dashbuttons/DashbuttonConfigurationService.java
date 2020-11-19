@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -19,15 +20,13 @@ public class DashbuttonConfigurationService extends BaseService {
 
 	@Inject
 	EntityManager em;
-	
+
 	@Inject
 	ConfigurationService configurationService;
-	
+
 	@Path("readAll")
 	@GET
 	public GenericEntity<List<DashButton>> getDashbuttons() {
-
-		
 
 		List<DashButton> resultList = em.createQuery("select db from DashButton db", DashButton.class).getResultList();
 
@@ -37,28 +36,20 @@ public class DashbuttonConfigurationService extends BaseService {
 
 	@Path("update")
 	@POST
+	@Transactional
 	public void updateDashButton(DashButton dashbutton) {
-		
-
-		em.getTransaction().begin();
-		
 		em.merge(dashbutton);
-		
-		em.getTransaction().commit();
 	}
 
 	@GET
 	@Path("new/{name}/{mac}")
+	@Transactional
 	public DashButton createNewDashButton(@PathParam("name") String name, @PathParam("mac") String mac) {
-		
-
-		em.getTransaction().begin();
 
 		DashButton dashButton = new DashButton();
 		dashButton.setName(name);
 		dashButton.setMac(mac.replace(":", "").toUpperCase());
 		em.persist(dashButton);
-		em.getTransaction().commit();
 
 		return dashButton;
 

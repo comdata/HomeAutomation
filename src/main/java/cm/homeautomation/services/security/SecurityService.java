@@ -6,6 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -53,6 +54,7 @@ public class SecurityService extends BaseService {
 	}
 
 	@ConsumeEvent(value = "EventObject", blocking = true)
+	@Transactional
 	public void handleWindowEvents(EventObject eventObject) {
 		if ((eventObject.getData() != null) && (eventObject.getData() instanceof WindowStateData)) {
 			final WindowStateData windowStateData = (WindowStateData) eventObject.getData();
@@ -68,13 +70,9 @@ public class SecurityService extends BaseService {
 //			LogManager.getLogger(this.getClass())
 //					.debug("Security Zone: " + securityZone.getName() + " state: " + securityZone.isState());
 
-			em.getTransaction().begin();
-
 			securityZoneMember.setViolated((windowStateData.getState() == 1) ? true : false);
 
 			em.merge(securityZoneMember);
-
-			em.getTransaction().commit();
 
 			if (securityZone.isState()) {
 				if (windowStateData.getState() == 1) {
@@ -97,16 +95,13 @@ public class SecurityService extends BaseService {
 	 */
 	@GET
 	@Path("setZoneState/{id}/{state}")
+	@Transactional
 	public GenericStatus setZoneState(@PathParam("id") Long id, @PathParam("state") boolean state) {
 		final SecurityZone securityZone = em.find(SecurityZone.class, id);
-
-		em.getTransaction().begin();
 
 		securityZone.setState(state);
 
 		em.persist(securityZone);
-
-		em.getTransaction().commit();
 
 		return new GenericStatus(true);
 	}

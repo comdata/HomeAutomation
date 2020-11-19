@@ -221,6 +221,7 @@ public class ZigbeeMQTTReceiver {
 
 	}
 
+	@Transactional
 	private void handleWindowBlind(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
 
 		List<WindowBlind> resultList = em
@@ -245,28 +246,22 @@ public class ZigbeeMQTTReceiver {
 			windowBlind.setMqttDimTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
 			windowBlind.setMqttDimMessage("{\"position\": {DIMVALUE}}");
 
-			em.getTransaction().begin();
-
 			em.persist(windowBlind);
-			em.getTransaction().commit();
 
 			handleWindowBlind(message, zigbeeDevice, messageObject);
 		}
 
 	}
 
+	@Transactional
 	private void saveUpdateAvailableInformation(ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
 		JsonNode updateNode = messageObject.get("update_available");
 
 		if (updateNode != null) {
 			boolean updateAvailable = updateNode.asBoolean();
 
-			em.getTransaction().begin();
-
 			zigbeeDevice.setUpdateAvailable(updateAvailable);
 			em.merge(zigbeeDevice);
-
-			em.getTransaction().commit();
 
 		}
 	}
@@ -299,6 +294,7 @@ public class ZigbeeMQTTReceiver {
 
 	}
 
+	@Transactional
 	private void handleWaterSensor(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
 		JsonNode leakNode = messageObject.get("leak");
 
@@ -312,18 +308,12 @@ public class ZigbeeMQTTReceiver {
 			if (existingSensor == null) {
 				existingSensor = new ZigbeeWaterSensor(zigbeeDevice.getIeeeAddr(), leakNodeBoolean);
 
-				em.getTransaction().begin();
-
 				em.persist(existingSensor);
-				em.getTransaction().commit();
 			}
 
 			existingSensor.setLeakDetected(leakNodeBoolean);
 
-			em.getTransaction().begin();
-
 			em.merge(existingSensor);
-			em.getTransaction().commit();
 
 			if (leakNodeBoolean) {
 				WaterLeakEvent waterLeakEvent = WaterLeakEvent.builder().device(zigbeeDevice.getFriendlyName()).build();
@@ -374,6 +364,7 @@ public class ZigbeeMQTTReceiver {
 		}
 	}
 
+	@Transactional
 	private void recordLinkQualityForDevice(ZigBeeDevice zigbeeDevice, int linkQuality) {
 
 		String linkQualityType = "linkquality";
@@ -391,9 +382,7 @@ public class ZigbeeMQTTReceiver {
 			sensor.setSensorType(linkQualityType);
 			sensor.setShowData(true);
 
-			em.getTransaction().begin();
 			em.persist(sensor);
-			em.getTransaction().commit();
 
 			recordLinkQualityForDevice(zigbeeDevice, linkQuality);
 		} else {
@@ -417,6 +406,7 @@ public class ZigbeeMQTTReceiver {
 		}
 	}
 
+	@Transactional
 	private void recordIlluminanceLevelForDevice(ZigBeeDevice zigbeeDevice, int illuminance) {
 
 		List<Sensor> sensorList = em
@@ -433,9 +423,7 @@ public class ZigbeeMQTTReceiver {
 			sensor.setSensorType("illuminance");
 			sensor.setShowData(true);
 
-			em.getTransaction().begin();
 			em.persist(sensor);
-			em.getTransaction().commit();
 
 			recordIlluminanceLevelForDevice(zigbeeDevice, illuminance);
 		} else {
@@ -459,6 +447,7 @@ public class ZigbeeMQTTReceiver {
 		}
 	}
 
+	@Transactional
 	private void handlePowerSocket(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
 
 		List<MQTTSwitch> existingDeviceList = em
@@ -478,10 +467,8 @@ public class ZigbeeMQTTReceiver {
 			zigbeeSwitch.setName(zigbeeDevice.getFriendlyName());
 			zigbeeSwitch.setSwitchType("SOCKET");
 
-			em.getTransaction().begin();
 			em.persist(zigbeeSwitch);
 
-			em.getTransaction().commit();
 		} else {
 			zigbeeSwitch = existingDeviceList.get(0);
 		}
@@ -493,12 +480,11 @@ public class ZigbeeMQTTReceiver {
 			zigbeeSwitch.setLatestStatusFrom(new Date());
 		}
 
-		em.getTransaction().begin();
 		em.persist(zigbeeSwitch);
 
-		em.getTransaction().commit();
 	}
 
+	@Transactional
 	private void handleMotionSensor(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
 
 		// {"battery":100,"voltage":3015,"illuminance":558,"illuminance_lux":558,"linkquality":18,"occupancy":false}
@@ -515,17 +501,13 @@ public class ZigbeeMQTTReceiver {
 			if (existingSensor == null) {
 				existingSensor = new ZigbeeMotionSensor(zigbeeDevice.getIeeeAddr(), occupancyNodeBoolean);
 
-				em.getTransaction().begin();
-
 				em.persist(existingSensor);
-				em.getTransaction().commit();
+
 			}
 
 			existingSensor.setMotionDetected(occupancyNodeBoolean);
-			em.getTransaction().begin();
 
 			em.merge(existingSensor);
-			em.getTransaction().commit();
 
 			RemoteControlEvent remoteControlEvent = new RemoteControlEvent(zigbeeDevice.getFriendlyName(), ieeeAddr,
 					RemoteControlEvent.EventType.REMOTE, RemoteType.ZIGBEE);
@@ -556,6 +538,7 @@ public class ZigbeeMQTTReceiver {
 		}
 	}
 
+	@Transactional
 	private void handleTradfriLight(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject, boolean color) {
 		int brightness = 0;
 
@@ -606,12 +589,11 @@ public class ZigbeeMQTTReceiver {
 
 			}
 
-			em.getTransaction().begin();
 			if (newLight != null) {
 				em.persist(newLight);
 			}
 			em.persist(existingLight);
-			em.getTransaction().commit();
+
 		}
 
 		// TODO map generic light
@@ -630,12 +612,11 @@ public class ZigbeeMQTTReceiver {
 			existingLight.setPowerOnState("ON".equalsIgnoreCase(stateNode.asText()));
 		}
 
-		em.getTransaction().begin();
-
 		em.merge(existingLight);
-		em.getTransaction().commit();
+
 	}
 
+	@Transactional
 	private void handleTradfriRemoteControl(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
 		JsonNode actionNode = messageObject.get("action");
 		if (actionNode != null) {
@@ -658,10 +639,8 @@ public class ZigbeeMQTTReceiver {
 				bus.publish("RemoteControlEvent", remoteControlEvent);
 
 				// update changed object in database
-				em.getTransaction().begin();
 
 				em.merge(existingRemote);
-				em.getTransaction().commit();
 
 				LogManager.getLogger(this.getClass()).debug("remote control: " + message);
 
@@ -687,11 +666,10 @@ public class ZigbeeMQTTReceiver {
 				bus.publish("RemoteControlBrightnessChangeEvent", remoteControlBrightnessChangeEvent);
 
 				// update changed object in database
-				em.getTransaction().begin();
+
 				existingRemote.setBrightness(newBrightness);
 				existingRemote.setPowerOnState((newBrightness > 0));
 				em.merge(existingRemote);
-				em.getTransaction().commit();
 
 			}
 
@@ -709,16 +687,17 @@ public class ZigbeeMQTTReceiver {
 					bus.publish("RemoteControlBrightnessChangeEvent", remoteControlBrightnessChangeEvent);
 
 					// update changed object in database
-					em.getTransaction().begin();
+
 					existingRemote.setBrightness(newBrightness);
 					existingRemote.setPowerOnState((newBrightness > 0));
 					em.merge(existingRemote);
-					em.getTransaction().commit();
+
 				}
 			}
 		}
 	}
 
+	@Transactional
 	private ZigBeeTradfriRemoteControl getOrCreateRemote(ZigBeeDevice zigbeeDevice, EntityManager em, String ieeeAddr) {
 		ZigBeeTradfriRemoteControl existingRemote = em.find(ZigBeeTradfriRemoteControl.class, ieeeAddr);
 
@@ -726,10 +705,8 @@ public class ZigbeeMQTTReceiver {
 		if (existingRemote == null) {
 			existingRemote = new ZigBeeTradfriRemoteControl(zigbeeDevice.getIeeeAddr(), false, 0);
 
-			em.getTransaction().begin();
-
 			em.persist(existingRemote);
-			em.getTransaction().commit();
+
 		}
 		return existingRemote;
 	}
@@ -769,6 +746,7 @@ public class ZigbeeMQTTReceiver {
 		deviceMap = deviceMapTemp;
 	}
 
+	@Transactional
 	private void handleDeviceMessage(String message) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
@@ -778,7 +756,7 @@ public class ZigbeeMQTTReceiver {
 
 			for (ZigBeeDevice zigBeeDevice : deviceList) {
 				try {
-					em.getTransaction().begin();
+
 					ZigBeeDevice existingDevice = em.find(ZigBeeDevice.class, zigBeeDevice.getIeeeAddr());
 
 					if (existingDevice == null) {
@@ -787,7 +765,6 @@ public class ZigbeeMQTTReceiver {
 						em.merge(zigBeeDevice);
 					}
 
-					em.getTransaction().commit();
 				} catch (Exception e) {
 
 				}

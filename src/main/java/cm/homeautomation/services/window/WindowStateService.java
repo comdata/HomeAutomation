@@ -11,6 +11,7 @@ import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -40,10 +41,10 @@ public class WindowStateService extends BaseService {
 
 	@Inject
 	ConfigurationService configurationService;
-	
+
 	@Inject
 	DeviceService deviceService;
-	
+
 	@Inject
 	Sensors sensors;
 
@@ -96,6 +97,7 @@ public class WindowStateService extends BaseService {
 
 	@GET
 	@Path("setState/{windowId}/{state}")
+	@Transactional
 	public GenericStatus handleWindowState(@PathParam("windowId") Long windowId, @PathParam("state") String state) {
 
 		synchronized (this) {
@@ -113,8 +115,6 @@ public class WindowStateService extends BaseService {
 
 				}
 
-				em.getTransaction().begin();
-
 				state = getSanitizedState(state);
 
 				saveWindowStateSensor(windowId, state, window);
@@ -122,8 +122,6 @@ public class WindowStateService extends BaseService {
 				final WindowState windowState = createWIndowState(state, em, window);
 
 				sendWindowStateEvent(window, windowState);
-
-				em.getTransaction().commit();
 
 			}
 
@@ -148,7 +146,9 @@ public class WindowStateService extends BaseService {
 
 			try {
 				sensors.saveSensorData(sensorDataSaveRequest);
-			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException | NotSupportedException e) {
+			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException | RollbackException
+					| HeuristicMixedException | HeuristicRollbackException | SystemException
+					| NotSupportedException e) {
 //				LogManager.getLogger(this.getClass()).error("window: " + windowId + " state: ---" + state + "---", e);
 			}
 		}
@@ -187,8 +187,9 @@ public class WindowStateService extends BaseService {
 		return sensorDataSaveRequest;
 	}
 
+	@Transactional
 	private void addNewSensorToWindowIfMissing(final EntityManager em, final Window window) {
-		em.getTransaction().begin();
+
 		final Sensor stateSensor = new Sensor();
 		stateSensor.setRoom(window.getRoom());
 		stateSensor.setSensorName(window.getName());
@@ -196,7 +197,7 @@ public class WindowStateService extends BaseService {
 		window.setStateSensor(stateSensor);
 		em.persist(stateSensor);
 		em.merge(window);
-		em.getTransaction().commit();
+
 	}
 
 }

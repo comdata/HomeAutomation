@@ -6,6 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.GasMeterPing;
@@ -33,6 +34,7 @@ public class GasMeterSensor {
 	}
 
 	@ConsumeEvent(value = "EventObject", blocking = true)
+	@Transactional
 	public void handleGasMeterData(final EventObject eventObject) {
 
 		final Object data = eventObject.getData();
@@ -45,10 +47,10 @@ public class GasMeterSensor {
 			gasMeterPing.setTimestamp(new Date());
 			gasMeterPing.setGasMeter(gasData.getGasMeter());
 
-			em.getTransaction().begin();
+			
 
 			em.merge(gasMeterPing);
-			em.getTransaction().commit();
+
 
 		}
 	}

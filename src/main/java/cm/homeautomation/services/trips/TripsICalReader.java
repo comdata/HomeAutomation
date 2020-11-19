@@ -9,6 +9,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
@@ -26,7 +27,7 @@ import net.fortuna.ical4j.util.MapTimeZoneCache;
 
 @ApplicationScoped
 public class TripsICalReader {
-	
+
 	@Inject
 	EntityManager em;
 
@@ -36,11 +37,12 @@ public class TripsICalReader {
 	private static TripsICalReader instance;
 
 	public TripsICalReader() {
-		instance=this;
+		instance = this;
 	}
-	
+
 	private static final DateTimeFormatter DATE_FORMATTER = new DateTimeFormatterBuilder().appendYear(4, 4)
-			.appendMonthOfYear(2).appendDayOfMonth(2).appendHourOfDay(2).appendMinuteOfHour(2).appendSecondOfMinute(2).toFormatter();
+			.appendMonthOfYear(2).appendDayOfMonth(2).appendHourOfDay(2).appendMinuteOfHour(2).appendSecondOfMinute(2)
+			.toFormatter();
 
 	public static void main(String[] args) throws IOException, ParserException {
 		loadTrips(args);
@@ -49,13 +51,12 @@ public class TripsICalReader {
 	public static void loadTrips(String[] args) throws IOException, ParserException {
 		instance.internalLoadTrips(args);
 	}
-		
+
+	@Transactional
 	public void internalLoadTrips(String[] args) throws IOException, ParserException {
 		System.setProperty("net.fortuna.ical4j.timezone.cache.impl", MapTimeZoneCache.class.getName());
 		CalendarBuilder calendarBuilder = new CalendarBuilder();
 
-		
-		em.getTransaction().begin();
 		// em.createQuery("delete from CalendarEntry").executeUpdate();
 
 		String url = args[0];
@@ -65,7 +66,7 @@ public class TripsICalReader {
 		ComponentList<CalendarComponent> components = calendar.getComponents();
 
 		for (CalendarComponent calendarComponent : components) {
-			//System.out.println("===================================");
+			// System.out.println("===================================");
 			PropertyList<Property> properties = calendarComponent.getProperties();
 
 			CalendarEntry calendarEntry = new CalendarEntry();
@@ -73,7 +74,7 @@ public class TripsICalReader {
 			for (Property property : properties) {
 				String propertyName = property.getName();
 				String propertyValue = property.getValue();
-				//System.out.println(propertyName + " - " + propertyValue);
+				// System.out.println(propertyName + " - " + propertyValue);
 
 				switch (propertyName) {
 				case "DTSTAMP":
@@ -83,10 +84,11 @@ public class TripsICalReader {
 					calendarEntry.setUid(propertyValue);
 					break;
 				case "DTSTART":
-					calendarEntry.setStart(DATE_FORMATTER.parseDateTime(propertyValue+"000000").toDate());
+					calendarEntry.setStart(DATE_FORMATTER.parseDateTime(propertyValue + "000000").toDate());
 					break;
 				case "DTEND":
-					calendarEntry.setEnd(new Date(DATE_FORMATTER.parseDateTime(propertyValue+"000000").toDate().getTime()-(1*1000)));
+					calendarEntry.setEnd(new Date(
+							DATE_FORMATTER.parseDateTime(propertyValue + "000000").toDate().getTime() - (1 * 1000)));
 					break;
 				case "SUMMARY":
 					calendarEntry.setSummary(propertyValue);
@@ -121,19 +123,17 @@ public class TripsICalReader {
 				oldCalendarEntry.setStart(calendarEntry.getStart());
 				oldCalendarEntry.setSummary(calendarEntry.getSummary());
 				oldCalendarEntry.setTransparent(calendarEntry.getTransparent());
-				
+
 				em.merge(oldCalendarEntry);
 			} else {
 
 				em.persist(calendarEntry);
 			}
-			//System.out.println("===================================");
+			// System.out.println("===================================");
 
 		}
 
-		em.getTransaction().commit();
-		
-		//EventBusService.getEventBus().post(new EventObject(new TripsUpdateEvent()));
+		// EventBusService.getEventBus().post(new EventObject(new TripsUpdateEvent()));
 
 	}
 

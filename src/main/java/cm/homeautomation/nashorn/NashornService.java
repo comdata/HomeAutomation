@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.script.ScriptException;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -19,18 +20,19 @@ public class NashornService extends BaseService {
 
 	@Inject
 	NashornRunner nashornRunner;
-	
+
 	@Inject
 	EntityManager em;
-	
+
 	@Inject
 	ConfigurationService configurationService;
-	
+
 	@GET
 	@Path("getAll")
 	public List<ScriptingEntity> getAllEntities() {
 
-		final List<ScriptingEntity> resultList = em.createQuery("select se from ScriptingEntity se", ScriptingEntity.class).getResultList();
+		final List<ScriptingEntity> resultList = em
+				.createQuery("select se from ScriptingEntity se", ScriptingEntity.class).getResultList();
 
 		return resultList;
 	}
@@ -45,11 +47,13 @@ public class NashornService extends BaseService {
 
 	@POST
 	@Path("update")
+	@Transactional
 	public void updateEntity(ScriptingEntity entity) {
-		em.getTransaction().begin();
+
 		ScriptingEntity modifiedEntity = entity;
 
-		final List<ScriptingEntity> resultList = em.createQuery("select se from ScriptingEntity se where se.id=:id", ScriptingEntity.class)
+		final List<ScriptingEntity> resultList = em
+				.createQuery("select se from ScriptingEntity se where se.id=:id", ScriptingEntity.class)
 				.setParameter("id", entity.getId()).getResultList();
 
 		if (resultList != null) {
@@ -60,8 +64,6 @@ public class NashornService extends BaseService {
 		}
 
 		em.persist(modifiedEntity);
-		em.getTransaction().commit();
-
 	}
 
 	@GET
@@ -73,7 +75,7 @@ public class NashornService extends BaseService {
 		configurationService.createOrUpdate(group, property, value);
 		nashornRunner.enableEngine(value);
 	}
-	
+
 	@GET
 	@Path("disable")
 	public void disableService() {
@@ -84,7 +86,3 @@ public class NashornService extends BaseService {
 		nashornRunner.stopEngine();
 	}
 }
-
-
-
-

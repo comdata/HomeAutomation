@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -19,6 +20,7 @@ public class SensorAdminService {
 
 	@GET
 	@Path("create/{roomId}/{name}/{type}")
+	@Transactional
 	public GenericStatus createSensor(@PathParam("roomId") Long roomId, @PathParam("name") String name,
 			@PathParam("type") String type) {
 		GenericStatus genericStatus = new GenericStatus(true);
@@ -35,10 +37,8 @@ public class SensorAdminService {
 			sensor.setRoom(room);
 			room.getSensors().add(sensor);
 
-			em.getTransaction().begin();
 			em.persist(sensor);
 			em.merge(room);
-			em.getTransaction().commit();
 
 			genericStatus.setObject(sensor);
 		}
@@ -48,6 +48,7 @@ public class SensorAdminService {
 
 	@GET
 	@Path("update/{sensorId}/{name}/{type}")
+	@Transactional
 	public GenericStatus updateSensor(@PathParam("sensorId") Long sensorId, @PathParam("name") String name,
 			@PathParam("type") String type) {
 
@@ -56,27 +57,27 @@ public class SensorAdminService {
 				.setParameter("sensorId", sensorId).getResultList();
 
 		if (sensors != null) {
-			em.getTransaction().begin();
+
 			for (Sensor sensor : sensors) {
 				sensor.setSensorName(name);
 				sensor.setSensorType(type);
 				em.persist(sensor);
 			}
 
-			em.getTransaction().commit();
 		}
 		return new GenericStatus(true);
 	}
 
 	@GET
 	@Path("delete/{sensorId}")
+	@Transactional
 	public GenericStatus deleteSensor(@PathParam("sensorId") Long sensorId) {
 
 		List<Sensor> sensors = em.createQuery("select s from Sensor s where s.id=:sensorId", Sensor.class)
 				.setParameter("sensorId", sensorId).getResultList();
 
 		if (sensors != null) {
-			em.getTransaction().begin();
+
 			for (Sensor sensor : sensors) {
 				Room room = sensor.getRoom();
 				room.getSensors().remove(sensor);
@@ -84,7 +85,6 @@ public class SensorAdminService {
 				em.persist(room);
 				em.remove(sensor);
 			}
-			em.getTransaction().commit();
 		}
 
 		return new GenericStatus(true);

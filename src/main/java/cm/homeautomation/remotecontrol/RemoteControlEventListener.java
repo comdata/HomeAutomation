@@ -7,6 +7,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
 import org.apache.log4j.LogManager;
 
@@ -32,10 +33,10 @@ public class RemoteControlEventListener {
 
 	@Inject
 	EventBus bus;
-	
+
 	@Inject
 	EntityManager em;
-	
+
 	@Inject
 	ConfigurationService configurationService;
 
@@ -94,6 +95,7 @@ public class RemoteControlEventListener {
 	}
 
 	@ConsumeEvent(value = "RemoteControlEvent", blocking = true)
+	@Transactional
 	public void subscribe(RemoteControlEvent event) {
 		String name = event.getName();
 		String technicalId = event.getTechnicalId();
@@ -187,8 +189,6 @@ public class RemoteControlEventListener {
 		} else {
 			// remote not found let's create it
 
-			em.getTransaction().begin();
-
 			RemoteControl remoteControl = new RemoteControl();
 
 			remoteControl.setTechnicalId(technicalId);
@@ -202,7 +202,7 @@ public class RemoteControlEventListener {
 			remoteControl.setGroups(groups);
 			em.persist(remoteControl);
 			em.persist(group);
-			em.getTransaction().commit();
+
 		}
 	}
 }

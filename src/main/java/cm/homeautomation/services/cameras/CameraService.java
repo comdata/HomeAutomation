@@ -16,6 +16,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -126,9 +127,9 @@ public class CameraService extends BaseService {
 		instance.singleCameraUpdateInternal(args, em, camera);
 	}
 
+	@Transactional
 	private void singleCameraUpdateInternal(String[] args, EntityManager em, Camera camera) {
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream();) {
-			em.getTransaction().begin();
 
 			final BufferedImage image = resize(new URL(camera.getIcon()),
 					new Dimension(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
@@ -154,34 +155,30 @@ public class CameraService extends BaseService {
 				em.persist(cameraImageHistory);
 			}
 
-			em.getTransaction().commit();
-
 			CameraImageUpdateEvent cameraEvent = new CameraImageUpdateEvent();
 			cameraEvent.setCamera(camera);
 			EventObject event = new EventObject(cameraEvent);
 
 			bus.publish("EventObject", event);
 		} catch (Exception e) {
-			em.getTransaction().rollback();
 			loadNoImage(args, em, camera);
 		} finally {
 		}
 	}
 
+	@Transactional
 	private void cleanOldImages() {
 		
-
-		em.getTransaction().begin();
 
 		em.createQuery("delete from CameraImageHistory c where c.dateTaken<=:deleteDate")
 				.setParameter("deleteDate", new Date((new Date()).getTime() - (3 * 86400 * 1000))).executeUpdate();
 
-		em.getTransaction().commit();
+	
 	}
 
-	private static void loadNoImage(String[] args, EntityManager em, Camera camera) {
+	@Transactional
+	private  void loadNoImage(String[] args, EntityManager em, Camera camera) {
 		try {
-			em.getTransaction().begin();
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			final BufferedImage image = resize(new File("resource/noimage.png").toURI().toURL(),
 					new Dimension(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
@@ -190,7 +187,6 @@ public class CameraService extends BaseService {
 
 			camera.setImageSnapshot(cameraSnapshot);
 			em.merge(camera);
-			em.getTransaction().commit();
 		} catch (IOException | RuntimeException e) {
 			LogManager.getLogger(CameraService.class).error("loading the 'no image' image failed.", e);
 		}

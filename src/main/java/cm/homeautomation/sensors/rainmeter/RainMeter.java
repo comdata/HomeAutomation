@@ -6,6 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.RainPing;
@@ -22,13 +23,12 @@ public class RainMeter {
 	ConfigurationService configurationService;
 
 	@ConsumeEvent(value = "EventObject", blocking = true)
+	@Transactional
 	public void handlePowerMeterData(final EventObject eventObject) {
 
 		final Object data = eventObject.getData();
 		if (data instanceof RainData) {
 			final RainData rainData = (RainData) data;
-
-			em.getTransaction().begin();
 
 			final RainPing rainPing = new RainPing();
 			rainPing.setMac(rainData.getMac());
@@ -37,8 +37,6 @@ public class RainMeter {
 			rainPing.setRainCounter(rainData.getRc());
 			rainPing.setTimestamp(new Date());
 			em.persist(rainPing);
-
-			em.getTransaction().commit();
 
 		}
 	}

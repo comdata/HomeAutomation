@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
@@ -40,10 +41,10 @@ public class HueInterface extends BaseService {
 
 	@Inject
 	EntityManager em;
-	
+
 	@Inject
 	ConfigurationService configurationService;
-	
+
 	@Inject
 	EventBus bus;
 
@@ -56,8 +57,8 @@ public class HueInterface extends BaseService {
 
 	@POST
 	@Path("send")
+	@Transactional
 	public GenericStatus handleMessage(HueEmulatorMessage message) {
-		
 
 		String lightId = message.getLightId();
 
@@ -76,10 +77,9 @@ public class HueInterface extends BaseService {
 				if (hueDeviceNameList != null && !hueDeviceNameList.isEmpty()) {
 					HueDevice hueDevice = hueDeviceNameList.get(0);
 
-					em.getTransaction().begin();
 					hueDevice.setLightId(message.getLightId());
 					em.merge(hueDevice);
-					em.getTransaction().commit();
+
 					handleMessage(message);
 				} else {
 
@@ -117,14 +117,13 @@ public class HueInterface extends BaseService {
 												RemoteControl.class)
 										.setParameter("name", message.getDeviceName()).getResultList();
 
-								if (remoteList!=null && !remoteList.isEmpty()) {
-									externalId=remoteList.get(0).getId();
-									type=HueDeviceType.REMOTE;
+								if (remoteList != null && !remoteList.isEmpty()) {
+									externalId = remoteList.get(0).getId();
+									type = HueDeviceType.REMOTE;
 								}
 							}
 						}
 					}
-					em.getTransaction().begin();
 
 					HueDevice hueDevice = new HueDevice();
 					hueDevice.setName(message.getDeviceName());
@@ -137,7 +136,6 @@ public class HueInterface extends BaseService {
 					}
 
 					em.persist(hueDevice);
-					em.getTransaction().commit();
 
 					if (externalId > 0 && type != null) {
 						// do it again, since device is now created
@@ -190,7 +188,6 @@ public class HueInterface extends BaseService {
 	}
 
 	private void handleWindowBlind(HueEmulatorMessage message, HueDevice hueDevice) {
-		
 
 		WindowBlind windowBlind = em.find(WindowBlind.class, hueDevice.getExternalId());
 

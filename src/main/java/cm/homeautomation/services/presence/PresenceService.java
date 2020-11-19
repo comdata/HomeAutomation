@@ -8,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -26,36 +27,31 @@ public class PresenceService extends BaseService {
 
 	@Inject
 	EventBus bus;
-	
+
 	@Inject
 	EntityManager em;
 
 	@Inject
 	ConfigurationService configurationService;
-	
+
+	@Transactional
 	public GenericStatus purgeStates() {
-		
-		
-		em.getTransaction().begin();
-		
+
 		em.createQuery("delete from PresenceState ps").executeUpdate();
-		
-		em.getTransaction().commit();
-		
+
 		return new GenericStatus(true);
 	}
-	
+
 	@GET
 	@Path("setPresence/{id}/{state}")
+	@Transactional
 	public GenericStatus setPresence(@PathParam("id") Long id, @PathParam("state") String state) {
-
-		
 
 		Person person = null;
 
 		@SuppressWarnings("unchecked")
-		List<Person> resultList = em.createQuery("select p from Person p where p.id=:id")
-				.setParameter("id", id).getResultList();
+		List<Person> resultList = em.createQuery("select p from Person p where p.id=:id").setParameter("id", id)
+				.getResultList();
 
 		if (resultList != null && !resultList.isEmpty()) {
 			person = resultList.get(0);
@@ -72,55 +68,48 @@ public class PresenceService extends BaseService {
 				presenceState = result.get(0);
 			}
 
-			if ((presenceState != null && !presenceState.getState().equals(state)) || presenceState==null) {
-				
-				em.getTransaction().begin();
-				
+			if ((presenceState != null && !presenceState.getState().equals(state)) || presenceState == null) {
+
 				PresenceState newState = new PresenceState();
-				
+
 				newState.setDate(new Date());
 				newState.setPerson(person);
 				newState.setState(state);
-				
+
 				em.persist(newState);
-				
+
 				bus.publish("EventObject", new EventObject(newState));
 
-				em.getTransaction().commit();
 			}
 		}
-		
-		
+
 		return new GenericStatus(true);
 	}
 
 	@GET
 	@Path("getAll")
 	public List<PresenceState> getPresences() {
-		
-		List<PresenceState> foundPresenceStates=new ArrayList<>();
-		
-		
 
+		List<PresenceState> foundPresenceStates = new ArrayList<>();
 
 		@SuppressWarnings("unchecked")
 		List<Person> personList = em.createQuery("select p from Person p").getResultList();
-		
-		for (Person person: personList) {
-			
+
+		for (Person person : personList) {
+
 			if (person != null) {
 				List<PresenceState> result = em
-						.createQuery("select p from PresenceState p where p.person=:person order by p.date desc", PresenceState.class)
+						.createQuery("select p from PresenceState p where p.person=:person order by p.date desc",
+								PresenceState.class)
 						.setParameter("person", person).getResultList();
-				
+
 				if (result != null && !result.isEmpty()) {
 					foundPresenceStates.add(result.get(0));
 				}
 			}
-			
+
 		}
 		return foundPresenceStates;
 	}
 
-	
 }

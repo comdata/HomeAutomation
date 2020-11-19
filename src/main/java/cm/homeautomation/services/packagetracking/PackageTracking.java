@@ -25,6 +25,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
@@ -385,171 +386,170 @@ public class PackageTracking extends BaseService {
 		instance.internalUpdateTrackingInformation(args);
 	}
 
-	public void internalUpdateTrackingInformation(String[] args) throws ClientProtocolException, IOException, NoSuchAlgorithmException, KeyManagementException {
-    	
-    	SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+	@Transactional
+	public void internalUpdateTrackingInformation(String[] args)
+			throws ClientProtocolException, IOException, NoSuchAlgorithmException, KeyManagementException {
 
-        // set up a TrustManager that trusts everything
-        sslContext.init(null, new TrustManager[] { new X509TrustManager() {
-            @Override
-            public X509Certificate[] getAcceptedIssuers() {
-                LogManager.getLogger(this.getClass()).info("getAcceptedIssuers =============");
-                return null;
-            }
+		SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
 
-            @Override
-            public void checkClientTrusted(X509Certificate[] certs, String authType) {
-                LogManager.getLogger(this.getClass()).info("checkClientTrusted =============");
-            }
+		// set up a TrustManager that trusts everything
+		sslContext.init(null, new TrustManager[] { new X509TrustManager() {
+			@Override
+			public X509Certificate[] getAcceptedIssuers() {
+				LogManager.getLogger(this.getClass()).info("getAcceptedIssuers =============");
+				return null;
+			}
 
-            @Override
-            public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                LogManager.getLogger(this.getClass()).info("checkServerTrusted =============");
-            }
-        } }, new SecureRandom());
+			@Override
+			public void checkClientTrusted(X509Certificate[] certs, String authType) {
+				LogManager.getLogger(this.getClass()).info("checkClientTrusted =============");
+			}
 
-        HostnameVerifier hostnameVerifier = org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
+			@Override
+			public void checkServerTrusted(X509Certificate[] certs, String authType) {
+				LogManager.getLogger(this.getClass()).info("checkServerTrusted =============");
+			}
+		} }, new SecureRandom());
 
-        SSLSocketFactory sf = new SSLSocketFactory(sslContext);
-        sf.setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);
-        Scheme httpsScheme = new Scheme("https", 443, sf);
-        SchemeRegistry schemeRegistry = new SchemeRegistry();
-        schemeRegistry.register(httpsScheme);
+		HostnameVerifier hostnameVerifier = org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
 
-        // apache HttpClient version >4.2 should use
-        // BasicClientConnectionManager
-        ClientConnectionManager cm = new SingleClientConnManager(schemeRegistry);
-        HttpClient client = new DefaultHttpClient(cm);
-        String url = "https://data.parcelapp.net/data.php?caller=yes&version=4";
+		SSLSocketFactory sf = new SSLSocketFactory(sslContext);
+		sf.setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);
+		Scheme httpsScheme = new Scheme("https", 443, sf);
+		SchemeRegistry schemeRegistry = new SchemeRegistry();
+		schemeRegistry.register(httpsScheme);
 
-        HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
+		// apache HttpClient version >4.2 should use
+		// BasicClientConnectionManager
+		ClientConnectionManager cm = new SingleClientConnManager(schemeRegistry);
+		HttpClient client = new DefaultHttpClient(cm);
+		String url = "https://data.parcelapp.net/data.php?caller=yes&version=4";
 
-        String cookie = args[0];
+		HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
 
-        HttpGet request = new HttpGet(url);
+		String cookie = args[0];
 
-        // add request header
-        request.addHeader("User-Agent", USER_AGENT);
-        request.addHeader("Accept", ACCEPT_HEADER);
-        request.addHeader("Cookie", cookie);
-        HttpResponse response = client.execute(request);
+		HttpGet request = new HttpGet(url);
 
-        LogManager.getLogger(PackageHistory.class).info("Response Code : " + response.getStatusLine().getStatusCode());
+		// add request header
+		request.addHeader("User-Agent", USER_AGENT);
+		request.addHeader("Accept", ACCEPT_HEADER);
+		request.addHeader("Cookie", cookie);
+		HttpResponse response = client.execute(request);
 
-        BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+		LogManager.getLogger(PackageHistory.class).info("Response Code : " + response.getStatusLine().getStatusCode());
 
-        StringBuffer result = new StringBuffer();
-        String line = "";
-        while ((line = rd.readLine()) != null) {
-            result.append(line);
-        }
+		BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 
-        String resultString = result.toString();
+		StringBuffer result = new StringBuffer();
+		String line = "";
+		while ((line = rd.readLine()) != null) {
+			result.append(line);
+		}
 
-        resultString = resultString.substring(1);
-        resultString = resultString.substring(0, resultString.length() - 1);
-        resultString = "{\"packages\":" + resultString + "}";
+		String resultString = result.toString();
 
-        List<SimpleDateFormat> knownPatterns = new ArrayList<>();
-        knownPatterns.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-        knownPatterns.add(new SimpleDateFormat("yyyy-MM-dd HH:mm"));
-        knownPatterns.add(new SimpleDateFormat("dd.MM.yyyy HH:mm:ss"));
-        knownPatterns.add(new SimpleDateFormat("dd.MM.yyyy HH:mm"));
+		resultString = resultString.substring(1);
+		resultString = resultString.substring(0, resultString.length() - 1);
+		resultString = "{\"packages\":" + resultString + "}";
 
-        JsonFactory factory = new JsonFactory();
-        ObjectMapper om = new ObjectMapper(factory).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		List<SimpleDateFormat> knownPatterns = new ArrayList<>();
+		knownPatterns.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+		knownPatterns.add(new SimpleDateFormat("yyyy-MM-dd HH:mm"));
+		knownPatterns.add(new SimpleDateFormat("dd.MM.yyyy HH:mm:ss"));
+		knownPatterns.add(new SimpleDateFormat("dd.MM.yyyy HH:mm"));
 
-        JsonNode rootNode = om.readTree(resultString);
+		JsonFactory factory = new JsonFactory();
+		ObjectMapper om = new ObjectMapper(factory).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        Iterator<Map.Entry<String, JsonNode>> fieldsIterator = rootNode.fields();
-        List<Package> trackedPackages = new ArrayList<>();
-        while (fieldsIterator.hasNext()) {
+		JsonNode rootNode = om.readTree(resultString);
 
-            Map.Entry<String, JsonNode> field = fieldsIterator.next();
+		Iterator<Map.Entry<String, JsonNode>> fieldsIterator = rootNode.fields();
+		List<Package> trackedPackages = new ArrayList<>();
+		while (fieldsIterator.hasNext()) {
 
-            JsonNode jsonNode = field.getValue().get(0);
+			Map.Entry<String, JsonNode> field = fieldsIterator.next();
 
-            if (jsonNode != null) {
-                for (int i = 0; i < jsonNode.size(); i++) {
+			JsonNode jsonNode = field.getValue().get(0);
 
-                    Package trackedPackage = new Package();
+			if (jsonNode != null) {
+				for (int i = 0; i < jsonNode.size(); i++) {
 
-                    JsonNode singleShipment = jsonNode.get(i);
+					Package trackedPackage = new Package();
 
-                    LogManager.getLogger(PackageHistory.class).info(singleShipment);
+					JsonNode singleShipment = jsonNode.get(i);
 
-                    String trackingNumber = singleShipment.get(0).asText();
-                    String packageName = singleShipment.get(1).asText();
-                    String carrier = singleShipment.get(2).asText();
-                    boolean delivered = singleShipment.get(3).asText().equals("no");
+					LogManager.getLogger(PackageHistory.class).info(singleShipment);
 
-                    JsonNode steps = singleShipment.get(4);
-                    LogManager.getLogger(PackageHistory.class).info("Steps:" + steps.get(0));
-                    String dateAdded = singleShipment.get(6).asText();
-                    String dateChanged = singleShipment.get(7).asText();
-                    LogManager.getLogger(PackageHistory.class).info("Status: " + singleShipment.get(8).asText());
+					String trackingNumber = singleShipment.get(0).asText();
+					String packageName = singleShipment.get(1).asText();
+					String carrier = singleShipment.get(2).asText();
+					boolean delivered = singleShipment.get(3).asText().equals("no");
 
-                    String carrierFullname = CARRIER_MAP.get(carrier);
+					JsonNode steps = singleShipment.get(4);
+					LogManager.getLogger(PackageHistory.class).info("Steps:" + steps.get(0));
+					String dateAdded = singleShipment.get(6).asText();
+					String dateChanged = singleShipment.get(7).asText();
+					LogManager.getLogger(PackageHistory.class).info("Status: " + singleShipment.get(8).asText());
 
-                    trackedPackage.setId(new PackagePK(trackingNumber, carrier));
-                    trackedPackage.setPackageName(packageName);
-                    trackedPackage.setDateAdded(dateAdded);
-                    trackedPackage.setDateModified(dateChanged);
-                    trackedPackage.setDelivered(delivered);
+					String carrierFullname = CARRIER_MAP.get(carrier);
 
-                    List<PackageHistoryPK> hashCodes = new ArrayList<PackageHistoryPK>();
-                    for (JsonNode step : steps) {
+					trackedPackage.setId(new PackagePK(trackingNumber, carrier));
+					trackedPackage.setPackageName(packageName);
+					trackedPackage.setDateAdded(dateAdded);
+					trackedPackage.setDateModified(dateChanged);
+					trackedPackage.setDelivered(delivered);
 
-                        PackageHistory historyEntry = new PackageHistory();
-                        Date timestamp = parseDate(knownPatterns, step.get(1).asText());
+					List<PackageHistoryPK> hashCodes = new ArrayList<PackageHistoryPK>();
+					for (JsonNode step : steps) {
 
-                        if (timestamp == null) {
-                            timestamp = new Date(0);
-                        }
-                        String statusText = step.get(0).asText().trim();
-                        PackageHistoryPK id = new PackageHistoryPK(trackingNumber, carrier, timestamp, statusText);
+						PackageHistory historyEntry = new PackageHistory();
+						Date timestamp = parseDate(knownPatterns, step.get(1).asText());
 
-                        if (!hashCodes.contains(id)) {
+						if (timestamp == null) {
+							timestamp = new Date(0);
+						}
+						String statusText = step.get(0).asText().trim();
+						PackageHistoryPK id = new PackageHistoryPK(trackingNumber, carrier, timestamp, statusText);
 
-                            historyEntry.setId(id);
-                            historyEntry.setTrackedPackage(trackedPackage);
+						if (!hashCodes.contains(id)) {
 
-                            historyEntry.setLocationText(step.get(3).asText());
-                            trackedPackage.getPackageHistory().add(historyEntry);
-                            hashCodes.add(id);
-                            LogManager.getLogger(PackageHistory.class).info("adding history event");
-                        } else {
-                            LogManager.getLogger(PackageHistory.class).info("duplicate found");
-                        }
-                    }
+							historyEntry.setId(id);
+							historyEntry.setTrackedPackage(trackedPackage);
 
-                    mergeTrackedPackage(trackedPackage);
+							historyEntry.setLocationText(step.get(3).asText());
+							trackedPackage.getPackageHistory().add(historyEntry);
+							hashCodes.add(id);
+							LogManager.getLogger(PackageHistory.class).info("adding history event");
+						} else {
+							LogManager.getLogger(PackageHistory.class).info("duplicate found");
+						}
+					}
 
-                    trackedPackages.add(trackedPackage);
+					mergeTrackedPackage(trackedPackage);
 
-                    LogManager.getLogger(PackageHistory.class).info("Tracking No:" + trackingNumber + " Delivered: "
-                            + delivered + " sCarrier: " + carrierFullname + " Name: " + packageName);
-                }
+					trackedPackages.add(trackedPackage);
 
-            }
-        }
+					LogManager.getLogger(PackageHistory.class).info("Tracking No:" + trackingNumber + " Delivered: "
+							+ delivered + " sCarrier: " + carrierFullname + " Name: " + packageName);
+				}
 
-        List<Package> allOpenPackages = new PackageTracking().getAllOpen();
-        
+			}
+		}
 
-        em.getTransaction().begin();
-        for (Package openPackage : allOpenPackages) {
+		List<Package> allOpenPackages = new PackageTracking().getAllOpen();
 
-            if (!isPackageTracked(openPackage, trackedPackages)) {
-                LogManager.getLogger(PackageHistory.class)
-                        .info("Package deleted: " + openPackage.getId().getTrackingNumber());
-                openPackage.setDelivered(true);
-                em.merge(openPackage);
-            }
-        }
-        em.getTransaction().commit();
+		for (Package openPackage : allOpenPackages) {
 
-    }
+			if (!isPackageTracked(openPackage, trackedPackages)) {
+				LogManager.getLogger(PackageHistory.class)
+						.info("Package deleted: " + openPackage.getId().getTrackingNumber());
+				openPackage.setDelivered(true);
+				em.merge(openPackage);
+			}
+		}
+
+	}
 
 	private static boolean isPackageTracked(Package openPackage, List<Package> trackedPackages) {
 		for (Package trackedPackage : trackedPackages) {
@@ -593,6 +593,7 @@ public class PackageTracking extends BaseService {
 		return newPackageList;
 	}
 
+	@Transactional
 	private void mergeTrackedPackage(Package trackedPackage) {
 
 		List<Package> results = em
@@ -614,20 +615,18 @@ public class PackageTracking extends BaseService {
 		trackedPackage.setPackageHistory(mergedPackageHistories);
 
 		if (results == null || results.isEmpty()) {
-			em.getTransaction().begin();
+			
 			em.persist(trackedPackage);
-			em.getTransaction().commit();
+			
 		} else {
 			Package existingPackage = results.get(0);
 
-			em.getTransaction().begin();
 			LogManager.getLogger(PackageHistory.class).info("performing package merge");
 
 			existingPackage.setDateModified(trackedPackage.getDateModified());
 			existingPackage.setDelivered(trackedPackage.isDelivered());
 			existingPackage.setPackageHistory(trackedPackage.getPackageHistory());
 			em.merge(existingPackage);
-			em.getTransaction().commit();
 		}
 
 	}

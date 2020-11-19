@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.UptimePing;
@@ -17,29 +18,26 @@ public class UptimeRecording {
 
 	@Inject
 	ConfigurationService configurationService;
-	
+
 	private static UptimeRecording instance;
-	
+
 	public UptimeRecording() {
-		instance=this;
+		instance = this;
 	}
-	
+
 	public static void recordUptime(String[] args) {
 		instance.internalRecordUptime(args);
 	}
-	
+
+	@Transactional
 	public void internalRecordUptime(String[] args) {
-		
-		
-		em.getTransaction().begin();
-		
-		UptimePing uptimePing=new UptimePing();
+
+		UptimePing uptimePing = new UptimePing();
 		uptimePing.setTimestamp(new Date());
 		uptimePing.setUp(true);
-		
+
 		em.persist(uptimePing);
-		
-		em.getTransaction().commit();
+
 	}
-	
+
 }

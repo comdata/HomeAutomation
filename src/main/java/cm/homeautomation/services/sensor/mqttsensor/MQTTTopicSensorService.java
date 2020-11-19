@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -29,24 +30,19 @@ public class MQTTTopicSensorService extends BaseService {
 
 	@Inject
 	ConfigurationService configurationService;
-	
+
 	@GET
 	@Path("getAll")
 	public List<MQTTTopic> getAllTopics() {
-
-		
 
 		return em.createQuery("select t from MQTTTopic t", MQTTTopic.class).getResultList();
 	}
 
 	@GET
 	@Path("createSensor/{topicId}/{roomId}/{sensorName}")
+	@Transactional
 	public GenericStatus createSensorForTopic(@PathParam("topicId") Long topicId, @PathParam("roomId") Long roomId,
 			@PathParam("sensorName") String sensorName) {
-
-		
-
-		em.getTransaction().begin();
 
 		MQTTTopic topic = em.find(MQTTTopic.class, topicId);
 		Room room = em.find(Room.class, roomId);
@@ -63,8 +59,6 @@ public class MQTTTopicSensorService extends BaseService {
 					.showData(true).deadbandPercent(0).reportingFactor(1f).build();
 
 			em.persist(sensor);
-
-			em.getTransaction().commit();
 
 			GenericStatus genericStatus = new GenericStatus(true);
 			genericStatus.setObject(sensor);

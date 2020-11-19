@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -73,6 +74,7 @@ public class InfraredService extends BaseService {
 	 * @param event
 	 */
 	@ConsumeEvent(value = "EventObject", blocking = true)
+	@Transactional
 	public void handleEvent(final EventObject event) {
 
 		final Object data = event.getData();
@@ -96,7 +98,6 @@ public class InfraredService extends BaseService {
 			if ((resultList == null) || resultList.isEmpty()) {
 				// not found create an entry
 
-				em.getTransaction().begin();
 				final IRCommand irCommand = new IRCommand();
 
 				irCommand.setAddress(address);
@@ -113,7 +114,6 @@ public class InfraredService extends BaseService {
 				irCommand.setData(irData.getData());
 
 				em.persist(irCommand);
-				em.getTransaction().commit();
 			}
 		}
 

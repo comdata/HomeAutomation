@@ -9,6 +9,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
 import org.apache.log4j.LogManager;
 
@@ -50,6 +51,7 @@ public class NetworkDeviceDatabaseUpdater {
 	}
 
 	@ConsumeEvent(value = "NetworkScannerHostFoundMessage", blocking = true)
+	@Transactional
 	public void handleNetworkDeviceFound(NetworkScannerHostFoundMessage foundHostMessage) {
 		final NetworkDevice networkDevice = foundHostMessage.getHost();
 		List<NetworkDevice> resultList = null;
@@ -79,19 +81,18 @@ public class NetworkDeviceDatabaseUpdater {
 				existingNetworkDevice.setMac(networkDevice.getMac());
 			}
 			existingNetworkDevice.setLastSeen(new Date());
-			em.getTransaction().begin();
+
 			em.merge(existingNetworkDevice);
-			em.getTransaction().commit();
 			System.out.println("done updating existing entry: " + existingNetworkDevice.getId());
 //				LogManager.getLogger(this.getClass()).debug("done updating existing entry: "+existingNetworkDevice.getId());
 		} else {
 			// this is a new device, so save it
 			System.out.println("creating new entry: " + networkDevice.getIp());
 //				LogManager.getLogger(this.getClass()).debug("creating new entry: "+networkDevice.getIp());
-			em.getTransaction().begin();
+
 			networkDevice.setLastSeen(new Date());
 			em.persist(networkDevice);
-			em.getTransaction().commit();
+	
 			System.out.println("done creating new entry: " + networkDevice.getIp());
 //				LogManager.getLogger(this.getClass()).debug("done creating new entry: "+networkDevice.getIp());
 		}

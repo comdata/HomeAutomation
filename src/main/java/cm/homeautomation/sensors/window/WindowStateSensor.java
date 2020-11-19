@@ -6,6 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.device.DeviceService;
@@ -27,13 +28,13 @@ public class WindowStateSensor {
 
 	@Inject
 	EntityManager em;
-	
+
 	@Inject
 	ConfigurationService configurationService;
-	
+
 	@Inject
 	DeviceService deviceService;
-	
+
 	@Inject
 	EventBus bus;
 
@@ -41,6 +42,7 @@ public class WindowStateSensor {
 	}
 
 	@ConsumeEvent(value = "EventObject", blocking = true)
+	@Transactional
 	public void handleWindowState(final EventObject eventObject) {
 
 		final Object data = eventObject.getData();
@@ -56,9 +58,9 @@ public class WindowStateSensor {
 			windowState.setMac(mac);
 
 			synchronized (this) {
-				em.getTransaction().begin();
+
 				em.merge(windowState);
-				em.getTransaction().commit();
+
 			}
 
 			final WindowStateData windowStateData = new WindowStateData();

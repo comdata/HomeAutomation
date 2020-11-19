@@ -12,6 +12,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
@@ -42,7 +43,7 @@ public class SchedulerService extends BaseService {
 
 	@Inject
 	ConfigurationService configurationService;
-	
+
 	@Inject
 	org.quartz.Scheduler quartz;
 
@@ -59,8 +60,6 @@ public class SchedulerService extends BaseService {
 	}
 
 	private void initialize() throws SchedulerException {
-
-		
 
 		List<Task> tasks = em.createQuery("select t from Task t", Task.class)
 				.setHint("javax.persistence.cache.storeMode", "REFRESH").getResultList();
@@ -135,8 +134,8 @@ public class SchedulerService extends BaseService {
 
 	@GET
 	@Path("sampleTask")
+	@Transactional
 	public void createSampleTask() {
-		
 
 		Task task = new Task();
 		List<String> arguments = new ArrayList<>();
@@ -144,17 +143,14 @@ public class SchedulerService extends BaseService {
 		arguments.add("Argument 2");
 		task.setArguments(arguments);
 
-		em.getTransaction().begin();
 		em.persist(task);
 
-		em.getTransaction().commit();
 	}
 
 	@GET
 	@Path("import")
+	@Transactional
 	public void importScheduleFile() {
-
-		
 
 		File cronFile = new File("/Users/christoph/git/HomeAutomation/schedule.cron");
 
@@ -191,11 +187,7 @@ public class SchedulerService extends BaseService {
 						task.setClazz(clazz);
 						task.setArguments(arguments);
 
-						em.getTransaction().begin();
-
 						em.persist(task);
-
-						em.getTransaction().commit();
 
 					}
 				}

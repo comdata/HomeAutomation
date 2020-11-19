@@ -13,6 +13,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -38,13 +39,13 @@ public class Phone extends BaseService {
 
 	@Inject
 	EventBus bus;
-	
+
 	@Inject
 	EntityManager em;
 
 	@Inject
 	ConfigurationService configurationService;
-	
+
 	/**
 	 * accepts call events from external systems and creates a {@link EventObject}
 	 * message of type {@link PhoneCallEvent} to all interested systems
@@ -57,6 +58,7 @@ public class Phone extends BaseService {
 	 */
 	@Path("status/{event}/{mode}/{internalNumber}/{externalNumber}")
 	@GET
+	@Transactional
 	public GenericStatus setStatus(@PathParam("event") String event, @PathParam("mode") String mode,
 			@PathParam("internalNumber") String internalNumber, @PathParam("externalNumber") String externalNumber) {
 
@@ -65,12 +67,7 @@ public class Phone extends BaseService {
 
 		PhoneCallEvent phoneCallEvent = new PhoneCallEvent(event, mode, internalNumber, externalNumber);
 
-		
-		em.getTransaction().begin();
-
 		em.persist(phoneCallEvent);
-
-		em.getTransaction().commit();
 
 		bus.publish("EventObject", new EventObject(phoneCallEvent));
 
@@ -86,17 +83,16 @@ public class Phone extends BaseService {
 	@Path("getCallList")
 	public List<PhoneCallEvent> getCallList() {
 
-		
-
-		return em.createQuery("select p from PhoneCallEvent p order by p.timestamp desc", PhoneCallEvent.class).getResultList();
+		return em.createQuery("select p from PhoneCallEvent p order by p.timestamp desc", PhoneCallEvent.class)
+				.getResultList();
 
 	}
 
-	//TODO
+	// TODO
 	/*
 	 * preparation for watching for call events internally
 	 */
-	public  void main(String[] argv) {
+	public void main(String[] argv) {
 		String configurationProperty = configurationService.getConfigurationProperty("phone", "phoneserverip");
 		new Phone().getCall(configurationProperty, 1012);
 
@@ -133,7 +129,7 @@ public class Phone extends BaseService {
 			this.is = new BufferedReader(new InputStreamReader(is));
 			this.os = new PrintStream(os);
 		}
-		
+
 		@Override
 		public void run() {
 			// FIXME add implementation

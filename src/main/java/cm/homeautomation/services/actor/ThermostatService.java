@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -28,11 +29,11 @@ public class ThermostatService extends BaseService {
 
 	@Inject
 	EntityManager em;
-	
+
 	@Inject
 	ConfigurationService configurationService;
-	
-	private static ThermostatService instance=null;
+
+	private static ThermostatService instance = null;
 
 	public static void cronSetStatus(final String[] args) {
 		final Long id = Long.valueOf(args[0]);
@@ -77,9 +78,10 @@ public class ThermostatService extends BaseService {
 
 	@GET
 	@Path("setValue/{id}/{value}")
+	@Transactional
 	public GenericStatus setValue(@PathParam("id") final Long id, @PathParam("value") String value) {
-		em.getTransaction().begin();
-		final Switch singleSwitch = (Switch) em.createQuery("select s from Switch s where s.id=:id")
+
+		final Switch singleSwitch = em.createQuery("select s from Switch s where s.id=:id", Switch.class)
 				.setParameter("id", id).getSingleResult();
 
 		final String setURL = singleSwitch.getSwitchSetUrl().replace("{SETVALUE}", value);
@@ -91,9 +93,7 @@ public class ThermostatService extends BaseService {
 
 		em.persist(singleSwitch);
 
-        em.getTransaction().commit();
-        
-        value = value.replaceAll("[\n|\r|\t]", "_");
+		value = value.replaceAll("[\n|\r|\t]", "_");
 
 		LogManager.getLogger(this.getClass()).info("Set {} to value: {}", id, value);
 		return new GenericStatus(true);

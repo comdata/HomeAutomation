@@ -7,6 +7,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -45,15 +46,14 @@ public class NetworkDevicesService extends BaseService {
 
 	@GET
 	@Path("delete/{name}/{ip}/{mac}")
+	@Transactional
 	public GenericStatus delete(@PathParam("name") final String name, @PathParam("ip") final String ip,
 			@PathParam("mac") final String mac) {
 
-		em.getTransaction().begin();
+		
 
 		em.createQuery("delete from DashButton db where db.mac=:mac", DashButton.class).setParameter("mac", mac)
 				.executeUpdate();
-
-		em.getTransaction().commit();
 
 		return new GenericStatus(true);
 	}

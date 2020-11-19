@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -24,7 +25,7 @@ public class DeviceService extends BaseService {
 
 	@Inject
 	EntityManager em;
-	
+
 	/**
 	 * list all devices
 	 * 
@@ -36,7 +37,7 @@ public class DeviceService extends BaseService {
 
 		@SuppressWarnings("unchecked")
 		List<Device> resultList = em.createQuery("select d from Device d").getResultList();
-		
+
 		return resultList;
 	}
 
@@ -50,14 +51,12 @@ public class DeviceService extends BaseService {
 	 */
 	@GET
 	@Path("create/{roomId}/{name}/{mac}")
+	@Transactional
 	public GenericStatus createDevice(@PathParam("roomId") Long roomId, @PathParam("name") String name,
 			@PathParam("mac") String mac) {
 
-
 		Room room = (Room) em.createQuery("select r from Room r where r.id=:roomId").setParameter("roomId", roomId)
 				.getSingleResult();
-
-		em.getTransaction().begin();
 
 		Device device = new Device();
 		device.setMac(mac);
@@ -67,8 +66,6 @@ public class DeviceService extends BaseService {
 
 		em.persist(device);
 		em.persist(room);
-
-		em.getTransaction().commit();
 
 		return new GenericStatus(true);
 	}
@@ -83,20 +80,16 @@ public class DeviceService extends BaseService {
 	 */
 	@GET
 	@Path("update/{roomId}/{name}/{oldMac}/{newMac}")
+	@Transactional
 	public GenericStatus update(@PathParam("roomId") String roomId, @PathParam("name") String name,
 			@PathParam("oldMac") String mac, @PathParam("newMac") String newMac) {
-
 
 		Device device = (Device) em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac)
 				.getSingleResult();
 
-		em.getTransaction().begin();
-
 		device.setMac(newMac);
 		device.setName(name);
 		em.merge(device);
-
-		em.getTransaction().commit();
 
 		return new GenericStatus(true);
 	}
@@ -109,13 +102,12 @@ public class DeviceService extends BaseService {
 	 */
 	@GET
 	@Path("delete/{mac}")
+	@Transactional
 	public GenericStatus delete(@PathParam("mac") String mac) {
 
 		@SuppressWarnings("unchecked")
 		List<Device> devices = em.createQuery("select d from Device d where d.mac=:mac").setParameter("mac", mac)
 				.getResultList();
-
-		em.getTransaction().begin();
 
 		for (Device device : devices) {
 
@@ -126,7 +118,6 @@ public class DeviceService extends BaseService {
 			em.remove(device);
 
 		}
-		em.getTransaction().commit();
 
 		return new GenericStatus(true);
 	}

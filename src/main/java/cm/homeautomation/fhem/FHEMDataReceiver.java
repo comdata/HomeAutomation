@@ -7,6 +7,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -101,16 +102,14 @@ public class FHEMDataReceiver {
 		}
 	}
 
+	@Transactional
 	private void createNewFHEMDevices(String device) {
-
-		em.getTransaction().begin();
 
 		FHEMDevice fhemDevice = new FHEMDevice();
 
 		fhemDevice.setName(device);
 		em.persist(fhemDevice);
 
-		em.getTransaction().commit();
 	}
 
 }

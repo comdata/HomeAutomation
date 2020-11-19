@@ -79,6 +79,7 @@ public class LightService extends BaseService {
 
 	@GET
 	@Path("create/{name}/{lightType}/{roomId}")
+	@Transactional
 	public Light createLight(@PathParam("name") final String name, @PathParam("lightType") final String lightType,
 			@PathParam("roomId") final long roomId) {
 
@@ -100,16 +101,12 @@ public class LightService extends BaseService {
 
 		light.setName(name);
 
-		em.getTransaction().begin();
-
 		final Room room = rooms.get(roomId);
 
 		room.getLights().add(light);
 		light.setRoom(room);
 
 		em.persist(light);
-
-		em.getTransaction().commit();
 
 		return light;
 	}
@@ -270,6 +267,7 @@ public class LightService extends BaseService {
 
 	@GET
 	@Path("color/{lightId}/{hex}")
+	@Transactional
 	public GenericStatus setColor(@PathParam(LIGHT_ID) final long lightId, @PathParam("hex") final String hex) {
 		final String shortHex = hex.substring(1);
 
@@ -278,9 +276,7 @@ public class LightService extends BaseService {
 		if (rgbLight != null) {
 			rgbLight.setColor(hex);
 
-			em.getTransaction().begin();
 			em.persist(rgbLight);
-			em.getTransaction().commit();
 
 			if (MQTT.equals(rgbLight.getLightType()) || ZIGBEE.equals(rgbLight.getLightType())) {
 				if (rgbLight.getMqttColorMessage() != null && rgbLight.getMqttColorTopic() != null) {

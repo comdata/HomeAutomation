@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
 import org.apache.logging.log4j.LogManager;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -36,6 +37,7 @@ public class AuthenticateCommand extends BotCommand {
 	}
 
 	@Override
+	@Transactional
 	public void execute(AbsSender absSender, User user, Chat chat, String[] arguments) {
 
 		String userId = user.getId().toString();
@@ -57,8 +59,6 @@ public class AuthenticateCommand extends BotCommand {
 
 				if (result == null || result.isEmpty()) {
 
-					em.getTransaction().begin();
-
 					TelegramUser telegramUser = new TelegramUser();
 
 					telegramUser.setUserId(userId);
@@ -66,7 +66,6 @@ public class AuthenticateCommand extends BotCommand {
 
 					em.persist(telegramUser);
 
-					em.getTransaction().commit();
 				}
 
 			} else {

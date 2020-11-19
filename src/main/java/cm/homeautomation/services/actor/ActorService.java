@@ -9,6 +9,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -313,6 +314,7 @@ public class ActorService extends BaseService {
 	 */
 	@GET
 	@Path("updateBackend/{switch}/{status}")
+	@Transactional
 	public Switch updateBackendSwitchState(@PathParam("switch") final String switchId,
 			@PathParam("status") String targetStatus) {
 
@@ -321,11 +323,10 @@ public class ActorService extends BaseService {
 		final Switch singleSwitch = (Switch) em.createQuery("select sw from Switch sw where sw.id=:switchId")
 				.setParameter("switchId", Float.parseFloat(switchId)).getSingleResult();
 
-		em.getTransaction().begin();
+		
 		singleSwitch.setTargetStatus(targetStatus);
 		singleSwitch.setTargetStatusFrom(new Date());
 		em.merge(singleSwitch);
-		em.getTransaction().commit();
 
 		/**
 		 * post a switch information event

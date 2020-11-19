@@ -8,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -53,6 +54,7 @@ public class TVService extends BaseService {
 
 	}
 
+	@Transactional
 	public void internalGetCurrentStatus(final String[] args) {
 		final boolean aliveStatus = getInstance().getAliveStatus();
 
@@ -66,7 +68,6 @@ public class TVService extends BaseService {
 
 		if ((resultList != null) && !resultList.isEmpty()) {
 
-			em.getTransaction().begin();
 			for (final Switch singleSwitch : resultList) {
 				singleSwitch.setSwitchState(aliveStatus);
 				singleSwitch.setLatestStatus((aliveStatus) ? "ON" : "OFF");
@@ -74,7 +75,6 @@ public class TVService extends BaseService {
 				em.persist(singleSwitch);
 			}
 
-			em.getTransaction().commit();
 		}
 	}
 

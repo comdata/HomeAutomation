@@ -9,6 +9,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -82,10 +83,9 @@ public class WindowBlindService extends BaseService {
 
 	@GET
 	@Path("getAll")
+	@Transactional
 	public WindowBlindsList getAll() {
 		final WindowBlindsList windowBlindsList = new WindowBlindsList();
-
-		em.getTransaction().begin();
 
 		final Set<Long> windowBlindIds = windowBlindMap.keySet();
 
@@ -95,17 +95,14 @@ public class WindowBlindService extends BaseService {
 			}
 		}
 
-		em.getTransaction().commit();
-
 		return windowBlindsList;
 	}
 
 	@GET
 	@Path("forRoom/{roomId}")
+	@Transactional
 	public WindowBlindsList getAllForRoom(@PathParam("roomId") Long roomId) {
 		final WindowBlindsList windowBlindsList = new WindowBlindsList();
-
-		em.getTransaction().begin();
 
 		final List<WindowBlind> windowBlinds = windowBlindList.get(roomId);
 
@@ -121,8 +118,6 @@ public class WindowBlindService extends BaseService {
 			windowBlindsList.getWindowBlinds().add(allAtOnce);
 
 		}
-
-		em.getTransaction().commit();
 
 		return windowBlindsList;
 	}
@@ -160,6 +155,7 @@ public class WindowBlindService extends BaseService {
 
 	@GET
 	@Path("setDim/{windowBlind}/{value}/{type}/{roomId}")
+	@Transactional
 	public GenericStatus setDim(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value,
 			@PathParam("type") String type, @PathParam("roomId") Long roomId) {
 
@@ -187,9 +183,8 @@ public class WindowBlindService extends BaseService {
 					HTTPHelper.performHTTPRequest(dimUrl1);
 					singleWindowBlind1.setCurrentValue(Float.parseFloat(newValue));
 
-					em.getTransaction().begin();
 					em.merge(singleWindowBlind1);
-					em.getTransaction().commit();
+
 				}
 
 				final WindowBlindStatus eventData1 = new WindowBlindStatus();
@@ -214,9 +209,9 @@ public class WindowBlindService extends BaseService {
 
 						singleWindowBlind2.setCurrentValue(Float.parseFloat(newValue));
 
-						em.getTransaction().begin();
+			
 						em.merge(singleWindowBlind2);
-						em.getTransaction().commit();
+			
 					}
 
 					final WindowBlindStatus eventData2 = new WindowBlindStatus();
@@ -235,15 +230,13 @@ public class WindowBlindService extends BaseService {
 
 	@GET
 	@Path("setPosition/{windowBlind}/{value}")
+	@Transactional
 	public GenericStatus setPosition(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value) {
-
-		em.getTransaction().begin();
 
 		final WindowBlind singleWindowBlind = windowBlindMap.get(windowBlindId);
 
 		singleWindowBlind.setCurrentValue(Float.parseFloat(value));
 		em.merge(singleWindowBlind);
-		em.getTransaction().commit();
 
 		return new GenericStatus(true);
 	}

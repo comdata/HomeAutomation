@@ -8,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
 import cm.homeautomation.entities.FHEMDevice;
 import cm.homeautomation.entities.ManualTask;
@@ -18,10 +19,10 @@ import io.vertx.core.eventbus.EventBus;
 public class FHEMBatteryStateReceiver {
 
 	private static final String BATTERY = "battery";
-	
+
 	@Inject
 	EventBus bus;
-	
+
 	@Inject
 	EntityManager em;
 
@@ -55,6 +56,7 @@ public class FHEMBatteryStateReceiver {
 		return null;
 	}
 
+	@Transactional
 	private void createTaskForBatteryDevice(FHEMDevice fhemDevice) {
 
 		List<ManualTask> resultList = em
@@ -69,9 +71,8 @@ public class FHEMBatteryStateReceiver {
 			manualTask.setExternalId(fhemDevice.getId());
 			manualTask.setCreatedDateTime(new Date());
 
-			em.getTransaction().begin();
 			em.persist(manualTask);
-			em.getTransaction().commit();
+
 		}
 	}
 

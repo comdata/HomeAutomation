@@ -6,6 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.WriteApi;
@@ -20,19 +21,18 @@ import io.quarkus.vertx.ConsumeEvent;
 @ApplicationScoped
 public class MotionDetectionService extends BaseService {
 
-    @Inject
+	@Inject
 	InfluxDBService influxDBService;
 
-    @Inject
+	@Inject
 	EntityManager em;
-	
+
 	@Inject
 	ConfigurationService configurationService;
-    
-	@ConsumeEvent(value = "MotionEvent", blocking = true)
-	public void registerMotionEvent(final MotionEvent motionEvent) {
 
-		
+	@ConsumeEvent(value = "MotionEvent", blocking = true)
+	@Transactional
+	public void registerMotionEvent(final MotionEvent motionEvent) {
 
 		final boolean state = motionEvent.isState();
 
@@ -47,7 +47,6 @@ public class MotionDetectionService extends BaseService {
 			// motion active
 
 			if (openEventList == null || openEventList.isEmpty()) {
-				em.getTransaction().begin();
 
 				MotionDetection motionDetection = new MotionDetection();
 				motionDetection.setStart(motionEvent.getTimestamp());
@@ -55,7 +54,7 @@ public class MotionDetectionService extends BaseService {
 				motionDetection.setType(motionEvent.getType());
 
 				em.persist(motionDetection);
-				em.getTransaction().commit();
+
 			} else {
 				// we already have an open event, so do nothing
 			}
@@ -64,19 +63,18 @@ public class MotionDetectionService extends BaseService {
 			// motion stopped
 
 			if (openEventList != null && !openEventList.isEmpty() && openEventList.size() == 1) {
-				em.getTransaction().begin();
+
 				// get first element
 				MotionDetection motionDetection = openEventList.get(0);
 				motionDetection.setEnd(motionEvent.getTimestamp());
 				em.merge(motionDetection);
 
-				em.getTransaction().commit();
 			}
 
 		}
-    }
-    
-    @ConsumeEvent(value = "MotionEvent", blocking = true)
+	}
+
+	@ConsumeEvent(value = "MotionEvent", blocking = true)
 	public void saveToInflux(MotionEvent motionEvent) {
 		InfluxDBClient influxDBClient = influxDBService.getClient();
 
@@ -85,13 +83,12 @@ public class MotionDetectionService extends BaseService {
 			InfluxMotionEvent influxMotionEvent = new InfluxMotionEvent();
 
 			influxMotionEvent.setState(motionEvent.isState());
-            influxMotionEvent.setRoomId(Long.valueOf(Integer.toString(motionEvent.getRoom())));
-            influxMotionEvent.setExternalId(motionEvent.getMac());
+			influxMotionEvent.setRoomId(Long.valueOf(Integer.toString(motionEvent.getRoom())));
+			influxMotionEvent.setExternalId(motionEvent.getMac());
 			influxMotionEvent.setDateTime(motionEvent.getTimestamp().toInstant());
 
 			writeApi.writeMeasurement(WritePrecision.MS, influxMotionEvent);
 		}
 	}
-
 
 }

@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.script.ScriptException;
+import javax.transaction.Transactional;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -57,16 +58,16 @@ public class DashButtonEventListener {
 		}
 	}
 
+	@Transactional
 	private void handleDashbuttonAction(DashButton dashButton) {
 		if (dashButton != null) {
 			boolean dashButtonState = dashButton.isState();
 			
-			em.getTransaction().begin();
+			
 			dashButton.setLastSeen(new Date());
 			
 			dashButton.setState(!dashButtonState);
 			em.merge(dashButton);
-			em.getTransaction().commit();
 
 			final Switch referencedSwitch = dashButton.getReferencedSwitch();
 			final ScriptingEntity referencedScript = dashButton.getReferencedScript();
@@ -117,6 +118,7 @@ public class DashButtonEventListener {
 		}
 	}
 
+	@Transactional
 	private DashButton findOrCreateDashbutton(final String mac) {
 
 		final List<DashButton> resultList = em
@@ -126,13 +128,11 @@ public class DashButtonEventListener {
 		// create a dashbutton if it is not existing
 		DashButton dashButton = null;
 		if ((resultList == null) || resultList.isEmpty()) {
-			em.getTransaction().begin();
 
 			dashButton = new DashButton();
 			dashButton.setMac(mac);
 
 			em.persist(dashButton);
-			em.getTransaction().commit();
 		} else {
 
 			dashButton = resultList.get(0);
