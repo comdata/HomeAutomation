@@ -23,5 +23,5 @@ COPY target/*-runner.jar /app.jar
 
 HEALTHCHECK CMD curl --fail http://127.0.0.1/overview/get|| exit 1
 
-ENTRYPOINT ["sh", "-c", "java -Dlog4j.error -Dlog4j.configuration=file:/log4j.xml -jar /app.jar" ]
+ENTRYPOINT ["sh", "-c", "java -jar /app.jar" ]
 
