@@ -12,6 +12,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.transaction.Transactional;
 
 import org.dhcp4java.DHCPPacket;
 
@@ -60,6 +61,7 @@ public class DashButtonService {
 		new Thread(runner).start();
 	}
 
+	@Transactional
 	private void listenAndReceive(final int listenPort, DatagramSocket socket, final DatagramPacket p) {
 		try {
 //				LogManager.getLogger(this.getClass()).debug("Listening on port " + listenPort + "...");
@@ -104,6 +106,7 @@ public class DashButtonService {
 		}
 	}
 
+	@Transactional
 	private boolean isDashButton(String mac) {
 		if (mac == null) {
 			throw new IllegalArgumentException("MAC is NULL");
