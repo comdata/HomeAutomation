@@ -36,6 +36,11 @@ public class DashButtonService {
 
 	void startup(@Observes StartupEvent event) {
 
+		runListener();
+	}
+
+	@Transactional
+	private void runListener() {
 		Runnable runner = () -> {
 			final int listenPort = 67;
 			final int MAX_BUFFER_SIZE = 1000;

@@ -29,6 +29,9 @@ public class MQTTTopicSensorReceiver {
 
 	@Inject
 	ConfigurationService configurationService;
+	
+	@Inject
+	Sensors sensors;
 
 	private static final Logger LOG = Logger.getLogger(MQTTTopicSensorReceiver.class);
 	private Map<String, Sensor> sensorTechnicalTypeMap = new HashMap<>();
@@ -49,7 +52,7 @@ public class MQTTTopicSensorReceiver {
 				if (sensor != null) {
 					LOG.debug("got sensors: " + sensor.getId() + " name:" + sensor.getSensorName());
 
-					Sensors.getInstance().saveSensorData(sensor.getId(), topicEvent.getMessage());
+					sensors.saveSensorData(sensor.getId(), topicEvent.getMessage());
 				} else {
 					LOG.debug("list is empty for technicaltype: " + technicalType);
 
