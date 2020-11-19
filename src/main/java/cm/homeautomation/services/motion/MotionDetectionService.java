@@ -2,6 +2,7 @@ package cm.homeautomation.services.motion;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -16,7 +17,7 @@ import cm.homeautomation.entities.MotionDetection;
 import cm.homeautomation.services.base.BaseService;
 import io.quarkus.vertx.ConsumeEvent;
 
-@Singleton
+@ApplicationScoped
 public class MotionDetectionService extends BaseService {
 
     @Inject

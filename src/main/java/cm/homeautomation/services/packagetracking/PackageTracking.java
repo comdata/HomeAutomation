@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.net.ssl.HostnameVerifier;
@@ -53,7 +54,7 @@ import cm.homeautomation.entities.PackagePK;
 import cm.homeautomation.services.base.BaseService;
 
 @Path("packages")
-@Singleton
+@ApplicationScoped
 public class PackageTracking extends BaseService {
 
 	@Inject

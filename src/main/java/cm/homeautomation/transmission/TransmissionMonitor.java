@@ -3,9 +3,9 @@ package cm.homeautomation.transmission;
 import java.net.URI;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -25,7 +25,7 @@ import nl.stil4m.transmission.rpc.RpcClient;
 import nl.stil4m.transmission.rpc.RpcConfiguration;
 import nl.stil4m.transmission.rpc.RpcException;
 
-@Singleton
+@ApplicationScoped
 public class TransmissionMonitor {
 
 	@Inject

@@ -2,6 +2,7 @@ package cm.homeautomation.mqtt.humanmessageemitter;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -14,7 +15,7 @@ import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
-@Singleton
+@ApplicationScoped
 public class MQTTHumanMessageEmitter {
 	private static List<HumanMessageEmitterFilter> filterList;
 

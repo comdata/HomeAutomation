@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -13,7 +14,7 @@ import cm.homeautomation.entities.ManualTask;
 import cm.homeautomation.fhem.BatteryStateResult.BatteryState;
 import io.vertx.core.eventbus.EventBus;
 
-@Singleton
+@ApplicationScoped
 public class FHEMBatteryStateReceiver {
 
 	private static final String BATTERY = "battery";

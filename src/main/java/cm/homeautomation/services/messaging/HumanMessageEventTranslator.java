@@ -1,5 +1,6 @@
 package cm.homeautomation.services.messaging;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -11,7 +12,7 @@ import cm.homeautomation.services.actor.ActorPressSwitchEvent;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
-@Singleton
+@ApplicationScoped
 public class HumanMessageEventTranslator {
 	
 	@Inject

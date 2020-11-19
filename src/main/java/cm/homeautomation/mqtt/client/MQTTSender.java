@@ -2,6 +2,7 @@ package cm.homeautomation.mqtt.client;
 
 import java.util.UUID;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -20,7 +21,7 @@ import io.vertx.core.eventbus.EventBus;
  * @author christoph
  *
  */
-@Singleton
+@ApplicationScoped
 public class MQTTSender {
 
 	private Mqtt3AsyncClient publishClient = null;

@@ -1,5 +1,6 @@
 package cm.homeautomation.networkmonitor;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -11,7 +12,7 @@ import io.quarkus.runtime.Startup;
 import io.vertx.core.eventbus.EventBus;
 
 @Startup
-@Singleton
+@ApplicationScoped
 public class NetworkScanner {
 
 	@Inject

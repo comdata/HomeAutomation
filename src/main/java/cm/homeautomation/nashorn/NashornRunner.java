@@ -2,6 +2,7 @@ package cm.homeautomation.nashorn;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -18,7 +19,7 @@ import cm.homeautomation.entities.ScriptingEntity;
 import cm.homeautomation.eventbus.EventObject;
 import io.quarkus.vertx.ConsumeEvent;
 
-@Singleton
+@ApplicationScoped
 public class NashornRunner {
 
 	private static final String ENABLED = "enabled";

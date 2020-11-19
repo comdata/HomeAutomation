@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -31,7 +32,7 @@ import io.vertx.core.eventbus.EventBus;
  * @author christoph
  *
  */
-@Singleton
+@ApplicationScoped
 @Path("tv/")
 public class TVService extends BaseService {
 

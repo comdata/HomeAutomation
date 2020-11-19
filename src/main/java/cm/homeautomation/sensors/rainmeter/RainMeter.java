@@ -2,6 +2,7 @@ package cm.homeautomation.sensors.rainmeter;
 
 import java.util.Date;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -12,7 +13,7 @@ import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.RainData;
 import io.quarkus.vertx.ConsumeEvent;
 
-@Singleton
+@ApplicationScoped
 public class RainMeter {
 	@Inject
 	EntityManager em;

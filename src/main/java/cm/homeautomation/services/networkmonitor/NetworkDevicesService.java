@@ -3,6 +3,7 @@ package cm.homeautomation.services.networkmonitor;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -29,7 +30,7 @@ import io.vertx.core.eventbus.EventBus;
  * @author christoph
  *
  */
-@Singleton
+@ApplicationScoped
 @Path("networkdevices/")
 public class NetworkDevicesService extends BaseService {
 

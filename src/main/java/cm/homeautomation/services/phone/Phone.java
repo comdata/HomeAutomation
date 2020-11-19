@@ -9,6 +9,7 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -31,7 +32,7 @@ import io.vertx.core.eventbus.EventBus;
  * @author christoph
  *
  */
-@Singleton
+@ApplicationScoped
 @Path("phone")
 public class Phone extends BaseService {
 

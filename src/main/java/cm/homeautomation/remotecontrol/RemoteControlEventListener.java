@@ -3,6 +3,7 @@ package cm.homeautomation.remotecontrol;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -26,7 +27,7 @@ import cm.homeautomation.zigbee.RemoteControlBrightnessChangeEvent;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
-@Singleton
+@ApplicationScoped
 public class RemoteControlEventListener {
 
 	@Inject

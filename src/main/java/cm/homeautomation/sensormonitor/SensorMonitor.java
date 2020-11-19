@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -17,7 +18,7 @@ import cm.homeautomation.services.messaging.HumanMessageEvent;
 import io.quarkus.scheduler.Scheduled;
 import io.vertx.core.eventbus.EventBus;
 
-@Singleton
+@ApplicationScoped
 public class SensorMonitor {
 
 	@Inject

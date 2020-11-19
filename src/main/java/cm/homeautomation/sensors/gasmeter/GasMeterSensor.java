@@ -2,6 +2,7 @@ package cm.homeautomation.sensors.gasmeter;
 
 import java.util.Date;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -18,7 +19,7 @@ import io.quarkus.vertx.ConsumeEvent;
  * @author christoph
  *
  */
-@Singleton
+@ApplicationScoped
 public class GasMeterSensor {
 
 	@Inject

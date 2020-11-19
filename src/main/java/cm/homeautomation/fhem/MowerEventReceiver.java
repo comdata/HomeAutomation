@@ -1,5 +1,6 @@
 package cm.homeautomation.fhem;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -8,7 +9,7 @@ import cm.homeautomation.mqtt.client.MQTTEventBusObject;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
-@Singleton
+@ApplicationScoped
 public class MowerEventReceiver {
 
 	@Inject

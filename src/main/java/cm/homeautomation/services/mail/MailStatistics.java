@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.mail.Folder;
@@ -20,7 +21,7 @@ import cm.homeautomation.services.base.BaseService;
 import io.vertx.core.eventbus.EventBus;
 import lombok.NonNull;
 
-@Singleton
+@ApplicationScoped
 @Path("mail/")
 public class MailStatistics extends BaseService {
 

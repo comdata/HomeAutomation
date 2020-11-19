@@ -2,6 +2,7 @@ package cm.homeautomation.services.hueinterface;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.CacheRetrieveMode;
@@ -30,7 +31,7 @@ import cm.homeautomation.services.windowblind.WindowBlindDimMessage;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
-@Singleton
+@ApplicationScoped
 @Path("hueInterface")
 public class HueInterface extends BaseService {
 

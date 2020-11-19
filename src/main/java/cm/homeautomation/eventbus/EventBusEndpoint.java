@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Singleton;
 import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
@@ -21,7 +22,7 @@ import cm.homeautomation.logging.WebSocketEvent;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
         
-@Singleton
+@ApplicationScoped
 
 @ServerEndpoint(value = "/eventbus/{clientId}", encoders = {
 		EventTranscoder.class, WebSocketEventTranscoder.class, StringTranscoder.class }, decoders = {
