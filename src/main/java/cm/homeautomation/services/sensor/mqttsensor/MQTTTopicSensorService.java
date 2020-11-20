@@ -40,7 +40,7 @@ public class MQTTTopicSensorService extends BaseService {
 
 	@GET
 	@Path("createSensor/{topicId}/{roomId}/{sensorName}")
-	@Transactional
+	
 	public GenericStatus createSensorForTopic(@PathParam("topicId") Long topicId, @PathParam("roomId") Long roomId,
 			@PathParam("sensorName") String sensorName) {
 

@@ -54,7 +54,7 @@ public class SecurityService extends BaseService {
 	}
 
 	@ConsumeEvent(value = "EventObject", blocking = true)
-	@Transactional
+	
 	public void handleWindowEvents(EventObject eventObject) {
 		if ((eventObject.getData() != null) && (eventObject.getData() instanceof WindowStateData)) {
 			final WindowStateData windowStateData = (WindowStateData) eventObject.getData();
@@ -95,7 +95,7 @@ public class SecurityService extends BaseService {
 	 */
 	@GET
 	@Path("setZoneState/{id}/{state}")
-	@Transactional
+	
 	public GenericStatus setZoneState(@PathParam("id") Long id, @PathParam("state") boolean state) {
 		final SecurityZone securityZone = em.find(SecurityZone.class, id);
 

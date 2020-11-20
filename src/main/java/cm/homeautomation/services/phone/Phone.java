@@ -58,7 +58,7 @@ public class Phone extends BaseService {
 	 */
 	@Path("status/{event}/{mode}/{internalNumber}/{externalNumber}")
 	@GET
-	@Transactional
+	
 	public GenericStatus setStatus(@PathParam("event") String event, @PathParam("mode") String mode,
 			@PathParam("internalNumber") String internalNumber, @PathParam("externalNumber") String externalNumber) {
 

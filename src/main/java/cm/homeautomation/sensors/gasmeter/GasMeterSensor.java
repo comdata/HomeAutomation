@@ -34,7 +34,7 @@ public class GasMeterSensor {
 	}
 
 	@ConsumeEvent(value = "EventObject", blocking = true)
-	@Transactional
+	
 	public void handleGasMeterData(final EventObject eventObject) {
 
 		final Object data = eventObject.getData();

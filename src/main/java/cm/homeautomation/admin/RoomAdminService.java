@@ -32,7 +32,7 @@ public class RoomAdminService extends BaseService {
 
 	@GET
 	@Path("create/{roomName}")
-	@Transactional
+	
 	public Room createRoom(@PathParam("roomName") String roomName) {
 
 		Room room = new Room();
@@ -44,7 +44,7 @@ public class RoomAdminService extends BaseService {
 
 	@GET
 	@Path("update/{roomId}/{roomName}")
-	@Transactional
+	
 	public Room updateRoom(@PathParam("roomId") Long roomId, @PathParam("roomName") String roomName) {
 
 		Room room = (Room) em.createQuery("select r from Room r where r.id=:roomId").setParameter("roomId", roomId)

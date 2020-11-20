@@ -4,8 +4,14 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.Status;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.HumanMessageEmitterFilter;
@@ -27,6 +33,9 @@ public class MQTTHumanMessageEmitter {
 
 	@Inject
 	ConfigurationService configurationService;
+	
+	@Inject
+	UserTransaction transaction;
 
 	private boolean checkMessageFiltered(String message) {
 		if (message != null) {
@@ -50,15 +59,30 @@ public class MQTTHumanMessageEmitter {
 	@ConsumeEvent(value = "HumanMessageEvent", blocking = true)
 	public void handleEvent(final HumanMessageEvent eventObject) {
 		Runnable eventThread = () -> {
-			String humanMessageTopic = configurationService.getConfigurationProperty("mqtt", "humanMessageTopic");
+			try {
+				boolean ownTransaction = false;
+				if (transaction.getStatus() == Status.STATUS_NO_TRANSACTION) {
+					transaction.begin();
+					ownTransaction = true;
+				}
 
-			String message = eventObject.getMessage();
+				String humanMessageTopic = configurationService.getConfigurationProperty("mqtt", "humanMessageTopic");
 
-			boolean filtered = checkMessageFiltered(message);
+				String message = eventObject.getMessage();
 
-			// message must not be set to ignore and not be filtered
-			if (!filtered) {
-				bus.publish("MQTTSendEvent", new MQTTSendEvent(humanMessageTopic, message));
+				boolean filtered = checkMessageFiltered(message);
+
+				// message must not be set to ignore and not be filtered
+				if (!filtered) {
+					bus.publish("MQTTSendEvent", new MQTTSendEvent(humanMessageTopic, message));
+				}
+				if (ownTransaction) {
+					transaction.commit();
+				}
+			} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException
+					| RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 
 		};

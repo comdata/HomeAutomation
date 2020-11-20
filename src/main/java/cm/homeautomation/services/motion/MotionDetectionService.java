@@ -33,7 +33,7 @@ public class MotionDetectionService extends BaseService {
 	InfluxDBClient influxDBClient;
 
 	@ConsumeEvent(value = "MotionEvent", blocking = true)
-	@Transactional
+	
 	public void registerMotionEvent(final MotionEvent motionEvent) {
 
 		final boolean state = motionEvent.isState();

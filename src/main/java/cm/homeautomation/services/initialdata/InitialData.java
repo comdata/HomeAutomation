@@ -21,7 +21,7 @@ public class InitialData extends BaseService {
 
 	@GET
 	@Path("load")
-	@Transactional
+	
 	public void createData() {
 
 		em.createQuery("delete from SensorData").executeUpdate();

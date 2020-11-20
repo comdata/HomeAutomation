@@ -74,7 +74,7 @@ public class InfraredService extends BaseService {
 	 * @param event
 	 */
 	@ConsumeEvent(value = "EventObject", blocking = true)
-	@Transactional
+	
 	public void handleEvent(final EventObject event) {
 
 		final Object data = event.getData();

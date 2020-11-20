@@ -43,7 +43,6 @@ public class MQTTTopicRecorder {
 	}
 
 	@ConsumeEvent(value = "MQTTTopicEvent", blocking = true)
-	@Transactional
 	public void receiverMQTTTopicEvents(MQTTTopicEvent event) {
 
 		@NonNull

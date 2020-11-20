@@ -42,7 +42,7 @@ public class WindowStateSensor {
 	}
 
 	@ConsumeEvent(value = "EventObject", blocking = true)
-	@Transactional
+	
 	public void handleWindowState(final EventObject eventObject) {
 
 		final Object data = eventObject.getData();

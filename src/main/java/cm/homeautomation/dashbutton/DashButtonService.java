@@ -48,7 +48,7 @@ public class DashButtonService {
 		runListener();
 	}
 
-	@Transactional
+	
 	private void runListener() {
 		Runnable runner = () -> {
 			final int listenPort = 67;
@@ -75,7 +75,7 @@ public class DashButtonService {
 		new Thread(runner).start();
 	}
 
-	@Transactional
+	
 	private void listenAndReceive(final int listenPort, DatagramSocket socket, final DatagramPacket p) {
 		try {
 //				LogManager.getLogger(this.getClass()).debug("Listening on port " + listenPort + "...");
@@ -134,7 +134,7 @@ public class DashButtonService {
 		}
 	}
 
-	@Transactional
+	
 	private boolean isDashButton(String mac) {
 		if (mac == null) {
 			throw new IllegalArgumentException("MAC is NULL");

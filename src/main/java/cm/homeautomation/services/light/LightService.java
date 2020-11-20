@@ -88,7 +88,7 @@ public class LightService extends BaseService {
 
 	@GET
 	@Path("create/{name}/{lightType}/{roomId}")
-	@Transactional
+	
 	public Light createLight(@PathParam("name") final String name, @PathParam("lightType") final String lightType,
 			@PathParam("roomId") final long roomId) {
 
@@ -162,7 +162,7 @@ public class LightService extends BaseService {
 		return lightRoomList.get(roomId);
 	}
 
-	@Transactional
+	
 	private GenericStatus internalDimLight(final long lightId, final int dimPercentValue, boolean calledForGroup,
 			boolean isAbsoluteValue) {
 		final Runnable requestThread = () -> {
@@ -284,7 +284,7 @@ public class LightService extends BaseService {
 
 	@GET
 	@Path("color/{lightId}/{hex}")
-	@Transactional
+	
 	public GenericStatus setColor(@PathParam(LIGHT_ID) final long lightId, @PathParam("hex") final String hex) {
 		final String shortHex = hex.substring(1);
 

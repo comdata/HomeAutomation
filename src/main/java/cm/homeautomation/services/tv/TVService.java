@@ -54,7 +54,7 @@ public class TVService extends BaseService {
 
 	}
 
-	@Transactional
+	
 	public void internalGetCurrentStatus(final String[] args) {
 		final boolean aliveStatus = getInstance().getAliveStatus();
 

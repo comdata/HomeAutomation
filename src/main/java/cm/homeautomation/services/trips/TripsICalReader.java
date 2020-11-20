@@ -52,7 +52,7 @@ public class TripsICalReader {
 		instance.internalLoadTrips(args);
 	}
 
-	@Transactional
+	
 	public void internalLoadTrips(String[] args) throws IOException, ParserException {
 		System.setProperty("net.fortuna.ical4j.timezone.cache.impl", MapTimeZoneCache.class.getName());
 		CalendarBuilder calendarBuilder = new CalendarBuilder();

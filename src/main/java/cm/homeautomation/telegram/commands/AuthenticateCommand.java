@@ -37,7 +37,7 @@ public class AuthenticateCommand extends BotCommand {
 	}
 
 	@Override
-	@Transactional
+	
 	public void execute(AbsSender absSender, User user, Chat chat, String[] arguments) {
 
 		String userId = user.getId().toString();

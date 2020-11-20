@@ -20,7 +20,7 @@ public class SensorAdminService {
 
 	@GET
 	@Path("create/{roomId}/{name}/{type}")
-	@Transactional
+	
 	public GenericStatus createSensor(@PathParam("roomId") Long roomId, @PathParam("name") String name,
 			@PathParam("type") String type) {
 		GenericStatus genericStatus = new GenericStatus(true);
@@ -48,7 +48,7 @@ public class SensorAdminService {
 
 	@GET
 	@Path("update/{sensorId}/{name}/{type}")
-	@Transactional
+	
 	public GenericStatus updateSensor(@PathParam("sensorId") Long sensorId, @PathParam("name") String name,
 			@PathParam("type") String type) {
 
@@ -70,7 +70,7 @@ public class SensorAdminService {
 
 	@GET
 	@Path("delete/{sensorId}")
-	@Transactional
+	
 	public GenericStatus deleteSensor(@PathParam("sensorId") Long sensorId) {
 
 		List<Sensor> sensors = em.createQuery("select s from Sensor s where s.id=:sensorId", Sensor.class)

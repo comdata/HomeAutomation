@@ -127,7 +127,7 @@ public class CameraService extends BaseService {
 		instance.singleCameraUpdateInternal(args, em, camera);
 	}
 
-	@Transactional
+	
 	private void singleCameraUpdateInternal(String[] args, EntityManager em, Camera camera) {
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream();) {
 
@@ -166,7 +166,7 @@ public class CameraService extends BaseService {
 		}
 	}
 
-	@Transactional
+	
 	private void cleanOldImages() {
 		
 
@@ -176,7 +176,7 @@ public class CameraService extends BaseService {
 	
 	}
 
-	@Transactional
+	
 	private  void loadNoImage(String[] args, EntityManager em, Camera camera) {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();

@@ -16,6 +16,7 @@ import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
+import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import javax.ws.rs.GET;
@@ -471,7 +472,11 @@ public class Sensors extends BaseService {
 	public void saveSensorData(final SensorDataSaveRequest request)
 			throws SensorDataLimitViolationException, SecurityException, IllegalStateException, RollbackException,
 			HeuristicMixedException, HeuristicRollbackException, SystemException, NotSupportedException {
-		transaction.begin();
+		boolean ownTransaction = false;
+		if (transaction.getStatus() == Status.STATUS_NO_TRANSACTION) {
+			transaction.begin();
+			ownTransaction = true;
+		}
 		Sensor sensor = null;
 		if (request.getSensorId() != null) {
 			Long sensorId = request.getSensorId();
@@ -605,7 +610,9 @@ public class Sensors extends BaseService {
 		} else {
 //            LogManager.getLogger(this.getClass()).error("sensor is null");
 		}
-		transaction.commit();
+		if (ownTransaction) {
+			transaction.commit();
+		}
 	}
 
 	public void saveToInflux(SensorData sensorData) {

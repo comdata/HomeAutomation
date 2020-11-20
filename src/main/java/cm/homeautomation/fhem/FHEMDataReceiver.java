@@ -102,7 +102,7 @@ public class FHEMDataReceiver {
 		}
 	}
 
-	@Transactional
+	
 	private void createNewFHEMDevices(String device) {
 
 		FHEMDevice fhemDevice = new FHEMDevice();

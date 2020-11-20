@@ -95,7 +95,7 @@ public class RemoteControlEventListener {
 	}
 
 	@ConsumeEvent(value = "RemoteControlEvent", blocking = true)
-	@Transactional
+	
 	public void subscribe(RemoteControlEvent event) {
 		String name = event.getName();
 		String technicalId = event.getTechnicalId();

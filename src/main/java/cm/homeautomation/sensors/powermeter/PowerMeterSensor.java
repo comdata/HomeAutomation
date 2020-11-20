@@ -18,6 +18,7 @@ import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
+import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
@@ -54,15 +55,16 @@ public class PowerMeterSensor {
 
 	@Inject
 	InfluxDBService influxDBService;
-	
+
 	@Inject
 	EntityManager em;
-	
+
 	@Inject
 	ConfigurationService configurationService;
-	
-	@Inject UserTransaction transaction;
-	
+
+	@Inject
+	UserTransaction transaction;
+
 	@Inject
 	InfluxDBClient influxDBClient;
 
@@ -70,15 +72,16 @@ public class PowerMeterSensor {
 	 * perform compression by aggregating the data for one hour blocks
 	 * 
 	 * @param args
-	 * @throws SystemException 
-	 * @throws NotSupportedException 
-	 * @throws HeuristicRollbackException 
-	 * @throws HeuristicMixedException 
-	 * @throws RollbackException 
-	 * @throws IllegalStateException 
-	 * @throws SecurityException 
+	 * @throws SystemException
+	 * @throws NotSupportedException
+	 * @throws HeuristicRollbackException
+	 * @throws HeuristicMixedException
+	 * @throws RollbackException
+	 * @throws IllegalStateException
+	 * @throws SecurityException
 	 */
-	public void compress(final String[] args) throws NotSupportedException, SystemException, SecurityException, IllegalStateException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+	public void compress(final String[] args) throws NotSupportedException, SystemException, SecurityException,
+			IllegalStateException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		if ((args != null) && (args.length > 0)) {
 
 			final int numberOfEntriesToCompress = Integer.parseInt(args[0]);
@@ -186,7 +189,7 @@ public class PowerMeterSensor {
 
 				em.persist(powerMeterPing);
 				transaction.commit();
-				
+
 				saveToInflux(powerMeterPing);
 
 			} catch (final Exception e) {
@@ -194,6 +197,12 @@ public class PowerMeterSensor {
 			}
 
 			try {
+
+				boolean ownTransaction = false;
+				if (transaction.getStatus() == Status.STATUS_NO_TRANSACTION) {
+					transaction.begin();
+					ownTransaction = true;
+				}
 				final boolean parseBoolean = Boolean
 						.parseBoolean(configurationService.getConfigurationProperty("power", "sendSummaryData"));
 				if (parseBoolean) {
@@ -214,7 +223,10 @@ public class PowerMeterSensor {
 
 					}
 				}
-			} catch (final Exception e) {
+				if (ownTransaction) {
+					transaction.commit();
+				}
+			} catch (Exception e) {
 				LogManager.getLogger(PowerMeterSensor.class).error("error creating and sending interval data", e);
 			}
 

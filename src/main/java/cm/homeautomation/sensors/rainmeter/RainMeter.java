@@ -23,7 +23,7 @@ public class RainMeter {
 	ConfigurationService configurationService;
 
 	@ConsumeEvent(value = "EventObject", blocking = true)
-	@Transactional
+	
 	public void handlePowerMeterData(final EventObject eventObject) {
 
 		final Object data = eventObject.getData();

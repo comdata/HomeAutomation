@@ -4,7 +4,13 @@ import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.Status;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -30,30 +36,47 @@ public class MQTTSender {
 
 	@Inject
 	EventBus bus;
-	
+
 	@Inject
 	ConfigurationService configurationService;
 
+	@Inject
+	UserTransaction transaction;
+
 	private void initClient() {
-		if (publishClient == null) {
+		try {
+			boolean ownTransaction = false;
+			if (transaction.getStatus() == Status.STATUS_NO_TRANSACTION) {
+				transaction.begin();
+				ownTransaction = true;
+			}
+			if (publishClient == null) {
 
-			String host = configurationService.getConfigurationProperty("mqtt", "host");
-			int port = Integer.parseInt(configurationService.getConfigurationProperty("mqtt", "port"));
+				String host = configurationService.getConfigurationProperty("mqtt", "host");
+				int port = Integer.parseInt(configurationService.getConfigurationProperty("mqtt", "port"));
 
-			publishClient = MqttClient.builder().useMqttVersion3().identifier(UUID.randomUUID().toString())
-					.serverHost(host).serverPort(port).automaticReconnect().applyAutomaticReconnect().buildAsync();
+				publishClient = MqttClient.builder().useMqttVersion3().identifier(UUID.randomUUID().toString())
+						.serverHost(host).serverPort(port).automaticReconnect().applyAutomaticReconnect().buildAsync();
 
-			publishClient.connect().whenComplete((connAck, throwable) -> {
-				if (throwable != null) {
-					// Handle connection failure
-				} else {
+				publishClient.connect().whenComplete((connAck, throwable) -> {
+					if (throwable != null) {
+						// Handle connection failure
+					} else {
 
-				}
-			});
-		}
+					}
+				});
+			}
 
-		if (!publishClient.getState().isConnectedOrReconnect()) {
-			publishClient.connect();
+			if (!publishClient.getState().isConnectedOrReconnect()) {
+				publishClient.connect();
+			}
+			if (ownTransaction) {
+				transaction.commit();
+			}
+		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
+				| HeuristicMixedException | HeuristicRollbackException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -66,19 +89,19 @@ public class MQTTSender {
 	}
 
 	public void doSendSyncMQTTMessage(String topic, String messagePayload) {
-		//System.out.println("MQTT OUTBOUND " + topic + " " + messagePayload);
-	
+		// System.out.println("MQTT OUTBOUND " + topic + " " + messagePayload);
+
 		bus.publish("MQTTSendEvent", new MQTTSendEvent(topic, messagePayload));
 
 	}
 
-	@ConsumeEvent(value = "MQTTSendEvent", blocking=true)
+	@ConsumeEvent(value = "MQTTSendEvent", blocking = true)
 	public void send(MQTTSendEvent mqttSendEvent) {
 		String topic = mqttSendEvent.getTopic();
 		String messagePayload = mqttSendEvent.getPayload();
 
 		initClient();
-		System.out.println("sending "+topic+" - "+ messagePayload); 
+		System.out.println("sending " + topic + " - " + messagePayload);
 		Mqtt3Publish publishMessage = Mqtt3Publish.builder().topic(topic).qos(MqttQos.AT_LEAST_ONCE)
 				.payload(messagePayload.getBytes()).build();
 		publishClient.publish(publishMessage);

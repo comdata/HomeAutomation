@@ -51,7 +51,7 @@ public class DeviceService extends BaseService {
 	 */
 	@GET
 	@Path("create/{roomId}/{name}/{mac}")
-	@Transactional
+	
 	public GenericStatus createDevice(@PathParam("roomId") Long roomId, @PathParam("name") String name,
 			@PathParam("mac") String mac) {
 
@@ -80,7 +80,7 @@ public class DeviceService extends BaseService {
 	 */
 	@GET
 	@Path("update/{roomId}/{name}/{oldMac}/{newMac}")
-	@Transactional
+	
 	public GenericStatus update(@PathParam("roomId") String roomId, @PathParam("name") String name,
 			@PathParam("oldMac") String mac, @PathParam("newMac") String newMac) {
 
@@ -102,7 +102,7 @@ public class DeviceService extends BaseService {
 	 */
 	@GET
 	@Path("delete/{mac}")
-	@Transactional
+	
 	public GenericStatus delete(@PathParam("mac") String mac) {
 
 		@SuppressWarnings("unchecked")

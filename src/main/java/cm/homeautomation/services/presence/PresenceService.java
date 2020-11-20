@@ -34,7 +34,7 @@ public class PresenceService extends BaseService {
 	@Inject
 	ConfigurationService configurationService;
 
-	@Transactional
+	
 	public GenericStatus purgeStates() {
 
 		em.createQuery("delete from PresenceState ps").executeUpdate();
@@ -44,7 +44,7 @@ public class PresenceService extends BaseService {
 
 	@GET
 	@Path("setPresence/{id}/{state}")
-	@Transactional
+	
 	public GenericStatus setPresence(@PathParam("id") Long id, @PathParam("state") String state) {
 
 		Person person = null;

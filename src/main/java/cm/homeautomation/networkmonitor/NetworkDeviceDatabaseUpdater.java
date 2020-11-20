@@ -51,7 +51,7 @@ public class NetworkDeviceDatabaseUpdater {
 	}
 
 	@ConsumeEvent(value = "NetworkScannerHostFoundMessage", blocking = true)
-	@Transactional
+	
 	public void handleNetworkDeviceFound(NetworkScannerHostFoundMessage foundHostMessage) {
 		final NetworkDevice networkDevice = foundHostMessage.getHost();
 		List<NetworkDevice> resultList = null;

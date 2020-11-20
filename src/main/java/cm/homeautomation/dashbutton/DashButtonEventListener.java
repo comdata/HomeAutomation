@@ -58,7 +58,7 @@ public class DashButtonEventListener {
 		}
 	}
 
-	@Transactional
+	
 	private void handleDashbuttonAction(DashButton dashButton) {
 		if (dashButton != null) {
 			boolean dashButtonState = dashButton.isState();
@@ -118,7 +118,7 @@ public class DashButtonEventListener {
 		}
 	}
 
-	@Transactional
+	
 	private DashButton findOrCreateDashbutton(final String mac) {
 
 		final List<DashButton> resultList = em

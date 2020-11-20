@@ -386,7 +386,7 @@ public class PackageTracking extends BaseService {
 		instance.internalUpdateTrackingInformation(args);
 	}
 
-	@Transactional
+	
 	public void internalUpdateTrackingInformation(String[] args)
 			throws ClientProtocolException, IOException, NoSuchAlgorithmException, KeyManagementException {
 
@@ -593,7 +593,7 @@ public class PackageTracking extends BaseService {
 		return newPackageList;
 	}
 
-	@Transactional
+	
 	private void mergeTrackedPackage(Package trackedPackage) {
 
 		List<Package> results = em

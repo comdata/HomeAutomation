@@ -56,7 +56,7 @@ public class FHEMBatteryStateReceiver {
 		return null;
 	}
 
-	@Transactional
+	
 	private void createTaskForBatteryDevice(FHEMDevice fhemDevice) {
 
 		List<ManualTask> resultList = em

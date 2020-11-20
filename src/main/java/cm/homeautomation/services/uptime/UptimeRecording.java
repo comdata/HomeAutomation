@@ -29,7 +29,7 @@ public class UptimeRecording {
 		instance.internalRecordUptime(args);
 	}
 
-	@Transactional
+	
 	public void internalRecordUptime(String[] args) {
 
 		UptimePing uptimePing = new UptimePing();

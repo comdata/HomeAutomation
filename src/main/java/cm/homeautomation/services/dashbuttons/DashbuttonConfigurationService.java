@@ -36,14 +36,14 @@ public class DashbuttonConfigurationService extends BaseService {
 
 	@Path("update")
 	@POST
-	@Transactional
+	
 	public void updateDashButton(DashButton dashbutton) {
 		em.merge(dashbutton);
 	}
 
 	@GET
 	@Path("new/{name}/{mac}")
-	@Transactional
+	
 	public DashButton createNewDashButton(@PathParam("name") String name, @PathParam("mac") String mac) {
 
 		DashButton dashButton = new DashButton();

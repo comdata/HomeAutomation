@@ -41,7 +41,7 @@ public class ConfigurationService {
 	 * @param property
 	 * @return
 	 */
-	@Transactional
+	
 	public String getConfigurationProperty(String settingsGroup, String property) {
 
 		

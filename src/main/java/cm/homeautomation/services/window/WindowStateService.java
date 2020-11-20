@@ -97,7 +97,7 @@ public class WindowStateService extends BaseService {
 
 	@GET
 	@Path("setState/{windowId}/{state}")
-	@Transactional
+	
 	public GenericStatus handleWindowState(@PathParam("windowId") Long windowId, @PathParam("state") String state) {
 
 		synchronized (this) {
@@ -187,7 +187,7 @@ public class WindowStateService extends BaseService {
 		return sensorDataSaveRequest;
 	}
 
-	@Transactional
+	
 	private void addNewSensorToWindowIfMissing(final EntityManager em, final Window window) {
 
 		final Sensor stateSensor = new Sensor();

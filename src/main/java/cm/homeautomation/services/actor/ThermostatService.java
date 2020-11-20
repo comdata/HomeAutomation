@@ -78,7 +78,6 @@ public class ThermostatService extends BaseService {
 
 	@GET
 	@Path("setValue/{id}/{value}")
-	@Transactional
 	public GenericStatus setValue(@PathParam("id") final Long id, @PathParam("value") String value) {
 
 		final Switch singleSwitch = em.createQuery("select s from Switch s where s.id=:id", Switch.class)

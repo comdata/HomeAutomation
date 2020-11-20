@@ -47,7 +47,7 @@ public class NashornService extends BaseService {
 
 	@POST
 	@Path("update")
-	@Transactional
+	
 	public void updateEntity(ScriptingEntity entity) {
 
 		ScriptingEntity modifiedEntity = entity;

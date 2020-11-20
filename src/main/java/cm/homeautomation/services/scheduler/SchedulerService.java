@@ -134,7 +134,7 @@ public class SchedulerService extends BaseService {
 
 	@GET
 	@Path("sampleTask")
-	@Transactional
+	
 	public void createSampleTask() {
 
 		Task task = new Task();
@@ -149,7 +149,7 @@ public class SchedulerService extends BaseService {
 
 	@GET
 	@Path("import")
-	@Transactional
+	
 	public void importScheduleFile() {
 
 		File cronFile = new File("/Users/christoph/git/HomeAutomation/schedule.cron");

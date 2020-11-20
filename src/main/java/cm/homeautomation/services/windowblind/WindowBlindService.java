@@ -13,6 +13,7 @@ import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
+import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transactional;
 import javax.transaction.UserTransaction;
@@ -92,7 +93,7 @@ public class WindowBlindService extends BaseService {
 
 	@GET
 	@Path("getAll")
-	@Transactional
+	
 	public WindowBlindsList getAll() {
 		final WindowBlindsList windowBlindsList = new WindowBlindsList();
 
@@ -109,7 +110,7 @@ public class WindowBlindService extends BaseService {
 
 	@GET
 	@Path("forRoom/{roomId}")
-	@Transactional
+	
 	public WindowBlindsList getAllForRoom(@PathParam("roomId") Long roomId) {
 		final WindowBlindsList windowBlindsList = new WindowBlindsList();
 
@@ -220,10 +221,16 @@ public class WindowBlindService extends BaseService {
 							singleWindowBlind2.setCurrentValue(Float.parseFloat(newValue));
 
 							try {
-								transaction.begin();
+								boolean ownTransaction = false;
+								if (transaction.getStatus() == Status.STATUS_NO_TRANSACTION) {
+									transaction.begin();
+									ownTransaction = true;
+								}
 
 								em.merge(singleWindowBlind2);
-								transaction.commit();
+								if (ownTransaction) {
+									transaction.commit();
+								}
 							} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException
 									| RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
 								// TODO Auto-generated catch block
@@ -253,7 +260,7 @@ public class WindowBlindService extends BaseService {
 
 	@GET
 	@Path("setPosition/{windowBlind}/{value}")
-	@Transactional
+	
 	public GenericStatus setPosition(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value) {
 
 		final WindowBlind singleWindowBlind = windowBlindMap.get(windowBlindId);

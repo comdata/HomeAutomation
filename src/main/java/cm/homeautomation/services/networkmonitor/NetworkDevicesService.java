@@ -45,7 +45,7 @@ public class NetworkDevicesService extends BaseService {
 
 	@GET
 	@Path("delete/{name}/{ip}/{mac}")
-	@Transactional
+	
 	public GenericStatus delete(@PathParam("name") final String name, @PathParam("ip") final String ip,
 			@PathParam("mac") final String mac) {
 

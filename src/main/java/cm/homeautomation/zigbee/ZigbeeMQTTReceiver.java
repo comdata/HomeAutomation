@@ -16,6 +16,7 @@ import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
+import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
@@ -381,6 +382,7 @@ public class ZigbeeMQTTReceiver {
 				} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException
 						| RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException
 						| NotSupportedException e) {
+					e.printStackTrace();
 					LogManager.getLogger(this.getClass()).error(e);
 				}
 
@@ -438,14 +440,17 @@ public class ZigbeeMQTTReceiver {
 			transaction.commit();
 		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
 				| HeuristicMixedException | HeuristicRollbackException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	private void recordIlluminanceLevelForDevice(ZigBeeDevice zigbeeDevice, int illuminance) {
 		try {
-			transaction.begin();
+			boolean ownTransaction = false;
+			if (transaction.getStatus() == Status.STATUS_NO_TRANSACTION) {
+				transaction.begin();
+				ownTransaction = true;
+			}
 
 			List<Sensor> sensorList = em
 					.createQuery(SELECT_S_FROM_SENSOR_S_WHERE_S_EXTERNAL_ID_EXTERNAL_ID_AND_S_SENSOR_TYPE_SENSOR_TYPE,
@@ -479,12 +484,15 @@ public class ZigbeeMQTTReceiver {
 				} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException
 						| RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException
 						| NotSupportedException e) {
+					e.printStackTrace();
 					LogManager.getLogger(this.getClass()).error(e);
 				}
 
 			}
 
-			transaction.commit();
+			if (ownTransaction) {
+				transaction.commit();
+			}
 		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
 				| HeuristicMixedException | HeuristicRollbackException e) {
 			// TODO Auto-generated catch block
@@ -536,6 +544,7 @@ public class ZigbeeMQTTReceiver {
 
 	}
 
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	private void handleMotionSensor(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
 		try {
 			transaction.begin();
@@ -597,6 +606,7 @@ public class ZigbeeMQTTReceiver {
 		}
 	}
 
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	private void handleTradfriLight(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject, boolean color) {
 		try {
 			transaction.begin();
