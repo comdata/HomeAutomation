@@ -41,7 +41,6 @@ public class MQTTTopicSensorReceiver {
 	private Map<String, Sensor> sensorTechnicalTypeMap = new HashMap<>();
 
 	@ConsumeEvent(value = "MQTTTopicEvent", blocking = true)
-	@Transactional
 	public void receiveMQTTTopic(MQTTTopicEvent topicEvent) {
 		Runnable mqttTopicThread = () -> {
 			LOG.debug("got topic: " + topicEvent.getTopic() + " -  message: " + topicEvent.getMessage());

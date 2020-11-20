@@ -17,7 +17,6 @@ import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
-import javax.transaction.Transactional;
 import javax.transaction.UserTransaction;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -69,8 +68,9 @@ public class Sensors extends BaseService {
 
 	@Inject
 	InfluxDBClient influxDBClient;
-	
-	@Inject UserTransaction transaction;
+
+	@Inject
+	UserTransaction transaction;
 
 	class DataLoadThread extends Thread {
 		private SensorDatas sensorDatas;
@@ -192,85 +192,91 @@ public class Sensors extends BaseService {
 	 * @throws IllegalStateException
 	 * @throws SecurityException
 	 */
-	@Transactional
+
 	public void loadSensorData(final SensorDatas sensorDatas, final EntityManager em, final Date now,
 			final Sensor sensor) throws NotSupportedException, SystemException, SecurityException,
 			IllegalStateException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		try {
+			transaction.begin();
+			final SensorValues sensorData = new SensorValues();
 
-		final SensorValues sensorData = new SensorValues();
+			sensorData.setSensorName(sensor.getSensorName());
 
-		sensorData.setSensorName(sensor.getSensorName());
+			final String queryString = "select sd from SensorData sd where sd.sensor=:sensor and sd.dateTime>=:timeframe";
 
-		final String queryString = "select sd from SensorData sd where sd.sensor=:sensor and sd.dateTime>=:timeframe";
+			final Date twoDaysAgo = new Date((new Date()).getTime() - (86400 * 1000));
 
-		final Date twoDaysAgo = new Date((new Date()).getTime() - (86400 * 1000));
+			final List<SensorData> data = em.createQuery(queryString, SensorData.class).setParameter("sensor", sensor)
+					.setParameter("timeframe", twoDaysAgo).getResultList();
 
-		final List<SensorData> data = em.createQuery(queryString, SensorData.class).setParameter("sensor", sensor)
-				.setParameter("timeframe", twoDaysAgo).getResultList();
+			String latestValue = "";
+			SensorValue lastSensorValue = null;
 
-		String latestValue = "";
-		SensorValue lastSensorValue = null;
+			// filter pressure by 0.2 percent changes only
+			if ("PRESSURE".equals(sensor.getSensorType())) {
+				for (final SensorData sData : data) {
+					final String currentValue = sData.getValue().replace(",", ".");
+					String lastValue = "0";
 
-		// filter pressure by 0.2 percent changes only
-		if ("PRESSURE".equals(sensor.getSensorType())) {
-			for (final SensorData sData : data) {
-				final String currentValue = sData.getValue().replace(",", ".");
-				String lastValue = "0";
+					if (lastSensorValue != null) {
+						lastValue = lastSensorValue.getValue().replace(",", ".");
+					}
 
-				if (lastSensorValue != null) {
-					lastValue = lastSensorValue.getValue().replace(",", ".");
+					final double floatCurrentValue = Double.parseDouble(currentValue);
+
+					final double floatLastValue = Double.parseDouble(lastValue);
+
+					if (floatLastValue != floatCurrentValue) {
+						final double diff = floatLastValue - floatCurrentValue;
+						final double diffAbsolute = Math.sqrt(diff * diff);
+
+						if (diffAbsolute >= 1) {
+
+							final SensorValue sensorValue = new SensorValue();
+							sensorValue.setDateTime(sData.getDateTime());
+
+							sensorValue.setValue(currentValue);
+
+							latestValue = sData.getValue();
+							lastSensorValue = sensorValue;
+							sensorData.getValues().add(sensorValue);
+
+						}
+					}
 				}
-
-				final double floatCurrentValue = Double.parseDouble(currentValue);
-
-				final double floatLastValue = Double.parseDouble(lastValue);
-
-				if (floatLastValue != floatCurrentValue) {
-					final double diff = floatLastValue - floatCurrentValue;
-					final double diffAbsolute = Math.sqrt(diff * diff);
-
-					if (diffAbsolute >= 1) {
+			} else {
+				for (final SensorData sData : data) {
+					if ((lastSensorValue == null) || !(lastSensorValue.getValue().equals(sData.getValue()))) {
+						if (lastSensorValue != null) {
+							final SensorValue tempSensorValue = new SensorValue();
+							tempSensorValue.setValue(lastSensorValue.getValue());
+							tempSensorValue.setDateTime(new Date(sData.getDateTime().getTime() - 1000));
+						}
 
 						final SensorValue sensorValue = new SensorValue();
 						sensorValue.setDateTime(sData.getDateTime());
-
-						sensorValue.setValue(currentValue);
+						sensorValue.setValue(sData.getValue());
 
 						latestValue = sData.getValue();
 						lastSensorValue = sensorValue;
 						sensorData.getValues().add(sensorValue);
-
 					}
 				}
 			}
-		} else {
-			for (final SensorData sData : data) {
-				if ((lastSensorValue == null) || !(lastSensorValue.getValue().equals(sData.getValue()))) {
-					if (lastSensorValue != null) {
-						final SensorValue tempSensorValue = new SensorValue();
-						tempSensorValue.setValue(lastSensorValue.getValue());
-						tempSensorValue.setDateTime(new Date(sData.getDateTime().getTime() - 1000));
-					}
 
-					final SensorValue sensorValue = new SensorValue();
-					sensorValue.setDateTime(sData.getDateTime());
-					sensorValue.setValue(sData.getValue());
+			// add a last value for the charts
+			final SensorValue latestInterpolatedValue = new SensorValue();
+			latestInterpolatedValue.setDateTime(now);
+			latestInterpolatedValue.setValue(latestValue);
+			sensorData.getValues().add(latestInterpolatedValue);
 
-					latestValue = sData.getValue();
-					lastSensorValue = sensorValue;
-					sensorData.getValues().add(sensorValue);
-				}
-			}
+			sensorDatas.getSensorData().add(sensorData);
+			transaction.commit();
+		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
+				| HeuristicMixedException | HeuristicRollbackException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
-		// add a last value for the charts
-		final SensorValue latestInterpolatedValue = new SensorValue();
-		latestInterpolatedValue.setDateTime(now);
-		latestInterpolatedValue.setValue(latestValue);
-		sensorData.getValues().add(latestInterpolatedValue);
-
-		sensorDatas.getSensorData().add(sensorData);
-
 	}
 
 	/**
@@ -320,58 +326,66 @@ public class Sensors extends BaseService {
 
 	@POST
 	@Path("rfsniffer")
-	@Transactional
 	public void registerRFEvent(final RFEvent event)
 			throws SensorDataLimitViolationException, NotSupportedException, SystemException, SecurityException,
 			IllegalStateException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
-		final String code = Integer.toString(event.getCode());
-//        LogManager.getLogger(this.getClass()).info("RF Event: " + code);
 
 		try {
-			final Switch sw = em
-					.createQuery("select sw from Switch sw where sw.onCode=:code or sw.offCode=:code", Switch.class)
-					.setParameter("code", code).getSingleResult();
+			transaction.begin();
+			final String code = Integer.toString(event.getCode());
+//        LogManager.getLogger(this.getClass()).info("RF Event: " + code);
 
-			if (sw != null) {
+			try {
+				final Switch sw = em
+						.createQuery("select sw from Switch sw where sw.onCode=:code or sw.offCode=:code", Switch.class)
+						.setParameter("code", code).getSingleResult();
 
-				String status = "";
+				if (sw != null) {
 
-				if (sw.getOnCode().equals(code)) {
-					status = "ON";
-				} else if (sw.getOffCode().equals(code)) {
-					status = "OFF";
-				} else {
-					status = "UNKNOWN " + code;
+					String status = "";
+
+					if (sw.getOnCode().equals(code)) {
+						status = "ON";
+					} else if (sw.getOffCode().equals(code)) {
+						status = "OFF";
+					} else {
+						status = "UNKNOWN " + code;
+					}
+
+					final SwitchEvent switchEvent = new SwitchEvent();
+					switchEvent.setSwitchId(Long.toString(sw.getId()));
+					switchEvent.setStatus(status);
+
+					bus.publish("SwitchEvent", switchEvent);
+
+					sw.setLatestStatus(status);
+					sw.setLatestStatusFrom(new Date());
+
+					em.persist(sw);
+
+					// save switch changes
+					final Sensor sensor = sw.getSensor();
+					if (sensor != null) {
+
+						final SensorDataSaveRequest sensorSaveRequest = new SensorDataSaveRequest();
+
+						sensorSaveRequest.setSensorId(sensor.getId());
+						final SensorData sensorData = new SensorData();
+						sensorData.setValue((("ON".equals(status)) ? "1" : "0"));
+						sensorSaveRequest.setSensorData(sensorData);
+
+						this.saveSensorData(sensorSaveRequest);
+					}
+
 				}
-
-				final SwitchEvent switchEvent = new SwitchEvent();
-				switchEvent.setSwitchId(Long.toString(sw.getId()));
-				switchEvent.setStatus(status);
-
-				bus.publish("SwitchEvent", switchEvent);
-
-				sw.setLatestStatus(status);
-				sw.setLatestStatusFrom(new Date());
-
-				em.persist(sw);
-
-				// save switch changes
-				final Sensor sensor = sw.getSensor();
-				if (sensor != null) {
-
-					final SensorDataSaveRequest sensorSaveRequest = new SensorDataSaveRequest();
-
-					sensorSaveRequest.setSensorId(sensor.getId());
-					final SensorData sensorData = new SensorData();
-					sensorData.setValue((("ON".equals(status)) ? "1" : "0"));
-					sensorSaveRequest.setSensorData(sensorData);
-
-					this.saveSensorData(sensorSaveRequest);
-				}
-
-			}
-		} catch (final NoResultException e) {
+			} catch (final NoResultException e) {
 //            LogManager.getLogger(this.getClass()).error(e);
+			}
+			transaction.commit();
+		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
+				| HeuristicMixedException | HeuristicRollbackException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}
@@ -453,7 +467,7 @@ public class Sensors extends BaseService {
 
 	@POST
 	@Path("forroom/save")
-	
+
 	public void saveSensorData(final SensorDataSaveRequest request)
 			throws SensorDataLimitViolationException, SecurityException, IllegalStateException, RollbackException,
 			HeuristicMixedException, HeuristicRollbackException, SystemException, NotSupportedException {
