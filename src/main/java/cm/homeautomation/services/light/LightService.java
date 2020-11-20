@@ -8,7 +8,13 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 import javax.transaction.Transactional;
+import javax.transaction.UserTransaction;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -44,6 +50,9 @@ public class LightService extends BaseService {
 
 	@Inject
 	ConfigurationService configurationService;
+
+	@Inject
+	UserTransaction transaction;
 
 	private static final String ON = "on";
 	private static final String OFF = "off";
@@ -177,15 +186,23 @@ public class LightService extends BaseService {
 				String dimUrl = light.getDimUrl();
 
 				if (light instanceof DimmableLight) {
-					final DimmableLight dimmableLight = (DimmableLight) light;
+					try {
+						transaction.begin();
 
-					if (dimValue > dimmableLight.getMaximumValue()) {
-						dimValue = dimmableLight.getMaximumValue();
+						final DimmableLight dimmableLight = (DimmableLight) light;
+
+						if (dimValue > dimmableLight.getMaximumValue()) {
+							dimValue = dimmableLight.getMaximumValue();
+						}
+
+						dimmableLight.setBrightnessLevel(dimValue);
+						em.merge(dimmableLight);
+						dimUrl = dimmableLight.getDimUrl();
+						transaction.commit();
+					} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-
-					dimmableLight.setBrightnessLevel(dimValue);
-					em.merge(dimmableLight);
-					dimUrl = dimmableLight.getDimUrl();
 				} else {
 					light.setPowerState(OFF.equals(powerState));
 				}

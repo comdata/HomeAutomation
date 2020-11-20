@@ -18,6 +18,7 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transactional;
+import javax.transaction.UserTransaction;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -68,6 +69,8 @@ public class Sensors extends BaseService {
 
 	@Inject
 	InfluxDBClient influxDBClient;
+	
+	@Inject UserTransaction transaction;
 
 	class DataLoadThread extends Thread {
 		private SensorDatas sensorDatas;
@@ -450,11 +453,11 @@ public class Sensors extends BaseService {
 
 	@POST
 	@Path("forroom/save")
-	@Transactional
+	
 	public void saveSensorData(final SensorDataSaveRequest request)
 			throws SensorDataLimitViolationException, SecurityException, IllegalStateException, RollbackException,
 			HeuristicMixedException, HeuristicRollbackException, SystemException, NotSupportedException {
-
+		transaction.begin();
 		Sensor sensor = null;
 		if (request.getSensorId() != null) {
 			Long sensorId = request.getSensorId();
@@ -588,6 +591,7 @@ public class Sensors extends BaseService {
 		} else {
 //            LogManager.getLogger(this.getClass()).error("sensor is null");
 		}
+		transaction.commit();
 	}
 
 	public void saveToInflux(SensorData sensorData) {

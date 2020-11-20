@@ -9,7 +9,13 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 import javax.transaction.Transactional;
+import javax.transaction.UserTransaction;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -43,6 +49,9 @@ public class WindowBlindService extends BaseService {
 
 	@Inject
 	ConfigurationService configurationService;
+
+	@Inject
+	UserTransaction transaction;
 
 	private Map<Long, List<WindowBlind>> windowBlindList;
 	private Map<Long, WindowBlind> windowBlindMap;
@@ -155,73 +164,87 @@ public class WindowBlindService extends BaseService {
 
 	@GET
 	@Path("setDim/{windowBlind}/{value}/{type}/{roomId}")
-	@Transactional
 	public GenericStatus setDim(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value,
 			@PathParam("type") String type, @PathParam("roomId") Long roomId) {
 
 		final Runnable windowBlindThread = () -> {
+			try {
+				transaction.begin();
 
-			String newValue = value;
+				String newValue = value;
 
-			if (WindowBlind.SINGLE.equals(type)) {
+				if (WindowBlind.SINGLE.equals(type)) {
 
-				final WindowBlind singleWindowBlind1 = windowBlindMap.get(windowBlindId);
+					final WindowBlind singleWindowBlind1 = windowBlindMap.get(windowBlindId);
 
-				if (Float.parseFloat(value) > singleWindowBlind1.getMaximumValue()) {
-					newValue = Integer.toString(singleWindowBlind1.getMaximumValue());
-				}
-
-				String mqttDimTopic = singleWindowBlind1.getMqttDimTopic();
-				if (mqttDimTopic != null && !mqttDimTopic.isEmpty()) {
-					String dimMessage = singleWindowBlind1.getMqttDimMessage().replace(DIMVALUE, newValue);
-
-					mqttSender.sendMQTTMessage(singleWindowBlind1.getMqttDimTopic(), dimMessage);
-				} else {
-
-					final String dimUrl1 = singleWindowBlind1.getDimUrl().replace(DIMVALUE, newValue);
-
-					HTTPHelper.performHTTPRequest(dimUrl1);
-					singleWindowBlind1.setCurrentValue(Float.parseFloat(newValue));
-
-					em.merge(singleWindowBlind1);
-
-				}
-
-				final WindowBlindStatus eventData1 = new WindowBlindStatus();
-				eventData1.setWindowBlind(singleWindowBlind1);
-				final EventObject eventObject1 = new EventObject(eventData1);
-				bus.publish("EventObject", eventObject1);
-			} else if (WindowBlind.ALL_AT_ONCE.equals(type)) {
-				final List<WindowBlind> windowBlinds = windowBlindList.get(roomId);
-
-				for (final WindowBlind singleWindowBlind2 : windowBlinds) {
-
-					String mqttDimTopic = singleWindowBlind2.getMqttDimTopic();
-					if (mqttDimTopic != null && !mqttDimTopic.isEmpty()) {
-						String dimMessage = singleWindowBlind2.getMqttDimMessage().replace(DIMVALUE, newValue);
-
-						mqttSender.sendMQTTMessage(singleWindowBlind2.getMqttDimTopic(), dimMessage);
-					} else {
-
-						final String dimUrl1 = singleWindowBlind2.getDimUrl().replace(DIMVALUE, newValue);
-
-						HTTPHelper.performHTTPRequest(dimUrl1);
-
-						singleWindowBlind2.setCurrentValue(Float.parseFloat(newValue));
-
-			
-						em.merge(singleWindowBlind2);
-			
+					if (Float.parseFloat(value) > singleWindowBlind1.getMaximumValue()) {
+						newValue = Integer.toString(singleWindowBlind1.getMaximumValue());
 					}
 
-					final WindowBlindStatus eventData2 = new WindowBlindStatus();
-					eventData2.setWindowBlind(singleWindowBlind2);
-					final EventObject eventObject2 = new EventObject(eventData2);
-					bus.publish("EventObject", eventObject2);
+					String mqttDimTopic = singleWindowBlind1.getMqttDimTopic();
+					if (mqttDimTopic != null && !mqttDimTopic.isEmpty()) {
+						String dimMessage = singleWindowBlind1.getMqttDimMessage().replace(DIMVALUE, newValue);
 
+						mqttSender.sendMQTTMessage(singleWindowBlind1.getMqttDimTopic(), dimMessage);
+					} else {
+
+						final String dimUrl1 = singleWindowBlind1.getDimUrl().replace(DIMVALUE, newValue);
+
+						HTTPHelper.performHTTPRequest(dimUrl1);
+						singleWindowBlind1.setCurrentValue(Float.parseFloat(newValue));
+
+						em.merge(singleWindowBlind1);
+
+					}
+
+					final WindowBlindStatus eventData1 = new WindowBlindStatus();
+					eventData1.setWindowBlind(singleWindowBlind1);
+					final EventObject eventObject1 = new EventObject(eventData1);
+					bus.publish("EventObject", eventObject1);
+				} else if (WindowBlind.ALL_AT_ONCE.equals(type)) {
+					final List<WindowBlind> windowBlinds = windowBlindList.get(roomId);
+
+					for (final WindowBlind singleWindowBlind2 : windowBlinds) {
+
+						String mqttDimTopic = singleWindowBlind2.getMqttDimTopic();
+						if (mqttDimTopic != null && !mqttDimTopic.isEmpty()) {
+							String dimMessage = singleWindowBlind2.getMqttDimMessage().replace(DIMVALUE, newValue);
+
+							mqttSender.sendMQTTMessage(singleWindowBlind2.getMqttDimTopic(), dimMessage);
+						} else {
+
+							final String dimUrl1 = singleWindowBlind2.getDimUrl().replace(DIMVALUE, newValue);
+
+							HTTPHelper.performHTTPRequest(dimUrl1);
+
+							singleWindowBlind2.setCurrentValue(Float.parseFloat(newValue));
+
+							try {
+								transaction.begin();
+
+								em.merge(singleWindowBlind2);
+								transaction.commit();
+							} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException
+									| RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+
+						final WindowBlindStatus eventData2 = new WindowBlindStatus();
+						eventData2.setWindowBlind(singleWindowBlind2);
+						final EventObject eventObject2 = new EventObject(eventData2);
+						bus.publish("EventObject", eventObject2);
+
+					}
 				}
-			}
 
+				transaction.commit();
+			} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException
+					| RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		};
 		new Thread(windowBlindThread).start();
 
