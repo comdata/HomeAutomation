@@ -23,18 +23,18 @@ public class SensorTest {
 	@BeforeEach
 	public void setup() {
 		
-		em.getTransaction().begin();
+		
 
 		room = new Room();
 		room.setRoomName("Test Sensor Room");
 
 		em.persist(room);
-		em.getTransaction().commit();
+		
 	}
 
 	@Test
 	public void testCreateSensor() throws Exception {
-		em.getTransaction().begin();
+		
 		Sensor sensor = new Sensor();
 	//	sensor.setRoom(room);
 		sensor.setSensorName("Testsensor");
@@ -42,7 +42,7 @@ public class SensorTest {
 	//	sensor.setMaxValue(null);
 
 		em.persist(sensor);
-		em.getTransaction().commit();
+		
 
 		//assertTrue("Id: " + sensor.getId(), sensor.getId() != null);
 	}
@@ -50,11 +50,11 @@ public class SensorTest {
 	@Test
 	public void testCreateEmptySensor() {
 		Assertions.assertThrows(RollbackException.class, () -> {
-			em.getTransaction().begin();
+			
 			Sensor sensor = new Sensor();
 		//	sensor.setRoom(room);
 			em.persist(sensor);
-			em.getTransaction().commit();
+			
 		});
 
 	}

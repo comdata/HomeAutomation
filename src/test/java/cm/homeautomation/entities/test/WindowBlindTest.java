@@ -35,13 +35,13 @@ public class WindowBlindTest {
 	@BeforeEach
 	public void setup() {
 
-		em.getTransaction().begin();
+		
 		room = new Room();
 		room.setRoomName("Test Sensor Room");
 
 		em.persist(room);
 		room = em.merge(room);
-		em.getTransaction().commit();
+		
 	}
 
 	@AfterEach
@@ -49,23 +49,23 @@ public class WindowBlindTest {
 
 		if (windowBlind != null) {
 			
-			em.getTransaction().begin();
+			
 			windowBlind = em.merge(windowBlind);
 			em.remove(windowBlind);
-			em.getTransaction().commit();
+			
 		}
 	}
 
 	@Test
 	public void testCreateBlind() throws Exception {
 		
-		em.getTransaction().begin();
+		
 		windowBlind = new WindowBlind();
 
 		windowBlind.setName("Testblind");
 		windowBlind.setRoom(room);
 		em.persist(windowBlind);
-		em.getTransaction().commit();
+		
 	}
 
 	@Test
@@ -73,25 +73,25 @@ public class WindowBlindTest {
 
 		Assertions.assertThrows(RollbackException.class, () -> {
 			
-			em.getTransaction().begin();
+			
 			windowBlind = new WindowBlind();
 
 			windowBlind.setName("Testblind");
 			em.persist(windowBlind);
-			em.getTransaction().commit();
+			
 		});
 	}
 
 	@Test
 	public void testCalibrationURL() throws Exception {
 		
-		em.getTransaction().begin();
+		
 		windowBlind = new WindowBlind();
 
 		windowBlind.setCalibrationUrl(calibrationUrl);
 		windowBlind.setRoom(room);
 		em.persist(windowBlind);
-		em.getTransaction().commit();
+		
 
 		assertTrue(windowBlind.getId() != null, "id is null");
 		assertTrue(windowBlind.getId().longValue() > 0, "id is not greater 0");

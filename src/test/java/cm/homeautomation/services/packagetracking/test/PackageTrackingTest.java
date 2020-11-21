@@ -38,7 +38,7 @@ class PackageTrackingTest {
     void testPackagesGetAllOpenWithEntity() {
         
 
-        em.getTransaction().begin();
+        
 
         Package pack = new Package();
         pack.setPackageName("Test Package");
@@ -47,24 +47,24 @@ class PackageTrackingTest {
         List<PackageHistory> packageHistory = new ArrayList<>();
         pack.setPackageHistory(packageHistory);
         em.persist(pack);
-        em.getTransaction().commit();
+        
 
         given().when().get("/packages/getAllOpen").then().statusCode(200)
                 .body(containsString("\"" + pack.getPackageName() + "\""));
 
-        em.getTransaction().begin();
+        
 
         em.createQuery("delete from Package p where p.packageName=:name").setParameter("name", pack.getPackageName())
                 .executeUpdate();
 
-        em.getTransaction().commit();
+        
     }
 
     @Test
     void testPackagesGetAllOpenWithEntityAndHistory() {
         
 
-        em.getTransaction().begin();
+        
 
         Package pack = new Package();
         pack.setPackageName("Test Package");
@@ -84,7 +84,7 @@ class PackageTrackingTest {
         pack.setPackageHistory(packageHistory);
         em.persist(history);
         em.persist(pack);
-        em.getTransaction().commit();
+        
 
         given()
           .when().get("/packages/getAllOpen")
@@ -92,11 +92,11 @@ class PackageTrackingTest {
              .statusCode(200)
              .body(containsString("\""+pack.getPackageName()+"\""));
 
-        em.getTransaction().begin();
+        
 
         em.createQuery("delete from PackageHistory p").executeUpdate();
         em.createQuery("delete from Package p where p.packageName=:name").setParameter("name", pack.getPackageName()).executeUpdate();
 
-        em.getTransaction().commit();
+        
     }
 }

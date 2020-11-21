@@ -26,7 +26,7 @@ public class DeviceTest {
 	
 	@BeforeEach
 	public void setup() {
-		em.getTransaction().begin();
+		
 
 		em.createQuery("delete from Device").executeUpdate();
 		em.createQuery("delete from Room r where r.roomName=:roomName").setParameter("roomName", TEST_DEVICE_ROOM)
@@ -36,12 +36,12 @@ public class DeviceTest {
 		room.setRoomName(TEST_DEVICE_ROOM);
 
 		em.persist(room);
-		em.getTransaction().commit();
+		
 	}
 
 	@Test
 	public void testCreateDevice() throws Exception {
-		em.getTransaction().begin();
+		
 		Device device = new Device();
 
 		device.setMac("00:00:00:00:00");
@@ -50,7 +50,7 @@ public class DeviceTest {
 
 		em.persist(device);
 
-		em.getTransaction().commit();
+		
 		
 		assertTrue(device.getId() != null, "Id: " + device.getId());
 	}

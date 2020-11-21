@@ -27,7 +27,7 @@ public class CameraTest {
 	@BeforeEach
 	public void setup() {
 
-		em.getTransaction().begin();
+		
 
 		em.createQuery("delete from Camera").executeUpdate();
 		em.createQuery("delete from Room r where r.roomName=:roomName").setParameter("roomName", TEST_CAMERA_ROOM)
@@ -37,12 +37,12 @@ public class CameraTest {
 		room.setRoomName(TEST_CAMERA_ROOM);
 
 		em.persist(room);
-		em.getTransaction().commit();
+		
 	}
 
 	@Test
 	public void testCreateCamera() throws Exception {
-		em.getTransaction().begin();
+		
 		Camera camera = new Camera();
 
 		camera.setIcon("Test Icon");
@@ -51,7 +51,7 @@ public class CameraTest {
 
 		em.persist(camera);
 
-		em.getTransaction().commit();
+		
 
 		assertTrue(camera.getId() != null, "Id: " + camera.getId());
 	}
@@ -60,12 +60,12 @@ public class CameraTest {
 	public void testCameraFailsWithoutRoom() throws Exception {
 		Assertions.assertThrows(RollbackException.class, () -> {
 			
-			em.getTransaction().begin();
+			
 			Camera camera = new Camera();
 
 			camera.setCameraName("Testblind");
 			em.persist(camera);
-			em.getTransaction().commit();
+			
 		});
 	}
 }

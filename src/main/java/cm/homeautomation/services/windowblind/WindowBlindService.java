@@ -160,70 +160,65 @@ public class WindowBlindService extends BaseService {
 	public GenericStatus setDim(@PathParam("windowBlind") Long windowBlindId, @PathParam("value") String value,
 			@PathParam("type") String type, @PathParam("roomId") Long roomId) {
 
-		final Runnable windowBlindThread = () -> {
+		String newValue = value;
 
-			String newValue = value;
+		if (WindowBlind.SINGLE.equals(type)) {
 
-			if (WindowBlind.SINGLE.equals(type)) {
+			final WindowBlind singleWindowBlind1 = windowBlindMap.get(windowBlindId);
 
-				final WindowBlind singleWindowBlind1 = windowBlindMap.get(windowBlindId);
-
-				if (Float.parseFloat(value) > singleWindowBlind1.getMaximumValue()) {
-					newValue = Integer.toString(singleWindowBlind1.getMaximumValue());
-				}
-
-				String mqttDimTopic = singleWindowBlind1.getMqttDimTopic();
-				if (mqttDimTopic != null && !mqttDimTopic.isEmpty()) {
-					String dimMessage = singleWindowBlind1.getMqttDimMessage().replace(DIMVALUE, newValue);
-
-					mqttSender.sendMQTTMessage(singleWindowBlind1.getMqttDimTopic(), dimMessage);
-				} else {
-
-					final String dimUrl1 = singleWindowBlind1.getDimUrl().replace(DIMVALUE, newValue);
-
-					HTTPHelper.performHTTPRequest(dimUrl1);
-					singleWindowBlind1.setCurrentValue(Float.parseFloat(newValue));
-
-					em.merge(singleWindowBlind1);
-
-				}
-
-				final WindowBlindStatus eventData1 = new WindowBlindStatus();
-				eventData1.setWindowBlind(singleWindowBlind1);
-				final EventObject eventObject1 = new EventObject(eventData1);
-				bus.publish("EventObject", eventObject1);
-			} else if (WindowBlind.ALL_AT_ONCE.equals(type)) {
-				final List<WindowBlind> windowBlinds = windowBlindList.get(roomId);
-
-				for (final WindowBlind singleWindowBlind2 : windowBlinds) {
-
-					String mqttDimTopic = singleWindowBlind2.getMqttDimTopic();
-					if (mqttDimTopic != null && !mqttDimTopic.isEmpty()) {
-						String dimMessage = singleWindowBlind2.getMqttDimMessage().replace(DIMVALUE, newValue);
-
-						mqttSender.sendMQTTMessage(singleWindowBlind2.getMqttDimTopic(), dimMessage);
-					} else {
-
-						final String dimUrl1 = singleWindowBlind2.getDimUrl().replace(DIMVALUE, newValue);
-
-						HTTPHelper.performHTTPRequest(dimUrl1);
-
-						singleWindowBlind2.setCurrentValue(Float.parseFloat(newValue));
-
-						em.merge(singleWindowBlind2);
-
-					}
-
-					final WindowBlindStatus eventData2 = new WindowBlindStatus();
-					eventData2.setWindowBlind(singleWindowBlind2);
-					final EventObject eventObject2 = new EventObject(eventData2);
-					bus.publish("EventObject", eventObject2);
-
-				}
+			if (Float.parseFloat(value) > singleWindowBlind1.getMaximumValue()) {
+				newValue = Integer.toString(singleWindowBlind1.getMaximumValue());
 			}
 
-		};
-		new Thread(windowBlindThread).start();
+			String mqttDimTopic = singleWindowBlind1.getMqttDimTopic();
+			if (mqttDimTopic != null && !mqttDimTopic.isEmpty()) {
+				String dimMessage = singleWindowBlind1.getMqttDimMessage().replace(DIMVALUE, newValue);
+
+				mqttSender.sendMQTTMessage(singleWindowBlind1.getMqttDimTopic(), dimMessage);
+			} else {
+
+				final String dimUrl1 = singleWindowBlind1.getDimUrl().replace(DIMVALUE, newValue);
+
+				HTTPHelper.performHTTPRequest(dimUrl1);
+				singleWindowBlind1.setCurrentValue(Float.parseFloat(newValue));
+
+				em.merge(singleWindowBlind1);
+
+			}
+
+			final WindowBlindStatus eventData1 = new WindowBlindStatus();
+			eventData1.setWindowBlind(singleWindowBlind1);
+			final EventObject eventObject1 = new EventObject(eventData1);
+			bus.publish("EventObject", eventObject1);
+		} else if (WindowBlind.ALL_AT_ONCE.equals(type)) {
+			final List<WindowBlind> windowBlinds = windowBlindList.get(roomId);
+
+			for (final WindowBlind singleWindowBlind2 : windowBlinds) {
+
+				String mqttDimTopic = singleWindowBlind2.getMqttDimTopic();
+				if (mqttDimTopic != null && !mqttDimTopic.isEmpty()) {
+					String dimMessage = singleWindowBlind2.getMqttDimMessage().replace(DIMVALUE, newValue);
+
+					mqttSender.sendMQTTMessage(singleWindowBlind2.getMqttDimTopic(), dimMessage);
+				} else {
+
+					final String dimUrl1 = singleWindowBlind2.getDimUrl().replace(DIMVALUE, newValue);
+
+					HTTPHelper.performHTTPRequest(dimUrl1);
+
+					singleWindowBlind2.setCurrentValue(Float.parseFloat(newValue));
+
+					em.merge(singleWindowBlind2);
+
+				}
+
+				final WindowBlindStatus eventData2 = new WindowBlindStatus();
+				eventData2.setWindowBlind(singleWindowBlind2);
+				final EventObject eventObject2 = new EventObject(eventData2);
+				bus.publish("EventObject", eventObject2);
+
+			}
+		}
 
 		return new GenericStatus(true);
 

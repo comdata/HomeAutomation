@@ -35,8 +35,6 @@ public class WindowBlindServiceTest {
     public void testWindowBlindGetAllWithEntity() {
         
 
-        em.getTransaction().begin();
-
         Room room = new Room();
 
         room.setRoomName("WindowBlind Test Room");
@@ -48,8 +46,6 @@ public class WindowBlindServiceTest {
         windowBlind.setRoom(room);
 
         em.persist(windowBlind);
-        em.getTransaction().commit();
-
 
         given()
           .when().get("/windowBlinds/getAll")
@@ -57,12 +53,9 @@ public class WindowBlindServiceTest {
              .statusCode(200)
              .body(containsString("{\"windowBlinds\":[{\"id\":"));
 
-        em.getTransaction().begin();
 
         em.createQuery("delete from WindowBlind w where w.name=:name").setParameter("name", windowBlind.getName()).executeUpdate();
         em.createQuery("delete from Room r where r.roomName=:name").setParameter("name", room.getRoomName()).executeUpdate();
-
-        em.getTransaction().commit();
 
     }
 }

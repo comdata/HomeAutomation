@@ -32,12 +32,12 @@ public class RoomTest {
 	
 	@Test
 	public void testCreateRoom() throws Exception {
-		em.getTransaction().begin();
+		
 		Room room=new Room();
 		room.setRoomName("Test Room");
 
 		em.persist(room);
-		em.getTransaction().commit();
+		
 		
 		assertNotNull(room);
     }
