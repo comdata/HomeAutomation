@@ -6,6 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.WriteApi;
@@ -15,8 +16,11 @@ import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.db.InfluxDBService;
 import cm.homeautomation.entities.MotionDetection;
 import cm.homeautomation.services.base.BaseService;
+import io.quarkus.runtime.Startup;
 import io.quarkus.vertx.ConsumeEvent;
 
+@Startup
+@Transactional(value = TxType.REQUIRES_NEW)
 @ApplicationScoped
 public class MotionDetectionService extends BaseService {
 
@@ -33,7 +37,6 @@ public class MotionDetectionService extends BaseService {
 	InfluxDBClient influxDBClient;
 
 	@ConsumeEvent(value = "MotionEvent", blocking = true)
-	
 	public void registerMotionEvent(final MotionEvent motionEvent) {
 
 		final boolean state = motionEvent.isState();

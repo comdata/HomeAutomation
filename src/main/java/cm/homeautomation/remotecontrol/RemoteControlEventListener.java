@@ -5,9 +5,9 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.apache.log4j.LogManager;
 
@@ -25,10 +25,13 @@ import cm.homeautomation.services.windowblind.WindowBlindDimMessageSimple;
 import cm.homeautomation.services.windowblind.WindowBlindService;
 import cm.homeautomation.services.windowblind.WindowBlindService.DimDirection;
 import cm.homeautomation.zigbee.RemoteControlBrightnessChangeEvent;
+import io.quarkus.runtime.Startup;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
+@Startup
 @ApplicationScoped
+@Transactional(value = TxType.REQUIRES_NEW)
 public class RemoteControlEventListener {
 
 	@Inject

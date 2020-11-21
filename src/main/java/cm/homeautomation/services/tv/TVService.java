@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -24,6 +25,7 @@ import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.tv.panasonic.PanasonicTVBinding;
 import cm.homeautomation.tv.panasonic.TVNotReachableException;
+import io.quarkus.runtime.Startup;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
@@ -35,6 +37,8 @@ import io.vertx.core.eventbus.EventBus;
  */
 @ApplicationScoped
 @Path("tv/")
+@Startup
+@Transactional(value = TxType.REQUIRES_NEW)
 public class TVService extends BaseService {
 
 	private static TVService instance;

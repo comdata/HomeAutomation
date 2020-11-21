@@ -79,8 +79,6 @@ public class ZigbeeMQTTReceiver {
 
 	private Map<String, ZigBeeDevice> deviceMap = new HashMap<>();
 
-	@Inject
-
 	private void init() {
 		initDeviceList();
 		updateDeviceList();
