@@ -42,7 +42,7 @@ public class DashButtonService {
 	}
 
 	private void runListener() {
-		
+
 		Runnable runner = () -> {
 			final int listenPort = 67;
 			final int MAX_BUFFER_SIZE = 1000;
@@ -68,6 +68,7 @@ public class DashButtonService {
 		new Thread(runner).start();
 	}
 
+	@Transactional(value = TxType.REQUIRES_NEW)
 	private void listenAndReceive(final int listenPort, DatagramSocket socket, final DatagramPacket p) {
 		try {
 //				LogManager.getLogger(this.getClass()).debug("Listening on port " + listenPort + "...");
@@ -77,36 +78,32 @@ public class DashButtonService {
 
 			final DHCPPacket packet = DHCPPacket.getPacket(p);
 
-			Runnable runner = () -> {
+			final String mac = packet.getHardwareAddress().getHardwareAddressHex();
+			// LogManager.getLogger(this.getClass()).debug("checking mac: " + mac);
+			if (isDashButton(mac)) {
+				// LogManager.getLogger(this.getClass()).debug("found a dashbutton mac: " +
+				// mac);
 
-				final String mac = packet.getHardwareAddress().getHardwareAddressHex();
-				// LogManager.getLogger(this.getClass()).debug("checking mac: " + mac);
-				if (isDashButton(mac)) {
-					// LogManager.getLogger(this.getClass()).debug("found a dashbutton mac: " +
-					// mac);
-
-					/*
-					 * suppress events if they are to fast
-					 *
-					 */
-					if (!timeFilter.containsKey(mac)) {
-						timeFilter.put(mac, new Date(1));
-					}
-
-					final Date filterTime = timeFilter.get(mac);
-
-					if (((filterTime.getTime()) + 1000) < (new Date()).getTime()) {
-						timeFilter.put(mac, new Date());
-						bus.publish("EventObject", new EventObject(new DashButtonEvent(mac)));
-						// LogManager.getLogger(this.getClass()).debug("send dashbutton event");
-					}
-
-				} else {
-//						LogManager.getLogger(this.getClass()).debug("not a dashbutton: " + mac);
+				/*
+				 * suppress events if they are to fast
+				 *
+				 */
+				if (!timeFilter.containsKey(mac)) {
+					timeFilter.put(mac, new Date(1));
 				}
 
-			};
-			new Thread(runner).start();
+				final Date filterTime = timeFilter.get(mac);
+
+				if (((filterTime.getTime()) + 1000) < (new Date()).getTime()) {
+					timeFilter.put(mac, new Date());
+					bus.publish("EventObject", new EventObject(new DashButtonEvent(mac)));
+					// LogManager.getLogger(this.getClass()).debug("send dashbutton event");
+				}
+
+			} else {
+//						LogManager.getLogger(this.getClass()).debug("not a dashbutton: " + mac);
+			}
+
 		} catch (final SocketException e) {
 //				LogManager.getLogger(this.getClass()).error("socket exeception", e);
 		} catch (final IOException e) {
