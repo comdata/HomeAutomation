@@ -12,15 +12,14 @@ import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
-import javax.transaction.Status;
 import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -48,6 +47,7 @@ import io.vertx.core.eventbus.EventBus;
  *
  */
 @ApplicationScoped
+@Transactional(value = TxType.REQUIRES_NEW)
 public class PowerMeterSensor {
 
 	@Inject
@@ -61,9 +61,6 @@ public class PowerMeterSensor {
 
 	@Inject
 	ConfigurationService configurationService;
-
-	@Inject
-	UserTransaction transaction;
 
 	@Inject
 	InfluxDBClient influxDBClient;
@@ -80,13 +77,10 @@ public class PowerMeterSensor {
 	 * @throws IllegalStateException
 	 * @throws SecurityException
 	 */
-	public void compress(final String[] args) throws NotSupportedException, SystemException, SecurityException,
-			IllegalStateException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+	public void compress(final String[] args) {
 		if ((args != null) && (args.length > 0)) {
 
 			final int numberOfEntriesToCompress = Integer.parseInt(args[0]);
-
-			transaction.begin();
 
 			@SuppressWarnings("unchecked")
 			final List<Object[]> rawResultList = em.createNativeQuery(
@@ -117,8 +111,6 @@ public class PowerMeterSensor {
 
 				em.persist(compressPowerPing);
 			}
-
-			transaction.commit();
 
 		} else {
 			LogManager.getLogger(PowerMeterSensor.class)
@@ -185,10 +177,7 @@ public class PowerMeterSensor {
 				powerMeterPing.setPowerCounter(powerData.getPowermeter());
 				powerMeterPing.setTimestamp(new Date());
 
-				transaction.begin();
-
 				em.persist(powerMeterPing);
-				transaction.commit();
 
 				saveToInflux(powerMeterPing);
 
@@ -196,38 +185,24 @@ public class PowerMeterSensor {
 				LogManager.getLogger(PowerMeterSensor.class).error("error persisting power data", e);
 			}
 
-			try {
-
-				boolean ownTransaction = false;
-				if (transaction.getStatus() == Status.STATUS_NO_TRANSACTION) {
-					transaction.begin();
-					ownTransaction = true;
-				}
-				final boolean parseBoolean = Boolean
-						.parseBoolean(configurationService.getConfigurationProperty("power", "sendSummaryData"));
-				if (parseBoolean) {
-					final boolean overLimit = requestRateLimiter
-							.overLimitWhenIncremented(PowerMeterData.class.getName());
-					if (overLimit) {
-						final Runnable sendNewDataService = new Runnable() {
-							@Override
-							public void run() {
-								try {
-									sendNewData();
-								} catch (final Exception e) {
-									LogManager.getLogger(this.getClass()).error("Failed sending new data", e);
-								}
+			final boolean parseBoolean = Boolean
+					.parseBoolean(configurationService.getConfigurationProperty("power", "sendSummaryData"));
+			if (parseBoolean) {
+				final boolean overLimit = requestRateLimiter.overLimitWhenIncremented(PowerMeterData.class.getName());
+				if (overLimit) {
+					final Runnable sendNewDataService = new Runnable() {
+						@Override
+						public void run() {
+							try {
+								sendNewData();
+							} catch (final Exception e) {
+								LogManager.getLogger(this.getClass()).error("Failed sending new data", e);
 							}
-						};
-						new Thread(sendNewDataService).start();
+						}
+					};
+					new Thread(sendNewDataService).start();
 
-					}
 				}
-				if (ownTransaction) {
-					transaction.commit();
-				}
-			} catch (Exception e) {
-				LogManager.getLogger(PowerMeterSensor.class).error("error creating and sending interval data", e);
 			}
 
 		}

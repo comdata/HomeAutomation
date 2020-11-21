@@ -8,12 +8,8 @@ import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -43,6 +39,7 @@ import io.vertx.core.eventbus.EventBus;
  *
  */
 @ApplicationScoped
+@Transactional(value = TxType.REQUIRES_NEW)
 public class JSONSensorDataReceiver {
 
 	private static final String RECEIVED_SENSOR_DATA_LIMIT_VIOLATION_EXCEPTION = "received SensorDataLimitViolationException";
@@ -106,27 +103,6 @@ public class JSONSensorDataReceiver {
             LogManager.getLogger(JSONSensorDataReceiver.class).error(RECEIVED_IO_EXCEPTION, e);
 		} catch (SensorDataLimitViolationException e) {
             LogManager.getLogger(JSONSensorDataReceiver.class).error(RECEIVED_SENSOR_DATA_LIMIT_VIOLATION_EXCEPTION, e);
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RollbackException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (HeuristicMixedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (HeuristicRollbackException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SystemException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NotSupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 

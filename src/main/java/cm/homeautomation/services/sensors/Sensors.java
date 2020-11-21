@@ -16,9 +16,9 @@ import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
-import javax.transaction.Status;
 import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -50,6 +50,7 @@ import io.vertx.core.eventbus.EventBus;
 
 @ApplicationScoped
 @Path("sensors")
+@Transactional(value = TxType.REQUIRES_NEW)
 public class Sensors extends BaseService {
 
 	@Inject
@@ -69,9 +70,6 @@ public class Sensors extends BaseService {
 
 	@Inject
 	InfluxDBClient influxDBClient;
-
-	@Inject
-	UserTransaction transaction;
 
 	class DataLoadThread extends Thread {
 		private SensorDatas sensorDatas;
@@ -104,22 +102,7 @@ public class Sensors extends BaseService {
 			} catch (IllegalStateException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (NotSupportedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SystemException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (RollbackException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (HeuristicMixedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (HeuristicRollbackException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			} 
 			this.latch.countDown();
 		}
 
@@ -195,89 +178,82 @@ public class Sensors extends BaseService {
 	 */
 
 	public void loadSensorData(final SensorDatas sensorDatas, final EntityManager em, final Date now,
-			final Sensor sensor) throws NotSupportedException, SystemException, SecurityException,
-			IllegalStateException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
-		try {
-			transaction.begin();
-			final SensorValues sensorData = new SensorValues();
+			final Sensor sensor) {
 
-			sensorData.setSensorName(sensor.getSensorName());
+		final SensorValues sensorData = new SensorValues();
 
-			final String queryString = "select sd from SensorData sd where sd.sensor=:sensor and sd.dateTime>=:timeframe";
+		sensorData.setSensorName(sensor.getSensorName());
 
-			final Date twoDaysAgo = new Date((new Date()).getTime() - (86400 * 1000));
+		final String queryString = "select sd from SensorData sd where sd.sensor=:sensor and sd.dateTime>=:timeframe";
 
-			final List<SensorData> data = em.createQuery(queryString, SensorData.class).setParameter("sensor", sensor)
-					.setParameter("timeframe", twoDaysAgo).getResultList();
+		final Date twoDaysAgo = new Date((new Date()).getTime() - (86400 * 1000));
 
-			String latestValue = "";
-			SensorValue lastSensorValue = null;
+		final List<SensorData> data = em.createQuery(queryString, SensorData.class).setParameter("sensor", sensor)
+				.setParameter("timeframe", twoDaysAgo).getResultList();
 
-			// filter pressure by 0.2 percent changes only
-			if ("PRESSURE".equals(sensor.getSensorType())) {
-				for (final SensorData sData : data) {
-					final String currentValue = sData.getValue().replace(",", ".");
-					String lastValue = "0";
+		String latestValue = "";
+		SensorValue lastSensorValue = null;
 
-					if (lastSensorValue != null) {
-						lastValue = lastSensorValue.getValue().replace(",", ".");
-					}
+		// filter pressure by 0.2 percent changes only
+		if ("PRESSURE".equals(sensor.getSensorType())) {
+			for (final SensorData sData : data) {
+				final String currentValue = sData.getValue().replace(",", ".");
+				String lastValue = "0";
 
-					final double floatCurrentValue = Double.parseDouble(currentValue);
-
-					final double floatLastValue = Double.parseDouble(lastValue);
-
-					if (floatLastValue != floatCurrentValue) {
-						final double diff = floatLastValue - floatCurrentValue;
-						final double diffAbsolute = Math.sqrt(diff * diff);
-
-						if (diffAbsolute >= 1) {
-
-							final SensorValue sensorValue = new SensorValue();
-							sensorValue.setDateTime(sData.getDateTime());
-
-							sensorValue.setValue(currentValue);
-
-							latestValue = sData.getValue();
-							lastSensorValue = sensorValue;
-							sensorData.getValues().add(sensorValue);
-
-						}
-					}
+				if (lastSensorValue != null) {
+					lastValue = lastSensorValue.getValue().replace(",", ".");
 				}
-			} else {
-				for (final SensorData sData : data) {
-					if ((lastSensorValue == null) || !(lastSensorValue.getValue().equals(sData.getValue()))) {
-						if (lastSensorValue != null) {
-							final SensorValue tempSensorValue = new SensorValue();
-							tempSensorValue.setValue(lastSensorValue.getValue());
-							tempSensorValue.setDateTime(new Date(sData.getDateTime().getTime() - 1000));
-						}
+
+				final double floatCurrentValue = Double.parseDouble(currentValue);
+
+				final double floatLastValue = Double.parseDouble(lastValue);
+
+				if (floatLastValue != floatCurrentValue) {
+					final double diff = floatLastValue - floatCurrentValue;
+					final double diffAbsolute = Math.sqrt(diff * diff);
+
+					if (diffAbsolute >= 1) {
 
 						final SensorValue sensorValue = new SensorValue();
 						sensorValue.setDateTime(sData.getDateTime());
-						sensorValue.setValue(sData.getValue());
+
+						sensorValue.setValue(currentValue);
 
 						latestValue = sData.getValue();
 						lastSensorValue = sensorValue;
 						sensorData.getValues().add(sensorValue);
+
 					}
 				}
 			}
+		} else {
+			for (final SensorData sData : data) {
+				if ((lastSensorValue == null) || !(lastSensorValue.getValue().equals(sData.getValue()))) {
+					if (lastSensorValue != null) {
+						final SensorValue tempSensorValue = new SensorValue();
+						tempSensorValue.setValue(lastSensorValue.getValue());
+						tempSensorValue.setDateTime(new Date(sData.getDateTime().getTime() - 1000));
+					}
 
-			// add a last value for the charts
-			final SensorValue latestInterpolatedValue = new SensorValue();
-			latestInterpolatedValue.setDateTime(now);
-			latestInterpolatedValue.setValue(latestValue);
-			sensorData.getValues().add(latestInterpolatedValue);
+					final SensorValue sensorValue = new SensorValue();
+					sensorValue.setDateTime(sData.getDateTime());
+					sensorValue.setValue(sData.getValue());
 
-			sensorDatas.getSensorData().add(sensorData);
-			transaction.commit();
-		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
-				| HeuristicMixedException | HeuristicRollbackException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+					latestValue = sData.getValue();
+					lastSensorValue = sensorValue;
+					sensorData.getValues().add(sensorValue);
+				}
+			}
 		}
+
+		// add a last value for the charts
+		final SensorValue latestInterpolatedValue = new SensorValue();
+		latestInterpolatedValue.setDateTime(now);
+		latestInterpolatedValue.setValue(latestValue);
+		sensorData.getValues().add(latestInterpolatedValue);
+
+		sensorDatas.getSensorData().add(sensorData);
+
 	}
 
 	/**
@@ -327,66 +303,56 @@ public class Sensors extends BaseService {
 
 	@POST
 	@Path("rfsniffer")
-	public void registerRFEvent(final RFEvent event)
-			throws SensorDataLimitViolationException, NotSupportedException, SystemException, SecurityException,
-			IllegalStateException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+	public void registerRFEvent(final RFEvent event) throws SensorDataLimitViolationException {
 
-		try {
-			transaction.begin();
-			final String code = Integer.toString(event.getCode());
+		final String code = Integer.toString(event.getCode());
 //        LogManager.getLogger(this.getClass()).info("RF Event: " + code);
 
-			try {
-				final Switch sw = em
-						.createQuery("select sw from Switch sw where sw.onCode=:code or sw.offCode=:code", Switch.class)
-						.setParameter("code", code).getSingleResult();
+		try {
+			final Switch sw = em
+					.createQuery("select sw from Switch sw where sw.onCode=:code or sw.offCode=:code", Switch.class)
+					.setParameter("code", code).getSingleResult();
 
-				if (sw != null) {
+			if (sw != null) {
 
-					String status = "";
+				String status = "";
 
-					if (sw.getOnCode().equals(code)) {
-						status = "ON";
-					} else if (sw.getOffCode().equals(code)) {
-						status = "OFF";
-					} else {
-						status = "UNKNOWN " + code;
-					}
-
-					final SwitchEvent switchEvent = new SwitchEvent();
-					switchEvent.setSwitchId(Long.toString(sw.getId()));
-					switchEvent.setStatus(status);
-
-					bus.publish("SwitchEvent", switchEvent);
-
-					sw.setLatestStatus(status);
-					sw.setLatestStatusFrom(new Date());
-
-					em.persist(sw);
-
-					// save switch changes
-					final Sensor sensor = sw.getSensor();
-					if (sensor != null) {
-
-						final SensorDataSaveRequest sensorSaveRequest = new SensorDataSaveRequest();
-
-						sensorSaveRequest.setSensorId(sensor.getId());
-						final SensorData sensorData = new SensorData();
-						sensorData.setValue((("ON".equals(status)) ? "1" : "0"));
-						sensorSaveRequest.setSensorData(sensorData);
-
-						this.saveSensorData(sensorSaveRequest);
-					}
-
+				if (sw.getOnCode().equals(code)) {
+					status = "ON";
+				} else if (sw.getOffCode().equals(code)) {
+					status = "OFF";
+				} else {
+					status = "UNKNOWN " + code;
 				}
-			} catch (final NoResultException e) {
-//            LogManager.getLogger(this.getClass()).error(e);
+
+				final SwitchEvent switchEvent = new SwitchEvent();
+				switchEvent.setSwitchId(Long.toString(sw.getId()));
+				switchEvent.setStatus(status);
+
+				bus.publish("SwitchEvent", switchEvent);
+
+				sw.setLatestStatus(status);
+				sw.setLatestStatusFrom(new Date());
+
+				em.persist(sw);
+
+				// save switch changes
+				final Sensor sensor = sw.getSensor();
+				if (sensor != null) {
+
+					final SensorDataSaveRequest sensorSaveRequest = new SensorDataSaveRequest();
+
+					sensorSaveRequest.setSensorId(sensor.getId());
+					final SensorData sensorData = new SensorData();
+					sensorData.setValue((("ON".equals(status)) ? "1" : "0"));
+					sensorSaveRequest.setSensorData(sensorData);
+
+					this.saveSensorData(sensorSaveRequest);
+				}
+
 			}
-			transaction.commit();
-		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
-				| HeuristicMixedException | HeuristicRollbackException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (final NoResultException e) {
+//            LogManager.getLogger(this.getClass()).error(e);
 		}
 
 	}
@@ -469,14 +435,8 @@ public class Sensors extends BaseService {
 	@POST
 	@Path("forroom/save")
 
-	public void saveSensorData(final SensorDataSaveRequest request)
-			throws SensorDataLimitViolationException, SecurityException, IllegalStateException, RollbackException,
-			HeuristicMixedException, HeuristicRollbackException, SystemException, NotSupportedException {
-		boolean ownTransaction = false;
-		if (transaction.getStatus() == Status.STATUS_NO_TRANSACTION) {
-			transaction.begin();
-			ownTransaction = true;
-		}
+	public void saveSensorData(final SensorDataSaveRequest request) throws SensorDataLimitViolationException {
+
 		Sensor sensor = null;
 		if (request.getSensorId() != null) {
 			Long sensorId = request.getSensorId();
@@ -610,9 +570,7 @@ public class Sensors extends BaseService {
 		} else {
 //            LogManager.getLogger(this.getClass()).error("sensor is null");
 		}
-		if (ownTransaction) {
-			transaction.commit();
-		}
+
 	}
 
 	public void saveToInflux(SensorData sensorData) {
@@ -647,8 +605,7 @@ public class Sensors extends BaseService {
 
 		try {
 			saveSensorData(sensorDataSaveRequest);
-		} catch (SecurityException | IllegalStateException | SensorDataLimitViolationException | RollbackException
-				| HeuristicMixedException | HeuristicRollbackException | SystemException | NotSupportedException e) {
+		} catch (SecurityException | IllegalStateException | SensorDataLimitViolationException e) {
 			return false;
 		}
 

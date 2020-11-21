@@ -8,13 +8,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
 import javax.transaction.Transactional;
-import javax.transaction.UserTransaction;
+import javax.transaction.Transactional.TxType;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -38,6 +33,7 @@ import io.vertx.core.eventbus.EventBus;
 @Path("light")
 @ApplicationScoped
 @Startup
+@Transactional(value = TxType.REQUIRES_NEW)
 public class LightService extends BaseService {
 	@Inject
 	MQTTSender mqttSender;
@@ -50,9 +46,6 @@ public class LightService extends BaseService {
 
 	@Inject
 	ConfigurationService configurationService;
-
-	@Inject
-	UserTransaction transaction;
 
 	private static final String ON = "on";
 	private static final String OFF = "off";
@@ -88,7 +81,7 @@ public class LightService extends BaseService {
 
 	@GET
 	@Path("create/{name}/{lightType}/{roomId}")
-	
+
 	public Light createLight(@PathParam("name") final String name, @PathParam("lightType") final String lightType,
 			@PathParam("roomId") final long roomId) {
 
@@ -162,7 +155,6 @@ public class LightService extends BaseService {
 		return lightRoomList.get(roomId);
 	}
 
-	
 	private GenericStatus internalDimLight(final long lightId, final int dimPercentValue, boolean calledForGroup,
 			boolean isAbsoluteValue) {
 		final Runnable requestThread = () -> {
@@ -186,23 +178,17 @@ public class LightService extends BaseService {
 				String dimUrl = light.getDimUrl();
 
 				if (light instanceof DimmableLight) {
-					try {
-						transaction.begin();
 
-						final DimmableLight dimmableLight = (DimmableLight) light;
+					final DimmableLight dimmableLight = (DimmableLight) light;
 
-						if (dimValue > dimmableLight.getMaximumValue()) {
-							dimValue = dimmableLight.getMaximumValue();
-						}
-
-						dimmableLight.setBrightnessLevel(dimValue);
-						em.merge(dimmableLight);
-						dimUrl = dimmableLight.getDimUrl();
-						transaction.commit();
-					} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					if (dimValue > dimmableLight.getMaximumValue()) {
+						dimValue = dimmableLight.getMaximumValue();
 					}
+
+					dimmableLight.setBrightnessLevel(dimValue);
+					em.merge(dimmableLight);
+					dimUrl = dimmableLight.getDimUrl();
+
 				} else {
 					light.setPowerState(OFF.equals(powerState));
 				}
@@ -284,7 +270,7 @@ public class LightService extends BaseService {
 
 	@GET
 	@Path("color/{lightId}/{hex}")
-	
+
 	public GenericStatus setColor(@PathParam(LIGHT_ID) final long lightId, @PathParam("hex") final String hex) {
 		final String shortHex = hex.substring(1);
 

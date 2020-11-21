@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -23,6 +24,7 @@ import cm.homeautomation.services.base.GenericStatus;
  *
  */
 @Path("sensor/mqtt")
+@Transactional(value = TxType.REQUIRES_NEW)
 public class MQTTTopicSensorService extends BaseService {
 
 	@Inject

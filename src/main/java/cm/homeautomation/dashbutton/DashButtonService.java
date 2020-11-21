@@ -12,13 +12,8 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
 import javax.transaction.Transactional;
-import javax.transaction.UserTransaction;
+import javax.transaction.Transactional.TxType;
 
 import org.dhcp4java.DHCPPacket;
 
@@ -30,6 +25,7 @@ import io.vertx.core.eventbus.EventBus;
 
 @Startup
 @ApplicationScoped
+@Transactional(value = TxType.REQUIRES_NEW)
 public class DashButtonService {
 
 	@Inject
@@ -38,9 +34,6 @@ public class DashButtonService {
 	@Inject
 	EntityManager em;
 
-	@Inject
-	UserTransaction transaction;
-
 	HashMap<String, Date> timeFilter = new HashMap<>();
 
 	void startup(@Observes StartupEvent event) {
@@ -48,7 +41,6 @@ public class DashButtonService {
 		runListener();
 	}
 
-	
 	private void runListener() {
 		Runnable runner = () -> {
 			final int listenPort = 67;
@@ -75,7 +67,6 @@ public class DashButtonService {
 		new Thread(runner).start();
 	}
 
-	
 	private void listenAndReceive(final int listenPort, DatagramSocket socket, final DatagramPacket p) {
 		try {
 //				LogManager.getLogger(this.getClass()).debug("Listening on port " + listenPort + "...");
@@ -86,43 +77,31 @@ public class DashButtonService {
 			final DHCPPacket packet = DHCPPacket.getPacket(p);
 
 			Runnable runner = () -> {
-				try {
-					transaction.begin();
 
-					final String mac = packet.getHardwareAddress().getHardwareAddressHex();
-					// LogManager.getLogger(this.getClass()).debug("checking mac: " + mac);
-					if (isDashButton(mac)) {
-						// LogManager.getLogger(this.getClass()).debug("found a dashbutton mac: " +
-						// mac);
+				final String mac = packet.getHardwareAddress().getHardwareAddressHex();
+				// LogManager.getLogger(this.getClass()).debug("checking mac: " + mac);
+				if (isDashButton(mac)) {
+					// LogManager.getLogger(this.getClass()).debug("found a dashbutton mac: " +
+					// mac);
 
-						/*
-						 * suppress events if they are to fast
-						 *
-						 */
-						if (!timeFilter.containsKey(mac)) {
-							timeFilter.put(mac, new Date(1));
-						}
-
-						final Date filterTime = timeFilter.get(mac);
-
-						if (((filterTime.getTime()) + 1000) < (new Date()).getTime()) {
-							timeFilter.put(mac, new Date());
-							bus.publish("EventObject", new EventObject(new DashButtonEvent(mac)));
-							// LogManager.getLogger(this.getClass()).debug("send dashbutton event");
-						}
-
-						transaction.commit();
-					} else {
-//						LogManager.getLogger(this.getClass()).debug("not a dashbutton: " + mac);
+					/*
+					 * suppress events if they are to fast
+					 *
+					 */
+					if (!timeFilter.containsKey(mac)) {
+						timeFilter.put(mac, new Date(1));
 					}
-				} catch (SecurityException | IllegalStateException | RollbackException | HeuristicMixedException
-						| HeuristicRollbackException | SystemException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 
-				} catch (NotSupportedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					final Date filterTime = timeFilter.get(mac);
+
+					if (((filterTime.getTime()) + 1000) < (new Date()).getTime()) {
+						timeFilter.put(mac, new Date());
+						bus.publish("EventObject", new EventObject(new DashButtonEvent(mac)));
+						// LogManager.getLogger(this.getClass()).debug("send dashbutton event");
+					}
+
+				} else {
+//						LogManager.getLogger(this.getClass()).debug("not a dashbutton: " + mac);
 				}
 
 			};
@@ -134,7 +113,6 @@ public class DashButtonService {
 		}
 	}
 
-	
 	private boolean isDashButton(String mac) {
 		if (mac == null) {
 			throw new IllegalArgumentException("MAC is NULL");

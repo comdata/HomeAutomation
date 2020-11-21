@@ -8,7 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
-import javax.transaction.UserTransaction;
+import javax.transaction.Transactional.TxType;
 
 import org.jboss.logging.Logger;
 
@@ -23,6 +23,7 @@ import io.quarkus.vertx.ConsumeEvent;
 
 @ApplicationScoped
 @Startup
+@Transactional(value = TxType.REQUIRES_NEW)
 public class MQTTTopicSensorReceiver {
 	
 	@Inject
@@ -33,9 +34,6 @@ public class MQTTTopicSensorReceiver {
 	
 	@Inject
 	Sensors sensors;
-
-	@Inject
-	UserTransaction transaction;
 	
 	private static final Logger LOG = Logger.getLogger(MQTTTopicSensorReceiver.class);
 	private Map<String, Sensor> sensorTechnicalTypeMap = new HashMap<>();

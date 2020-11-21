@@ -15,10 +15,9 @@ import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
-import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transactional;
-import javax.transaction.UserTransaction;
+import javax.transaction.Transactional.TxType;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -55,6 +54,7 @@ import io.vertx.core.eventbus.EventBus;
 @Startup
 @ApplicationScoped
 @Path("actor")
+@Transactional(value = TxType.REQUIRES_NEW)
 public class ActorService extends BaseService {
 
 	private static Map<Long, List<Switch>> switchList = new HashMap<>();
@@ -73,12 +73,8 @@ public class ActorService extends BaseService {
 	@Inject
 	ConfigurationService configurationService;
 
-	@Inject
-	UserTransaction transaction;
-
 	public void performSwitch(String targetStatus, String switchId) throws RollbackException, HeuristicMixedException,
 			HeuristicRollbackException, SystemException, NotSupportedException {
-		transaction.begin();
 		System.out.println(switchId + " - " + targetStatus);
 		final String upperCaseTargetStatus = targetStatus.toUpperCase();
 		System.out.println("update backend");
@@ -91,7 +87,6 @@ public class ActorService extends BaseService {
 		System.out.println("switch");
 		switchSockets(singleSwitch, actorMessage);
 
-		transaction.commit();
 		bus.publish("EventObject", new EventObject(actorMessage));
 
 	}
@@ -362,51 +357,37 @@ public class ActorService extends BaseService {
 	}
 
 	private Switch internalUpdateBackendSwitchState(final String switchId, String targetStatus) {
+
+		targetStatus = targetStatus.toUpperCase();
+		System.out.println("Switch id" + switchId);
+		Long id = Long.parseLong(switchId);
+		System.out.println("loading switch " + id);
+		Switch singleSwitch = null;
 		try {
-			boolean ownTransaction = false;
-			if (transaction.getStatus() == Status.STATUS_NO_TRANSACTION) {
-				transaction.begin();
-				ownTransaction = true;
-			}
 
-			targetStatus = targetStatus.toUpperCase();
-			System.out.println("Switch id" + switchId);
-			Long id = Long.parseLong(switchId);
-			System.out.println("loading switch " + id);
-			Switch singleSwitch = null;
-			try {
-
-				singleSwitch = em.find(Switch.class, id);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			System.out.println(singleSwitch.getName());
-
-			System.out.println("setting target status");
-			singleSwitch.setTargetStatus(targetStatus);
-			singleSwitch.setTargetStatusFrom(new Date());
-			em.merge(singleSwitch);
-			System.out.println("setting target status - post merge");
-
-			/**
-			 * post a switch information event
-			 */
-			final SwitchEvent switchEvent = new SwitchEvent();
-			switchEvent.setStatus(targetStatus);
-			switchEvent.setSwitchId(switchId);
-			switchEvent.setUsedSwitch(singleSwitch);
-			bus.publish("EventObject", new EventObject(switchEvent));
-			if (ownTransaction) {
-				transaction.commit();
-			}
-			return singleSwitch;
-
-		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
-				| HeuristicMixedException | HeuristicRollbackException e) {
-			// TODO Auto-generated catch block
+			singleSwitch = em.find(Switch.class, id);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		System.out.println(singleSwitch.getName());
+
+		System.out.println("setting target status");
+		singleSwitch.setTargetStatus(targetStatus);
+		singleSwitch.setTargetStatusFrom(new Date());
+		em.merge(singleSwitch);
+		System.out.println("setting target status - post merge");
+
+		/**
+		 * post a switch information event
+		 */
+		final SwitchEvent switchEvent = new SwitchEvent();
+		switchEvent.setStatus(targetStatus);
+		switchEvent.setSwitchId(switchId);
+		switchEvent.setUsedSwitch(singleSwitch);
+		bus.publish("EventObject", new EventObject(switchEvent));
+
+		return singleSwitch;
+
 	}
 
 }

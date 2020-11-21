@@ -12,6 +12,7 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -32,6 +33,7 @@ import cm.homeautomation.services.sensors.Sensors;
 import io.vertx.core.eventbus.EventBus;
 
 @Path("window")
+@Transactional(value = TxType.REQUIRES_NEW)
 public class WindowStateService extends BaseService {
 	@Inject
 	EventBus bus;
@@ -146,9 +148,7 @@ public class WindowStateService extends BaseService {
 
 			try {
 				sensors.saveSensorData(sensorDataSaveRequest);
-			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException | RollbackException
-					| HeuristicMixedException | HeuristicRollbackException | SystemException
-					| NotSupportedException e) {
+			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException e) {
 //				LogManager.getLogger(this.getClass()).error("window: " + windowId + " state: ---" + state + "---", e);
 			}
 		}

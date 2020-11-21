@@ -12,13 +12,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.Status;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -87,7 +80,6 @@ public class ZigbeeMQTTReceiver {
 	private Map<String, ZigBeeDevice> deviceMap = new HashMap<>();
 
 	@Inject
-	UserTransaction transaction;
 
 	private void init() {
 		initDeviceList();
@@ -242,21 +234,13 @@ public class ZigbeeMQTTReceiver {
 			}
 		} else {
 
-			try {
-				transaction.begin();
-				WindowBlind windowBlind = new WindowBlind();
+			WindowBlind windowBlind = new WindowBlind();
 
-				windowBlind.setName(zigbeeDevice.getFriendlyName());
-				windowBlind.setExternalId(zigbeeDevice.getIeeeAddr());
-				windowBlind.setMqttDimTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
-				windowBlind.setMqttDimMessage("{\"position\": {DIMVALUE}}");
-				em.persist(windowBlind);
-				transaction.commit();
-			} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException
-					| RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			windowBlind.setName(zigbeeDevice.getFriendlyName());
+			windowBlind.setExternalId(zigbeeDevice.getIeeeAddr());
+			windowBlind.setMqttDimTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
+			windowBlind.setMqttDimMessage("{\"position\": {DIMVALUE}}");
+			em.persist(windowBlind);
 
 			handleWindowBlind(message, zigbeeDevice, messageObject);
 		}
@@ -268,16 +252,10 @@ public class ZigbeeMQTTReceiver {
 
 		if (updateNode != null) {
 			boolean updateAvailable = updateNode.asBoolean();
-			try {
-				transaction.begin();
-				zigbeeDevice.setUpdateAvailable(updateAvailable);
-				em.merge(zigbeeDevice);
-				transaction.commit();
-			} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException
-					| RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
+			zigbeeDevice.setUpdateAvailable(updateAvailable);
+			em.merge(zigbeeDevice);
+
 		}
 	}
 
@@ -309,445 +287,390 @@ public class ZigbeeMQTTReceiver {
 	}
 
 	private void handleWaterSensor(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
-		try {
-			transaction.begin();
 
-			JsonNode leakNode = messageObject.get("leak");
+		JsonNode leakNode = messageObject.get("leak");
 
-			if (leakNode != null) {
+		if (leakNode != null) {
 
-				boolean leakNodeBoolean = leakNode.asBoolean();
+			boolean leakNodeBoolean = leakNode.asBoolean();
 
-				String ieeeAddr = zigbeeDevice.getIeeeAddr();
-				ZigbeeWaterSensor existingSensor = em.find(ZigbeeWaterSensor.class, ieeeAddr);
+			String ieeeAddr = zigbeeDevice.getIeeeAddr();
+			ZigbeeWaterSensor existingSensor = em.find(ZigbeeWaterSensor.class, ieeeAddr);
 
-				if (existingSensor == null) {
-					existingSensor = new ZigbeeWaterSensor(zigbeeDevice.getIeeeAddr(), leakNodeBoolean);
+			if (existingSensor == null) {
+				existingSensor = new ZigbeeWaterSensor(zigbeeDevice.getIeeeAddr(), leakNodeBoolean);
 
-					em.persist(existingSensor);
-				}
-
-				existingSensor.setLeakDetected(leakNodeBoolean);
-
-				em.merge(existingSensor);
-
-				if (leakNodeBoolean) {
-					WaterLeakEvent waterLeakEvent = WaterLeakEvent.builder().device(zigbeeDevice.getFriendlyName())
-							.build();
-					bus.publish("WaterLeakEvent", waterLeakEvent);
-				}
+				em.persist(existingSensor);
 			}
 
-			transaction.commit();
-		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
-				| HeuristicMixedException | HeuristicRollbackException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			existingSensor.setLeakDetected(leakNodeBoolean);
+
+			em.merge(existingSensor);
+
+			if (leakNodeBoolean) {
+				WaterLeakEvent waterLeakEvent = WaterLeakEvent.builder().device(zigbeeDevice.getFriendlyName()).build();
+				bus.publish("WaterLeakEvent", waterLeakEvent);
+			}
 		}
 
 	}
 
 	private void recordBatteryLevelForDevice(ZigBeeDevice zigbeeDevice, int batteryLevel) {
-		try {
-			transaction.begin();
-			List<Sensor> sensorList = em
-					.createQuery(SELECT_S_FROM_SENSOR_S_WHERE_S_EXTERNAL_ID_EXTERNAL_ID_AND_S_SENSOR_TYPE_SENSOR_TYPE,
-							Sensor.class)
-					.setParameter("externalId", zigbeeDevice.getIeeeAddr()).setParameter("sensorType", "battery")
-					.getResultList();
 
-			if (sensorList == null || sensorList.isEmpty()) {
-				Sensor sensor = new Sensor();
+		List<Sensor> sensorList = em
+				.createQuery(SELECT_S_FROM_SENSOR_S_WHERE_S_EXTERNAL_ID_EXTERNAL_ID_AND_S_SENSOR_TYPE_SENSOR_TYPE,
+						Sensor.class)
+				.setParameter("externalId", zigbeeDevice.getIeeeAddr()).setParameter("sensorType", "battery")
+				.getResultList();
 
-				sensor.setExternalId(zigbeeDevice.getIeeeAddr());
-				sensor.setSensorName(zigbeeDevice.getFriendlyName() + " Batterie");
-				sensor.setSensorType("battery");
-				sensor.setShowData(true);
+		if (sensorList == null || sensorList.isEmpty()) {
+			Sensor sensor = new Sensor();
 
-				em.persist(sensor);
+			sensor.setExternalId(zigbeeDevice.getIeeeAddr());
+			sensor.setSensorName(zigbeeDevice.getFriendlyName() + " Batterie");
+			sensor.setSensorType("battery");
+			sensor.setShowData(true);
 
-				recordBatteryLevelForDevice(zigbeeDevice, batteryLevel);
-			} else {
+			em.persist(sensor);
 
-				SensorDataSaveRequest saveRequest = new SensorDataSaveRequest();
+			recordBatteryLevelForDevice(zigbeeDevice, batteryLevel);
+		} else {
 
-				saveRequest.setSensorId(sensorList.get(0).getId());
-				SensorData sensorData = new SensorData();
-				sensorData.setSensor(sensorList.get(0));
-				sensorData.setValue(Integer.toString(batteryLevel));
-				sensorData.setDateTime(new Date());
-				saveRequest.setSensorData(sensorData);
-				try {
-					sensors.saveSensorData(saveRequest);
-				} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException
-						| RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException
-						| NotSupportedException e) {
-					e.printStackTrace();
-					LogManager.getLogger(this.getClass()).error(e);
-				}
+			SensorDataSaveRequest saveRequest = new SensorDataSaveRequest();
 
+			saveRequest.setSensorId(sensorList.get(0).getId());
+			SensorData sensorData = new SensorData();
+			sensorData.setSensor(sensorList.get(0));
+			sensorData.setValue(Integer.toString(batteryLevel));
+			sensorData.setDateTime(new Date());
+			saveRequest.setSensorData(sensorData);
+			try {
+				sensors.saveSensorData(saveRequest);
+			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException e) {
+				e.printStackTrace();
+				LogManager.getLogger(this.getClass()).error(e);
 			}
 
-			transaction.commit();
-		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
-				| HeuristicMixedException | HeuristicRollbackException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+
 	}
 
 	private void recordLinkQualityForDevice(ZigBeeDevice zigbeeDevice, int linkQuality) {
-		try {
-			transaction.begin();
 
-			String linkQualityType = "linkquality";
-			List<Sensor> sensorList = em
-					.createQuery(SELECT_S_FROM_SENSOR_S_WHERE_S_EXTERNAL_ID_EXTERNAL_ID_AND_S_SENSOR_TYPE_SENSOR_TYPE,
-							Sensor.class)
-					.setParameter("externalId", zigbeeDevice.getIeeeAddr()).setParameter("sensorType", linkQualityType)
-					.getResultList();
+		String linkQualityType = "linkquality";
+		List<Sensor> sensorList = em
+				.createQuery(SELECT_S_FROM_SENSOR_S_WHERE_S_EXTERNAL_ID_EXTERNAL_ID_AND_S_SENSOR_TYPE_SENSOR_TYPE,
+						Sensor.class)
+				.setParameter("externalId", zigbeeDevice.getIeeeAddr()).setParameter("sensorType", linkQualityType)
+				.getResultList();
 
-			if (sensorList == null || sensorList.isEmpty()) {
-				Sensor sensor = new Sensor();
+		if (sensorList == null || sensorList.isEmpty()) {
+			Sensor sensor = new Sensor();
 
-				sensor.setExternalId(zigbeeDevice.getIeeeAddr());
-				sensor.setSensorName(zigbeeDevice.getFriendlyName() + " Link Quality");
-				sensor.setSensorType(linkQualityType);
-				sensor.setShowData(true);
+			sensor.setExternalId(zigbeeDevice.getIeeeAddr());
+			sensor.setSensorName(zigbeeDevice.getFriendlyName() + " Link Quality");
+			sensor.setSensorType(linkQualityType);
+			sensor.setShowData(true);
 
-				em.persist(sensor);
+			em.persist(sensor);
 
-				recordLinkQualityForDevice(zigbeeDevice, linkQuality);
-			} else {
+			recordLinkQualityForDevice(zigbeeDevice, linkQuality);
+		} else {
 
-				SensorDataSaveRequest saveRequest = new SensorDataSaveRequest();
+			SensorDataSaveRequest saveRequest = new SensorDataSaveRequest();
 
-				saveRequest.setSensorId(sensorList.get(0).getId());
-				SensorData sensorData = new SensorData();
-				sensorData.setSensor(sensorList.get(0));
-				sensorData.setValue(Integer.toString(linkQuality));
-				sensorData.setDateTime(new Date());
-				saveRequest.setSensorData(sensorData);
-				try {
-					sensorsService.saveSensorData(saveRequest);
-				} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException
-						| RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException
-						| NotSupportedException e) {
-					LogManager.getLogger(this.getClass()).error(e);
-				}
-
+			saveRequest.setSensorId(sensorList.get(0).getId());
+			SensorData sensorData = new SensorData();
+			sensorData.setSensor(sensorList.get(0));
+			sensorData.setValue(Integer.toString(linkQuality));
+			sensorData.setDateTime(new Date());
+			saveRequest.setSensorData(sensorData);
+			try {
+				sensorsService.saveSensorData(saveRequest);
+			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException e) {
+				LogManager.getLogger(this.getClass()).error(e);
 			}
-			transaction.commit();
-		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
-				| HeuristicMixedException | HeuristicRollbackException e) {
-			e.printStackTrace();
+
 		}
+
 	}
 
 	private void recordIlluminanceLevelForDevice(ZigBeeDevice zigbeeDevice, int illuminance) {
-		try {
-			boolean ownTransaction = false;
-			if (transaction.getStatus() == Status.STATUS_NO_TRANSACTION) {
-				transaction.begin();
-				ownTransaction = true;
+
+		List<Sensor> sensorList = em
+				.createQuery(SELECT_S_FROM_SENSOR_S_WHERE_S_EXTERNAL_ID_EXTERNAL_ID_AND_S_SENSOR_TYPE_SENSOR_TYPE,
+						Sensor.class)
+				.setParameter("externalId", zigbeeDevice.getIeeeAddr()).setParameter("sensorType", "illuminance")
+				.getResultList();
+
+		if (sensorList == null || sensorList.isEmpty()) {
+			Sensor sensor = new Sensor();
+
+			sensor.setExternalId(zigbeeDevice.getIeeeAddr());
+			sensor.setSensorName(zigbeeDevice.getFriendlyName() + " illuminance");
+			sensor.setSensorType("illuminance");
+			sensor.setShowData(true);
+
+			em.persist(sensor);
+
+			recordIlluminanceLevelForDevice(zigbeeDevice, illuminance);
+		} else {
+
+			SensorDataSaveRequest saveRequest = new SensorDataSaveRequest();
+
+			saveRequest.setSensorId(sensorList.get(0).getId());
+			SensorData sensorData = new SensorData();
+			sensorData.setSensor(sensorList.get(0));
+			sensorData.setValue(Integer.toString(illuminance));
+			sensorData.setDateTime(new Date());
+			saveRequest.setSensorData(sensorData);
+			try {
+				sensors.saveSensorData(saveRequest);
+			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException e) {
+				e.printStackTrace();
+				LogManager.getLogger(this.getClass()).error(e);
 			}
 
-			List<Sensor> sensorList = em
-					.createQuery(SELECT_S_FROM_SENSOR_S_WHERE_S_EXTERNAL_ID_EXTERNAL_ID_AND_S_SENSOR_TYPE_SENSOR_TYPE,
-							Sensor.class)
-					.setParameter("externalId", zigbeeDevice.getIeeeAddr()).setParameter("sensorType", "illuminance")
-					.getResultList();
-
-			if (sensorList == null || sensorList.isEmpty()) {
-				Sensor sensor = new Sensor();
-
-				sensor.setExternalId(zigbeeDevice.getIeeeAddr());
-				sensor.setSensorName(zigbeeDevice.getFriendlyName() + " illuminance");
-				sensor.setSensorType("illuminance");
-				sensor.setShowData(true);
-
-				em.persist(sensor);
-
-				recordIlluminanceLevelForDevice(zigbeeDevice, illuminance);
-			} else {
-
-				SensorDataSaveRequest saveRequest = new SensorDataSaveRequest();
-
-				saveRequest.setSensorId(sensorList.get(0).getId());
-				SensorData sensorData = new SensorData();
-				sensorData.setSensor(sensorList.get(0));
-				sensorData.setValue(Integer.toString(illuminance));
-				sensorData.setDateTime(new Date());
-				saveRequest.setSensorData(sensorData);
-				try {
-					sensors.saveSensorData(saveRequest);
-				} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException
-						| RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException
-						| NotSupportedException e) {
-					e.printStackTrace();
-					LogManager.getLogger(this.getClass()).error(e);
-				}
-
-			}
-
-			if (ownTransaction) {
-				transaction.commit();
-			}
-		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
-				| HeuristicMixedException | HeuristicRollbackException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+
 	}
 
 	private void handlePowerSocket(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
-		try {
-			transaction.begin();
-			List<MQTTSwitch> existingDeviceList = em
-					.createQuery("select sw from MQTTSwitch sw where sw.externalId=:externalId", MQTTSwitch.class)
-					.setParameter("externalId", zigbeeDevice.getIeeeAddr()).getResultList();
 
-			MQTTSwitch zigbeeSwitch = null;
-			if (existingDeviceList == null || existingDeviceList.isEmpty()) {
-				zigbeeSwitch = new MQTTSwitch();
-				zigbeeSwitch.setExternalId(zigbeeDevice.getIeeeAddr());
-				zigbeeSwitch.setMqttPowerOnTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
+		List<MQTTSwitch> existingDeviceList = em
+				.createQuery("select sw from MQTTSwitch sw where sw.externalId=:externalId", MQTTSwitch.class)
+				.setParameter("externalId", zigbeeDevice.getIeeeAddr()).getResultList();
 
-				zigbeeSwitch.setMqttPowerOffTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
+		MQTTSwitch zigbeeSwitch = null;
+		if (existingDeviceList == null || existingDeviceList.isEmpty()) {
+			zigbeeSwitch = new MQTTSwitch();
+			zigbeeSwitch.setExternalId(zigbeeDevice.getIeeeAddr());
+			zigbeeSwitch.setMqttPowerOnTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
 
-				zigbeeSwitch.setMqttPowerOnMessage("{\"state\": \"ON\"}");
-				zigbeeSwitch.setMqttPowerOffMessage("{\"state\": \"OFF\"}");
-				zigbeeSwitch.setName(zigbeeDevice.getFriendlyName());
-				zigbeeSwitch.setSwitchType("SOCKET");
+			zigbeeSwitch.setMqttPowerOffTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
 
-				em.persist(zigbeeSwitch);
-
-			} else {
-				zigbeeSwitch = existingDeviceList.get(0);
-			}
-
-			JsonNode stateNode = messageObject.get("state");
-
-			if (stateNode != null) {
-				zigbeeSwitch.setLatestStatus(stateNode.asText());
-				zigbeeSwitch.setLatestStatusFrom(new Date());
-			}
+			zigbeeSwitch.setMqttPowerOnMessage("{\"state\": \"ON\"}");
+			zigbeeSwitch.setMqttPowerOffMessage("{\"state\": \"OFF\"}");
+			zigbeeSwitch.setName(zigbeeDevice.getFriendlyName());
+			zigbeeSwitch.setSwitchType("SOCKET");
 
 			em.persist(zigbeeSwitch);
 
-			transaction.commit();
-		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
-				| HeuristicMixedException | HeuristicRollbackException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} else {
+			zigbeeSwitch = existingDeviceList.get(0);
 		}
+
+		JsonNode stateNode = messageObject.get("state");
+
+		if (stateNode != null) {
+			zigbeeSwitch.setLatestStatus(stateNode.asText());
+			zigbeeSwitch.setLatestStatusFrom(new Date());
+		}
+
+		em.persist(zigbeeSwitch);
 
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	private void handleMotionSensor(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
-		try {
-			transaction.begin();
-			// {"battery":100,"voltage":3015,"illuminance":558,"illuminance_lux":558,"linkquality":18,"occupancy":false}
 
-			JsonNode occupancyNode = messageObject.get("occupancy");
+		// {"battery":100,"voltage":3015,"illuminance":558,"illuminance_lux":558,"linkquality":18,"occupancy":false}
 
-			if (occupancyNode != null) {
+		JsonNode occupancyNode = messageObject.get("occupancy");
 
-				boolean occupancyNodeBoolean = occupancyNode.asBoolean();
+		if (occupancyNode != null) {
 
-				String ieeeAddr = zigbeeDevice.getIeeeAddr();
-				ZigbeeMotionSensor existingSensor = em.find(ZigbeeMotionSensor.class, ieeeAddr);
+			boolean occupancyNodeBoolean = occupancyNode.asBoolean();
 
-				if (existingSensor == null) {
-					existingSensor = new ZigbeeMotionSensor(zigbeeDevice.getIeeeAddr(), occupancyNodeBoolean);
+			String ieeeAddr = zigbeeDevice.getIeeeAddr();
+			ZigbeeMotionSensor existingSensor = em.find(ZigbeeMotionSensor.class, ieeeAddr);
 
-					em.persist(existingSensor);
+			if (existingSensor == null) {
+				existingSensor = new ZigbeeMotionSensor(zigbeeDevice.getIeeeAddr(), occupancyNodeBoolean);
 
-				}
+				em.persist(existingSensor);
 
-				existingSensor.setMotionDetected(occupancyNodeBoolean);
-
-				em.merge(existingSensor);
-
-				RemoteControlEvent remoteControlEvent = new RemoteControlEvent(zigbeeDevice.getFriendlyName(), ieeeAddr,
-						RemoteControlEvent.EventType.REMOTE, RemoteType.ZIGBEE);
-
-				remoteControlEvent.setPoweredOnState(occupancyNodeBoolean);
-
-				bus.publish("RemoteControlEvent", remoteControlEvent);
-
-				MotionEvent motionDetectionEvent = new MotionEvent();
-				motionDetectionEvent.setMac(ieeeAddr);
-				motionDetectionEvent.setName(zigbeeDevice.getFriendlyName());
-				motionDetectionEvent.setState(occupancyNodeBoolean);
-				motionDetectionEvent.setTimestamp(new Date());
-				motionDetectionEvent.setType("ZIGBEE");
-
-				// EventBusService.getEventBus().post(motionDetectionEvent);
-
-				bus.publish("MotionEvent", motionDetectionEvent);
 			}
 
-			JsonNode illuminanceNode = messageObject.get("illuminance");
+			existingSensor.setMotionDetected(occupancyNodeBoolean);
 
-			if (illuminanceNode != null) {
-				int illuminanceLevel = illuminanceNode.asInt();
-				LogManager.getLogger(this.getClass()).debug("illuminance level: " + illuminanceLevel);
+			em.merge(existingSensor);
 
-				recordIlluminanceLevelForDevice(zigbeeDevice, illuminanceLevel);
-			}
+			RemoteControlEvent remoteControlEvent = new RemoteControlEvent(zigbeeDevice.getFriendlyName(), ieeeAddr,
+					RemoteControlEvent.EventType.REMOTE, RemoteType.ZIGBEE);
 
-			transaction.commit();
-		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
-				| HeuristicMixedException | HeuristicRollbackException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			remoteControlEvent.setPoweredOnState(occupancyNodeBoolean);
+
+			bus.publish("RemoteControlEvent", remoteControlEvent);
+
+			MotionEvent motionDetectionEvent = new MotionEvent();
+			motionDetectionEvent.setMac(ieeeAddr);
+			motionDetectionEvent.setName(zigbeeDevice.getFriendlyName());
+			motionDetectionEvent.setState(occupancyNodeBoolean);
+			motionDetectionEvent.setTimestamp(new Date());
+			motionDetectionEvent.setType("ZIGBEE");
+
+			// EventBusService.getEventBus().post(motionDetectionEvent);
+
+			bus.publish("MotionEvent", motionDetectionEvent);
 		}
+
+		JsonNode illuminanceNode = messageObject.get("illuminance");
+
+		if (illuminanceNode != null) {
+			int illuminanceLevel = illuminanceNode.asInt();
+			LogManager.getLogger(this.getClass()).debug("illuminance level: " + illuminanceLevel);
+
+			recordIlluminanceLevelForDevice(zigbeeDevice, illuminanceLevel);
+		}
+
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	private void handleTradfriLight(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject, boolean color) {
-		try {
-			transaction.begin();
-			int brightness = 0;
-			try {
-				transaction.begin();
 
-				JsonNode brightnessNode = messageObject.get("brightness");
+		int brightness = 0;
 
-				JsonNode stateNode = messageObject.get("state");
+		JsonNode brightnessNode = messageObject.get("brightness");
 
-				if (brightnessNode != null) {
-					brightness = brightnessNode.intValue();
+		JsonNode stateNode = messageObject.get("state");
+
+		if (brightnessNode != null) {
+			brightness = brightnessNode.intValue();
+		}
+
+		String ieeeAddr = zigbeeDevice.getIeeeAddr();
+
+		ZigbeeLight existingLight = em.find(ZigbeeLight.class, zigbeeDevice.getIeeeAddr());
+		// create new light if not existing
+		if (existingLight == null) {
+			existingLight = new ZigbeeLight(zigbeeDevice.getIeeeAddr(), false, brightness);
+			List<Light> lightList = em.createQuery("select l from Light l where l.externalId=:externalId", Light.class)
+					.setParameter("externalId", ieeeAddr).getResultList();
+
+			DimmableLight newLight = null;
+
+			if (lightList == null || lightList.isEmpty()) {
+
+				if (color) {
+					RGBLight rgbLight = new RGBLight();
+					newLight = rgbLight;
+
+					rgbLight.setMqttColorTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
+					rgbLight.setMqttColorMessage(
+							"{\"state\": \"ON\", \"brightness\": {DIMVALUE}, \"xy\": [{colorX}, {colorY}]}");
+				} else {
+					newLight = new DimmableLight();
 				}
 
-				String ieeeAddr = zigbeeDevice.getIeeeAddr();
+				newLight.setName(zigbeeDevice.getFriendlyName());
 
-				ZigbeeLight existingLight = em.find(ZigbeeLight.class, zigbeeDevice.getIeeeAddr());
-				// create new light if not existing
-				if (existingLight == null) {
-					existingLight = new ZigbeeLight(zigbeeDevice.getIeeeAddr(), false, brightness);
-					List<Light> lightList = em
-							.createQuery("select l from Light l where l.externalId=:externalId", Light.class)
-							.setParameter("externalId", ieeeAddr).getResultList();
+				newLight.setExternalId(ieeeAddr);
+				newLight.setLightType("ZIGBEE");
+				newLight.setMaximumValue(254);
+				newLight.setMinimumValue(0);
+				newLight.setMqttPowerOnTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
 
-					DimmableLight newLight = null;
+				newLight.setMqttPowerOffTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
 
-					if (lightList == null || lightList.isEmpty()) {
+				newLight.setMqttPowerOnMessage("{\"state\": \"ON\", \"brightness\": {DIMVALUE}}");
+				newLight.setMqttPowerOffMessage("{\"state\": \"OFF\"}");
 
-						if (color) {
-							RGBLight rgbLight = new RGBLight();
-							newLight = rgbLight;
-
-							rgbLight.setMqttColorTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
-							rgbLight.setMqttColorMessage(
-									"{\"state\": \"ON\", \"brightness\": {DIMVALUE}, \"xy\": [{colorX}, {colorY}]}");
-						} else {
-							newLight = new DimmableLight();
-						}
-
-						newLight.setName(zigbeeDevice.getFriendlyName());
-
-						newLight.setExternalId(ieeeAddr);
-						newLight.setLightType("ZIGBEE");
-						newLight.setMaximumValue(254);
-						newLight.setMinimumValue(0);
-						newLight.setMqttPowerOnTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
-
-						newLight.setMqttPowerOffTopic(zigbeeMqttTopic + "/" + zigbeeDevice.getFriendlyName() + "/set");
-
-						newLight.setMqttPowerOnMessage("{\"state\": \"ON\", \"brightness\": {DIMVALUE}}");
-						newLight.setMqttPowerOffMessage("{\"state\": \"OFF\"}");
-
-					}
-
-					if (newLight != null) {
-						em.persist(newLight);
-					}
-					em.persist(existingLight);
-
-				}
-
-				// TODO map generic light
-				existingLight.setBrightness(brightness);
-
-				JsonNode xyNode = messageObject.get("xy");
-
-				if (xyNode != null && xyNode.isArray()) {
-					List<JsonNode> xyNodeList = Arrays.asList(xyNode);
-
-					existingLight.setX(Float.parseFloat(Double.toString(xyNodeList.get(0).asDouble())));
-					existingLight.setY(Float.parseFloat(Double.toString(xyNodeList.get(1).asDouble())));
-				}
-
-				if (stateNode != null) {
-					existingLight.setPowerOnState("ON".equalsIgnoreCase(stateNode.asText()));
-				}
-
-				em.merge(existingLight);
-				transaction.commit();
-			} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException
-					| RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 
-			transaction.commit();
-		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
-				| HeuristicMixedException | HeuristicRollbackException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if (newLight != null) {
+				em.persist(newLight);
+			}
+			em.persist(existingLight);
+
 		}
+
+		// TODO map generic light
+		existingLight.setBrightness(brightness);
+
+		JsonNode xyNode = messageObject.get("xy");
+
+		if (xyNode != null && xyNode.isArray()) {
+			List<JsonNode> xyNodeList = Arrays.asList(xyNode);
+
+			existingLight.setX(Float.parseFloat(Double.toString(xyNodeList.get(0).asDouble())));
+			existingLight.setY(Float.parseFloat(Double.toString(xyNodeList.get(1).asDouble())));
+		}
+
+		if (stateNode != null) {
+			existingLight.setPowerOnState("ON".equalsIgnoreCase(stateNode.asText()));
+		}
+
+		em.merge(existingLight);
 
 	}
 
 	private void handleTradfriRemoteControl(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
-		try {
-			transaction.begin();
-			JsonNode actionNode = messageObject.get("action");
-			if (actionNode != null) {
-				String action = actionNode.asText();
 
-				String ieeeAddr = zigbeeDevice.getIeeeAddr();
-				ZigBeeTradfriRemoteControl existingRemote = getOrCreateRemote(zigbeeDevice, em, ieeeAddr);
+		JsonNode actionNode = messageObject.get("action");
+		if (actionNode != null) {
+			String action = actionNode.asText();
 
-				if ("toggle".equals(action)) {
-					boolean sourcePowerState = existingRemote.isPowerOnState();
-					boolean targetPowerState = sourcePowerState ? false : true;
-					existingRemote.setPowerOnState(targetPowerState);
-					existingRemote.setBrightness(targetPowerState ? 254 : 0);
-					// TODO hold events
-					RemoteControlEvent remoteControlEvent = new RemoteControlEvent(zigbeeDevice.getFriendlyName(),
-							ieeeAddr, RemoteControlEvent.EventType.REMOTE, RemoteType.ZIGBEE);
+			String ieeeAddr = zigbeeDevice.getIeeeAddr();
+			ZigBeeTradfriRemoteControl existingRemote = getOrCreateRemote(zigbeeDevice, em, ieeeAddr);
 
-					remoteControlEvent.setPoweredOnState(existingRemote.isPowerOnState());
+			if ("toggle".equals(action)) {
+				boolean sourcePowerState = existingRemote.isPowerOnState();
+				boolean targetPowerState = sourcePowerState ? false : true;
+				existingRemote.setPowerOnState(targetPowerState);
+				existingRemote.setBrightness(targetPowerState ? 254 : 0);
+				// TODO hold events
+				RemoteControlEvent remoteControlEvent = new RemoteControlEvent(zigbeeDevice.getFriendlyName(), ieeeAddr,
+						RemoteControlEvent.EventType.REMOTE, RemoteType.ZIGBEE);
 
-					bus.publish("RemoteControlEvent", remoteControlEvent);
+				remoteControlEvent.setPoweredOnState(existingRemote.isPowerOnState());
 
-					// update changed object in database
+				bus.publish("RemoteControlEvent", remoteControlEvent);
 
-					em.merge(existingRemote);
+				// update changed object in database
 
-					LogManager.getLogger(this.getClass()).debug("remote control: " + message);
+				em.merge(existingRemote);
 
-				}
+				LogManager.getLogger(this.getClass()).debug("remote control: " + message);
 
-				if ("arrow_right_click".equals(action)) {
+			}
 
-				}
+			if ("arrow_right_click".equals(action)) {
 
-				if ("arrow_left_click".equals(action)) {
+			}
 
-				}
+			if ("arrow_left_click".equals(action)) {
 
-				if ("brightness_up_click".equals(action)) {
+			}
+
+			if ("brightness_up_click".equals(action)) {
+				RemoteControlBrightnessChangeEvent remoteControlBrightnessChangeEvent = new RemoteControlBrightnessChangeEvent();
+
+				remoteControlBrightnessChangeEvent.setTechnicalId(existingRemote.getIeeeAddr());
+				remoteControlBrightnessChangeEvent.setName(zigbeeDevice.getFriendlyName());
+				remoteControlBrightnessChangeEvent.setPoweredOnState(existingRemote.isPowerOnState());
+				int newBrightness = brightnessChange(existingRemote, brightnessChangeIncrement);
+
+				remoteControlBrightnessChangeEvent.setBrightness(newBrightness);
+				bus.publish("RemoteControlBrightnessChangeEvent", remoteControlBrightnessChangeEvent);
+
+				// update changed object in database
+
+				existingRemote.setBrightness(newBrightness);
+				existingRemote.setPowerOnState((newBrightness > 0));
+				em.merge(existingRemote);
+
+			}
+
+			if ("brightness_down_click".equals(action)) {
+				if (existingRemote.isPowerOnState()) {
 					RemoteControlBrightnessChangeEvent remoteControlBrightnessChangeEvent = new RemoteControlBrightnessChangeEvent();
 
 					remoteControlBrightnessChangeEvent.setTechnicalId(existingRemote.getIeeeAddr());
 					remoteControlBrightnessChangeEvent.setName(zigbeeDevice.getFriendlyName());
 					remoteControlBrightnessChangeEvent.setPoweredOnState(existingRemote.isPowerOnState());
-					int newBrightness = brightnessChange(existingRemote, brightnessChangeIncrement);
+
+					int newBrightness = brightnessChange(existingRemote, -1 * brightnessChangeIncrement);
 
 					remoteControlBrightnessChangeEvent.setBrightness(newBrightness);
 					bus.publish("RemoteControlBrightnessChangeEvent", remoteControlBrightnessChangeEvent);
@@ -759,55 +682,22 @@ public class ZigbeeMQTTReceiver {
 					em.merge(existingRemote);
 
 				}
-
-				if ("brightness_down_click".equals(action)) {
-					if (existingRemote.isPowerOnState()) {
-						RemoteControlBrightnessChangeEvent remoteControlBrightnessChangeEvent = new RemoteControlBrightnessChangeEvent();
-
-						remoteControlBrightnessChangeEvent.setTechnicalId(existingRemote.getIeeeAddr());
-						remoteControlBrightnessChangeEvent.setName(zigbeeDevice.getFriendlyName());
-						remoteControlBrightnessChangeEvent.setPoweredOnState(existingRemote.isPowerOnState());
-
-						int newBrightness = brightnessChange(existingRemote, -1 * brightnessChangeIncrement);
-
-						remoteControlBrightnessChangeEvent.setBrightness(newBrightness);
-						bus.publish("RemoteControlBrightnessChangeEvent", remoteControlBrightnessChangeEvent);
-
-						// update changed object in database
-
-						existingRemote.setBrightness(newBrightness);
-						existingRemote.setPowerOnState((newBrightness > 0));
-						em.merge(existingRemote);
-
-					}
-				}
 			}
-			transaction.commit();
-		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
-				| HeuristicMixedException | HeuristicRollbackException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+
 	}
 
 	private ZigBeeTradfriRemoteControl getOrCreateRemote(ZigBeeDevice zigbeeDevice, EntityManager em, String ieeeAddr) {
 		ZigBeeTradfriRemoteControl existingRemote = em.find(ZigBeeTradfriRemoteControl.class, ieeeAddr);
-		try {
-			transaction.begin();
 
-			// create new remote if not existing
-			if (existingRemote == null) {
-				existingRemote = new ZigBeeTradfriRemoteControl(zigbeeDevice.getIeeeAddr(), false, 0);
+		// create new remote if not existing
+		if (existingRemote == null) {
+			existingRemote = new ZigBeeTradfriRemoteControl(zigbeeDevice.getIeeeAddr(), false, 0);
 
-				em.persist(existingRemote);
+			em.persist(existingRemote);
 
-			}
-			transaction.commit();
-		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
-				| HeuristicMixedException | HeuristicRollbackException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+
 		return existingRemote;
 	}
 
@@ -847,42 +737,32 @@ public class ZigbeeMQTTReceiver {
 	}
 
 	private void handleDeviceMessage(String message) {
+
 		try {
-			transaction.begin();
+			ObjectMapper mapper = new ObjectMapper();
 
-			try {
-				ObjectMapper mapper = new ObjectMapper();
+			List<ZigBeeDevice> deviceList = mapper.readValue(message, new TypeReference<List<ZigBeeDevice>>() {
+			});
 
-				List<ZigBeeDevice> deviceList = mapper.readValue(message, new TypeReference<List<ZigBeeDevice>>() {
-				});
+			for (ZigBeeDevice zigBeeDevice : deviceList) {
+				try {
 
-				for (ZigBeeDevice zigBeeDevice : deviceList) {
-					try {
+					ZigBeeDevice existingDevice = em.find(ZigBeeDevice.class, zigBeeDevice.getIeeeAddr());
 
-						ZigBeeDevice existingDevice = em.find(ZigBeeDevice.class, zigBeeDevice.getIeeeAddr());
-
-						if (existingDevice == null) {
-							em.persist(zigBeeDevice);
-						} else {
-							em.merge(zigBeeDevice);
-						}
-
-					} catch (Exception e) {
-
+					if (existingDevice == null) {
+						em.persist(zigBeeDevice);
+					} else {
+						em.merge(zigBeeDevice);
 					}
-				}
 
-			} catch (JsonProcessingException e) {
-				LogManager.getLogger(this.getClass()).error("error parsing zigbee device message " + message, e);
+				} catch (Exception e) {
+
+				}
 			}
 
-			transaction.commit();
-		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
-				| HeuristicMixedException |
-
-				HeuristicRollbackException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (JsonProcessingException e) {
+			LogManager.getLogger(this.getClass()).error("error parsing zigbee device message " + message, e);
 		}
+
 	}
 }

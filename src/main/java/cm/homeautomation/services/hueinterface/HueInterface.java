@@ -5,13 +5,8 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.transaction.RollbackException;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.SystemException;
 import javax.transaction.Transactional;
-import javax.transaction.UserTransaction;
+import javax.transaction.Transactional.TxType;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
@@ -40,6 +35,7 @@ import io.vertx.core.eventbus.EventBus;
 @Startup
 @ApplicationScoped
 @Path("hueInterface")
+@Transactional(value = TxType.REQUIRES_NEW)
 public class HueInterface extends BaseService {
 
 	@Inject
@@ -54,9 +50,6 @@ public class HueInterface extends BaseService {
 	@Inject
 	EventBus bus;
 
-	@Inject
-	UserTransaction transaction;
-
 	private static final Logger LOG = Logger.getLogger(HueInterface.class);
 
 	@ConsumeEvent(value = "HueEmulatorMessage", blocking = true)
@@ -70,135 +63,124 @@ public class HueInterface extends BaseService {
 
 	public GenericStatus handleMessage(HueEmulatorMessage message) {
 
-		try {
-			transaction.begin();
+		String lightId = message.getLightId();
 
-			String lightId = message.getLightId();
+		if (lightId != null) {
 
-			if (lightId != null) {
+			List<HueDevice> hueDeviceList = em
+					.createQuery("select hd from HueDevice hd where hd.lightId=:lightId", HueDevice.class)
+					.setParameter("lightId", lightId).getResultList();
 
-				List<HueDevice> hueDeviceList = em
-						.createQuery("select hd from HueDevice hd where hd.lightId=:lightId", HueDevice.class)
-						.setParameter("lightId", lightId).getResultList();
+			if (hueDeviceList == null || hueDeviceList.isEmpty()) {
 
-				if (hueDeviceList == null || hueDeviceList.isEmpty()) {
+				List<HueDevice> hueDeviceNameList = em
+						.createQuery("select hd from HueDevice hd where hd.name=:name", HueDevice.class)
+						.setParameter("name", message.getDeviceName()).getResultList();
+				if (hueDeviceNameList != null && !hueDeviceNameList.isEmpty()) {
+					HueDevice hueDevice = hueDeviceNameList.get(0);
 
-					List<HueDevice> hueDeviceNameList = em
-							.createQuery("select hd from HueDevice hd where hd.name=:name", HueDevice.class)
+					hueDevice.setLightId(message.getLightId());
+					em.merge(hueDevice);
+
+					handleMessage(message);
+				} else {
+					System.out.println("Found hue device");
+					// try to find existing device
+					long externalId = 0;
+					HueDeviceType type = null;
+
+					List<Switch> switchList = em
+							.createQuery("select sw from Switch sw where sw.name=:name", Switch.class)
 							.setParameter("name", message.getDeviceName()).getResultList();
-					if (hueDeviceNameList != null && !hueDeviceNameList.isEmpty()) {
-						HueDevice hueDevice = hueDeviceNameList.get(0);
 
-						hueDevice.setLightId(message.getLightId());
-						em.merge(hueDevice);
-
-						handleMessage(message);
+					if (switchList != null && !switchList.isEmpty()) {
+						Switch singleSwitch = switchList.get(0);
+						externalId = singleSwitch.getId();
+						type = HueDeviceType.SWITCH;
 					} else {
-						System.out.println("Found hue device");
-						// try to find existing device
-						long externalId = 0;
-						HueDeviceType type = null;
-
-						List<Switch> switchList = em
-								.createQuery("select sw from Switch sw where sw.name=:name", Switch.class)
+						List<Light> lightList = em.createQuery("select l from Light l where l.name=:name", Light.class)
 								.setParameter("name", message.getDeviceName()).getResultList();
-
-						if (switchList != null && !switchList.isEmpty()) {
-							Switch singleSwitch = switchList.get(0);
-							externalId = singleSwitch.getId();
-							type = HueDeviceType.SWITCH;
+						if (lightList != null && !lightList.isEmpty()) {
+							Light singleLight = lightList.get(0);
+							externalId = singleLight.getId();
+							type = HueDeviceType.LIGHT;
 						} else {
-							List<Light> lightList = em
-									.createQuery("select l from Light l where l.name=:name", Light.class)
+							List<WindowBlind> windowBlindList = em
+									.createQuery("select w from WindowBlind w where w.name=:name", WindowBlind.class)
 									.setParameter("name", message.getDeviceName()).getResultList();
-							if (lightList != null && !lightList.isEmpty()) {
-								Light singleLight = lightList.get(0);
-								externalId = singleLight.getId();
-								type = HueDeviceType.LIGHT;
+
+							if (windowBlindList != null && !windowBlindList.isEmpty()) {
+								WindowBlind windowBlind = windowBlindList.get(0);
+								externalId = windowBlind.getId();
+								type = HueDeviceType.WINDOWBLIND;
 							} else {
-								List<WindowBlind> windowBlindList = em
-										.createQuery("select w from WindowBlind w where w.name=:name",
-												WindowBlind.class)
+								List<RemoteControl> remoteList = em
+										.createQuery("select r from RemoteControl r where r.name=:name",
+												RemoteControl.class)
 										.setParameter("name", message.getDeviceName()).getResultList();
 
-								if (windowBlindList != null && !windowBlindList.isEmpty()) {
-									WindowBlind windowBlind = windowBlindList.get(0);
-									externalId = windowBlind.getId();
-									type = HueDeviceType.WINDOWBLIND;
-								} else {
-									List<RemoteControl> remoteList = em
-											.createQuery("select r from RemoteControl r where r.name=:name",
-													RemoteControl.class)
-											.setParameter("name", message.getDeviceName()).getResultList();
-
-									if (remoteList != null && !remoteList.isEmpty()) {
-										externalId = remoteList.get(0).getId();
-										type = HueDeviceType.REMOTE;
-									}
+								if (remoteList != null && !remoteList.isEmpty()) {
+									externalId = remoteList.get(0).getId();
+									type = HueDeviceType.REMOTE;
 								}
 							}
 						}
+					}
 
-						HueDevice hueDevice = new HueDevice();
-						hueDevice.setName(message.getDeviceName());
-						hueDevice.setLightId(message.getLightId());
+					HueDevice hueDevice = new HueDevice();
+					hueDevice.setName(message.getDeviceName());
+					hueDevice.setLightId(message.getLightId());
 
-						if (externalId > 0 && type != null) {
-							hueDevice.setExternalId(externalId);
-							hueDevice.setType(type);
+					if (externalId > 0 && type != null) {
+						hueDevice.setExternalId(externalId);
+						hueDevice.setType(type);
 
-						}
+					}
 
-						em.persist(hueDevice);
+					em.persist(hueDevice);
 
-						if (externalId > 0 && type != null) {
-							// do it again, since device is now created
-							handleMessage(message);
+					if (externalId > 0 && type != null) {
+						// do it again, since device is now created
+						handleMessage(message);
+					}
+				}
+			} else {
+				HueDevice hueDevice = hueDeviceList.get(0);
+
+				if (hueDevice != null) {
+					System.out.println("device name: " + hueDevice.getName());
+					HueDeviceType type = hueDevice.getType();
+
+					if (type != null) {
+						switch (type) {
+						case LIGHT:
+
+							handleLight(message, hueDevice);
+
+							break;
+						case SWITCH:
+							handleSwitch(message, hueDevice);
+							break;
+						case WINDOWBLIND:
+							handleWindowBlind(message, hueDevice);
+							break;
+						case REMOTE:
+							handleRemote(message, hueDevice);
+							break;
+						default:
+							break;
 						}
 					}
 				} else {
-					HueDevice hueDevice = hueDeviceList.get(0);
-
-					if (hueDevice != null) {
-						System.out.println("device name: " + hueDevice.getName());
-						HueDeviceType type = hueDevice.getType();
-
-						if (type != null) {
-							switch (type) {
-							case LIGHT:
-
-								handleLight(message, hueDevice);
-
-								break;
-							case SWITCH:
-								handleSwitch(message, hueDevice);
-								break;
-							case WINDOWBLIND:
-								handleWindowBlind(message, hueDevice);
-								break;
-							case REMOTE:
-								handleRemote(message, hueDevice);
-								break;
-							default:
-								break;
-							}
-						}
-					} else {
-						LOG.debug("hue not found for lightId: " + lightId);
-					}
+					LOG.debug("hue not found for lightId: " + lightId);
 				}
-				transaction.commit();
-				return new GenericStatus(true);
-			} else {
-				return new GenericStatus(true, "Light Id is null");
 			}
 
-		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
-				| HeuristicMixedException | HeuristicRollbackException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return new GenericStatus(true);
+		} else {
+			return new GenericStatus(true, "Light Id is null");
 		}
-		return new GenericStatus(false);
+
 	}
 
 	private void handleRemote(HueEmulatorMessage message, HueDevice hueDevice) {

@@ -4,13 +4,8 @@ import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.Status;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -30,6 +25,7 @@ import io.vertx.core.eventbus.EventBus;
  */
 @Startup
 @ApplicationScoped
+@Transactional(value = TxType.REQUIRES_NEW)
 public class MQTTSender {
 
 	private Mqtt3AsyncClient publishClient = null;
@@ -40,44 +36,29 @@ public class MQTTSender {
 	@Inject
 	ConfigurationService configurationService;
 
-	@Inject
-	UserTransaction transaction;
-
 	private void initClient() {
-		try {
-			boolean ownTransaction = false;
-			if (transaction.getStatus() == Status.STATUS_NO_TRANSACTION) {
-				transaction.begin();
-				ownTransaction = true;
-			}
-			if (publishClient == null) {
 
-				String host = configurationService.getConfigurationProperty("mqtt", "host");
-				int port = Integer.parseInt(configurationService.getConfigurationProperty("mqtt", "port"));
+		if (publishClient == null) {
 
-				publishClient = MqttClient.builder().useMqttVersion3().identifier(UUID.randomUUID().toString())
-						.serverHost(host).serverPort(port).automaticReconnect().applyAutomaticReconnect().buildAsync();
+			String host = configurationService.getConfigurationProperty("mqtt", "host");
+			int port = Integer.parseInt(configurationService.getConfigurationProperty("mqtt", "port"));
 
-				publishClient.connect().whenComplete((connAck, throwable) -> {
-					if (throwable != null) {
-						// Handle connection failure
-					} else {
+			publishClient = MqttClient.builder().useMqttVersion3().identifier(UUID.randomUUID().toString())
+					.serverHost(host).serverPort(port).automaticReconnect().applyAutomaticReconnect().buildAsync();
 
-					}
-				});
-			}
+			publishClient.connect().whenComplete((connAck, throwable) -> {
+				if (throwable != null) {
+					// Handle connection failure
+				} else {
 
-			if (!publishClient.getState().isConnectedOrReconnect()) {
-				publishClient.connect();
-			}
-			if (ownTransaction) {
-				transaction.commit();
-			}
-		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException
-				| HeuristicMixedException | HeuristicRollbackException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+				}
+			});
 		}
+
+		if (!publishClient.getState().isConnectedOrReconnect()) {
+			publishClient.connect();
+		}
+
 	}
 
 	public void sendMQTTMessage(String topic, String messagePayload) {
