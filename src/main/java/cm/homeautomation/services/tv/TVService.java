@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
@@ -17,7 +16,6 @@ import javax.ws.rs.PathParam;
 import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.configuration.ConfigurationService;
-
 import cm.homeautomation.entities.PhoneCallEvent;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.eventbus.EventObject;
