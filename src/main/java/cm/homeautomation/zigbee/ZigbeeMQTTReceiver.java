@@ -6,12 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.control.ActivateRequestContext;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -51,7 +52,8 @@ import lombok.NonNull;
 
 @Startup
 @ApplicationScoped
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+@ActivateRequestContext
+@Transactional(value = TxType.REQUIRES_NEW)
 public class ZigbeeMQTTReceiver {
 	@Inject
 	MQTTSender mqttSender;
@@ -95,11 +97,12 @@ public class ZigbeeMQTTReceiver {
 	}
 
 	@ConsumeEvent(value = "MQTTTopicEvent", blocking = true)
+	@Transactional
 	public void receiveMQTTTopicEvents(MQTTTopicEvent event) {
 		@NonNull
 		String topic = event.getTopic();
 
-		// System.out.println("ZIGBEE: " + topic);
+		System.out.println("ZIGBEE: " + topic);
 		if (topic.startsWith(zigbeeMqttTopic)) {
 
 			try {
@@ -107,7 +110,7 @@ public class ZigbeeMQTTReceiver {
 				// do zigbee magic
 				String message = event.getMessage();
 
-				// System.out.println("ZIGBEE2: " + topic + " " + message);
+				System.out.println("ZIGBEE2: " + topic + " " + message);
 
 				LogManager.getLogger(this.getClass()).debug("Got Zigbee message: " + message);
 
@@ -124,15 +127,18 @@ public class ZigbeeMQTTReceiver {
 						ZigBeeDevice zigbeeDevice = getZigbeeDevice(device);
 
 						if (zigbeeDevice != null) {
+							System.out.println(zigbeeDevice.getModelID());
 							String modelID = zigbeeDevice.getModelID();
 
 							ObjectMapper mapper = new ObjectMapper();
 							JsonNode messageObject = mapper.readTree(message);
 
-							recordBatteryLevel(zigbeeDevice, messageObject);
-							recordLinkQuality(zigbeeDevice, messageObject);
-
-							saveUpdateAvailableInformation(zigbeeDevice, messageObject);
+							/*
+							 * recordBatteryLevel(zigbeeDevice, messageObject);
+							 * recordLinkQuality(zigbeeDevice, messageObject);
+							 * 
+							 * saveUpdateAvailableInformation(zigbeeDevice, messageObject);
+							 */
 
 							if (zigbeeDevice.getManufacturerID().equals("4476")) {
 
@@ -246,6 +252,7 @@ public class ZigbeeMQTTReceiver {
 	}
 
 	private void saveUpdateAvailableInformation(ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
+		System.out.println("update availabe start");
 		JsonNode updateNode = messageObject.get("update_available");
 
 		if (updateNode != null) {
@@ -255,10 +262,12 @@ public class ZigbeeMQTTReceiver {
 			em.merge(zigbeeDevice);
 
 		}
+		System.out.println("update availabe end");
 	}
 
 	private void recordBatteryLevel(ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
 		if ("Battery".equals(zigbeeDevice.getPowerSource())) {
+			System.out.println("battery level start");
 			LogManager.getLogger(this.getClass()).debug("Device is battery powered");
 			JsonNode batteryNode = messageObject.get("battery");
 
@@ -268,11 +277,12 @@ public class ZigbeeMQTTReceiver {
 
 				recordBatteryLevelForDevice(zigbeeDevice, batteryLevel);
 			}
+			System.out.println("battery level end");
 		}
 	}
 
 	private void recordLinkQuality(ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
-
+		System.out.println("link quality start");
 		JsonNode linkQualityNode = messageObject.get("linkquality");
 
 		if (linkQualityNode != null) {
@@ -281,7 +291,7 @@ public class ZigbeeMQTTReceiver {
 
 			recordLinkQualityForDevice(zigbeeDevice, linkQuality);
 		}
-
+		System.out.println("link quality end");
 	}
 
 	private void handleWaterSensor(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
@@ -322,6 +332,7 @@ public class ZigbeeMQTTReceiver {
 				.getResultList();
 
 		if (sensorList == null || sensorList.isEmpty()) {
+			System.out.println("battery level sensor empty");
 			Sensor sensor = new Sensor();
 
 			sensor.setExternalId(zigbeeDevice.getIeeeAddr());
@@ -343,7 +354,9 @@ public class ZigbeeMQTTReceiver {
 			sensorData.setDateTime(new Date());
 			saveRequest.setSensorData(sensorData);
 			try {
+				System.out.println("battery level - before save");
 				sensors.saveSensorData(saveRequest);
+				System.out.println("battery level - after save");
 			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException e) {
 				e.printStackTrace();
 				LogManager.getLogger(this.getClass()).error(e);
@@ -469,11 +482,10 @@ public class ZigbeeMQTTReceiver {
 
 	}
 
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	private void handleMotionSensor(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
 
 		// {"battery":100,"voltage":3015,"illuminance":558,"illuminance_lux":558,"linkquality":18,"occupancy":false}
-
+		System.out.println("Motion: start");
 		JsonNode occupancyNode = messageObject.get("occupancy");
 
 		if (occupancyNode != null) {
@@ -481,36 +493,52 @@ public class ZigbeeMQTTReceiver {
 			boolean occupancyNodeBoolean = occupancyNode.asBoolean();
 
 			String ieeeAddr = zigbeeDevice.getIeeeAddr();
-			ZigbeeMotionSensor existingSensor = em.find(ZigbeeMotionSensor.class, ieeeAddr);
+			System.out.println("Motion: find sensor");
+			try {
+				List<ZigbeeMotionSensor> existingSensors = em
+						.createQuery("select z from ZigbeeMotionSensor z where z.ieeeAddr=:ieeeAddr",
+								ZigbeeMotionSensor.class)
+						.setParameter("ieeeAddr", ieeeAddr).getResultList();
 
-			if (existingSensor == null) {
-				existingSensor = new ZigbeeMotionSensor(zigbeeDevice.getIeeeAddr(), occupancyNodeBoolean);
+				ZigbeeMotionSensor existingSensor = null;
 
-				em.persist(existingSensor);
+				if (existingSensors == null || existingSensors.isEmpty()) {
+					System.out.println("Motion: sensor empty");
+					existingSensor = new ZigbeeMotionSensor(zigbeeDevice.getIeeeAddr(), occupancyNodeBoolean);
 
+					em.persist(existingSensor);
+
+				} else {
+					existingSensor = existingSensors.get(0);
+				}
+
+				System.out.println("Motion: motion detected");
+				existingSensor.setMotionDetected(occupancyNodeBoolean);
+
+				em.merge(existingSensor);
+				System.out.println("Motion: motion event merged");
+
+				RemoteControlEvent remoteControlEvent = new RemoteControlEvent(zigbeeDevice.getFriendlyName(), ieeeAddr,
+						RemoteControlEvent.EventType.REMOTE, RemoteType.ZIGBEE);
+
+				remoteControlEvent.setPoweredOnState(occupancyNodeBoolean);
+
+				bus.publish("RemoteControlEvent", remoteControlEvent);
+				System.out.println("Motion: remote control event sent");
+
+				MotionEvent motionDetectionEvent = new MotionEvent();
+				motionDetectionEvent.setMac(ieeeAddr);
+				motionDetectionEvent.setName(zigbeeDevice.getFriendlyName());
+				motionDetectionEvent.setState(occupancyNodeBoolean);
+				motionDetectionEvent.setTimestamp(new Date());
+				motionDetectionEvent.setType("ZIGBEE");
+
+				// EventBusService.getEventBus().post(motionDetectionEvent);
+
+				bus.publish("MotionEvent", motionDetectionEvent);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-
-			existingSensor.setMotionDetected(occupancyNodeBoolean);
-
-			em.merge(existingSensor);
-
-			RemoteControlEvent remoteControlEvent = new RemoteControlEvent(zigbeeDevice.getFriendlyName(), ieeeAddr,
-					RemoteControlEvent.EventType.REMOTE, RemoteType.ZIGBEE);
-
-			remoteControlEvent.setPoweredOnState(occupancyNodeBoolean);
-
-			bus.publish("RemoteControlEvent", remoteControlEvent);
-
-			MotionEvent motionDetectionEvent = new MotionEvent();
-			motionDetectionEvent.setMac(ieeeAddr);
-			motionDetectionEvent.setName(zigbeeDevice.getFriendlyName());
-			motionDetectionEvent.setState(occupancyNodeBoolean);
-			motionDetectionEvent.setTimestamp(new Date());
-			motionDetectionEvent.setType("ZIGBEE");
-
-			// EventBusService.getEventBus().post(motionDetectionEvent);
-
-			bus.publish("MotionEvent", motionDetectionEvent);
 		}
 
 		JsonNode illuminanceNode = messageObject.get("illuminance");
@@ -524,7 +552,6 @@ public class ZigbeeMQTTReceiver {
 
 	}
 
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	private void handleTradfriLight(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject, boolean color) {
 
 		int brightness = 0;

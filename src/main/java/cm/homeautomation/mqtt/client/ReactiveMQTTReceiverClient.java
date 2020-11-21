@@ -5,6 +5,8 @@ import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.apache.log4j.LogManager;
 
@@ -28,6 +30,7 @@ import io.vertx.core.eventbus.EventBus;
 
 @Startup
 @ApplicationScoped
+@Transactional(value = TxType.REQUIRES_NEW)
 public class ReactiveMQTTReceiverClient {
 	private static ObjectMapper mapper = new ObjectMapper();
 
@@ -360,7 +363,7 @@ public class ReactiveMQTTReceiverClient {
 		String topic = publish.getTopic().toString();
 		String messageContent = new String(publish.getPayloadAsBytes());
 		LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-//		System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+		System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
 
 		handleMessageMQTT(topic, messageContent);
 	}
