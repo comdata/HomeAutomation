@@ -102,7 +102,7 @@ public class ZigbeeMQTTReceiver {
 		@NonNull
 		String topic = event.getTopic();
 
-		System.out.println("ZIGBEE: " + topic);
+		// System.out.println("ZIGBEE: " + topic);
 		if (topic.startsWith(zigbeeMqttTopic)) {
 
 			try {
@@ -110,7 +110,7 @@ public class ZigbeeMQTTReceiver {
 				// do zigbee magic
 				String message = event.getMessage();
 
-				System.out.println("ZIGBEE2: " + topic + " " + message);
+				// System.out.println("ZIGBEE2: " + topic + " " + message);
 
 				LogManager.getLogger(this.getClass()).debug("Got Zigbee message: " + message);
 
@@ -127,18 +127,16 @@ public class ZigbeeMQTTReceiver {
 						ZigBeeDevice zigbeeDevice = getZigbeeDevice(device);
 
 						if (zigbeeDevice != null) {
-							System.out.println(zigbeeDevice.getModelID());
+							// System.out.println(zigbeeDevice.getModelID());
 							String modelID = zigbeeDevice.getModelID();
 
 							ObjectMapper mapper = new ObjectMapper();
 							JsonNode messageObject = mapper.readTree(message);
 
-							/*
-							 * recordBatteryLevel(zigbeeDevice, messageObject);
-							 * recordLinkQuality(zigbeeDevice, messageObject);
-							 * 
-							 * saveUpdateAvailableInformation(zigbeeDevice, messageObject);
-							 */
+							recordBatteryLevel(zigbeeDevice, messageObject);
+							recordLinkQuality(zigbeeDevice, messageObject);
+
+							saveUpdateAvailableInformation(zigbeeDevice, messageObject);
 
 							if (zigbeeDevice.getManufacturerID().equals("4476")) {
 

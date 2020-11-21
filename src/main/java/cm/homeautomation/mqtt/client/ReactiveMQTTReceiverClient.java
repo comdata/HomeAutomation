@@ -363,7 +363,7 @@ public class ReactiveMQTTReceiverClient {
 		String topic = publish.getTopic().toString();
 		String messageContent = new String(publish.getPayloadAsBytes());
 		LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-		System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+		//System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
 
 		handleMessageMQTT(topic, messageContent);
 	}
