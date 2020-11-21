@@ -35,7 +35,6 @@ import io.vertx.core.eventbus.EventBus;
  */
 @ApplicationScoped
 @Path("tv/")
-@Startup
 @Transactional(value = TxType.REQUIRES_NEW)
 public class TVService extends BaseService {
 
