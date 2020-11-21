@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -46,9 +47,11 @@ import cm.homeautomation.sensors.SensorValues;
 import cm.homeautomation.services.actor.SwitchEvent;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
+import io.quarkus.runtime.Startup;
 import io.vertx.core.eventbus.EventBus;
 
-@RequestScoped
+@Startup
+@ApplicationScoped
 @Path("sensors")
 @Transactional(value = TxType.REQUIRES_NEW)
 public class Sensors extends BaseService {
