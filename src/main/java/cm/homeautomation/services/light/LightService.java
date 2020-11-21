@@ -1,3 +1,4 @@
+
 package cm.homeautomation.services.light;
 
 import java.util.HashMap;
@@ -157,46 +158,45 @@ public class LightService extends BaseService {
 
 	private GenericStatus internalDimLight(final long lightId, final int dimPercentValue, boolean calledForGroup,
 			boolean isAbsoluteValue) {
-		final Runnable requestThread = () -> {
-			String powerState = getPowerStateFromDimValue(dimPercentValue);
 
-			final Light light = lightList.get(lightId);
+		String powerState = getPowerStateFromDimValue(dimPercentValue);
 
-			if (light != null) {
+		final Light light = lightList.get(lightId);
 
-				int dimValue = dimPercentValue;
+		if (light != null) {
+
+			int dimValue = dimPercentValue;
 
 //				LogManager.getLogger(this.getClass()).error("dimPercentValue: " + dimPercentValue);
 
-				dimValue = dimByPercentIfPercentValue(dimPercentValue, isAbsoluteValue, light, dimValue);
+			dimValue = dimByPercentIfPercentValue(dimPercentValue, isAbsoluteValue, light, dimValue);
 
-				LogManager.getLogger(this.getClass()).error("dimValue: " + dimValue);
+			LogManager.getLogger(this.getClass()).error("dimValue: " + dimValue);
 
-				// if part of a group then call for the others as well
-				checkAndCallLightGroup(lightId, calledForGroup, isAbsoluteValue, em, light, dimValue);
+			// if part of a group then call for the others as well
+			checkAndCallLightGroup(lightId, calledForGroup, isAbsoluteValue, em, light, dimValue);
 
-				String dimUrl = light.getDimUrl();
+			String dimUrl = light.getDimUrl();
 
-				if (light instanceof DimmableLight) {
+			if (light instanceof DimmableLight) {
 
-					final DimmableLight dimmableLight = (DimmableLight) light;
+				final DimmableLight dimmableLight = (DimmableLight) light;
 
-					if (dimValue > dimmableLight.getMaximumValue()) {
-						dimValue = dimmableLight.getMaximumValue();
-					}
-
-					dimmableLight.setBrightnessLevel(dimValue);
-					em.merge(dimmableLight);
-					dimUrl = dimmableLight.getDimUrl();
-
-				} else {
-					light.setPowerState(OFF.equals(powerState));
+				if (dimValue > dimmableLight.getMaximumValue()) {
+					dimValue = dimmableLight.getMaximumValue();
 				}
 
-				sendMessageToDevice(powerState, light, dimValue, dimUrl);
+				dimmableLight.setBrightnessLevel(dimValue);
+				em.merge(dimmableLight);
+				dimUrl = dimmableLight.getDimUrl();
+
+			} else {
+				light.setPowerState(OFF.equals(powerState));
 			}
-		};
-		new Thread(requestThread).start();
+
+			sendMessageToDevice(powerState, light, dimValue, dimUrl);
+		}
+
 		return new GenericStatus(true);
 	}
 
