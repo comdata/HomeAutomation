@@ -16,6 +16,7 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import org.dhcp4java.DHCPPacket;
+import org.eclipse.microprofile.context.ManagedExecutor;
 
 import cm.homeautomation.entities.DashButtonRange;
 import cm.homeautomation.eventbus.EventObject;
@@ -35,6 +36,10 @@ public class DashButtonService {
 	EntityManager em;
 
 	HashMap<String, Date> timeFilter = new HashMap<>();
+	
+	@Inject
+	ManagedExecutor executor;
+
 
 	void startup(@Observes StartupEvent event) {
 
@@ -65,7 +70,9 @@ public class DashButtonService {
 				// LogManager.getLogger(this.getClass()).error("socket exeception", e);
 			}
 		};
-		new Thread(runner).start();
+		//new Thread(runner).start();
+		
+		executor.runAsync(runner);
 	}
 
 	@Transactional(value = TxType.REQUIRES_NEW)
