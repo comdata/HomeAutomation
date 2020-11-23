@@ -327,8 +327,8 @@ public class LightService extends BaseService {
 		Map<String, Light> lightExternalListTemp = new HashMap<>();
 		Map<Long, Light> lightListTemp = new HashMap<>();
 
+	
 		if (em != null) {
-
 			final List<Room> roomsList = em.createQuery("select r from Room r", Room.class).getResultList();
 
 			for (Room room : roomsList) {

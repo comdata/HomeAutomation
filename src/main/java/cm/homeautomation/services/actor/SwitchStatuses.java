@@ -13,7 +13,7 @@ public class SwitchStatuses {
 
 	public List<Switch> getSwitchStatuses() {
 		if (switchStatuses==null) {
-			switchStatuses=new ArrayList<Switch>();
+			switchStatuses=new ArrayList<>();
 		}
 		return switchStatuses;
 	}

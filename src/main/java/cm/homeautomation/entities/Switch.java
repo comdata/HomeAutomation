@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -64,9 +65,9 @@ public class Switch {
 
 	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 	@JsonIdentityReference(alwaysAsId = true)
-	@OneToMany(mappedBy = "referencedSwitch", cascade = CascadeType.ALL)
-	@JsonManagedReference("referencedSwitch")
+	@OneToMany(mappedBy = "referencedSwitch", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JsonIgnore
+	@XmlTransient
 	private List<Light> lights;
 
 	@JoinColumn(nullable = true, referencedColumnName = "ID")
@@ -82,14 +83,13 @@ public class Switch {
 
 	@OneToOne
 	@JoinColumn(name = "SENSOR_ID")
-
+	@XmlTransient
 	private Sensor sensor;
 
 	@ManyToOne
 	@JoinColumn(name = "ROOM_ID")
 	@XmlTransient
 	@JsonIgnore
-
 	private Room room;
 
 	@Column(name = "VISIBLE", nullable = false)
@@ -97,26 +97,5 @@ public class Switch {
 
 	@Transient
 	private boolean switchState;
-
-	@XmlIDREF
-	public List<Light> getLights() {
-		return lights;
-	}
-
-	@XmlTransient
-	@JsonIgnore
-	public Room getRoom() {
-		return room;
-	}
-
-	@XmlTransient
-	public Sensor getSensor() {
-		return sensor;
-	}
-
-	@XmlIDREF
-	public void setLights(final List<Light> lights) {
-		this.lights = lights;
-	}
 
 }
