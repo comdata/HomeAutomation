@@ -530,6 +530,7 @@ public class ZigbeeMQTTReceiver {
 				motionDetectionEvent.setState(occupancyNodeBoolean);
 				motionDetectionEvent.setTimestamp(new Date());
 				motionDetectionEvent.setType("ZIGBEE");
+				motionDetectionEvent.setRoom(zigbeeDevice.getRoom());
 
 				// EventBusService.getEventBus().post(motionDetectionEvent);
 
