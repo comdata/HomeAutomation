@@ -42,6 +42,9 @@ public class RemoteControlEventListener {
 
 	@Inject
 	ConfigurationService configurationService;
+	
+	@Inject
+	ActorService actorService;
 
 	@ConsumeEvent(value = "RemoteControlBrightnessChangeEvent", blocking = true)
 	public void subscribe(RemoteControlBrightnessChangeEvent event) {
@@ -133,7 +136,7 @@ public class RemoteControlEventListener {
 										(event.isPoweredOnState() ? LightStates.ON : LightStates.OFF), false);
 								break;
 							case SWITCH:
-								ActorService.getInstance().pressSwitch(
+								actorService.pressSwitch(
 										Long.toString(remoteControlGroupMember.getExternalId()),
 										(event.isPoweredOnState() ? "ON" : "OFF"));
 								break;

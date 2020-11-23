@@ -187,7 +187,7 @@ public class ActorService extends BaseService {
 	}
 
 	public ActorService() {
-		instance = this;
+		instance=this;
 	}
 
 	@Scheduled(every = "120s")
@@ -235,18 +235,11 @@ public class ActorService extends BaseService {
 	/**
 	 * @return the instance
 	 */
-	public static ActorService getInstance() {
+	protected static ActorService getInstance() {
 		if (instance == null) {
 			instance = new ActorService();
 		}
 		return instance;
-	}
-
-	/**
-	 * @param instance the instance to set
-	 */
-	public static void setInstance(final ActorService instance) {
-		ActorService.instance = instance;
 	}
 
 	/**
