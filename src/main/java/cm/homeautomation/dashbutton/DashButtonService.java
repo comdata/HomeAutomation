@@ -85,6 +85,7 @@ public class DashButtonService {
 			final DHCPPacket packet = DHCPPacket.getPacket(p);
 
 			final String mac = packet.getHardwareAddress().getHardwareAddressHex();
+			System.out.println("checking mac: " + mac);
 			// LogManager.getLogger(this.getClass()).debug("checking mac: " + mac);
 			if (isDashButton(mac)) {
 				// LogManager.getLogger(this.getClass()).debug("found a dashbutton mac: " +

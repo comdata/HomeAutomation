@@ -3,11 +3,12 @@ package cm.homeautomation.dashbutton;
 import java.util.Date;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.script.ScriptException;
 import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -19,6 +20,7 @@ import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.nashorn.NashornRunner;
 import cm.homeautomation.services.actor.ActorPressSwitchEvent;
+import io.quarkus.runtime.Startup;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
@@ -28,15 +30,17 @@ import io.vertx.core.eventbus.EventBus;
  * @author christoph
  *
  */
-@Singleton
+@Startup
+@ApplicationScoped
+@Transactional(value = TxType.REQUIRES_NEW)
 public class DashButtonEventListener {
 
 	@Inject
 	EventBus bus;
-	
+
 	@Inject
 	EntityManager em;
-	
+
 	@Inject
 	NashornRunner nashornRunner;
 
@@ -58,14 +62,12 @@ public class DashButtonEventListener {
 		}
 	}
 
-	
 	private void handleDashbuttonAction(DashButton dashButton) {
 		if (dashButton != null) {
 			boolean dashButtonState = dashButton.isState();
-			
-			
+
 			dashButton.setLastSeen(new Date());
-			
+
 			dashButton.setState(!dashButtonState);
 			em.merge(dashButton);
 
@@ -78,8 +80,7 @@ public class DashButtonEventListener {
 			remoteControlEvent.setPoweredOnState(!dashButtonState);
 
 			bus.publish("RemoteControlEvent", remoteControlEvent);
-			
-			
+
 			if (referencedSwitch != null) {
 
 				final String latestStatus = referencedSwitch.getLatestStatus();
@@ -94,13 +95,12 @@ public class DashButtonEventListener {
 					String switchId = referencedSwitch.getId().toString();
 
 					String message = "Dashbutton: Pressing switch {} to status: {}";
-					
-					System.out.println(message);
-					
-					LogManager.getLogger(this.getClass()).info(message, switchId,
-							newStatus);
 
-					bus.publish("ActorPressSwitchEvent",new ActorPressSwitchEvent(switchId, newStatus));
+					System.out.println(message);
+
+					LogManager.getLogger(this.getClass()).info(message, switchId, newStatus);
+
+					bus.publish("ActorPressSwitchEvent", new ActorPressSwitchEvent(switchId, newStatus));
 				}
 
 			}
@@ -118,7 +118,6 @@ public class DashButtonEventListener {
 		}
 	}
 
-	
 	private DashButton findOrCreateDashbutton(final String mac) {
 
 		final List<DashButton> resultList = em
