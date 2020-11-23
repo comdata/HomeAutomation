@@ -8,8 +8,6 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.script.ScriptException;
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -24,6 +22,7 @@ import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
+import lombok.NonNull;
 
 /**
  * listen for dashbutton events and act accordingly
@@ -33,7 +32,6 @@ import io.vertx.core.eventbus.EventBus;
  */
 @Startup
 @ApplicationScoped
-@Transactional(value = TxType.REQUIRES_NEW)
 public class DashButtonEventListener {
 
 	@Inject
@@ -44,13 +42,12 @@ public class DashButtonEventListener {
 
 	@Inject
 	NashornRunner nashornRunner;
-	
-	void startup(@Observes StartupEvent event) {
 
+	void startup(@Observes StartupEvent event) {
+		System.out.println("dash listener startup");
 	}
 
 	@ConsumeEvent(value = "DashButtonEvent", blocking = true)
-	@Transactional
 	public void handleEvent(DashButtonEvent dbEvent) {
 
 		final String mac = dbEvent.getMac().replace(":", "").toUpperCase();
@@ -58,65 +55,68 @@ public class DashButtonEventListener {
 		System.out.println("got mac: " + mac);
 
 		DashButton dashButton = findOrCreateDashbutton(mac);
-
-		handleDashbuttonAction(dashButton);
+		if (dashButton != null) {
+			handleDashbuttonAction(dashButton);
+		}
 
 	}
 
-	private void handleDashbuttonAction(DashButton dashButton) {
-		if (dashButton != null) {
-			boolean dashButtonState = dashButton.isState();
+	private void handleDashbuttonAction(@NonNull DashButton dashButton) {
 
-			dashButton.setLastSeen(new Date());
+		boolean dashButtonState = dashButton.isState();
 
-			dashButton.setState(!dashButtonState);
-			em.merge(dashButton);
+		dashButton.setLastSeen(new Date());
 
-			final Switch referencedSwitch = dashButton.getReferencedSwitch();
-			final ScriptingEntity referencedScript = dashButton.getReferencedScript();
+		dashButton.setState(!dashButtonState);
+		em.merge(dashButton);
 
-			RemoteControlEvent remoteControlEvent = new RemoteControlEvent(dashButton.getName(), dashButton.getMac(),
-					RemoteControlEvent.EventType.REMOTE, RemoteType.DASHBUTTON);
+		final Switch referencedSwitch = dashButton.getReferencedSwitch();
+		final ScriptingEntity referencedScript = dashButton.getReferencedScript();
 
-			remoteControlEvent.setPoweredOnState(!dashButtonState);
+		RemoteControlEvent remoteControlEvent = new RemoteControlEvent(dashButton.getName(), dashButton.getMac(),
+				RemoteControlEvent.EventType.REMOTE, RemoteType.DASHBUTTON);
 
-			bus.publish("RemoteControlEvent", remoteControlEvent);
+		remoteControlEvent.setPoweredOnState(!dashButtonState);
 
-			if (referencedSwitch != null) {
+		System.out.println("Sending RC event");
+		bus.publish("RemoteControlEvent", remoteControlEvent);
+		System.out.println("Sent RC event");
 
-				final String latestStatus = referencedSwitch.getLatestStatus();
+		if (referencedSwitch != null) {
 
-				final Date latestStatusFrom = referencedSwitch.getLatestStatusFrom();
+			final String latestStatus = referencedSwitch.getLatestStatus();
 
-				// limit button presses to once every 10 seconds
-				if (latestStatusFrom.getTime() < ((new Date()).getTime() - 10000)) {
+			final Date latestStatusFrom = referencedSwitch.getLatestStatusFrom();
 
-					final String newStatus = ("ON".equals(latestStatus) ? "OFF" : "ON");
+			// limit button presses to once every 10 seconds
+			if (latestStatusFrom.getTime() < ((new Date()).getTime() - 10000)) {
 
-					String switchId = referencedSwitch.getId().toString();
+				final String newStatus = ("ON".equals(latestStatus) ? "OFF" : "ON");
 
-					String message = "Dashbutton: Pressing switch {} to status: {}";
+				String switchId = referencedSwitch.getId().toString();
 
-					System.out.println(message);
+				String message = "Dashbutton: Pressing switch {} to status: {}";
 
-					LogManager.getLogger(this.getClass()).info(message, switchId, newStatus);
+				System.out.println(message);
 
-					bus.publish("ActorPressSwitchEvent", new ActorPressSwitchEvent(switchId, newStatus));
-				}
+				LogManager.getLogger(this.getClass()).info(message, switchId, newStatus);
 
+				bus.publish("ActorPressSwitchEvent", new ActorPressSwitchEvent(switchId, newStatus));
 			}
 
-			if (referencedScript != null) {
-				final String jsCode = referencedScript.getJsCode();
-				try {
-
-					nashornRunner.run(jsCode);
-				} catch (final ScriptException e) {
-					LogManager.getLogger(this.getClass()).error("error running code: {}", jsCode, e);
-				}
-
-			}
 		}
+
+		if (referencedScript != null) {
+			final String jsCode = referencedScript.getJsCode();
+			try {
+
+				nashornRunner.run(jsCode);
+			} catch (final ScriptException e) {
+				LogManager.getLogger(this.getClass()).error("error running code: {}", jsCode, e);
+			}
+
+		}
+
 	}
 
 	private DashButton findOrCreateDashbutton(final String mac) {

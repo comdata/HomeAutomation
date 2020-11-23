@@ -136,9 +136,7 @@ public class DashButtonService {
 			}
 		} catch (final NoResultException e) {
 			e.printStackTrace();
-//				LogManager.getLogger(this.getClass()).error(e);
 		}
-//			LogManager.getLogger(this.getClass()).trace("vendorCode: " + vendorCode);
 
 		return false;
 	}
