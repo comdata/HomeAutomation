@@ -135,7 +135,7 @@ public class DashButtonService {
 				return true;
 			}
 		} catch (final NoResultException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 
 		return false;
