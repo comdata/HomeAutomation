@@ -88,7 +88,7 @@ public class MotionDetectionService extends BaseService {
 			InfluxMotionEvent influxMotionEvent = new InfluxMotionEvent();
 
 			influxMotionEvent.setState(motionEvent.isState());
-			influxMotionEvent.setRoomId(Long.valueOf(Integer.toString(motionEvent.getRoom())));
+			influxMotionEvent.setRoomId(motionEvent.getRoom().getId());
 			influxMotionEvent.setExternalId(motionEvent.getMac());
 			influxMotionEvent.setDateTime(motionEvent.getTimestamp().toInstant());
 
