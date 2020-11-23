@@ -3,8 +3,8 @@ package cm.homeautomation.nashorn;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -17,8 +17,11 @@ import org.apache.logging.log4j.Logger;
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.ScriptingEntity;
 import cm.homeautomation.eventbus.EventObject;
+import io.quarkus.runtime.Startup;
+import io.quarkus.runtime.StartupEvent;
 import io.quarkus.vertx.ConsumeEvent;
 
+@Startup
 @ApplicationScoped
 public class NashornRunner {
 
@@ -34,7 +37,8 @@ public class NashornRunner {
 	@Inject
 	ConfigurationService configurationService;
 
-	public NashornRunner() {
+	
+	void startup(@Observes StartupEvent event) {
 		String nashornEnabled = configurationService.getConfigurationProperty(NASHORN, ENABLED);
 
 		enableEngine(nashornEnabled);
