@@ -75,7 +75,6 @@ public class DashButtonService {
 		executor.runAsync(runner);
 	}
 
-	@Transactional(value = TxType.REQUIRES_NEW)
 	private void listenAndReceive(final int listenPort, DatagramSocket socket, final DatagramPacket p) {
 		try {
 //				LogManager.getLogger(this.getClass()).debug("Listening on port " + listenPort + "...");
