@@ -16,7 +16,6 @@ import cm.homeautomation.entities.DashButton;
 import cm.homeautomation.entities.RemoteControl.RemoteType;
 import cm.homeautomation.entities.ScriptingEntity;
 import cm.homeautomation.entities.Switch;
-import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.nashorn.NashornRunner;
 import cm.homeautomation.services.actor.ActorPressSwitchEvent;
@@ -44,24 +43,17 @@ public class DashButtonEventListener {
 	@Inject
 	NashornRunner nashornRunner;
 
-	@ConsumeEvent(value = "EventObject", blocking = true)
-	public void handleEvent(final EventObject event) {
+	@ConsumeEvent(value = "DashButtonEvent", blocking = true)
+	public void handleEvent(final DashButtonEvent dbEvent) {
 
-		final Object data = event.getData();
+		final String mac = dbEvent.getMac().replace(":", "").toUpperCase();
 
-		if (data instanceof DashButtonEvent) {
+		System.out.println("got mac: " + mac);
 
-			final DashButtonEvent dbEvent = (DashButtonEvent) data;
+		DashButton dashButton = findOrCreateDashbutton(mac);
 
-			final String mac = dbEvent.getMac().replace(":", "").toUpperCase();
+		handleDashbuttonAction(dashButton);
 
-			System.out.println("got mac: "+mac);
-			
-			DashButton dashButton = findOrCreateDashbutton(mac);
-
-			handleDashbuttonAction(dashButton);
-
-		}
 	}
 
 	private void handleDashbuttonAction(DashButton dashButton) {

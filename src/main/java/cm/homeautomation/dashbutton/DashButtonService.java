@@ -19,7 +19,6 @@ import org.dhcp4java.DHCPPacket;
 import org.eclipse.microprofile.context.ManagedExecutor;
 
 import cm.homeautomation.entities.DashButtonRange;
-import cm.homeautomation.eventbus.EventObject;
 import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import io.vertx.core.eventbus.EventBus;
@@ -103,7 +102,7 @@ public class DashButtonService {
 
 				if (((filterTime.getTime()) + 1000) < (new Date()).getTime()) {
 					timeFilter.put(mac, new Date());
-					bus.publish("EventObject", new EventObject(new DashButtonEvent(mac)));
+					bus.publish("DashButtonEvent", new DashButtonEvent(mac));
 					// LogManager.getLogger(this.getClass()).debug("send dashbutton event");
 				}
 
