@@ -66,6 +66,7 @@ public class Switch {
 	@JsonIdentityReference(alwaysAsId = true)
 	@OneToMany(mappedBy = "referencedSwitch", cascade = CascadeType.ALL)
 	@JsonManagedReference("referencedSwitch")
+	@JsonIgnore
 	private List<Light> lights;
 
 	@JoinColumn(nullable = true, referencedColumnName = "ID")
