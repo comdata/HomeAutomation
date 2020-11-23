@@ -35,10 +35,9 @@ public class DashButtonService {
 	EntityManager em;
 
 	HashMap<String, Date> timeFilter = new HashMap<>();
-	
+
 	@Inject
 	ManagedExecutor executor;
-
 
 	void startup(@Observes StartupEvent event) {
 
@@ -69,8 +68,8 @@ public class DashButtonService {
 				// LogManager.getLogger(this.getClass()).error("socket exeception", e);
 			}
 		};
-		//new Thread(runner).start();
-		
+		// new Thread(runner).start();
+
 		executor.runAsync(runner);
 	}
 
@@ -90,6 +89,8 @@ public class DashButtonService {
 				// LogManager.getLogger(this.getClass()).debug("found a dashbutton mac: " +
 				// mac);
 
+				System.out.println("found a dashbutton mac: " + mac);
+
 				/*
 				 * suppress events if they are to fast
 				 *
@@ -102,7 +103,9 @@ public class DashButtonService {
 
 				if (((filterTime.getTime()) + 1000) < (new Date()).getTime()) {
 					timeFilter.put(mac, new Date());
+					System.out.println("sending event: " + mac);
 					bus.publish("DashButtonEvent", new DashButtonEvent(mac));
+					System.out.println("event sent: " + mac);
 					// LogManager.getLogger(this.getClass()).debug("send dashbutton event");
 				}
 
@@ -132,17 +135,11 @@ public class DashButtonService {
 				return true;
 			}
 		} catch (final NoResultException e) {
+			e.printStackTrace();
 //				LogManager.getLogger(this.getClass()).error(e);
 		}
 //			LogManager.getLogger(this.getClass()).trace("vendorCode: " + vendorCode);
 
 		return false;
 	}
-
-	public static void main(String[] args) {
-
-		new DashButtonService();
-
-	}
-
 }
