@@ -55,6 +55,8 @@ public class DashButtonEventListener {
 
 			final String mac = dbEvent.getMac().replace(":", "").toUpperCase();
 
+			System.out.println("got mac: "+mac);
+			
 			DashButton dashButton = findOrCreateDashbutton(mac);
 
 			handleDashbuttonAction(dashButton);
