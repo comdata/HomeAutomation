@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.script.ScriptException;
@@ -20,6 +21,7 @@ import cm.homeautomation.events.RemoteControlEvent;
 import cm.homeautomation.nashorn.NashornRunner;
 import cm.homeautomation.services.actor.ActorPressSwitchEvent;
 import io.quarkus.runtime.Startup;
+import io.quarkus.runtime.StartupEvent;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
@@ -42,9 +44,14 @@ public class DashButtonEventListener {
 
 	@Inject
 	NashornRunner nashornRunner;
+	
+	void startup(@Observes StartupEvent event) {
+
+	}
 
 	@ConsumeEvent(value = "DashButtonEvent", blocking = true)
-	public void handleEvent(final DashButtonEvent dbEvent) {
+	@Transactional
+	public void handleEvent(DashButtonEvent dbEvent) {
 
 		final String mac = dbEvent.getMac().replace(":", "").toUpperCase();
 
