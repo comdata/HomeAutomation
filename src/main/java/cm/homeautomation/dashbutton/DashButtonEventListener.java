@@ -4,10 +4,13 @@ import java.util.Date;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.control.ActivateRequestContext;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.script.ScriptException;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -32,6 +35,8 @@ import lombok.NonNull;
  */
 @Startup
 @ApplicationScoped
+@ActivateRequestContext
+@Transactional(value = TxType.REQUIRES_NEW)
 public class DashButtonEventListener {
 
 	@Inject
