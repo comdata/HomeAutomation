@@ -65,7 +65,7 @@ public class MQTTTopicSensorReceiver {
 			sensorData.setDateTime(new Date());
 			sensorDataSaveRequest.setSensorData(sensorData);
 
-			bus.publish("SensorDataSaveRequest", sensorDataSaveRequest);
+			//bus.publish("SensorDataSaveRequest", sensorDataSaveRequest);
 		} else {
 			LOG.debug("list is empty for technicaltype: " + technicalType);
 
