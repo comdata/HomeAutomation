@@ -2,13 +2,13 @@ package cm.homeautomation.fhem;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
-import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.mqtt.client.MQTTEventBusObject;
+import io.quarkus.runtime.Startup;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
+@Startup
 @ApplicationScoped
 public class MowerEventReceiver {
 
@@ -28,7 +28,7 @@ public class MowerEventReceiver {
 
 			if (!"no_message".equals(messageContent)) {
 //				LogManager.getLogger(this.getClass()).info("Mower: error: {}", messageContent);
-				bus.publish("EventObject", new EventObject(new MowerErrorEvent(messageContent)));
+				bus.publish("MowerErrorEvent",new MowerErrorEvent(messageContent));
 			} else {
 //				LogManager.getLogger(this.getClass()).info("Mower: not an error: {}", messageContent);
 			}
