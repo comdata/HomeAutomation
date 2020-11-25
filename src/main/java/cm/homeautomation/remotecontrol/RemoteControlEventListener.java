@@ -75,27 +75,25 @@ public class RemoteControlEventListener {
 
 						for (RemoteControlGroupMember remoteControlGroupMember : members) {
 
-							final Runnable controlMemberThread = () -> {
-								LogManager.getLogger(this.getClass())
-										.debug("found remote member: " + remoteControl.getName());
-								switch (remoteControlGroupMember.getType()) {
-								case LIGHT:
-									LightService.getInstance().dimLight(remoteControlGroupMember.getExternalId(),
-											event.getBrightness());
-									break;
-								case SWITCH:
-									break;
-								case WINDOWBLIND:
-									break;
-								case NETWORKDEVICE:
-									break;
-								case SCRIPT:
-									break;
-								default:
-									break;
-								}
-							};
-							executor.runAsync(controlMemberThread);
+							LogManager.getLogger(this.getClass())
+									.debug("found remote member: " + remoteControl.getName());
+							switch (remoteControlGroupMember.getType()) {
+							case LIGHT:
+								LightService.getInstance().dimLight(remoteControlGroupMember.getExternalId(),
+										event.getBrightness());
+								break;
+							case SWITCH:
+								break;
+							case WINDOWBLIND:
+								break;
+							case NETWORKDEVICE:
+								break;
+							case SCRIPT:
+								break;
+							default:
+								break;
+							}
+
 						}
 					}
 				}
@@ -134,64 +132,60 @@ public class RemoteControlEventListener {
 //                            LogManager.getLogger(this.getClass())
 //                                    .debug("found remote member: " + remoteControl.getName());
 
-							final Runnable controlMemberThread = () -> {
+							switch (remoteControlGroupMember.getType()) {
+							case LIGHT:
+								LightService.getInstance().setLightState(remoteControlGroupMember.getExternalId(),
+										(event.isPoweredOnState() ? LightStates.ON : LightStates.OFF), false);
+								break;
+							case SWITCH:
+								actorService.pressSwitch(Long.toString(remoteControlGroupMember.getExternalId()),
+										(event.isPoweredOnState() ? "ON" : "OFF"));
+								break;
+							case WINDOWBLIND:
 
-								switch (remoteControlGroupMember.getType()) {
-								case LIGHT:
-									LightService.getInstance().setLightState(remoteControlGroupMember.getExternalId(),
-											(event.isPoweredOnState() ? LightStates.ON : LightStates.OFF), false);
-									break;
-								case SWITCH:
-									actorService.pressSwitch(Long.toString(remoteControlGroupMember.getExternalId()),
-											(event.isPoweredOnState() ? "ON" : "OFF"));
-									break;
-								case WINDOWBLIND:
+								switch (event.getEventType()) {
 
-									switch (event.getEventType()) {
+								case ON_OFF:
 
-									case ON_OFF:
-
-										DimDirection dimDirection;
-										if (event.getClick().equals("open")) {
-											dimDirection = DimDirection.UP;
-										} else {
-											dimDirection = DimDirection.DOWN;
-										}
-
-										new WindowBlindService().dim(dimDirection,
-												remoteControlGroupMember.getExternalId());
-
-										break;
-
-									case REMOTE:
-										WindowBlindDimMessageSimple windowBlindDimMessage = new WindowBlindDimMessageSimple(
-												remoteControlGroupMember.getExternalId(),
-												(event.isPoweredOnState() ? "99" : "0"));
-										bus.publish("WindowBlindDimMessageSimple", windowBlindDimMessage);
-										break;
+									DimDirection dimDirection;
+									if (event.getClick().equals("open")) {
+										dimDirection = DimDirection.UP;
+									} else {
+										dimDirection = DimDirection.DOWN;
 									}
 
-									break;
-								case NETWORKDEVICE:
+									new WindowBlindService().dim(dimDirection,
+											remoteControlGroupMember.getExternalId());
 
-									if (event.isPoweredOnState()) {
-										NetworkDevice networkDevice = em.find(NetworkDevice.class,
-												remoteControlGroupMember.getExternalId());
-
-										if (networkDevice != null) {
-											bus.publish("NetworkWakeUpEvent",
-													new NetworkWakeupEvent(networkDevice.getMac()));
-
-										}
-									}
-									break;
-								default:
 									break;
 
+								case REMOTE:
+									WindowBlindDimMessageSimple windowBlindDimMessage = new WindowBlindDimMessageSimple(
+											remoteControlGroupMember.getExternalId(),
+											(event.isPoweredOnState() ? "99" : "0"));
+									bus.publish("WindowBlindDimMessageSimple", windowBlindDimMessage);
+									break;
 								}
 
-							};
-							executor.runAsync(controlMemberThread);
+								break;
+							case NETWORKDEVICE:
+
+								if (event.isPoweredOnState()) {
+									NetworkDevice networkDevice = em.find(NetworkDevice.class,
+											remoteControlGroupMember.getExternalId());
+
+									if (networkDevice != null) {
+										bus.publish("NetworkWakeUpEvent",
+												new NetworkWakeupEvent(networkDevice.getMac()));
+
+									}
+								}
+								break;
+							default:
+								break;
+
+							}
+
 						}
 					}
 
