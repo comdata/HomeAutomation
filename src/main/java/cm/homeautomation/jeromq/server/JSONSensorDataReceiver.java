@@ -15,7 +15,6 @@ import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.DistanceSensorData;
 import cm.homeautomation.sensors.GasmeterData;
 import cm.homeautomation.sensors.IRData;
