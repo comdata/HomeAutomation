@@ -15,7 +15,11 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(indexes = { @Index(name = "sensorId", columnList = "SENSOR_ID, VALIDTHRU") })
 public class SensorData {

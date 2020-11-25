@@ -1,5 +1,6 @@
 package cm.homeautomation.services.sensor.mqttsensor;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,12 +15,15 @@ import org.jboss.logging.Logger;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.Sensor;
+import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
+import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
 import io.quarkus.runtime.Startup;
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
 
 @ApplicationScoped
 @Startup
@@ -35,6 +39,9 @@ public class MQTTTopicSensorReceiver {
 	@Inject
 	Sensors sensors;
 
+	@Inject
+	EventBus bus;
+
 	private static final Logger LOG = Logger.getLogger(MQTTTopicSensorReceiver.class);
 	private Map<String, Sensor> sensorTechnicalTypeMap = new HashMap<>();
 
@@ -47,20 +54,21 @@ public class MQTTTopicSensorReceiver {
 
 		LOG.debug("looking for technicaltype: " + technicalType);
 
-		try {
+		Sensor sensor = sensorTechnicalTypeMap.get(technicalType);
+		if (sensor != null) {
+			LOG.debug("got sensors: " + sensor.getId() + " name:" + sensor.getSensorName());
 
-			Sensor sensor = sensorTechnicalTypeMap.get(technicalType);
-			if (sensor != null) {
-				LOG.debug("got sensors: " + sensor.getId() + " name:" + sensor.getSensorName());
-				if (1==0) {
-					sensors.saveSensorData(sensor.getId(), topicEvent.getMessage());
-				}	
-			} else {
-				LOG.debug("list is empty for technicaltype: " + technicalType);
+			final SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
+			sensorDataSaveRequest.setSensorId(sensor.getId());
+			final SensorData sensorData = new SensorData();
+			sensorData.setValue(topicEvent.getMessage());
+			sensorData.setDateTime(new Date());
+			sensorDataSaveRequest.setSensorData(sensorData);
 
-			}
-		} catch (SensorDataLimitViolationException e) {
-			LOG.error(e);
+			bus.publish("SensorDataSaveRequest", sensorDataSaveRequest);
+		} else {
+			LOG.debug("list is empty for technicaltype: " + technicalType);
+
 		}
 
 	}

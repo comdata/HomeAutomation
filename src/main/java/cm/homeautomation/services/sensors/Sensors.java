@@ -47,6 +47,7 @@ import cm.homeautomation.services.actor.SwitchEvent;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import io.quarkus.runtime.Startup;
+import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
 @Startup
@@ -104,7 +105,7 @@ public class Sensors extends BaseService {
 			} catch (IllegalStateException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} 
+			}
 			this.latch.countDown();
 		}
 
@@ -436,7 +437,7 @@ public class Sensors extends BaseService {
 
 	@POST
 	@Path("forroom/save")
-
+	@ConsumeEvent(value = "SensorDataSaveRequest", blocking = true)
 	public void saveSensorData(final SensorDataSaveRequest request) throws SensorDataLimitViolationException {
 
 		Sensor sensor = null;
