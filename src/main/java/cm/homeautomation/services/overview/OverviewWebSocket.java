@@ -50,39 +50,33 @@ public class OverviewWebSocket {
 
 	}
 
-	@ConsumeEvent(value = "EventObject", blocking = true)
-	public void handleSensorDataChanged(final EventObject eventObject) {
+	@ConsumeEvent(value = "SensorData", blocking = true)
+	public void handleSensorDataChanged(final SensorData sensorData) {
 
 		LogManager.getLogger(this.getClass()).info("Overview got event");
-		final Object eventData = eventObject.getData();
-		if (eventData instanceof SensorData) {
 
-			final SensorData sensorData = (SensorData) eventData;
+		if (overviewService != null && sensorData != null) {
+			final OverviewTile overviewTileForRoom = overviewService.updateOverviewTile(sensorData);
 
-			if (overviewService != null && sensorData != null) {
-				final OverviewTile overviewTileForRoom = overviewService.updateOverviewTile(sensorData);
+			if (sensorData.getSensor() != null && sensorData.getSensor().getRoom() != null) {
+				LogManager.getLogger(this.getClass())
+						.info("Got eventbus for room: " + sensorData.getSensor().getRoom().getRoomName());
 
-				if (sensorData.getSensor() != null && sensorData.getSensor().getRoom() != null) {
-					LogManager.getLogger(this.getClass())
-							.info("Got eventbus for room: " + sensorData.getSensor().getRoom().getRoomName());
+				try {
 
-					try {
-
-						overviewEndPointConfiguration = new OverviewEndPointConfiguration();
-						overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
-						LogManager.getLogger(this.getClass()).info("Sending tile: " + overviewTileForRoom.getRoomName()
-								+ " - " + overviewTileForRoom.getNumber());
-						overviewEndpoint.sendTile(overviewTileForRoom);
-					} catch (final InstantiationException e) {
-						LogManager.getLogger(this.getClass()).error("Sending eventbus updates failed", e);
-					}
+					overviewEndPointConfiguration = new OverviewEndPointConfiguration();
+					overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
+					LogManager.getLogger(this.getClass()).info("Sending tile: " + overviewTileForRoom.getRoomName()
+							+ " - " + overviewTileForRoom.getNumber());
+					overviewEndpoint.sendTile(overviewTileForRoom);
+				} catch (final InstantiationException e) {
+					LogManager.getLogger(this.getClass()).error("Sending eventbus updates failed", e);
 				}
-			} else {
-				// overview not initialized
 			}
 		} else {
-			LogManager.getLogger(this.getClass()).info("Eventdata not SensorData: " + eventData.getClass().getName());
+			// overview not initialized
 		}
+
 	}
 
 	/**
