@@ -288,7 +288,6 @@ public class ActorService extends BaseService {
 	}
 
 	@ConsumeEvent(value = "ActorPressSwitchEvent", blocking = true)
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void subscribePressSwitch(ActorPressSwitchEvent event) {
 		System.out.println(event.getSwitchId());
 		pressSwitch(event.getSwitchId(), event.getTargetStatus());
