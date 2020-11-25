@@ -9,6 +9,7 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import org.apache.log4j.LogManager;
+import org.eclipse.microprofile.context.ManagedExecutor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,6 +40,10 @@ public class ReactiveMQTTReceiverClient {
 	
 	@Inject
 	ConfigurationService configurationService;
+	
+	@Inject
+	ManagedExecutor executor;
+
 
 	private void initClient() {
 
@@ -69,7 +74,7 @@ public class ReactiveMQTTReceiverClient {
 
 						mqttHandler(publish);
 					};
-					new Thread(runThread).start();
+					executor.runAsync(runThread);
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe
@@ -96,7 +101,7 @@ public class ReactiveMQTTReceiverClient {
 
 						mqttHandler(publish);
 					};
-					new Thread(runThread).start();
+					executor.runAsync(runThread);
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe
@@ -123,7 +128,7 @@ public class ReactiveMQTTReceiverClient {
 
 						mqttHandler(publish);
 					};
-					new Thread(runThread).start();
+					executor.runAsync(runThread);
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe
@@ -150,7 +155,7 @@ public class ReactiveMQTTReceiverClient {
 
 						mqttHandler(publish);
 					};
-					new Thread(runThread).start();
+					executor.runAsync(runThread);
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe
@@ -177,7 +182,7 @@ public class ReactiveMQTTReceiverClient {
 
 						mqttHandler(publish);
 					};
-					new Thread(runThread).start();
+					executor.runAsync(runThread);
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe
@@ -210,7 +215,7 @@ public class ReactiveMQTTReceiverClient {
 
 						handleMessageEBUS(topic, messageContent);
 					};
-					new Thread(runThread).start();
+					executor.runAsync(runThread);
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe
@@ -244,7 +249,7 @@ public class ReactiveMQTTReceiverClient {
 
 						handleMessageHUE(topic, messageContent);
 					};
-					new Thread(runThread).start();
+					executor.runAsync(runThread);
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe
@@ -278,7 +283,7 @@ public class ReactiveMQTTReceiverClient {
 							sendNetworkScanResult(messageContent);
 						}
 					};
-					new Thread(runThread).start();
+					executor.runAsync(runThread);
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe
@@ -309,7 +314,7 @@ public class ReactiveMQTTReceiverClient {
 
 						handleMessageFHEM(topic, messageContent);
 					};
-					new Thread(runThread).start();
+					executor.runAsync(runThread);
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe
@@ -343,7 +348,7 @@ public class ReactiveMQTTReceiverClient {
 
 						handleMessage(topic, messageContent);
 					};
-					new Thread(runThread).start();
+					executor.runAsync(runThread);
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe

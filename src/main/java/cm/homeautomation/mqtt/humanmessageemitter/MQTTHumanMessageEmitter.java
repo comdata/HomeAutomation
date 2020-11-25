@@ -8,6 +8,8 @@ import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
+import org.eclipse.microprofile.context.ManagedExecutor;
+
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.HumanMessageEmitterFilter;
 import cm.homeautomation.mqtt.client.MQTTSendEvent;
@@ -29,6 +31,9 @@ public class MQTTHumanMessageEmitter {
 
 	@Inject
 	ConfigurationService configurationService;
+	
+	@Inject
+	ManagedExecutor executor;
 
 	private boolean checkMessageFiltered(String message) {
 		if (message != null) {
@@ -65,6 +70,6 @@ public class MQTTHumanMessageEmitter {
 			}
 
 		};
-		new Thread(eventThread).start();
+		executor.runAsync(eventThread);
 	}
 }

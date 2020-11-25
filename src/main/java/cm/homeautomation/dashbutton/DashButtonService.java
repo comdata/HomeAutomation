@@ -68,7 +68,6 @@ public class DashButtonService {
 				// LogManager.getLogger(this.getClass()).error("socket exeception", e);
 			}
 		};
-		// new Thread(runner).start();
 
 		executor.runAsync(runner);
 	}

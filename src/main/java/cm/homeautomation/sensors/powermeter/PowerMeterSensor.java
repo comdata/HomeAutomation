@@ -22,6 +22,7 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import org.apache.logging.log4j.LogManager;
+import org.eclipse.microprofile.context.ManagedExecutor;
 
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.WriteApi;
@@ -54,9 +55,6 @@ public class PowerMeterSensor {
 	EventBus bus;
 
 	@Inject
-	InfluxDBService influxDBService;
-
-	@Inject
 	EntityManager em;
 
 	@Inject
@@ -65,6 +63,9 @@ public class PowerMeterSensor {
 	@Inject
 	InfluxDBClient influxDBClient;
 
+	@Inject
+	ManagedExecutor executor;
+	
 	/**
 	 * perform compression by aggregating the data for one hour blocks
 	 * 
@@ -200,7 +201,7 @@ public class PowerMeterSensor {
 							}
 						}
 					};
-					new Thread(sendNewDataService).start();
+					executor.runAsync(sendNewDataService);
 
 				}
 			}
