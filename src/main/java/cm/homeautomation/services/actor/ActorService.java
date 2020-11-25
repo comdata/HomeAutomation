@@ -134,6 +134,8 @@ public class ActorService extends BaseService {
 				LogManager.getLogger(this.getClass()).debug("MQTT: " + topic + " - " + message);
 
 				bus.publish("MQTTSendEvent", new MQTTSendEvent(topic, message));
+				
+				System.out.println("sent mqtt");
 
 			} else {
 
