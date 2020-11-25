@@ -9,7 +9,6 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import org.apache.log4j.LogManager;
-import org.eclipse.microprofile.context.ManagedExecutor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,13 +35,9 @@ public class ReactiveMQTTReceiverClient {
 
 	@Inject
 	EventBus bus;
-	
+
 	@Inject
 	ConfigurationService configurationService;
-	
-	@Inject
-	ManagedExecutor executor;
-
 
 	private void initClient() {
 
@@ -60,7 +55,7 @@ public class ReactiveMQTTReceiverClient {
 		Mqtt3AsyncClient wledClient = buildAClient(host, port);
 		Mqtt3AsyncClient networkServicesClient = buildAClient(host, port);
 		Mqtt3AsyncClient espClient = buildAClient(host, port);
-		
+
 		wledClient.connect().whenComplete((connAck, throwable) -> {
 			if (throwable != null) {
 				// Handle connection failure
@@ -73,7 +68,7 @@ public class ReactiveMQTTReceiverClient {
 
 						mqttHandler(publish);
 					};
-					executor.runAsync(runThread);
+					new Thread(runThread).start();
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe
@@ -100,7 +95,7 @@ public class ReactiveMQTTReceiverClient {
 
 						mqttHandler(publish);
 					};
-					executor.runAsync(runThread);
+					new Thread(runThread).start();
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe
@@ -127,7 +122,7 @@ public class ReactiveMQTTReceiverClient {
 
 						mqttHandler(publish);
 					};
-					executor.runAsync(runThread);
+					new Thread(runThread).start();
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe
@@ -154,7 +149,7 @@ public class ReactiveMQTTReceiverClient {
 
 						mqttHandler(publish);
 					};
-					executor.runAsync(runThread);
+					new Thread(runThread).start();
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe
@@ -168,7 +163,7 @@ public class ReactiveMQTTReceiverClient {
 
 			}
 		});
-		
+
 		espClient.connect().whenComplete((connAck, throwable) -> {
 			if (throwable != null) {
 				// Handle connection failure
@@ -181,7 +176,7 @@ public class ReactiveMQTTReceiverClient {
 
 						mqttHandler(publish);
 					};
-					executor.runAsync(runThread);
+					new Thread(runThread).start();
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe
@@ -214,7 +209,7 @@ public class ReactiveMQTTReceiverClient {
 
 						handleMessageEBUS(topic, messageContent);
 					};
-					executor.runAsync(runThread);
+					new Thread(runThread).start();
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe
@@ -248,7 +243,7 @@ public class ReactiveMQTTReceiverClient {
 
 						handleMessageHUE(topic, messageContent);
 					};
-					executor.runAsync(runThread);
+					new Thread(runThread).start();
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe
@@ -282,7 +277,7 @@ public class ReactiveMQTTReceiverClient {
 							sendNetworkScanResult(messageContent);
 						}
 					};
-					executor.runAsync(runThread);
+					new Thread(runThread).start();
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe
@@ -313,7 +308,7 @@ public class ReactiveMQTTReceiverClient {
 
 						handleMessageFHEM(topic, messageContent);
 					};
-					executor.runAsync(runThread);
+					new Thread(runThread).start();
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe
@@ -347,7 +342,7 @@ public class ReactiveMQTTReceiverClient {
 
 						handleMessage(topic, messageContent);
 					};
-					executor.runAsync(runThread);
+					new Thread(runThread).start();
 				}).send().whenComplete((subAck, e) -> {
 					if (e != null) {
 						// Handle failure to subscribe
@@ -367,7 +362,7 @@ public class ReactiveMQTTReceiverClient {
 		String topic = publish.getTopic().toString();
 		String messageContent = new String(publish.getPayloadAsBytes());
 		LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-		//System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+		// System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
 
 		handleMessageMQTT(topic, messageContent);
 	}
@@ -447,7 +442,7 @@ public class ReactiveMQTTReceiverClient {
 	private void sendHueInterfaceMessage(String messageContent) {
 		HueEmulatorMessage hueMessage;
 		try {
-			System.out.println("hue: "+messageContent);
+			System.out.println("hue: " + messageContent);
 			hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
 
 			bus.publish("HueEmulatorMessage", hueMessage);
