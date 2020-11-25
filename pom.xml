@@ -26,7 +26,6 @@
 		<surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
 		<jacoco.version>0.8.6</jacoco.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<telegrambots.version>2.4.2</telegrambots.version>
 		<log4j.version>2.13.3</log4j.version>
 		<eclipselink.version>2.7.7</eclipselink.version>
 		<jodatime.version>2.10.6</jodatime.version>
@@ -255,15 +254,6 @@
 			<groupId>org.mitre.dsmiley.httpproxy</groupId>
 			<artifactId>smiley-http-proxy-servlet</artifactId>
 			<version>1.11</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.telegram</groupId>
-			<artifactId>telegrambots</artifactId>
-			<version>${telegrambots.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jacoco</groupId>
