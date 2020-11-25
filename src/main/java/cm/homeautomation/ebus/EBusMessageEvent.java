@@ -1,10 +1,8 @@
 package cm.homeautomation.ebus;
 
 import cm.homeautomation.eventbus.EventBusHumanMessageIgnore;
-import cm.homeautomation.telegram.TelegramIgnore;
 
 @EventBusHumanMessageIgnore
-@TelegramIgnore
 public class EBusMessageEvent {
 
 	private static final String EBUS = "EBUS";
