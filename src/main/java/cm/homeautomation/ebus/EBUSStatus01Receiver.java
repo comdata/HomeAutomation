@@ -45,191 +45,186 @@ public class EBUSStatus01Receiver {
 	@Inject
 	Sensors sensorsInstance;
 
-	@ConsumeEvent(value = "EventObject", blocking = true)
-	public void receive(EventObject eventObject) {
-		if (eventObject.getData() instanceof EBusMessageEvent) {
-			EBusMessageEvent messageEvent = (EBusMessageEvent) eventObject.getData();
+	@ConsumeEvent(value = "EBusMessageEvent", blocking = true)
+	public void receive(EBusMessageEvent messageEvent) {
 
-			if (EBUSD_BAI_STATUS01.equals(messageEvent.getTopic())) {
-				String[] technicalNames = { HEATINGTEMP, RETURNTEMP, OUTSIDETEMP, WARMWATERTEMP, STORAGETEMP,
-						PUMPSTATE };
-				String messageString = messageEvent.getMessageContent();
-				messageString = messageString.replace(ON, "1").replace(OFF, "0");
+		if (EBUSD_BAI_STATUS01.equals(messageEvent.getTopic())) {
+			String[] technicalNames = { HEATINGTEMP, RETURNTEMP, OUTSIDETEMP, WARMWATERTEMP, STORAGETEMP, PUMPSTATE };
+			String messageString = messageEvent.getMessageContent();
+			messageString = messageString.replace(ON, "1").replace(OFF, "0");
 
-				String[] valueParts = messageString.split(SEMICOLON);
-				for (int i = 0; i < 6; i++) {
-					String sensorValue = valueParts[i];
+			String[] valueParts = messageString.split(SEMICOLON);
+			for (int i = 0; i < 6; i++) {
+				String sensorValue = valueParts[i];
 
-					SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
-					SensorData sensorData = new SensorData();
-					sensorData.setValue(sensorValue);
-					sensorData.setDateTime(new Date());
-					Sensor sensor = new Sensor();
-					sensor.setSensorName(technicalNames[i]);
-					sensor.setSensorTechnicalType(technicalNames[i]);
-					sensorData.setSensor(sensor);
-					sensorDataSaveRequest.setSensorData(sensorData);
+				SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
+				SensorData sensorData = new SensorData();
+				sensorData.setValue(sensorValue);
+				sensorData.setDateTime(new Date());
+				Sensor sensor = new Sensor();
+				sensor.setSensorName(technicalNames[i]);
+				sensor.setSensorTechnicalType(technicalNames[i]);
+				sensorData.setSensor(sensor);
+				sensorDataSaveRequest.setSensorData(sensorData);
 
-					if (sensorsInstance != null) {
-						try {
-							log.debug(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
-							sensorsInstance.saveSensorData(sensorDataSaveRequest);
-						} catch (NoResultException e) {
-							log.debug(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
+				if (sensorsInstance != null) {
+					try {
+						log.debug(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
+						sensorsInstance.saveSensorData(sensorDataSaveRequest);
+					} catch (NoResultException e) {
+						log.debug(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
 
-						} catch (Exception e) {
-							log.error(ERROR_SAVING_EBUS_DATA, e);
-
-						}
-					} else {
-						log.debug(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
+					} catch (Exception e) {
+						log.error(ERROR_SAVING_EBUS_DATA, e);
 
 					}
-				}
+				} else {
+					log.debug(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
 
-			} else if (EBUSD_BAI_WATER_PRESSURE.equals(messageEvent.getTopic())) {
-				String[] technicalNames = { WATERPRESSURE };
-				String messageString = messageEvent.getMessageContent();
-				messageString = messageString.replace(ON, "1").replace(OFF, "0");
-
-				String[] valueParts = messageString.split(SEMICOLON);
-				for (int i = 0; i < 1; i++) {
-
-					String sensorValue = valueParts[i];
-					SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
-					SensorData sensorData = new SensorData();
-					sensorData.setValue(sensorValue);
-					sensorData.setDateTime(new Date());
-					Sensor sensor = new Sensor();
-					sensor.setSensorName(technicalNames[i]);
-					sensor.setSensorTechnicalType(technicalNames[i]);
-					sensorData.setSensor(sensor);
-					sensorDataSaveRequest.setSensorData(sensorData);
-
-					if (sensorsInstance != null) {
-						try {
-							log.debug(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
-							sensorsInstance.saveSensorData(sensorDataSaveRequest);
-						} catch (NoResultException e) {
-							log.debug(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
-
-						} catch (Exception e) {
-							log.error(ERROR_SAVING_EBUS_DATA, e);
-
-						}
-					} else {
-						log.debug(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
-
-					}
-				}
-			} else if (EBUSD_BAI_SOL_BACK_TEMP.equals(messageEvent.getTopic())) {
-				String[] technicalNames = { SOLARBACKTEMP };
-				String messageString = messageEvent.getMessageContent();
-				messageString = messageString.replace(ON, "1").replace(OFF, "0");
-
-				String[] valueParts = messageString.split(SEMICOLON);
-				for (int i = 0; i < 1; i++) {
-
-					String sensorValue = valueParts[i];
-					SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
-					SensorData sensorData = new SensorData();
-					sensorData.setValue(sensorValue);
-					sensorData.setDateTime(new Date());
-					Sensor sensor = new Sensor();
-					sensor.setSensorName(technicalNames[i]);
-					sensor.setSensorTechnicalType(technicalNames[i]);
-					sensorData.setSensor(sensor);
-					sensorDataSaveRequest.setSensorData(sensorData);
-
-					if (sensorsInstance != null) {
-						try {
-							log.debug(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
-							sensorsInstance.saveSensorData(sensorDataSaveRequest);
-						} catch (NoResultException e) {
-							log.debug(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
-
-						} catch (Exception e) {
-							log.error(ERROR_SAVING_EBUS_DATA, e);
-
-						}
-					} else {
-						log.debug(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
-
-					}
-				}
-			} else if (EBUSD_BAI_SOL_PUMP.equals(messageEvent.getTopic())) {
-				String[] technicalNames = { SOLARPUMP };
-				String messageString = messageEvent.getMessageContent();
-				messageString = messageString.replace(ON, "1").replace(OFF, "0");
-
-				String[] valueParts = messageString.split(SEMICOLON);
-				for (int i = 0; i < 1; i++) {
-
-					String sensorValue = valueParts[i];
-					SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
-					SensorData sensorData = new SensorData();
-					sensorData.setValue(sensorValue);
-					sensorData.setDateTime(new Date());
-					Sensor sensor = new Sensor();
-					sensor.setSensorName(technicalNames[i]);
-					sensor.setSensorTechnicalType(technicalNames[i]);
-					sensorData.setSensor(sensor);
-					sensorDataSaveRequest.setSensorData(sensorData);
-
-					if (sensorsInstance != null) {
-						try {
-							log.debug(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
-							sensorsInstance.saveSensorData(sensorDataSaveRequest);
-						} catch (NoResultException e) {
-							log.debug(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
-
-						} catch (Exception e) {
-							log.error(ERROR_SAVING_EBUS_DATA, e);
-
-						}
-					} else {
-						log.debug(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
-
-					}
-				}
-			} else if ("ebusd/bai/Flame".equals(messageEvent.getTopic())) {
-				String[] technicalNames = { FLAME };
-				String messageString = messageEvent.getMessageContent();
-				messageString = messageString.replace(ON, "1").replace(OFF, "0");
-
-				String[] valueParts = messageString.split(SEMICOLON);
-				for (int i = 0; i < 1; i++) {
-
-					String sensorValue = valueParts[i];
-					SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
-					SensorData sensorData = new SensorData();
-					sensorData.setValue(sensorValue);
-					sensorData.setDateTime(new Date());
-					Sensor sensor = new Sensor();
-					sensor.setSensorName(technicalNames[i]);
-					sensor.setSensorTechnicalType(technicalNames[i]);
-					sensorData.setSensor(sensor);
-					sensorDataSaveRequest.setSensorData(sensorData);
-
-					if (sensorsInstance != null) {
-						try {
-							log.debug(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
-							sensorsInstance.saveSensorData(sensorDataSaveRequest);
-						} catch (NoResultException e) {
-							log.debug(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
-
-						} catch (Exception e) {
-							log.error(ERROR_SAVING_EBUS_DATA, e);
-
-						}
-					} else {
-						log.debug(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
-
-					}
 				}
 			}
-		} else {
-			log.debug(EMPTY_EVENT_RECEIVED);
+
+		} else if (EBUSD_BAI_WATER_PRESSURE.equals(messageEvent.getTopic())) {
+			String[] technicalNames = { WATERPRESSURE };
+			String messageString = messageEvent.getMessageContent();
+			messageString = messageString.replace(ON, "1").replace(OFF, "0");
+
+			String[] valueParts = messageString.split(SEMICOLON);
+			for (int i = 0; i < 1; i++) {
+
+				String sensorValue = valueParts[i];
+				SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
+				SensorData sensorData = new SensorData();
+				sensorData.setValue(sensorValue);
+				sensorData.setDateTime(new Date());
+				Sensor sensor = new Sensor();
+				sensor.setSensorName(technicalNames[i]);
+				sensor.setSensorTechnicalType(technicalNames[i]);
+				sensorData.setSensor(sensor);
+				sensorDataSaveRequest.setSensorData(sensorData);
+
+				if (sensorsInstance != null) {
+					try {
+						log.debug(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
+						sensorsInstance.saveSensorData(sensorDataSaveRequest);
+					} catch (NoResultException e) {
+						log.debug(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
+
+					} catch (Exception e) {
+						log.error(ERROR_SAVING_EBUS_DATA, e);
+
+					}
+				} else {
+					log.debug(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
+
+				}
+			}
+		} else if (EBUSD_BAI_SOL_BACK_TEMP.equals(messageEvent.getTopic())) {
+			String[] technicalNames = { SOLARBACKTEMP };
+			String messageString = messageEvent.getMessageContent();
+			messageString = messageString.replace(ON, "1").replace(OFF, "0");
+
+			String[] valueParts = messageString.split(SEMICOLON);
+			for (int i = 0; i < 1; i++) {
+
+				String sensorValue = valueParts[i];
+				SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
+				SensorData sensorData = new SensorData();
+				sensorData.setValue(sensorValue);
+				sensorData.setDateTime(new Date());
+				Sensor sensor = new Sensor();
+				sensor.setSensorName(technicalNames[i]);
+				sensor.setSensorTechnicalType(technicalNames[i]);
+				sensorData.setSensor(sensor);
+				sensorDataSaveRequest.setSensorData(sensorData);
+
+				if (sensorsInstance != null) {
+					try {
+						log.debug(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
+						sensorsInstance.saveSensorData(sensorDataSaveRequest);
+					} catch (NoResultException e) {
+						log.debug(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
+
+					} catch (Exception e) {
+						log.error(ERROR_SAVING_EBUS_DATA, e);
+
+					}
+				} else {
+					log.debug(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
+
+				}
+			}
+		} else if (EBUSD_BAI_SOL_PUMP.equals(messageEvent.getTopic())) {
+			String[] technicalNames = { SOLARPUMP };
+			String messageString = messageEvent.getMessageContent();
+			messageString = messageString.replace(ON, "1").replace(OFF, "0");
+
+			String[] valueParts = messageString.split(SEMICOLON);
+			for (int i = 0; i < 1; i++) {
+
+				String sensorValue = valueParts[i];
+				SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
+				SensorData sensorData = new SensorData();
+				sensorData.setValue(sensorValue);
+				sensorData.setDateTime(new Date());
+				Sensor sensor = new Sensor();
+				sensor.setSensorName(technicalNames[i]);
+				sensor.setSensorTechnicalType(technicalNames[i]);
+				sensorData.setSensor(sensor);
+				sensorDataSaveRequest.setSensorData(sensorData);
+
+				if (sensorsInstance != null) {
+					try {
+						log.debug(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
+						sensorsInstance.saveSensorData(sensorDataSaveRequest);
+					} catch (NoResultException e) {
+						log.debug(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
+
+					} catch (Exception e) {
+						log.error(ERROR_SAVING_EBUS_DATA, e);
+
+					}
+				} else {
+					log.debug(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
+
+				}
+			}
+		} else if ("ebusd/bai/Flame".equals(messageEvent.getTopic())) {
+			String[] technicalNames = { FLAME };
+			String messageString = messageEvent.getMessageContent();
+			messageString = messageString.replace(ON, "1").replace(OFF, "0");
+
+			String[] valueParts = messageString.split(SEMICOLON);
+			for (int i = 0; i < 1; i++) {
+
+				String sensorValue = valueParts[i];
+				SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
+				SensorData sensorData = new SensorData();
+				sensorData.setValue(sensorValue);
+				sensorData.setDateTime(new Date());
+				Sensor sensor = new Sensor();
+				sensor.setSensorName(technicalNames[i]);
+				sensor.setSensorTechnicalType(technicalNames[i]);
+				sensorData.setSensor(sensor);
+				sensorDataSaveRequest.setSensorData(sensorData);
+
+				if (sensorsInstance != null) {
+					try {
+						log.debug(STORED_EBUS_VALUE_S_FOR_S, sensorValue, technicalNames[i]);
+						sensorsInstance.saveSensorData(sensorDataSaveRequest);
+					} catch (NoResultException e) {
+						log.debug(SENSOR_NOT_DEFINED_FOR_S, technicalNames[i]);
+
+					} catch (Exception e) {
+						log.error(ERROR_SAVING_EBUS_DATA, e);
+
+					}
+				} else {
+					log.debug(SENSORS_CLASS_NOT_INITIALIZED_CORRECTLY_GOT_NO_INSTANCE_BACK);
+
+				}
+			}
 		}
+
 	}
 }

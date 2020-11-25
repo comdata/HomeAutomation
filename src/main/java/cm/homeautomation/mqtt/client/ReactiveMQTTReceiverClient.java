@@ -412,8 +412,7 @@ public class ReactiveMQTTReceiverClient {
 	private void handleMessageEBUS(String topic, String messageContent) {
 		try {
 			EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
-			EventObject eventObject = new EventObject(ebusMessageEvent);
-			bus.publish("EventObject", eventObject);
+			bus.publish("EBusMessageEvent", ebusMessageEvent);
 
 			handleMessageMQTT(topic, messageContent);
 		} catch (Exception e) {
