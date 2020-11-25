@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
+import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jboss.logging.Logger;
 
 import cm.homeautomation.configuration.ConfigurationService;
@@ -42,34 +43,40 @@ public class MQTTTopicSensorReceiver {
 	@Inject
 	EventBus bus;
 
+	@Inject
+	ManagedExecutor executor;
+
 	private static final Logger LOG = Logger.getLogger(MQTTTopicSensorReceiver.class);
 	private Map<String, Sensor> sensorTechnicalTypeMap = new HashMap<>();
 
 	@ConsumeEvent(value = "MQTTTopicEvent", blocking = true)
 	public void receiveMQTTTopic(MQTTTopicEvent topicEvent) {
 
-		LOG.debug("got topic: " + topicEvent.getTopic() + " -  message: " + topicEvent.getMessage());
+		Runnable runner = () -> {
+			LOG.debug("got topic: " + topicEvent.getTopic() + " -  message: " + topicEvent.getMessage());
 
-		String technicalType = "mqtt://" + topicEvent.getTopic();
+			String technicalType = "mqtt://" + topicEvent.getTopic();
 
-		LOG.debug("looking for technicaltype: " + technicalType);
+			LOG.debug("looking for technicaltype: " + technicalType);
 
-		Sensor sensor = sensorTechnicalTypeMap.get(technicalType);
-		if (sensor != null) {
-			LOG.debug("got sensors: " + sensor.getId() + " name:" + sensor.getSensorName());
+			Sensor sensor = sensorTechnicalTypeMap.get(technicalType);
+			if (sensor != null) {
+				LOG.debug("got sensors: " + sensor.getId() + " name:" + sensor.getSensorName());
 
-			final SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
-			sensorDataSaveRequest.setSensorId(sensor.getId());
-			final SensorData sensorData = new SensorData();
-			sensorData.setValue(topicEvent.getMessage());
-			sensorData.setDateTime(new Date());
-			sensorDataSaveRequest.setSensorData(sensorData);
+				final SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
+				sensorDataSaveRequest.setSensorId(sensor.getId());
+				final SensorData sensorData = new SensorData();
+				sensorData.setValue(topicEvent.getMessage());
+				sensorData.setDateTime(new Date());
+				sensorDataSaveRequest.setSensorData(sensorData);
 
-			//bus.publish("SensorDataSaveRequest", sensorDataSaveRequest);
-		} else {
-			LOG.debug("list is empty for technicaltype: " + technicalType);
+				bus.publish("SensorDataSaveRequest", sensorDataSaveRequest);
+			} else {
+				LOG.debug("list is empty for technicaltype: " + technicalType);
 
-		}
+			}
+		};
+		executor.runAsync(runner);
 
 	}
 
