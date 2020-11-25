@@ -6,7 +6,6 @@ import java.util.Properties;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.mail.Folder;
 import javax.mail.MessagingException;
 import javax.mail.Session;

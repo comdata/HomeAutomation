@@ -29,7 +29,6 @@ import com.influxdb.client.WriteApi;
 import com.influxdb.client.domain.WritePrecision;
 
 import cm.homeautomation.configuration.ConfigurationService;
-import cm.homeautomation.db.InfluxDBService;
 import cm.homeautomation.entities.PowerMeterPing;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.PowerMeterData;

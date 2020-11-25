@@ -3,7 +3,6 @@ package cm.homeautomation.mqtt.client;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.apache.log4j.LogManager;
 

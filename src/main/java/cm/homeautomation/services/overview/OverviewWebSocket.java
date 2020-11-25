@@ -18,7 +18,6 @@ import javax.websocket.server.ServerEndpoint;
 import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.entities.SensorData;
-import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.eventbus.StringTranscoder;
 import io.quarkus.vertx.ConsumeEvent;
 

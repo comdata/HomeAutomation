@@ -19,7 +19,6 @@ import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.ebus.EBusMessageEvent;
-import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.fhem.FHEMDataEvent;
 import cm.homeautomation.jeromq.server.JSONDataEvent;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
