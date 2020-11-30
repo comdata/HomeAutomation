@@ -24,7 +24,7 @@ jobs:
       - name: Build with Maven
         run: mvn -B package -DskipTests=true --file pom.xml
       - name: Try native build
-        run: ./mvnw package -DskipTests -Pnative -Dquarkus.native.container-build=true -Dquarkus.native.additional-build-args='--initialize-at-run-time=io.netty.handler.codec.http2.Http2CodecUtil\,io.netty.handler.codec.http2.Http2ClientUpgradeCodec\,io.netty.handler.codec.http2.DefaultHttp2FrameWriter\,io.netty.buffer.AbstractReferenceCountedByteBuf'
+        run: ./mvnw package -DskipTests -Pnative -Dquarkus.native.container-build=true -Dquarkus.native.additional-build-args='--initialize-at-run-time=io.netty.handler.codec.http2.Http2CodecUtil\,io.netty.handler.codec.http2.Http2ClientUpgradeCodec\,io.netty.handler.codec.http2.DefaultHttp2FrameWriter\,io.netty.buffer.AbstractReferenceCountedByteBuf' -H:+TraceClassInitialization
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
