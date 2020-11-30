@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;

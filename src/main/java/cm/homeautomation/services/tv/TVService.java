@@ -23,7 +23,6 @@ import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.tv.panasonic.PanasonicTVBinding;
 import cm.homeautomation.tv.panasonic.TVNotReachableException;
-import io.quarkus.runtime.Startup;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 

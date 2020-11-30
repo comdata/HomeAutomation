@@ -5,9 +5,7 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 
 import org.apache.logging.log4j.LogManager;
 

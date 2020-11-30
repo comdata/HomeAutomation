@@ -4,12 +4,10 @@ import java.util.Date;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.persistence.NoResultException;
 
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
-import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
 import cm.homeautomation.services.sensors.Sensors;
 import io.quarkus.vertx.ConsumeEvent;
