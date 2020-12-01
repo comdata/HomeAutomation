@@ -29,8 +29,10 @@ import org.quartz.TriggerBuilder;
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.Task;
 import cm.homeautomation.services.base.BaseService;
+import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 
+@Startup
 @ApplicationScoped
 @Path("scheduler")
 public class SchedulerService extends BaseService {
