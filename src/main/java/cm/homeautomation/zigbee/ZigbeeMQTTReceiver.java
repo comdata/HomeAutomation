@@ -120,7 +120,7 @@ public class ZigbeeMQTTReceiver {
 
 				if (topic.equals(zigbeeMqttTopic + "/bridge/config/devices")) {
 					handleDeviceMessage(message);
-				} else if (topic.startsWith(zigbeeMqttTopic + "/bridge/info")) {
+				} else if (topic.equals(zigbeeMqttTopic + "/bridge/info")) {
 					handleBridgeInfo(message);
 
 				} else if (topic.startsWith(zigbeeMqttTopic + "/bridge")) {
