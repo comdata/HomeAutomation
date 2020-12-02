@@ -48,9 +48,6 @@ public class SchedulerService extends BaseService {
 	@Inject
 	org.quartz.Scheduler quartz;
 
-	public SchedulerService() {
-
-	}
 
 	void onStart(@Observes StartupEvent event) {
 		try {
