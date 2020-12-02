@@ -85,6 +85,8 @@ public class ZigbeeMQTTReceiver {
 
 	private Map<String, ZigBeeDevice> deviceMap = new HashMap<>();
 
+	private Map<String, ZigBeeDevice> deviceIeeeMap;
+
 	private void init() {
 		initDeviceList();
 		updateDeviceList();
@@ -131,71 +133,74 @@ public class ZigbeeMQTTReceiver {
 					if (topicSplit.length > 1) {
 						String device = topicSplit[1];
 
-						ZigBeeDevice zigbeeDevice = getZigbeeDevice(device);
+						if (!device.equals("bridge")) {
 
-						if (zigbeeDevice != null) {
-							// System.out.println(zigbeeDevice.getModelID());
-							String modelID = zigbeeDevice.getModelID();
+							ZigBeeDevice zigbeeDevice = getZigbeeDevice(device);
 
-							ObjectMapper mapper = new ObjectMapper();
-							JsonNode messageObject = mapper.readTree(message);
+							if (zigbeeDevice != null) {
+								// System.out.println(zigbeeDevice.getModelID());
+								String modelID = zigbeeDevice.getModelID();
 
-							recordBatteryLevel(zigbeeDevice, messageObject);
-							recordLinkQuality(zigbeeDevice, messageObject);
+								ObjectMapper mapper = new ObjectMapper();
+								JsonNode messageObject = mapper.readTree(message);
 
-							saveUpdateAvailableInformation(zigbeeDevice, messageObject);
+								recordBatteryLevel(zigbeeDevice, messageObject);
+								recordLinkQuality(zigbeeDevice, messageObject);
 
-							if (zigbeeDevice.getManufacturerID().equals("4476")) {
+								saveUpdateAvailableInformation(zigbeeDevice, messageObject);
 
-								if (modelID.equals("TRADFRI remote control")) {
-									handleTradfriRemoteControl(message, zigbeeDevice, messageObject);
-								} else if (modelID.equals("TRADFRI open/close remote")) {
-									handleOpenCloseRemote(message, zigbeeDevice, messageObject);
-								} else if (modelID.startsWith("TRADFRI bulb")) {
+								if (zigbeeDevice.getManufacturerID().equals("4476")) {
 
-									if ("TRADFRI bulb E27 CWS opal 600lm".equals(modelID)) {
-										handleTradfriLight(message, zigbeeDevice, messageObject, true);
-									} else {
+									if (modelID.equals("TRADFRI remote control")) {
+										handleTradfriRemoteControl(message, zigbeeDevice, messageObject);
+									} else if (modelID.equals("TRADFRI open/close remote")) {
+										handleOpenCloseRemote(message, zigbeeDevice, messageObject);
+									} else if (modelID.startsWith("TRADFRI bulb")) {
+
+										if ("TRADFRI bulb E27 CWS opal 600lm".equals(modelID)) {
+											handleTradfriLight(message, zigbeeDevice, messageObject, true);
+										} else {
+											handleTradfriLight(message, zigbeeDevice, messageObject, false);
+										}
+									} else if (modelID.startsWith("FLOALT panel")) {
+
+										handleTradfriLight(message, zigbeeDevice, messageObject, false);
+									} else if (modelID.startsWith("TRADFRI Driver")) {
+										handleTradfriLight(message, zigbeeDevice, messageObject, false);
+									} else if (modelID.startsWith("TRADFRI motion")) {
+										handleMotionSensor(message, zigbeeDevice, messageObject);
+									} else if (modelID.startsWith("TRADFRI control")) {
+										handlePowerSocket(message, zigbeeDevice, messageObject);
+									} else if (modelID.startsWith("FYRTUR block-out roller blind")) {
+										handleWindowBlind(message, zigbeeDevice, messageObject);
+									}
+
+								}
+
+								if (zigbeeDevice.getManufacturerID().equals("4416")) {
+									if (modelID.equals("LWB006")) {
 										handleTradfriLight(message, zigbeeDevice, messageObject, false);
 									}
-								} else if (modelID.startsWith("FLOALT panel")) {
-
-									handleTradfriLight(message, zigbeeDevice, messageObject, false);
-								} else if (modelID.startsWith("TRADFRI Driver")) {
-									handleTradfriLight(message, zigbeeDevice, messageObject, false);
-								} else if (modelID.startsWith("TRADFRI motion")) {
-									handleMotionSensor(message, zigbeeDevice, messageObject);
-								} else if (modelID.startsWith("TRADFRI control")) {
-									handlePowerSocket(message, zigbeeDevice, messageObject);
-								} else if (modelID.startsWith("FYRTUR block-out roller blind")) {
-									handleWindowBlind(message, zigbeeDevice, messageObject);
 								}
 
-							}
-
-							if (zigbeeDevice.getManufacturerID().equals("4416")) {
-								if (modelID.equals("LWB006")) {
-									handleTradfriLight(message, zigbeeDevice, messageObject, false);
+								if (zigbeeDevice.getManufacturerID().equals("4151")) {
+									if (modelID.equals("lumi.sensor_motion.aq2")) {
+										handleMotionSensor(message, zigbeeDevice, messageObject);
+									} else if (modelID.equals("lumi.sensor_wleak.aq1")) {
+										handleWaterSensor(message, zigbeeDevice, messageObject);
+									}
 								}
-							}
 
-							if (zigbeeDevice.getManufacturerID().equals("4151")) {
-								if (modelID.equals("lumi.sensor_motion.aq2")) {
-									handleMotionSensor(message, zigbeeDevice, messageObject);
-								} else if (modelID.equals("lumi.sensor_wleak.aq1")) {
-									handleWaterSensor(message, zigbeeDevice, messageObject);
+								if (zigbeeDevice.getManufacturerID().equals("48042")) {
+									if (modelID.equals("Plug 01")) {
+										handlePowerSocket(message, zigbeeDevice, messageObject);
+									}
 								}
+							} else {
+								System.out.println("Device not found: " + device);
+								// we did not find the device so update the device list
+								updateDeviceList();
 							}
-
-							if (zigbeeDevice.getManufacturerID().equals("48042")) {
-								if (modelID.equals("Plug 01")) {
-									handlePowerSocket(message, zigbeeDevice, messageObject);
-								}
-							}
-						} else {
-							System.out.println("Device not found: " + device);
-							// we did not find the device so update the device list
-							updateDeviceList();
 						}
 					}
 				}
@@ -215,31 +220,41 @@ public class ZigbeeMQTTReceiver {
 			JsonNode findValues = messageObject.get("config").get("groups");
 			Iterator<JsonNode> iterator = findValues.iterator();
 
-			while(iterator.hasNext()) {
+			while (iterator.hasNext()) {
 				JsonNode jsonNode = iterator.next();
-				
-				ZigbeeDeviceGroup zigbeeDeviceGroup = new ZigbeeDeviceGroup();
 
-				String asText = jsonNode.toString();
-				System.out.println(1 + " " + asText);
 				String name = jsonNode.get("friendly_name").asText();
-				Iterator<JsonNode> elements = jsonNode.get("devices").elements();
-				
-				zigbeeDeviceGroup.setName(name);
-				
-				List<ZigBeeDevice> deviceList=new ArrayList<>();
-				
-				while(elements.hasNext()) {
-					JsonNode next = elements.next();
-					
-					String ieeeAddr=next.asText();
-					
-					deviceList.add(getZigbeeDevice(ieeeAddr));
+
+				List<ZigbeeDeviceGroup> resultList = em
+						.createQuery("select zg from ZigbeeDeviceGroup zg where zg.name=:name", ZigbeeDeviceGroup.class)
+						.setParameter("name", name).getResultList();
+
+				if (resultList == null || resultList.isEmpty()) {
+					ZigbeeDeviceGroup zigbeeDeviceGroup = new ZigbeeDeviceGroup();
+
+					String asText = jsonNode.toString();
+					System.out.println(1 + " " + asText);
+
+					Iterator<JsonNode> elements = jsonNode.get("devices").elements();
+
+					zigbeeDeviceGroup.setName(name);
+
+					List<ZigBeeDevice> deviceList = new ArrayList<>();
+
+					while (elements.hasNext()) {
+						JsonNode next = elements.next();
+
+						String ieeeAddr = next.asText();
+
+						ZigBeeDevice zigbeeDevice = getZigbeeDeviceByIeee(ieeeAddr);
+						System.out.println(zigbeeDevice.getFriendlyName());
+						deviceList.add(zigbeeDevice);
+					}
+
+					zigbeeDeviceGroup.setDevices(deviceList);
+
+					em.persist(zigbeeDeviceGroup);
 				}
-				
-				zigbeeDeviceGroup.setDevices(deviceList);
-				
-				em.persist(zigbeeDeviceGroup);
 			}
 
 		} catch (JsonMappingException e) {
@@ -795,6 +810,10 @@ public class ZigbeeMQTTReceiver {
 		return deviceMap.get(device);
 	}
 
+	private ZigBeeDevice getZigbeeDeviceByIeee(String ieeeAddress) {
+		return deviceIeeeMap.get(ieeeAddress);
+	}
+
 	@Scheduled(every = "120s")
 	public void initDeviceList() {
 		final
@@ -803,13 +822,16 @@ public class ZigbeeMQTTReceiver {
 				.getResultList();
 
 		Map<String, ZigBeeDevice> deviceMapTemp = new HashMap<>();
+		Map<String, ZigBeeDevice> deviceIeeeMapTemp = new HashMap<>();
 
 		for (ZigBeeDevice zigBeeDevice : devices) {
 
 			deviceMapTemp.put(zigBeeDevice.getFriendlyName(), zigBeeDevice);
+			deviceIeeeMapTemp.put(zigBeeDevice.getIeeeAddr(), zigBeeDevice);
 		}
 
 		deviceMap = deviceMapTemp;
+		deviceIeeeMap = deviceIeeeMapTemp;
 	}
 
 	private void handleDeviceMessage(String message) {
@@ -844,324 +866,168 @@ public class ZigbeeMQTTReceiver {
 
 	public static void main(String[] args) {
 		ZigbeeMQTTReceiver zigbeeMQTTReceiver = new ZigbeeMQTTReceiver();
-		String message = "{\r\n"
-				+ "	\"commit\": \"6b32f30\",\r\n"
-				+ "	\"config\": {\r\n"
-				+ "		\"advanced\": {\r\n"
-				+ "			\"adapter_concurrent\": null,\r\n"
-				+ "			\"availability_blacklist\": [],\r\n"
-				+ "			\"availability_blocklist\": [],\r\n"
-				+ "			\"availability_passlist\": [],\r\n"
-				+ "			\"availability_timeout\": 0,\r\n"
-				+ "			\"availability_whitelist\": [],\r\n"
-				+ "			\"cache_state\": true,\r\n"
+		String message = "{\r\n" + "	\"commit\": \"6b32f30\",\r\n" + "	\"config\": {\r\n"
+				+ "		\"advanced\": {\r\n" + "			\"adapter_concurrent\": null,\r\n"
+				+ "			\"availability_blacklist\": [],\r\n" + "			\"availability_blocklist\": [],\r\n"
+				+ "			\"availability_passlist\": [],\r\n" + "			\"availability_timeout\": 0,\r\n"
+				+ "			\"availability_whitelist\": [],\r\n" + "			\"cache_state\": true,\r\n"
 				+ "			\"cache_state_persistent\": true,\r\n"
-				+ "			\"cache_state_send_on_startup\": true,\r\n"
-				+ "			\"channel\": 11,\r\n"
-				+ "			\"elapsed\": false,\r\n"
-				+ "			\"ext_pan_id\": [\r\n"
-				+ "				221,\r\n"
-				+ "				221,\r\n"
-				+ "				221,\r\n"
-				+ "				221,\r\n"
-				+ "				221,\r\n"
-				+ "				221,\r\n"
-				+ "				221,\r\n"
-				+ "				221\r\n"
-				+ "			],\r\n"
+				+ "			\"cache_state_send_on_startup\": true,\r\n" + "			\"channel\": 11,\r\n"
+				+ "			\"elapsed\": false,\r\n" + "			\"ext_pan_id\": [\r\n" + "				221,\r\n"
+				+ "				221,\r\n" + "				221,\r\n" + "				221,\r\n"
+				+ "				221,\r\n" + "				221,\r\n" + "				221,\r\n"
+				+ "				221\r\n" + "			],\r\n"
 				+ "			\"homeassistant_discovery_topic\": \"homeassistant\",\r\n"
 				+ "			\"homeassistant_legacy_triggers\": true,\r\n"
 				+ "			\"homeassistant_status_topic\": \"hass/status\",\r\n"
-				+ "			\"last_seen\": \"ISO_8601\",\r\n"
-				+ "			\"legacy_api\": true,\r\n"
+				+ "			\"last_seen\": \"ISO_8601\",\r\n" + "			\"legacy_api\": true,\r\n"
 				+ "			\"log_directory\": \"/app/data/log/%TIMESTAMP%\",\r\n"
-				+ "			\"log_file\": \"log.txt\",\r\n"
-				+ "			\"log_level\": \"info\",\r\n"
-				+ "			\"log_output\": [\r\n"
-				+ "				\"console\",\r\n"
-				+ "				\"file\"\r\n"
-				+ "			],\r\n"
-				+ "			\"log_rotation\": true,\r\n"
-				+ "			\"log_syslog\": {\r\n"
-				+ "				\r\n"
-				+ "			},\r\n"
-				+ "			\"pan_id\": 6754,\r\n"
-				+ "			\"report\": false,\r\n"
-				+ "			\"soft_reset_timeout\": 0,\r\n"
-				+ "			\"timestamp_format\": \"YYYY-MM-DD HH:mm:ss\"\r\n"
-				+ "		},\r\n"
-				+ "		\"ban\": [],\r\n"
-				+ "		\"blocklist\": [],\r\n"
-				+ "		\"device_options\": {\r\n"
-				+ "			\r\n"
-				+ "		},\r\n"
-				+ "		\"devices\": {\r\n"
+				+ "			\"log_file\": \"log.txt\",\r\n" + "			\"log_level\": \"info\",\r\n"
+				+ "			\"log_output\": [\r\n" + "				\"console\",\r\n" + "				\"file\"\r\n"
+				+ "			],\r\n" + "			\"log_rotation\": true,\r\n" + "			\"log_syslog\": {\r\n"
+				+ "				\r\n" + "			},\r\n" + "			\"pan_id\": 6754,\r\n"
+				+ "			\"report\": false,\r\n" + "			\"soft_reset_timeout\": 0,\r\n"
+				+ "			\"timestamp_format\": \"YYYY-MM-DD HH:mm:ss\"\r\n" + "		},\r\n"
+				+ "		\"ban\": [],\r\n" + "		\"blocklist\": [],\r\n" + "		\"device_options\": {\r\n"
+				+ "			\r\n" + "		},\r\n" + "		\"devices\": {\r\n"
 				+ "			\"0x000b57fffe521310\": {\r\n"
-				+ "				\"friendly_name\": \"Fernbedienung Arbeitszimmer\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"Fernbedienung Arbeitszimmer\"\r\n" + "			},\r\n"
 				+ "			\"0x000b57fffe8a45d1\": {\r\n"
-				+ "				\"friendly_name\": \"Stehlampe Lennard 3\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000b57fffe8b8be8\": {\r\n"
-				+ "				\"friendly_name\": \"SD2\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000b57fffe8cd8b9\": {\r\n"
-				+ "				\"friendly_name\": \"Stehlampe Lennard 2\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000b57fffe8cf5ac\": {\r\n"
-				+ "				\"friendly_name\": \"Ballon Lea\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000b57fffe8e13f3\": {\r\n"
-				+ "				\"friendly_name\": \"Bad 2\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"Stehlampe Lennard 3\"\r\n" + "			},\r\n"
+				+ "			\"0x000b57fffe8b8be8\": {\r\n" + "				\"friendly_name\": \"SD2\"\r\n"
+				+ "			},\r\n" + "			\"0x000b57fffe8cd8b9\": {\r\n"
+				+ "				\"friendly_name\": \"Stehlampe Lennard 2\"\r\n" + "			},\r\n"
+				+ "			\"0x000b57fffe8cf5ac\": {\r\n" + "				\"friendly_name\": \"Ballon Lea\"\r\n"
+				+ "			},\r\n" + "			\"0x000b57fffe8e13f3\": {\r\n"
+				+ "				\"friendly_name\": \"Bad 2\"\r\n" + "			},\r\n"
 				+ "			\"0x000b57fffe9655b4\": {\r\n"
-				+ "				\"friendly_name\": \"Stehlampe Lennard 1\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"Stehlampe Lennard 1\"\r\n" + "			},\r\n"
 				+ "			\"0x000b57fffe9700d6\": {\r\n"
-				+ "				\"friendly_name\": \"Bewegungsmelder Flur EG\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000b57fffe9a3df6\": {\r\n"
-				+ "				\"friendly_name\": \"Schreibtisch\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000b57fffe9d2e5d\": {\r\n"
-				+ "				\"friendly_name\": \"Bad 1\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"Bewegungsmelder Flur EG\"\r\n" + "			},\r\n"
+				+ "			\"0x000b57fffe9a3df6\": {\r\n" + "				\"friendly_name\": \"Schreibtisch\"\r\n"
+				+ "			},\r\n" + "			\"0x000b57fffe9d2e5d\": {\r\n"
+				+ "				\"friendly_name\": \"Bad 1\"\r\n" + "			},\r\n"
 				+ "			\"0x000b57fffe9defc5\": {\r\n"
-				+ "				\"friendly_name\": \"Fernbedienung Lennard\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000b57fffe9f3e75\": {\r\n"
-				+ "				\"friendly_name\": \"Haus Lennard\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000b57fffea4c8e9\": {\r\n"
-				+ "				\"friendly_name\": \"SD1\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"Fernbedienung Lennard\"\r\n" + "			},\r\n"
+				+ "			\"0x000b57fffe9f3e75\": {\r\n" + "				\"friendly_name\": \"Haus Lennard\"\r\n"
+				+ "			},\r\n" + "			\"0x000b57fffea4c8e9\": {\r\n"
+				+ "				\"friendly_name\": \"SD1\"\r\n" + "			},\r\n"
 				+ "			\"0x000b57fffea7f927\": {\r\n"
-				+ "				\"friendly_name\": \"Deckenleuchte Lennard\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"Deckenleuchte Lennard\"\r\n" + "			},\r\n"
 				+ "			\"0x000b57fffeb283c9\": {\r\n"
-				+ "				\"friendly_name\": \"Deckenleuchte Arbeitszimmer\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000b57fffebee945\": {\r\n"
-				+ "				\"friendly_name\": \"SD4\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000b57fffebeee14\": {\r\n"
-				+ "				\"friendly_name\": \"SD3\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"Deckenleuchte Arbeitszimmer\"\r\n" + "			},\r\n"
+				+ "			\"0x000b57fffebee945\": {\r\n" + "				\"friendly_name\": \"SD4\"\r\n"
+				+ "			},\r\n" + "			\"0x000b57fffebeee14\": {\r\n"
+				+ "				\"friendly_name\": \"SD3\"\r\n" + "			},\r\n"
 				+ "			\"0x000b57fffedbe667\": {\r\n"
-				+ "				\"friendly_name\": \"Fernbedienung Schlafzimmer\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000b57fffee2cb16\": {\r\n"
-				+ "				\"friendly_name\": \"Bad 6\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000b57fffeebd704\": {\r\n"
-				+ "				\"friendly_name\": \"Bad 5\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000b57fffeec640e\": {\r\n"
-				+ "				\"friendly_name\": \"Bad 3\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000b57fffeec6a8b\": {\r\n"
-				+ "				\"friendly_name\": \"Bad 4\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"Fernbedienung Schlafzimmer\"\r\n" + "			},\r\n"
+				+ "			\"0x000b57fffee2cb16\": {\r\n" + "				\"friendly_name\": \"Bad 6\"\r\n"
+				+ "			},\r\n" + "			\"0x000b57fffeebd704\": {\r\n"
+				+ "				\"friendly_name\": \"Bad 5\"\r\n" + "			},\r\n"
+				+ "			\"0x000b57fffeec640e\": {\r\n" + "				\"friendly_name\": \"Bad 3\"\r\n"
+				+ "			},\r\n" + "			\"0x000b57fffeec6a8b\": {\r\n"
+				+ "				\"friendly_name\": \"Bad 4\"\r\n" + "			},\r\n"
 				+ "			\"0x000d6ffffe1bc5b2\": {\r\n"
-				+ "				\"friendly_name\": \"Fernbedienung Wohnzimmer\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"Fernbedienung Wohnzimmer\"\r\n" + "			},\r\n"
 				+ "			\"0x000d6ffffe2ad5cd\": {\r\n"
-				+ "				\"friendly_name\": \"RGB Arbeitszimmer Steckdose\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000d6ffffe2ade65\": {\r\n"
-				+ "				\"friendly_name\": \"Beamer\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000d6ffffe9a9f95\": {\r\n"
-				+ "				\"friendly_name\": \"Lautsprecher\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"RGB Arbeitszimmer Steckdose\"\r\n" + "			},\r\n"
+				+ "			\"0x000d6ffffe2ade65\": {\r\n" + "				\"friendly_name\": \"Beamer\"\r\n"
+				+ "			},\r\n" + "			\"0x000d6ffffe9a9f95\": {\r\n"
+				+ "				\"friendly_name\": \"Lautsprecher\"\r\n" + "			},\r\n"
 				+ "			\"0x000d6ffffe9aa4f1\": {\r\n"
-				+ "				\"friendly_name\": \"Fernseher Lennard\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000d6ffffe9c22b6\": {\r\n"
-				+ "				\"friendly_name\": \"Spiegel\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000d6ffffe9c601e\": {\r\n"
-				+ "				\"friendly_name\": \"Drucker\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000d6ffffe9f3582\": {\r\n"
-				+ "				\"friendly_name\": \"PS4\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000d6ffffea03c07\": {\r\n"
-				+ "				\"friendly_name\": \"Repeater EG\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000d6ffffea5c76d\": {\r\n"
-				+ "				\"friendly_name\": \"Stehlampe\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x000d6ffffeb2c4d1\": {\r\n"
-				+ "				\"friendly_name\": \"FB Arbeitszimmer\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"Fernseher Lennard\"\r\n" + "			},\r\n"
+				+ "			\"0x000d6ffffe9c22b6\": {\r\n" + "				\"friendly_name\": \"Spiegel\"\r\n"
+				+ "			},\r\n" + "			\"0x000d6ffffe9c601e\": {\r\n"
+				+ "				\"friendly_name\": \"Drucker\"\r\n" + "			},\r\n"
+				+ "			\"0x000d6ffffe9f3582\": {\r\n" + "				\"friendly_name\": \"PS4\"\r\n"
+				+ "			},\r\n" + "			\"0x000d6ffffea03c07\": {\r\n"
+				+ "				\"friendly_name\": \"Repeater EG\"\r\n" + "			},\r\n"
+				+ "			\"0x000d6ffffea5c76d\": {\r\n" + "				\"friendly_name\": \"Stehlampe\"\r\n"
+				+ "			},\r\n" + "			\"0x000d6ffffeb2c4d1\": {\r\n"
+				+ "				\"friendly_name\": \"FB Arbeitszimmer\"\r\n" + "			},\r\n"
 				+ "			\"0x00158d00038c0f82\": {\r\n"
-				+ "				\"friendly_name\": \"0x00158d00038c0f82\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"0x00158d00038c0f82\"\r\n" + "			},\r\n"
 				+ "			\"0x00158d00038c0fe8\": {\r\n"
-				+ "				\"friendly_name\": \"Flur Keller links oben\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"Flur Keller links oben\"\r\n" + "			},\r\n"
 				+ "			\"0x00158d000451907f\": {\r\n"
-				+ "				\"friendly_name\": \"Bewegungsmelder Wohnzimmer\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x00158d00047ea551\": {\r\n"
-				+ "				\"friendly_name\": \"Wasser Küche\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x001788011025893c\": {\r\n"
-				+ "				\"friendly_name\": \"0x001788011025893c\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"Bewegungsmelder Wohnzimmer\"\r\n" + "			},\r\n"
+				+ "			\"0x00158d00047ea551\": {\r\n" + "				\"friendly_name\": \"Wasser Küche\"\r\n"
+				+ "			},\r\n" + "			\"0x001788011025893c\": {\r\n"
+				+ "				\"friendly_name\": \"0x001788011025893c\"\r\n" + "			},\r\n"
 				+ "			\"0x00178801105c2f4e\": {\r\n"
-				+ "				\"friendly_name\": \"Stehlampe Schlafzimmer\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"Stehlampe Schlafzimmer\"\r\n" + "			},\r\n"
 				+ "			\"0x14b457fffefaefc2\": {\r\n"
-				+ "				\"friendly_name\": \"0x14b457fffefaefc2\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"0x14b457fffefaefc2\"\r\n" + "			},\r\n"
 				+ "			\"0x14b457fffefaeffa\": {\r\n"
-				+ "				\"friendly_name\": \"0x14b457fffefaeffa\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"0x14b457fffefaeffa\"\r\n" + "			},\r\n"
 				+ "			\"0x588e81fffe6000eb\": {\r\n"
-				+ "				\"friendly_name\": \"0x588e81fffe6000eb\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"0x588e81fffe6000eb\"\r\n" + "			},\r\n"
 				+ "			\"0x588e81fffe6bc268\": {\r\n"
-				+ "				\"friendly_name\": \"0x588e81fffe6bc268\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"0x588e81fffe6bc268\"\r\n" + "			},\r\n"
 				+ "			\"0x588e81fffebcc097\": {\r\n"
-				+ "				\"friendly_name\": \"0x588e81fffebcc097\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"0x588e81fffebcc097\"\r\n" + "			},\r\n"
 				+ "			\"0x680ae2fffe32e4a6\": {\r\n"
-				+ "				\"friendly_name\": \"Bewegungsmelder Flur OG\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"Bewegungsmelder Flur OG\"\r\n" + "			},\r\n"
 				+ "			\"0x680ae2fffe3cf2e4\": {\r\n"
-				+ "				\"friendly_name\": \"Dimmer Treppenhaus\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"Dimmer Treppenhaus\"\r\n" + "			},\r\n"
 				+ "			\"0x680ae2fffe3f0573\": {\r\n"
-				+ "				\"friendly_name\": \"0x680ae2fffe3f0573\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"0x680ae2fffe3f0573\"\r\n" + "			},\r\n"
 				+ "			\"0x680ae2fffe6fd2d5\": {\r\n"
-				+ "				\"friendly_name\": \"Rollo Treppenhaus\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"Rollo Treppenhaus\"\r\n" + "			},\r\n"
 				+ "			\"0x680ae2fffef8187a\": {\r\n"
-				+ "				\"friendly_name\": \"Schreibtisch Mandy\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x7cb03eaa00b0b89e\": {\r\n"
-				+ "				\"friendly_name\": \"Plug 01\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0x7cb03eaa00b0cd53\": {\r\n"
-				+ "				\"friendly_name\": \"Plug 02\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0xd0cf5efffe159a45\": {\r\n"
-				+ "				\"friendly_name\": \"Couch 5\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0xd0cf5efffe162327\": {\r\n"
-				+ "				\"friendly_name\": \"Couch 4\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0xd0cf5efffe22aafe\": {\r\n"
-				+ "				\"friendly_name\": \"Couch 3\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0xd0cf5efffe2bcb0e\": {\r\n"
-				+ "				\"friendly_name\": \"Couch 2\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0xd0cf5efffe2d37fb\": {\r\n"
-				+ "				\"friendly_name\": \"Couch 1\"\r\n"
-				+ "			},\r\n"
-				+ "			\"0xec1bbdfffe85e485\": {\r\n"
-				+ "				\"friendly_name\": \"Arbeitsleuchte\"\r\n"
-				+ "			},\r\n"
+				+ "				\"friendly_name\": \"Schreibtisch Mandy\"\r\n" + "			},\r\n"
+				+ "			\"0x7cb03eaa00b0b89e\": {\r\n" + "				\"friendly_name\": \"Plug 01\"\r\n"
+				+ "			},\r\n" + "			\"0x7cb03eaa00b0cd53\": {\r\n"
+				+ "				\"friendly_name\": \"Plug 02\"\r\n" + "			},\r\n"
+				+ "			\"0xd0cf5efffe159a45\": {\r\n" + "				\"friendly_name\": \"Couch 5\"\r\n"
+				+ "			},\r\n" + "			\"0xd0cf5efffe162327\": {\r\n"
+				+ "				\"friendly_name\": \"Couch 4\"\r\n" + "			},\r\n"
+				+ "			\"0xd0cf5efffe22aafe\": {\r\n" + "				\"friendly_name\": \"Couch 3\"\r\n"
+				+ "			},\r\n" + "			\"0xd0cf5efffe2bcb0e\": {\r\n"
+				+ "				\"friendly_name\": \"Couch 2\"\r\n" + "			},\r\n"
+				+ "			\"0xd0cf5efffe2d37fb\": {\r\n" + "				\"friendly_name\": \"Couch 1\"\r\n"
+				+ "			},\r\n" + "			\"0xec1bbdfffe85e485\": {\r\n"
+				+ "				\"friendly_name\": \"Arbeitsleuchte\"\r\n" + "			},\r\n"
 				+ "			\"0xec1bbdfffea85228\": {\r\n"
-				+ "				\"friendly_name\": \"Bewegungsmelder Arbeitszimmer\"\r\n"
-				+ "			}\r\n"
-				+ "		},\r\n"
-				+ "		\"experimental\": {\r\n"
-				+ "			\"new_api\": true,\r\n"
-				+ "			\"output\": \"json\"\r\n"
-				+ "		},\r\n"
-				+ "		\"external_converters\": [],\r\n"
-				+ "		\"frontend\": {\r\n"
-				+ "			\"port\": 8080\r\n"
-				+ "		},\r\n"
-				+ "		\"groups\": {\r\n"
-				+ "			\"1\": {\r\n"
-				+ "				\"devices\": [\r\n"
-				+ "					\"0xd0cf5efffe2bcb0e\",\r\n"
-				+ "					\"0xd0cf5efffe159a45\",\r\n"
-				+ "					\"0xd0cf5efffe2d37fb\",\r\n"
-				+ "					\"0xd0cf5efffe22aafe\",\r\n"
-				+ "					\"0xd0cf5efffe162327\"\r\n"
-				+ "				],\r\n"
-				+ "				\"friendly_name\": \"Couchlampe\",\r\n"
-				+ "				\"optimistic\": true,\r\n"
-				+ "				\"retain\": false,\r\n"
-				+ "				\"transition\": 2\r\n"
-				+ "			},\r\n"
-				+ "			\"2\": {\r\n"
-				+ "				\"devices\": [\r\n"
-				+ "					\"0xd0cf5efffe2bcb0e\",\r\n"
-				+ "					\"0xd0cf5efffe159a45\",\r\n"
-				+ "					\"0xd0cf5efffe2d37fb\",\r\n"
-				+ "					\"0xd0cf5efffe22aafe\",\r\n"
-				+ "					\"0xd0cf5efffe162327\"\r\n"
-				+ "				],\r\n"
-				+ "				\"friendly_name\": \"Couchlampe2\",\r\n"
-				+ "				\"optimistic\": true,\r\n"
-				+ "				\"retain\": false,\r\n"
-				+ "				\"transition\": 2\r\n"
-				+ "			}\r\n"
-				+ "		},\r\n"
-				+ "		\"homeassistant\": true,\r\n"
-				+ "		\"map_options\": {\r\n"
-				+ "			\"graphviz\": {\r\n"
-				+ "				\"colors\": {\r\n"
-				+ "					\"fill\": {\r\n"
-				+ "						\"coordinator\": \"#e04e5d\",\r\n"
+				+ "				\"friendly_name\": \"Bewegungsmelder Arbeitszimmer\"\r\n" + "			}\r\n"
+				+ "		},\r\n" + "		\"experimental\": {\r\n" + "			\"new_api\": true,\r\n"
+				+ "			\"output\": \"json\"\r\n" + "		},\r\n" + "		\"external_converters\": [],\r\n"
+				+ "		\"frontend\": {\r\n" + "			\"port\": 8080\r\n" + "		},\r\n"
+				+ "		\"groups\": {\r\n" + "			\"1\": {\r\n" + "				\"devices\": [\r\n"
+				+ "					\"0xd0cf5efffe2bcb0e\",\r\n" + "					\"0xd0cf5efffe159a45\",\r\n"
+				+ "					\"0xd0cf5efffe2d37fb\",\r\n" + "					\"0xd0cf5efffe22aafe\",\r\n"
+				+ "					\"0xd0cf5efffe162327\"\r\n" + "				],\r\n"
+				+ "				\"friendly_name\": \"Couchlampe\",\r\n" + "				\"optimistic\": true,\r\n"
+				+ "				\"retain\": false,\r\n" + "				\"transition\": 2\r\n" + "			},\r\n"
+				+ "			\"2\": {\r\n" + "				\"devices\": [\r\n"
+				+ "					\"0xd0cf5efffe2bcb0e\",\r\n" + "					\"0xd0cf5efffe159a45\",\r\n"
+				+ "					\"0xd0cf5efffe2d37fb\",\r\n" + "					\"0xd0cf5efffe22aafe\",\r\n"
+				+ "					\"0xd0cf5efffe162327\"\r\n" + "				],\r\n"
+				+ "				\"friendly_name\": \"Couchlampe2\",\r\n" + "				\"optimistic\": true,\r\n"
+				+ "				\"retain\": false,\r\n" + "				\"transition\": 2\r\n" + "			}\r\n"
+				+ "		},\r\n" + "		\"homeassistant\": true,\r\n" + "		\"map_options\": {\r\n"
+				+ "			\"graphviz\": {\r\n" + "				\"colors\": {\r\n"
+				+ "					\"fill\": {\r\n" + "						\"coordinator\": \"#e04e5d\",\r\n"
 				+ "						\"enddevice\": \"#fff8ce\",\r\n"
-				+ "						\"router\": \"#4ea3e0\"\r\n"
-				+ "					},\r\n"
-				+ "					\"font\": {\r\n"
-				+ "						\"coordinator\": \"#ffffff\",\r\n"
+				+ "						\"router\": \"#4ea3e0\"\r\n" + "					},\r\n"
+				+ "					\"font\": {\r\n" + "						\"coordinator\": \"#ffffff\",\r\n"
 				+ "						\"enddevice\": \"#000000\",\r\n"
-				+ "						\"router\": \"#ffffff\"\r\n"
-				+ "					},\r\n"
-				+ "					\"line\": {\r\n"
-				+ "						\"active\": \"#009900\",\r\n"
-				+ "						\"inactive\": \"#994444\"\r\n"
-				+ "					}\r\n"
-				+ "				}\r\n"
-				+ "			}\r\n"
-				+ "		},\r\n"
-				+ "		\"mqtt\": {\r\n"
-				+ "			\"base_topic\": \"zigbee2mqtt\",\r\n"
-				+ "			\"discovery\": true,\r\n"
-				+ "			\"include_device_information\": false,\r\n"
-				+ "			\"server\": \"mqtt://nas\"\r\n"
-				+ "		},\r\n"
-				+ "		\"passlist\": [],\r\n"
-				+ "		\"permit_join\": true,\r\n"
-				+ "		\"serial\": {\r\n"
-				+ "			\"disable_led\": false,\r\n"
-				+ "			\"port\": \"/dev/ttyACM0\"\r\n"
-				+ "		},\r\n"
-				+ "		\"whitelist\": []\r\n"
-				+ "	},\r\n"
-				+ "	\"coordinator\": {\r\n"
-				+ "		\"meta\": {\r\n"
-				+ "			\"maintrel\": 3,\r\n"
-				+ "			\"majorrel\": 2,\r\n"
-				+ "			\"minorrel\": 6,\r\n"
-				+ "			\"product\": 0,\r\n"
-				+ "			\"revision\": 20190608,\r\n"
-				+ "			\"transportrev\": 2\r\n"
-				+ "		},\r\n"
-				+ "		\"type\": \"zStack12\"\r\n"
-				+ "	},\r\n"
-				+ "	\"log_level\": \"info\",\r\n"
-				+ "	\"network\": {\r\n"
-				+ "		\"channel\": 11,\r\n"
-				+ "		\"extended_pan_id\": \"0xdddddddddddddddd\",\r\n"
-				+ "		\"pan_id\": 6754\r\n"
-				+ "	},\r\n"
-				+ "	\"permit_join\": true,\r\n"
-				+ "	\"version\": \"1.16.1\"\r\n"
-				+ "}";
+				+ "						\"router\": \"#ffffff\"\r\n" + "					},\r\n"
+				+ "					\"line\": {\r\n" + "						\"active\": \"#009900\",\r\n"
+				+ "						\"inactive\": \"#994444\"\r\n" + "					}\r\n"
+				+ "				}\r\n" + "			}\r\n" + "		},\r\n" + "		\"mqtt\": {\r\n"
+				+ "			\"base_topic\": \"zigbee2mqtt\",\r\n" + "			\"discovery\": true,\r\n"
+				+ "			\"include_device_information\": false,\r\n" + "			\"server\": \"mqtt://nas\"\r\n"
+				+ "		},\r\n" + "		\"passlist\": [],\r\n" + "		\"permit_join\": true,\r\n"
+				+ "		\"serial\": {\r\n" + "			\"disable_led\": false,\r\n"
+				+ "			\"port\": \"/dev/ttyACM0\"\r\n" + "		},\r\n" + "		\"whitelist\": []\r\n" + "	},\r\n"
+				+ "	\"coordinator\": {\r\n" + "		\"meta\": {\r\n" + "			\"maintrel\": 3,\r\n"
+				+ "			\"majorrel\": 2,\r\n" + "			\"minorrel\": 6,\r\n" + "			\"product\": 0,\r\n"
+				+ "			\"revision\": 20190608,\r\n" + "			\"transportrev\": 2\r\n" + "		},\r\n"
+				+ "		\"type\": \"zStack12\"\r\n" + "	},\r\n" + "	\"log_level\": \"info\",\r\n"
+				+ "	\"network\": {\r\n" + "		\"channel\": 11,\r\n"
+				+ "		\"extended_pan_id\": \"0xdddddddddddddddd\",\r\n" + "		\"pan_id\": 6754\r\n" + "	},\r\n"
+				+ "	\"permit_join\": true,\r\n" + "	\"version\": \"1.16.1\"\r\n" + "}";
 		zigbeeMQTTReceiver.handleBridgeInfo(message);
 	}
 }
