@@ -14,8 +14,12 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 public class WindowState {
 
 	@Id
@@ -27,7 +31,6 @@ public class WindowState {
 	@JsonBackReference("window")
 	@ManyToOne
 	@JoinColumn(name = "WINDOW_ID")
-	
 	private Window window;
 
 	private Date timestamp;
@@ -35,43 +38,4 @@ public class WindowState {
 	private String mac;
 	private String externalId;
 
-	public Long getId() {
-		return id;
-	}
-
-	public String getMac() {
-		return mac;
-	}
-
-	public int getState() {
-		return state;
-	}
-
-	public Date getTimestamp() {
-		return timestamp;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public void setMac(String mac) {
-		this.mac = mac;
-	}
-
-	public void setState(int state) {
-		this.state = state;
-	}
-
-	public void setTimestamp(Date timestamp) {
-		this.timestamp = timestamp;
-	}
-
-	public Window getWindow() {
-		return window;
-	}
-
-	public void setWindow(Window window) {
-		this.window = window;
-	}
 }
