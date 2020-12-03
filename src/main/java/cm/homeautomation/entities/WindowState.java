@@ -33,6 +33,7 @@ public class WindowState {
 	private Date timestamp;
 	private int state;
 	private String mac;
+	private String externalId;
 
 	public Long getId() {
 		return id;
