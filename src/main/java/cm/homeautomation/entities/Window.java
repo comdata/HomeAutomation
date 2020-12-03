@@ -15,9 +15,15 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import lombok.Getter;
+
+import lombok.Setter;
+
 
 @Entity
 @Table(name = "WINDOWS")
+@Getter
+@Setter
 public class Window {
 
 	@Id
@@ -43,40 +49,6 @@ public class Window {
 	@Column(nullable = true)
 	private String mac;
 
-	public Long getId() {
-		return id;
-	}
-
-	public String getMac() {
-		return mac;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public Room getRoom() {
-		return room;
-	}
-
-	public Sensor getStateSensor() {
-		return stateSensor;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setRoom(Room room) {
-		this.room = room;
-	}
-
-	public void setStateSensor(Sensor stateSensor) {
-		this.stateSensor = stateSensor;
-	}
-
+	private String externalId;
+	
 }
