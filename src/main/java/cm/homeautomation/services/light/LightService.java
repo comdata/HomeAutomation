@@ -270,7 +270,6 @@ public class LightService extends BaseService {
 
 	@GET
 	@Path("color/{lightId}/{hex}")
-
 	public GenericStatus setColor(@PathParam(LIGHT_ID) final long lightId, @PathParam("hex") final String hex) {
 		final String shortHex = hex.substring(1);
 
@@ -279,7 +278,7 @@ public class LightService extends BaseService {
 		if (rgbLight != null) {
 			rgbLight.setColor(hex);
 
-			em.persist(rgbLight);
+			em.merge(rgbLight);
 
 			if (MQTT.equals(rgbLight.getLightType()) || ZIGBEE.equals(rgbLight.getLightType())) {
 				if (rgbLight.getMqttColorMessage() != null && rgbLight.getMqttColorTopic() != null) {
