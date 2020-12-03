@@ -192,8 +192,7 @@ public class ZigbeeMQTTReceiver {
 									} else if (modelID.equals("lumi.sensor_magnet.aq2")) {
 										handleContactSensor(message, zigbeeDevice, messageObject);
 									}
-									
-									
+
 								}
 
 								if (zigbeeDevice.getManufacturerID().equals("48042")) {
@@ -392,7 +391,7 @@ public class ZigbeeMQTTReceiver {
 		}
 
 	}
-	
+
 	private void handleContactSensor(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
 
 		JsonNode contactNode = messageObject.get("contact");
@@ -414,10 +413,9 @@ public class ZigbeeMQTTReceiver {
 
 			em.merge(existingSensor);
 
-			if (!contactNodeBoolean) {
-				WindowContactEvent windowContactEvent = WindowContactEvent.builder().device(zigbeeDevice.getFriendlyName()).build();
-				bus.publish("WindowContactEvent", windowContactEvent);
-			}
+			WindowContactEvent windowContactEvent = WindowContactEvent.builder().device(zigbeeDevice.getFriendlyName())
+					.id(zigbeeDevice.getIeeeAddr()).contact(contactNodeBoolean).build();
+			bus.publish("WindowContactEvent", windowContactEvent);
 		}
 
 	}

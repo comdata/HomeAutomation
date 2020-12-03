@@ -11,6 +11,10 @@ import lombok.Setter;
 public class WindowContactEvent implements HumanMessageGenerationInterface {
 
 	String device;
+	String id;
+	
+	// true=closed, false=open
+	boolean contact;
 
 	@Override
 	public String getTitle() {

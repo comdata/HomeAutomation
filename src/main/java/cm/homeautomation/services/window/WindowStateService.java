@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
@@ -25,8 +26,13 @@ import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
+import cm.homeautomation.zigbee.WindowContactEvent;
+import io.quarkus.runtime.Startup;
+import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
+@Startup
+@ApplicationScoped
 @Path("window")
 @Transactional(value = TxType.REQUIRES_NEW)
 public class WindowStateService extends BaseService {
@@ -94,7 +100,7 @@ public class WindowStateService extends BaseService {
 
 	@GET
 	@Path("setState/{windowId}/{state}")
-	
+
 	public GenericStatus handleWindowState(@PathParam("windowId") Long windowId, @PathParam("state") String state) {
 
 		synchronized (this) {
@@ -182,7 +188,6 @@ public class WindowStateService extends BaseService {
 		return sensorDataSaveRequest;
 	}
 
-	
 	private void addNewSensorToWindowIfMissing(final EntityManager em, final Window window) {
 
 		final Sensor stateSensor = new Sensor();
@@ -193,6 +198,21 @@ public class WindowStateService extends BaseService {
 		em.persist(stateSensor);
 		em.merge(window);
 
+	}
+
+	@ConsumeEvent(value = "WindowContactEvent", blocking = true)
+	public void consume(WindowContactEvent windowContactEvent) {
+
+		String externalId = windowContactEvent.getId();
+
+		final List<Window> resultList = em.createQuery("select w from Window w where w.externalId=:id", Window.class)
+				.setParameter("externalId", externalId).getResultList();
+
+		if (resultList != null && !resultList.isEmpty()) {
+			Window window = resultList.get(0);
+
+			handleWindowState(window.getId(), ((windowContactEvent.isContact()) ? "closed" : "opened"));
+		}
 	}
 
 }
