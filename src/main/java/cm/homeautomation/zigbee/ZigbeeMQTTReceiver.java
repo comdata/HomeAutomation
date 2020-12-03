@@ -414,9 +414,9 @@ public class ZigbeeMQTTReceiver {
 
 			em.merge(existingSensor);
 
-			if (contactNodeBoolean) {
-				WindowContactEvent waterLeakEvent = WindowContactEvent.builder().device(zigbeeDevice.getFriendlyName()).build();
-				bus.publish("WindowContactEvent", waterLeakEvent);
+			if (!contactNodeBoolean) {
+				WindowContactEvent windowContactEvent = WindowContactEvent.builder().device(zigbeeDevice.getFriendlyName()).build();
+				bus.publish("WindowContactEvent", windowContactEvent);
 			}
 		}
 

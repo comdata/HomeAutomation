@@ -52,7 +52,9 @@ public class SchedulerService extends BaseService {
 	void onStart(@Observes StartupEvent event) {
 		try {
 			initialize();
+			System.out.println("Scheduler initialized");
 		} catch (SchedulerException e) {
+			e.printStackTrace();
 			LogManager.getLogger(this.getClass()).error(e);
 		}
 	}
