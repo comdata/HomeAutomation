@@ -34,6 +34,7 @@ import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.entities.WindowBlind;
 import cm.homeautomation.entities.ZigBeeDevice;
+import cm.homeautomation.entities.ZigbeeContactSensor;
 import cm.homeautomation.entities.ZigbeeDeviceGroup;
 import cm.homeautomation.entities.ZigbeeLight;
 import cm.homeautomation.entities.ZigbeeMotionSensor;
@@ -188,7 +189,11 @@ public class ZigbeeMQTTReceiver {
 										handleMotionSensor(message, zigbeeDevice, messageObject);
 									} else if (modelID.equals("lumi.sensor_wleak.aq1")) {
 										handleWaterSensor(message, zigbeeDevice, messageObject);
+									} else if (modelID.equals("lumi.sensor_magnet.aq2")) {
+										handleContactSensor(message, zigbeeDevice, messageObject);
 									}
+									
+									
 								}
 
 								if (zigbeeDevice.getManufacturerID().equals("48042")) {
@@ -383,6 +388,35 @@ public class ZigbeeMQTTReceiver {
 			if (leakNodeBoolean) {
 				WaterLeakEvent waterLeakEvent = WaterLeakEvent.builder().device(zigbeeDevice.getFriendlyName()).build();
 				bus.publish("WaterLeakEvent", waterLeakEvent);
+			}
+		}
+
+	}
+	
+	private void handleContactSensor(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
+
+		JsonNode contactNode = messageObject.get("contact");
+
+		if (contactNode != null) {
+
+			boolean contactNodeBoolean = contactNode.asBoolean();
+
+			String ieeeAddr = zigbeeDevice.getIeeeAddr();
+			ZigbeeContactSensor existingSensor = em.find(ZigbeeContactSensor.class, ieeeAddr);
+
+			if (existingSensor == null) {
+				existingSensor = new ZigbeeContactSensor(zigbeeDevice.getIeeeAddr(), contactNodeBoolean);
+
+				em.persist(existingSensor);
+			}
+
+			existingSensor.setContact(contactNodeBoolean);
+
+			em.merge(existingSensor);
+
+			if (contactNodeBoolean) {
+				WindowContactEvent waterLeakEvent = WindowContactEvent.builder().device(zigbeeDevice.getFriendlyName()).build();
+				bus.publish("WindowContactEvent", waterLeakEvent);
 			}
 		}
 
