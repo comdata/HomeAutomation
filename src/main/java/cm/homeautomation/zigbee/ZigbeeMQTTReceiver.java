@@ -184,6 +184,17 @@ public class ZigbeeMQTTReceiver {
 									}
 								}
 
+								if (zigbeeDevice.getManufacturerID().equals("4619")) {
+									if (modelID.equals("TY0202")) {
+										handleMotionSensor(message, zigbeeDevice, messageObject);
+									}
+								}
+								if (zigbeeDevice.getManufacturerID().equals("4098")) {
+									if (modelID.startsWith("TS011F")) {
+										handlePowerSocket(message, zigbeeDevice, messageObject);
+									}
+								}
+								
 								if (zigbeeDevice.getManufacturerID().equals("4151")) {
 									if (modelID.equals("lumi.sensor_motion.aq2")) {
 										handleMotionSensor(message, zigbeeDevice, messageObject);
