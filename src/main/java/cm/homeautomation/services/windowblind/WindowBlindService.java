@@ -49,10 +49,13 @@ public class WindowBlindService extends BaseService {
 	private Map<Long, List<WindowBlind>> windowBlindList;
 	private Map<Long, WindowBlind> windowBlindMap;
 
+	private static WindowBlindService instance;
+
 	private static final String DIMVALUE = "{DIMVALUE}";
 
 	void startup(@Observes StartupEvent event) {
 		initWindowBlindList();
+		instance=this;
 
 	}
 
@@ -68,7 +71,7 @@ public class WindowBlindService extends BaseService {
 	public static synchronized void cronPerformCalibration(String[] args) {
 		final String windowBlindId = args[0];
 
-		new WindowBlindService().performCalibration(Long.valueOf(windowBlindId));
+		instance.performCalibration(Long.valueOf(windowBlindId));
 	}
 
 	/**
@@ -80,7 +83,7 @@ public class WindowBlindService extends BaseService {
 		final String windowBlindId = args[0];
 		final String dimValue = args[1];
 
-		new WindowBlindService().setDim(Long.valueOf(windowBlindId), dimValue);
+		instance.setDim(Long.valueOf(windowBlindId), dimValue);
 	}
 
 	@GET
