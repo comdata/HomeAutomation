@@ -208,9 +208,12 @@ public class WindowStateService extends BaseService {
 	public void consume(WindowContactEvent windowContactEvent) {
 
 		String externalId = windowContactEvent.getId();
+		System.out.println(externalId);
 
-		final List<Window> resultList = em.createQuery("select w from Window w where w.externalId=:id", Window.class)
+		final List<Window> resultList = em.createQuery("select w from Window w where w.externalId=:externalId", Window.class)
 				.setParameter("externalId", externalId).getResultList();
+		
+		System.out.println(resultList.size());
 
 		if (resultList != null && !resultList.isEmpty()) {
 			Window window = resultList.get(0);
