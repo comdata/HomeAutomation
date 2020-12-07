@@ -25,6 +25,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.hibernate.Hibernate;
 
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.WriteApi;
@@ -552,7 +553,7 @@ public class Sensors extends BaseService {
 //                LogManager.getLogger(this.getClass()).debug("merging data");
 				existingSensorData.setValidThru(new Date());
 				em.merge(existingSensorData);
-				saveToInflux(existingSensorData);
+				saveToInflux(Hibernate.unproxy(existingSensorData, SensorData.class));
 //                LogManager.getLogger(this.getClass()).debug("Committing data: " + existingSensorData.getValue());
 			} else {
 				if ((existingSensorData != null) && (requestSensorData.getDateTime() != null)) {
@@ -564,7 +565,7 @@ public class Sensors extends BaseService {
 				sensorData = requestSensorData;
 				sensorData.setSensor(sensor);
 				em.persist(sensorData);
-				saveToInflux(sensorData);
+				saveToInflux(Hibernate.unproxy(sensorData, SensorData.class));
 				sensorDataMap.put(sensorId, sensorData);
 
 				bus.publish("EventObject", new EventObject(sensorData));
@@ -587,6 +588,8 @@ public class Sensors extends BaseService {
 				influxSensorData.roomId = sensorData.getSensor().getRoom().getId();
 			}
 
+			System.out.println("influx date time: "+sensorData.getDateTime());
+			
 			influxSensorData.value = sensorData.getValue();
 			influxSensorData.sensorName = sensorData.getSensor().getSensorName();
 			influxSensorData.sensorId = sensorData.getSensor().getId();
