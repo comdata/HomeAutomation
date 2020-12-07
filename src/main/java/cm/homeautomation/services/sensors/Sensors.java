@@ -54,7 +54,7 @@ import io.vertx.core.eventbus.EventBus;
 @Startup
 @ApplicationScoped
 @Path("sensors")
-@Transactional(value = TxType.REQUIRES_NEW)
+@Transactional(value = TxType.MANDATORY )
 public class Sensors extends BaseService {
 
 	@Inject
@@ -553,7 +553,7 @@ public class Sensors extends BaseService {
 //                LogManager.getLogger(this.getClass()).debug("merging data");
 				existingSensorData.setValidThru(new Date());
 				em.merge(existingSensorData);
-				saveToInflux(Hibernate.unproxy(existingSensorData, SensorData.class));
+				saveToInflux(existingSensorData);
 //                LogManager.getLogger(this.getClass()).debug("Committing data: " + existingSensorData.getValue());
 			} else {
 				if ((existingSensorData != null) && (requestSensorData.getDateTime() != null)) {
@@ -565,7 +565,7 @@ public class Sensors extends BaseService {
 				sensorData = requestSensorData;
 				sensorData.setSensor(sensor);
 				em.persist(sensorData);
-				saveToInflux(Hibernate.unproxy(sensorData, SensorData.class));
+				saveToInflux(sensorData);
 				sensorDataMap.put(sensorId, sensorData);
 
 				bus.publish("EventObject", new EventObject(sensorData));
@@ -577,10 +577,12 @@ public class Sensors extends BaseService {
 
 	}
 
-	public void saveToInflux(SensorData sensorData) {
+	public void saveToInflux(SensorData inSensorData) {
 
 		try (WriteApi writeApi = influxDBClient.getWriteApi()) {
 
+			SensorData sensorData = Hibernate.unproxy(inSensorData, SensorData.class);
+			
 			InfluxSensorData influxSensorData = new InfluxSensorData();
 
 			if (sensorData.getSensor() != null && sensorData.getSensor().getRoom() != null) {
@@ -593,10 +595,10 @@ public class Sensors extends BaseService {
 			influxSensorData.value = sensorData.getValue();
 			influxSensorData.sensorName = sensorData.getSensor().getSensorName();
 			influxSensorData.sensorId = sensorData.getSensor().getId();
-			influxSensorData.dateTime = sensorData.getDateTime().toInstant();
+			influxSensorData.dateTime = ((Date)sensorData.getDateTime().clone()).toInstant();
 
 			writeApi.writeMeasurement(WritePrecision.MS, influxSensorData);
-//			System.out.println("Wrote to influx");
+			System.out.println("Wrote to influx "+influxSensorData.sensorName+" "+influxSensorData.value);
 		}
 	}
 
