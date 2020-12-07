@@ -1,5 +1,7 @@
 package cm.homeautomation.entities;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -51,4 +53,6 @@ public class Window {
 
 	private String externalId;
 	
+	boolean opened;
+	Date lastChange;
 }

@@ -68,29 +68,29 @@ public class WindowStateService extends BaseService {
 
 	@GET
 	@Path("readAll")
-	public List<WindowStateData> get() {
+	public List<WindowStateData> readAll() {
 
 		final List<WindowStateData> windowStateList = new ArrayList<>();
 
-		final List<WindowState> results = em.createQuery(
-				"select ws from WindowState ws where ws.id in (select max(w.id) from WindowState w group by w.window) order by ws.timestamp desc",
-				WindowState.class).getResultList();
+		final List<Window> results = em.createQuery(
+				"select ws from Window ws",
+				Window.class).getResultList();
 
-		for (final WindowState windowState : results) {
+		for (final Window windowState : results) {
 			final String mac = windowState.getMac();
 
 			final WindowStateData windowStateData = new WindowStateData();
 
 			windowStateData.setMac(windowState.getMac());
-			windowStateData.setState(windowState.getState());
-			windowStateData.setWindow(windowState.getWindow());
+			windowStateData.setState((windowState.isOpened()?1:0));
+			windowStateData.setWindow(windowState);
 
-			windowStateData.setRoomName(windowState.getWindow().getRoom().getRoomName());
-			windowStateData.setWindowName(windowState.getWindow().getName());
+			windowStateData.setRoomName(windowState.getRoom().getRoomName());
+			windowStateData.setWindowName(windowState.getName());
 
-			windowStateData.setRoom(windowState.getWindow().getRoom());
+			windowStateData.setRoom(windowState.getRoom());
 			windowStateData.setDevice(deviceService.getDeviceForMac(mac));
-			windowStateData.setDate(windowState.getTimestamp());
+			windowStateData.setDate(windowState.getLastChange());
 
 			windowStateList.add(windowStateData);
 		}
@@ -120,9 +120,13 @@ public class WindowStateService extends BaseService {
 
 				state = getSanitizedState(state);
 
+				window.setOpened("open".equals(state));
+				window.setLastChange(new Date());
+				em.merge(window);
+				
 				saveWindowStateSensor(windowId, state, window);
 
-				final WindowState windowState = createWIndowState(state, em, window);
+				final WindowState windowState = createWindowState(state, em, window);
 
 				sendWindowStateEvent(window, windowState);
 
@@ -166,7 +170,7 @@ public class WindowStateService extends BaseService {
 		bus.publish("EventObject", intervalEventObject);
 	}
 
-	private WindowState createWIndowState(String state, final EntityManager em, final Window window) {
+	private WindowState createWindowState(String state, final EntityManager em, final Window window) {
 		final WindowState windowState = new WindowState();
 
 		windowState.setWindow(window);
