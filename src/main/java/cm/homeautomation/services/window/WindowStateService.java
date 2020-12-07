@@ -214,6 +214,8 @@ public class WindowStateService extends BaseService {
 
 		if (resultList != null && !resultList.isEmpty()) {
 			Window window = resultList.get(0);
+			
+			System.out.println(window.getName());
 
 			handleWindowState(window.getId(), ((windowContactEvent.isContact()) ? "closed" : "opened"));
 		}

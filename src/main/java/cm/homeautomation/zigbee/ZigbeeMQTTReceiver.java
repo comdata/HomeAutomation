@@ -150,7 +150,11 @@ public class ZigbeeMQTTReceiver {
 
 								saveUpdateAvailableInformation(zigbeeDevice, messageObject);
 
-								if (zigbeeDevice.getManufacturerID().equals("4476")) {
+								System.out.println("post save update");
+								String manufacturerID = zigbeeDevice.getManufacturerID();
+								System.out.println("manufacturer: " + manufacturerID + " modelid: " + modelID);
+
+								if (manufacturerID.equals("4476")) {
 
 									if (modelID.equals("TRADFRI remote control")) {
 										handleTradfriRemoteControl(message, zigbeeDevice, messageObject);
@@ -178,35 +182,36 @@ public class ZigbeeMQTTReceiver {
 
 								}
 
-								if (zigbeeDevice.getManufacturerID().equals("4416")) {
+								if (manufacturerID.equals("4416")) {
 									if (modelID.equals("LWB006")) {
 										handleTradfriLight(message, zigbeeDevice, messageObject, false);
 									}
 								}
 
-								if (zigbeeDevice.getManufacturerID().equals("4619")) {
+								if (manufacturerID.equals("4619")) {
 									if (modelID.equals("TY0202")) {
 										handleMotionSensor(message, zigbeeDevice, messageObject);
 									}
 								}
-								if (zigbeeDevice.getManufacturerID().equals("4098")) {
+								if (manufacturerID.equals("4098")) {
 									if (modelID.startsWith("TS011F")) {
 										handlePowerSocket(message, zigbeeDevice, messageObject);
 									}
 								}
-								
-								if (zigbeeDevice.getManufacturerID().equals("4151")) {
+
+								if (manufacturerID.equals("4151")) {
 									if (modelID.equals("lumi.sensor_motion.aq2")) {
 										handleMotionSensor(message, zigbeeDevice, messageObject);
 									} else if (modelID.equals("lumi.sensor_wleak.aq1")) {
 										handleWaterSensor(message, zigbeeDevice, messageObject);
 									} else if (modelID.equals("lumi.sensor_magnet.aq2")) {
+										System.out.println("contact sensor");
 										handleContactSensor(message, zigbeeDevice, messageObject);
 									}
 
 								}
 
-								if (zigbeeDevice.getManufacturerID().equals("48042")) {
+								if (manufacturerID.equals("48042")) {
 									if (modelID.equals("Plug 01")) {
 										handlePowerSocket(message, zigbeeDevice, messageObject);
 									}
@@ -405,6 +410,8 @@ public class ZigbeeMQTTReceiver {
 
 	private void handleContactSensor(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
 
+		System.out.println("contact sensor start");
+
 		JsonNode contactNode = messageObject.get("contact");
 
 		if (contactNode != null) {
@@ -428,7 +435,7 @@ public class ZigbeeMQTTReceiver {
 					.id(zigbeeDevice.getIeeeAddr()).contact(contactNodeBoolean).build();
 			bus.publish("WindowContactEvent", windowContactEvent);
 		}
-
+		System.out.println("contact sensor end");
 	}
 
 	private void recordBatteryLevelForDevice(ZigBeeDevice zigbeeDevice, int batteryLevel) {
@@ -461,14 +468,11 @@ public class ZigbeeMQTTReceiver {
 			sensorData.setValue(Integer.toString(batteryLevel));
 			sensorData.setDateTime(new Date());
 			saveRequest.setSensorData(sensorData);
-			try {
-				System.out.println("battery level - before save");
-				sensors.saveSensorData(saveRequest);
-				System.out.println("battery level - after save");
-			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException e) {
-				e.printStackTrace();
-				LogManager.getLogger(this.getClass()).error(e);
-			}
+
+			System.out.println("battery level - before save");
+			// sensors.saveSensorData(saveRequest);
+			bus.publish("SensorDataSaveRequest", saveRequest);
+			System.out.println("battery level - after save");
 
 		}
 
@@ -504,11 +508,8 @@ public class ZigbeeMQTTReceiver {
 			sensorData.setValue(Integer.toString(linkQuality));
 			sensorData.setDateTime(new Date());
 			saveRequest.setSensorData(sensorData);
-			try {
-				sensorsService.saveSensorData(saveRequest);
-			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException e) {
-				LogManager.getLogger(this.getClass()).error(e);
-			}
+			bus.publish("SensorDataSaveRequest", saveRequest);
+			
 
 		}
 
