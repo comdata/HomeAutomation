@@ -264,7 +264,7 @@ public class ZigbeeMQTTReceiver {
 					while (elements.hasNext()) {
 						JsonNode next = elements.next();
 
-						String ieeeAddr = next.asText();
+						String ieeeAddr = next.asText().split("/")[0];
 
 						ZigBeeDevice zigbeeDevice = getZigbeeDeviceByIeee(ieeeAddr);
 						System.out.println(zigbeeDevice.getFriendlyName());
