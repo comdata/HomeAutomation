@@ -3,7 +3,9 @@ package cm.homeautomation.dashbutton;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -16,6 +18,7 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import org.dhcp4java.DHCPPacket;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.context.ManagedExecutor;
 
 import cm.homeautomation.entities.DashButtonRange;
@@ -38,6 +41,9 @@ public class DashButtonService {
 
 	@Inject
 	ManagedExecutor executor;
+	
+	@ConfigProperty(name = "dash.listen.ip")
+	String listenIp;
 
 	void startup(@Observes StartupEvent event) {
 
@@ -50,7 +56,7 @@ public class DashButtonService {
 			final int listenPort = 67;
 			final int MAX_BUFFER_SIZE = 1000;
 
-			try (DatagramSocket socket = new DatagramSocket(listenPort);) {
+			try (DatagramSocket socket = new DatagramSocket(listenPort, InetAddress.getByName(listenIp));) {
 //				LogManager.getLogger(this.getClass()).debug("start listening");
 				System.out.println("Start listening.");
 				final byte[] payload = new byte[MAX_BUFFER_SIZE];
@@ -66,6 +72,9 @@ public class DashButtonService {
 			} catch (final SocketException e) {
 				e.printStackTrace();
 				// LogManager.getLogger(this.getClass()).error("socket exeception", e);
+			} catch (UnknownHostException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 		};
 
