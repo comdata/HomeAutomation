@@ -111,6 +111,9 @@ public class CameraService extends BaseService {
 		
 		List<Camera> resultList = em.createQuery("select c from Camera c where c.id=:id", Camera.class)
 				.setParameter("id", Long.parseLong(args[0])).getResultList();
+		
+		try {
+		
 		if (resultList != null && !resultList.isEmpty()) {
 
 			for (Camera camera : resultList) {
@@ -120,6 +123,9 @@ public class CameraService extends BaseService {
 			}
 		}
 		cleanOldImages();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@SuppressWarnings("unused")
