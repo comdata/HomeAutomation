@@ -16,8 +16,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
-        <quarkus.platform.version>1.9.2.Final</quarkus.platform.version>
-        <quarkus-plugin.version>1.9.2.Final</quarkus-plugin.version> <!--${quarkus.platform.version} -->
+        <quarkus.platform.version>1.10.3.Final</quarkus.platform.version>
+        <quarkus-plugin.version>1.10.3.Final</quarkus-plugin.version> <!--${quarkus.platform.version} -->
         <ratelimitj-inmemory.version>0.7.0-RC1</ratelimitj-inmemory.version>
         <ratelimitj-inmemory-core.version>0.7.0-RC3</ratelimitj-inmemory-core.version>
         <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
@@ -100,7 +100,7 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.slf4j</groupId>
-            <artifactId>slf4j-jboss-logging</artifactId>
+            <artifactId>slf4j-jboss-logmanager</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jboss.logmanager</groupId>
@@ -113,7 +113,6 @@
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-jdk</artifactId>
-            <version>2.2.0.CR1</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
