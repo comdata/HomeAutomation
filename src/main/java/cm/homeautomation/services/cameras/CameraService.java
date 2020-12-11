@@ -122,6 +122,7 @@ public class CameraService extends BaseService {
 		cleanOldImages();
 	}
 
+	@SuppressWarnings("unused")
 	private static void singleCameraUpdate(String[] args, EntityManager em, Camera camera) {
 		instance.singleCameraUpdateInternal(args, em, camera);
 	}
