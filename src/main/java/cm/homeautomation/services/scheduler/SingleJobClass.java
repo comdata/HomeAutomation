@@ -35,13 +35,15 @@ public class SingleJobClass implements Job {
 
 				Method specificMethod = Class.forName(clazz).getMethod(method, String[].class);
 
+				if (specificMethod != null) {
 //                System.out.println(
 //                        "Invoking method Task called. " + clazz + "." + method + " arguments: " + argumentString);
 
-				final Object[] args = new Object[1];
-				args[0] = arguments;
+					final Object[] args = new Object[1];
+					args[0] = arguments;
 
-				specificMethod.invoke(null, args);
+					specificMethod.invoke(null, args);
+				}
 			}
 		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException | IllegalArgumentException
 				| IllegalAccessException | InvocationTargetException e) {
