@@ -3,9 +3,7 @@ package cm.homeautomation.dashbutton;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -18,7 +16,6 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import org.dhcp4java.DHCPPacket;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.context.ManagedExecutor;
 
 import cm.homeautomation.entities.DashButtonRange;
