@@ -56,7 +56,7 @@ public class DashButtonService {
 			final int listenPort = 67;
 			final int MAX_BUFFER_SIZE = 1000;
 
-			try (DatagramSocket socket = new DatagramSocket(listenPort, InetAddress.getByName(listenIp));) {
+			try (DatagramSocket socket = new DatagramSocket(listenPort);) {
 //				LogManager.getLogger(this.getClass()).debug("start listening");
 				System.out.println("Start listening.");
 				final byte[] payload = new byte[MAX_BUFFER_SIZE];
@@ -72,9 +72,7 @@ public class DashButtonService {
 			} catch (final SocketException e) {
 				e.printStackTrace();
 				// LogManager.getLogger(this.getClass()).error("socket exeception", e);
-			} catch (UnknownHostException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			
 			}
 		};
 
