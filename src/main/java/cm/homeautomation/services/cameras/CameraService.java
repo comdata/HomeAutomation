@@ -111,7 +111,7 @@ public class CameraService extends BaseService {
 		
 		List<Camera> resultList = em.createQuery("select c from Camera c where c.id=:id", Camera.class)
 				.setParameter("id", Long.parseLong(args[0])).getResultList();
-		if (resultList != null) {
+		if (resultList != null && !resultList.isEmpty()) {
 
 			for (Camera camera : resultList) {
 				if (camera.isEnabled()) {
