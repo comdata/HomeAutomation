@@ -91,8 +91,9 @@ public class MotionDetectionService extends BaseService {
 			influxMotionEvent.setRoomId(motionEvent.getRoom().getId());
 			influxMotionEvent.setExternalId(motionEvent.getMac());
 			influxMotionEvent.setDateTime(motionEvent.getTimestamp().toInstant());
-
+			System.out.println("Writing to influx MotionEvent");
 			writeApi.writeMeasurement(WritePrecision.MS, influxMotionEvent);
+			System.out.println("Writing to influx MotionEvent - done");
 		}
 	}
 
