@@ -41,9 +41,6 @@ public class DashButtonService {
 
 	@Inject
 	ManagedExecutor executor;
-	
-	@ConfigProperty(name = "dash.listen.ip")
-	String listenIp;
 
 	void startup(@Observes StartupEvent event) {
 
