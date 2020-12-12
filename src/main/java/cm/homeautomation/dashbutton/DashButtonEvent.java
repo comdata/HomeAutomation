@@ -1,20 +1,15 @@
 package cm.homeautomation.dashbutton;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class DashButtonEvent {
 
 	private String mac;
-
-	public DashButtonEvent(String mac) {
-		this.setMac(mac);
-		
-	}
-
-	public String getMac() {
-		return mac;
-	}
-
-	public void setMac(String mac) {
-		this.mac = mac;
-	}
-
 }
