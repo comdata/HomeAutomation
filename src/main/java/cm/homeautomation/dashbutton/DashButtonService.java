@@ -41,7 +41,7 @@ public class DashButtonService {
 
 	void startup(@Observes StartupEvent event) {
 
-		runListener();
+		//runListener();
 	}
 
 	private void runListener() {

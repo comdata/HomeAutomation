@@ -8,6 +8,7 @@ import javax.enterprise.context.control.ActivateRequestContext;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.script.ScriptException;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
@@ -15,6 +16,7 @@ import javax.transaction.Transactional.TxType;
 import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.entities.DashButton;
+import cm.homeautomation.entities.DashButtonRange;
 import cm.homeautomation.entities.RemoteControl.RemoteType;
 import cm.homeautomation.entities.ScriptingEntity;
 import cm.homeautomation.entities.Switch;
@@ -59,11 +61,34 @@ public class DashButtonEventListener {
 
 		System.out.println("got mac: " + mac);
 
-		DashButton dashButton = findOrCreateDashbutton(mac);
-		if (dashButton != null) {
-			handleDashbuttonAction(dashButton);
+		if (isDashButton(mac)) {
+
+			DashButton dashButton = findOrCreateDashbutton(mac);
+			if (dashButton != null) {
+				handleDashbuttonAction(dashButton);
+			}
+		}
+	}
+
+	private boolean isDashButton(String mac) {
+		if (mac == null) {
+			throw new IllegalArgumentException("MAC is NULL");
+		}
+		final String vendorCode = mac.substring(0, 6);
+
+		try {
+			final DashButtonRange singleResult = em
+					.createQuery("select dbr from DashButtonRange dbr where dbr.range=:vendor", DashButtonRange.class)
+					.setParameter("vendor", vendorCode).getSingleResult();
+
+			if (singleResult != null) {
+				return true;
+			}
+		} catch (final NoResultException e) {
+			// e.printStackTrace();
 		}
 
+		return false;
 	}
 
 	private void handleDashbuttonAction(@NonNull DashButton dashButton) {
