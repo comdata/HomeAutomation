@@ -17,6 +17,7 @@ import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 
 import cm.homeautomation.configuration.ConfigurationService;
+import cm.homeautomation.dashbutton.DashButtonEvent;
 import cm.homeautomation.ebus.EBusMessageEvent;
 import cm.homeautomation.fhem.FHEMDataEvent;
 import cm.homeautomation.jeromq.server.JSONDataEvent;
@@ -55,6 +56,8 @@ public class ReactiveMQTTReceiverClient {
             Mqtt3AsyncClient wledClient = buildAClient(host, port);
             Mqtt3AsyncClient networkServicesClient = buildAClient(host, port);
             Mqtt3AsyncClient espClient = buildAClient(host, port);
+            
+            Mqtt3AsyncClient dhcpEventClient = buildAClient(host, port);
 
             wledClient.connect().whenComplete((connAck, throwable) -> {
                 if (throwable != null) {
@@ -224,6 +227,39 @@ public class ReactiveMQTTReceiverClient {
 
             });
 
+            dhcpEventClient.connect().whenComplete((connAck, throwable) -> {
+                if (throwable != null) {
+                    // Handle connection failure
+                } else {
+
+                    // topicFilter("zigbee2mqtt").topicFilter("ebusd")
+
+                    hueClient.subscribeWith().topicFilter(" dhcpEvent/#").callback(publish -> {
+
+                        Runnable runThread = () -> {
+                            // Process the received message
+
+                            String topic = publish.getTopic().toString();
+                            String messageContent = new String(publish.getPayloadAsBytes());
+                            LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+                            // System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+
+                            sendDashButtonMessage(messageContent);
+                        };
+                        new Thread(runThread).start();
+                    }).send().whenComplete((subAck, e) -> {
+                        if (e != null) {
+                            // Handle failure to subscribe
+                            LogManager.getLogger(this.getClass()).error(e);
+                        } else {
+                            // Handle successful subscription, e.g. logging or incrementing a metric
+                            LogManager.getLogger(this.getClass())
+                                    .debug("successfully subscribed. Type: " + subAck.getType().name());
+                        }
+                    });
+                }
+            });
+            
             hueClient.connect().whenComplete((connAck, throwable) -> {
                 if (throwable != null) {
                     // Handle connection failure
@@ -450,6 +486,18 @@ public class ReactiveMQTTReceiverClient {
             hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
 
             bus.publish("HueEmulatorMessage", hueMessage);
+        } catch (JsonProcessingException e) {
+            LogManager.getLogger(this.getClass()).error(e);
+        }
+    }
+    
+    private void sendDashButtonMessage(String messageContent) {
+    	 
+        try {
+            System.out.println("dash: " + messageContent);
+            DashButtonEvent dashButtonEvent = mapper.readValue(messageContent, DashButtonEvent.class);
+
+            bus.publish("DashButtonEvent", dashButtonEvent);
         } catch (JsonProcessingException e) {
             LogManager.getLogger(this.getClass()).error(e);
         }
