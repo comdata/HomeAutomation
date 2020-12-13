@@ -12,4 +12,5 @@ import lombok.Setter;
 public class DashButtonEvent {
 
 	private String mac;
+	private short secs;
 }
