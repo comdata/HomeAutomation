@@ -1,6 +1,7 @@
 package cm.homeautomation.dashbutton;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -50,6 +51,8 @@ public class DashButtonEventListener {
 	@Inject
 	NashornRunner nashornRunner;
 
+	HashMap<String, Date> timeFilter = new HashMap<>();
+
 	void startup(@Observes StartupEvent event) {
 		System.out.println("dash listener startup");
 	}
@@ -63,9 +66,22 @@ public class DashButtonEventListener {
 
 		if (isDashButton(mac)) {
 
-			DashButton dashButton = findOrCreateDashbutton(mac);
-			if (dashButton != null) {
-				handleDashbuttonAction(dashButton);
+			/*
+			 * suppress events if they are to fast
+			 *
+			 */
+			if (!timeFilter.containsKey(mac)) {
+				timeFilter.put(mac, new Date(1));
+			}
+
+			final Date filterTime = timeFilter.get(mac);
+
+			if (((filterTime.getTime()) + 1000) < (new Date()).getTime()) {
+
+				DashButton dashButton = findOrCreateDashbutton(mac);
+				if (dashButton != null) {
+					handleDashbuttonAction(dashButton);
+				}
 			}
 		}
 	}
