@@ -114,44 +114,45 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 			LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
 			System.out.println("Topic: " + topic + " " + messageContent);
 
-			if (topic.startsWith("wled/")) {
+			if (topic.startsWith("wled")) {
+				System.out.println("WLED");
 				handleMessageMQTT(topic, messageContent);
 			}
 
-			if (topic.startsWith("zigbee2mqtt/")) {
+			if (topic.startsWith("zigbee2mqtt")) {
 				handleMessageMQTT(topic, messageContent);
 			}
 
-			if (topic.startsWith("shellies/")) {
+			if (topic.startsWith("shellies")) {
 				handleMessageMQTT(topic, messageContent);
 			}
-			if (topic.startsWith("tasmota/")) {
-				handleMessageMQTT(topic, messageContent);
-			}
-
-			if (topic.startsWith("esp/")) {
+			if (topic.startsWith("tasmota")) {
 				handleMessageMQTT(topic, messageContent);
 			}
 
-			if (topic.startsWith("ebusd/")) {
+			if (topic.startsWith("esp")) {
+				handleMessageMQTT(topic, messageContent);
+			}
+
+			if (topic.startsWith("ebusd")) {
 				handleMessageEBUS(topic, messageContent);
 			}
 
-			if (topic.startsWith("dhcpEvent/")) {
+			if (topic.startsWith("dhcpEvent")) {
 				LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
 				// System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
 
 				sendDashButtonMessage(messageContent);
 			}
 
-			if (topic.startsWith("hueinterface/")) {
+			if (topic.startsWith("hueinterface")) {
 				LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
 				// System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
-
+				System.out.println("hue");
 				handleMessageHUE(topic, messageContent);
 			}
 
-			if (topic.startsWith("networkServices/")) {
+			if (topic.startsWith("networkServices")) {
 				LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
 				// System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
 				if (topic.equals("networkServices/scanResult")) {
@@ -159,12 +160,12 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 				}
 			}
 
-			if (topic.startsWith("/fhem/")) {
+			if (topic.startsWith("/fhem")) {
 				LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
 				handleMessageFHEM(topic, messageContent);
 			}
 
-			if (topic.startsWith("/sensordata/")) {
+			if (topic.startsWith("/sensordata")) {
 				LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
 				handleMessage(topic, messageContent);
 			}
@@ -223,6 +224,7 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 			sendHueInterfaceMessage(messageContent);
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass()).error(e);
+			e.printStackTrace();
 		}
 
 	}
