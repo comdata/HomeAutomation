@@ -22,6 +22,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+
 import cm.homeautomation.dashbutton.DashButtonEvent;
 import cm.homeautomation.ebus.EBusMessageEvent;
 import cm.homeautomation.fhem.FHEMDataEvent;
@@ -81,7 +82,7 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 
 			client.connect(connOpt);
 
-			client.subscribe("networkServices/#");
+			client.subscribe("#");
 			System.out.println("Connected to MQTT");
 		} catch (MqttException e) {
 			// TODO Auto-generated catch block
