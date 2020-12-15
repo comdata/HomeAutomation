@@ -9,14 +9,19 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import org.apache.log4j.LogManager;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.context.ManagedExecutor;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
-import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 
-import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.dashbutton.DashButtonEvent;
 import cm.homeautomation.ebus.EBusMessageEvent;
 import cm.homeautomation.fhem.FHEMDataEvent;
@@ -31,486 +36,243 @@ import io.vertx.core.eventbus.EventBus;
 @Startup
 @ApplicationScoped
 @Transactional(value = TxType.REQUIRES_NEW)
-public class ReactiveMQTTReceiverClient {
-    private static ObjectMapper mapper = new ObjectMapper();
-
-    @Inject
-    EventBus bus;
-
-    @Inject
-    ConfigurationService configurationService;
-
-    private void initClient() {
-        try {
-            String host = configurationService.getConfigurationProperty("mqtt", "host");
-            int port = Integer.parseInt(configurationService.getConfigurationProperty("mqtt", "port"));
-
-            Mqtt3AsyncClient client = buildAClient(host, port);
-
-            Mqtt3AsyncClient zigbeeClient = buildAClient(host, port);
-            Mqtt3AsyncClient ebusClient = buildAClient(host, port);
-            Mqtt3AsyncClient hueClient = buildAClient(host, port);
-            Mqtt3AsyncClient fhemClient = buildAClient(host, port);
-            Mqtt3AsyncClient shellyClient = buildAClient(host, port);
-            Mqtt3AsyncClient tasmotaClient = buildAClient(host, port);
-            Mqtt3AsyncClient wledClient = buildAClient(host, port);
-            Mqtt3AsyncClient networkServicesClient = buildAClient(host, port);
-            Mqtt3AsyncClient espClient = buildAClient(host, port);
-            
-            Mqtt3AsyncClient dhcpEventClient = buildAClient(host, port);
-
-            wledClient.connect().whenComplete((connAck, throwable) -> {
-                if (throwable != null) {
-                    // Handle connection failure
-                } else {
-
-                    wledClient.subscribeWith().topicFilter("wled/#").callback(publish -> {
-
-                        Runnable runThread = () -> {
-                            // Process the received message
-
-                            mqttHandler(publish);
-                        };
-                        new Thread(runThread).start();
-                    }).send().whenComplete((subAck, e) -> {
-                        if (e != null) {
-                            // Handle failure to subscribe
-                            LogManager.getLogger(this.getClass()).error(e);
-                        } else {
-                            // Handle successful subscription, e.g. logging or incrementing a metric
-                            LogManager.getLogger(this.getClass())
-                                    .debug("successfully subscribed. Type: " + subAck.getType().name());
-                        }
-                    });
-
-                }
-            });
-
-            zigbeeClient.connect().whenComplete((connAck, throwable) -> {
-                if (throwable != null) {
-                    // Handle connection failure
-                } else {
-
-                    zigbeeClient.subscribeWith().topicFilter("zigbee2mqtt/#").callback(publish -> {
-
-                        Runnable runThread = () -> {
-                            // Process the received message
-
-                            mqttHandler(publish);
-                        };
-                        new Thread(runThread).start();
-                    }).send().whenComplete((subAck, e) -> {
-                        if (e != null) {
-                            // Handle failure to subscribe
-                            LogManager.getLogger(this.getClass()).error(e);
-                        } else {
-                            // Handle successful subscription, e.g. logging or incrementing a metric
-                            LogManager.getLogger(this.getClass())
-                                    .debug("successfully subscribed. Type: " + subAck.getType().name());
-                        }
-                    });
-
-                }
-            });
-
-            shellyClient.connect().whenComplete((connAck, throwable) -> {
-                if (throwable != null) {
-                    // Handle connection failure
-                } else {
-
-                    shellyClient.subscribeWith().topicFilter("shellies/#").callback(publish -> {
-
-                        Runnable runThread = () -> {
-                            // Process the received message
-
-                            mqttHandler(publish);
-                        };
-                        new Thread(runThread).start();
-                    }).send().whenComplete((subAck, e) -> {
-                        if (e != null) {
-                            // Handle failure to subscribe
-                            LogManager.getLogger(this.getClass()).error(e);
-                        } else {
-                            // Handle successful subscription, e.g. logging or incrementing a metric
-                            LogManager.getLogger(this.getClass())
-                                    .debug("successfully subscribed. Type: " + subAck.getType().name());
-                        }
-                    });
-
-                }
-            });
-
-            tasmotaClient.connect().whenComplete((connAck, throwable) -> {
-                if (throwable != null) {
-                    // Handle connection failure
-                } else {
-
-                    tasmotaClient.subscribeWith().topicFilter("tasmota/#").callback(publish -> {
-
-                        Runnable runThread = () -> {
-                            // Process the received message
-
-                            mqttHandler(publish);
-                        };
-                        new Thread(runThread).start();
-                    }).send().whenComplete((subAck, e) -> {
-                        if (e != null) {
-                            // Handle failure to subscribe
-                            LogManager.getLogger(this.getClass()).error(e);
-                        } else {
-                            // Handle successful subscription, e.g. logging or incrementing a metric
-                            LogManager.getLogger(this.getClass())
-                                    .debug("successfully subscribed. Type: " + subAck.getType().name());
-                        }
-                    });
-
-                }
-            });
-
-            espClient.connect().whenComplete((connAck, throwable) -> {
-                if (throwable != null) {
-                    // Handle connection failure
-                } else {
-
-                    tasmotaClient.subscribeWith().topicFilter("esp/#").callback(publish -> {
-
-                        Runnable runThread = () -> {
-                            // Process the received message
-
-                            mqttHandler(publish);
-                        };
-                        new Thread(runThread).start();
-                    }).send().whenComplete((subAck, e) -> {
-                        if (e != null) {
-                            // Handle failure to subscribe
-                            LogManager.getLogger(this.getClass()).error(e);
-                        } else {
-                            // Handle successful subscription, e.g. logging or incrementing a metric
-                            LogManager.getLogger(this.getClass())
-                                    .debug("successfully subscribed. Type: " + subAck.getType().name());
-                        }
-                    });
-
-                }
-            });
-
-            ebusClient.connect().whenComplete((connAck, throwable) -> {
-                if (throwable != null) {
-                    // Handle connection failure
-                } else {
-
-                    // topicFilter("zigbee2mqtt").topicFilter("ebusd")
-                    ebusClient.subscribeWith().topicFilter("ebusd/#").callback(publish -> {
-
-                        Runnable runThread = () -> {
-                            // Process the received message
-
-                            String topic = publish.getTopic().toString();
-                            String messageContent = new String(publish.getPayloadAsBytes());
-                            LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-                            // System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
-
-                            handleMessageEBUS(topic, messageContent);
-                        };
-                        new Thread(runThread).start();
-                    }).send().whenComplete((subAck, e) -> {
-                        if (e != null) {
-                            // Handle failure to subscribe
-                            LogManager.getLogger(this.getClass()).error(e);
-                        } else {
-                            // Handle successful subscription, e.g. logging or incrementing a metric
-                            LogManager.getLogger(this.getClass())
-                                    .debug("successfully subscribed. Type: " + subAck.getType().name());
-                        }
-                    });
-                }
-
-            });
-
-            dhcpEventClient.connect().whenComplete((connAck, throwable) -> {
-                if (throwable != null) {
-                    // Handle connection failure
-                } else {
-
-                    // topicFilter("zigbee2mqtt").topicFilter("ebusd")
-
-                    hueClient.subscribeWith().topicFilter("dhcpEvent/#").callback(publish -> {
-
-                        Runnable runThread = () -> {
-                            // Process the received message
-
-                            String topic = publish.getTopic().toString();
-                            String messageContent = new String(publish.getPayloadAsBytes());
-                            LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-                            //System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
-
-                            sendDashButtonMessage(messageContent);
-                        };
-                        new Thread(runThread).start();
-                    }).send().whenComplete((subAck, e) -> {
-                        if (e != null) {
-                            // Handle failure to subscribe
-                            LogManager.getLogger(this.getClass()).error(e);
-                        } else {
-                            // Handle successful subscription, e.g. logging or incrementing a metric
-                            LogManager.getLogger(this.getClass())
-                                    .debug("successfully subscribed. Type: " + subAck.getType().name());
-                        }
-                    });
-                }
-            });
-            
-            hueClient.connect().whenComplete((connAck, throwable) -> {
-                if (throwable != null) {
-                    // Handle connection failure
-                } else {
-
-                    // topicFilter("zigbee2mqtt").topicFilter("ebusd")
-
-                    hueClient.subscribeWith().topicFilter("hueinterface/#").callback(publish -> {
-
-                        Runnable runThread = () -> {
-                            // Process the received message
-
-                            String topic = publish.getTopic().toString();
-                            String messageContent = new String(publish.getPayloadAsBytes());
-                            LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-                            // System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
-
-                            handleMessageHUE(topic, messageContent);
-                        };
-                        new Thread(runThread).start();
-                    }).send().whenComplete((subAck, e) -> {
-                        if (e != null) {
-                            // Handle failure to subscribe
-                            LogManager.getLogger(this.getClass()).error(e);
-                        } else {
-                            // Handle successful subscription, e.g. logging or incrementing a metric
-                            LogManager.getLogger(this.getClass())
-                                    .debug("successfully subscribed. Type: " + subAck.getType().name());
-                        }
-                    });
-                }
-            });
-
-            networkServicesClient.connect().whenComplete((connAck, throwable) -> {
-                if (throwable != null) {
-                    // Handle connection failure
-                } else {
-
-                    // topicFilter("zigbee2mqtt").topicFilter("ebusd")
-
-                    hueClient.subscribeWith().topicFilter("networkServices/#").callback(publish -> {
-
-                        Runnable runThread = () -> {
-                            // Process the received message
-
-                            String topic = publish.getTopic().toString();
-                            String messageContent = new String(publish.getPayloadAsBytes());
-                            LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-
-                            if ("networkServices/scanResult".equals(topic)) {
-                                sendNetworkScanResult(messageContent);
-                            }
-                        };
-                        new Thread(runThread).start();
-                    }).send().whenComplete((subAck, e) -> {
-                        if (e != null) {
-                            // Handle failure to subscribe
-                            LogManager.getLogger(this.getClass()).error(e);
-                        } else {
-                            // Handle successful subscription, e.g. logging or incrementing a metric
-                            LogManager.getLogger(this.getClass())
-                                    .debug("successfully subscribed. Type: " + subAck.getType().name());
-                        }
-                    });
-                }
-            });
-
-            fhemClient.connect().whenComplete((connAck, throwable) -> {
-                if (throwable != null) {
-                    // Handle connection failure
-                } else {
-
-                    fhemClient.subscribeWith().topicFilter("/fhem/#").callback(publish -> {
-
-                        Runnable runThread = () -> {
-                            // Process the received message
-
-                            String topic = publish.getTopic().toString();
-                            String messageContent = new String(publish.getPayloadAsBytes());
-                            LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-                            // System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
-
-                            handleMessageFHEM(topic, messageContent);
-                        };
-                        new Thread(runThread).start();
-                    }).send().whenComplete((subAck, e) -> {
-                        if (e != null) {
-                            // Handle failure to subscribe
-                            LogManager.getLogger(this.getClass()).error(e);
-                        } else {
-                            // Handle successful subscription, e.g. logging or incrementing a metric
-                            LogManager.getLogger(this.getClass())
-                                    .debug("successfully subscribed. Type: " + subAck.getType().name());
-                        }
-                    });
-
-                }
-            });
-
-            client.connect().whenComplete((connAck, throwable) -> {
-                if (throwable != null) {
-                    // Handle connection failure
-                } else {
-
-                    // topicFilter("zigbee2mqtt").topicFilter("ebusd")
-
-                    client.subscribeWith().topicFilter("/sensordata/#").callback(publish -> {
-
-                        Runnable runThread = () -> {
-                            // Process the received message
-
-                            String topic = publish.getTopic().toString();
-                            String messageContent = new String(publish.getPayloadAsBytes());
-                            LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-                            // System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
-
-                            handleMessage(topic, messageContent);
-                        };
-                        new Thread(runThread).start();
-                    }).send().whenComplete((subAck, e) -> {
-                        if (e != null) {
-                            // Handle failure to subscribe
-                            LogManager.getLogger(this.getClass()).error(e);
-                        } else {
-                            // Handle successful subscription, e.g. logging or incrementing a metric
-                            LogManager.getLogger(this.getClass())
-                                    .debug("successfully subscribed. Type: " + subAck.getType().name());
-                        }
-                    });
-                }
-            });
-        } catch (NumberFormatException nfe) {
-            LogManager.getLogger(this.getClass()).error("Port for mqtt client not configured");
-            return;
-        }
-
-    }
-
-    private void mqttHandler(Mqtt3Publish publish) {
-        String topic = publish.getTopic().toString();
-        String messageContent = new String(publish.getPayloadAsBytes());
-        LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
-        // System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
-
-        handleMessageMQTT(topic, messageContent);
-    }
-
-    private Mqtt3AsyncClient buildAClient(String host, int port) {
-        return MqttClient.builder().useMqttVersion3().identifier(UUID.randomUUID().toString()).serverHost(host)
-                .serverPort(port).automaticReconnect().applyAutomaticReconnect().buildAsync();
-    }
-
-    void startup(@Observes StartupEvent event) {
-        initClient();
-
-    }
-
-    private void handleMessageMQTT(String topic, String messageContent) {
-
-        try {
-
-            MQTTTopicEvent mqttTopicEvent = new MQTTTopicEvent(topic, messageContent);
-            bus.publish("MQTTTopicEvent", mqttTopicEvent);
-
-        } catch (Exception e) {
-            LogManager.getLogger(this.getClass()).error(e);
-        }
-
-    }
-
-    private void handleMessageFHEM(String topic, String messageContent) {
-        try {
-            FHEMDataEvent fhemDataEvent = new FHEMDataEvent(topic, messageContent);
-            bus.publish("FHEMDataEvent", fhemDataEvent);
-
-            handleMessageMQTT(topic, messageContent);
-
-        } catch (Exception e) {
-            LogManager.getLogger(this.getClass()).error(e);
-        }
-
-    }
-
-    private void handleMessageEBUS(String topic, String messageContent) {
-        try {
-            EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
-            bus.publish("EBusMessageEvent", ebusMessageEvent);
-
-            handleMessageMQTT(topic, messageContent);
-        } catch (Exception e) {
-            LogManager.getLogger(this.getClass()).error(e);
-        }
-
-    }
-
-    private void handleMessageHUE(String topic, String messageContent) {
-        try {
-            sendHueInterfaceMessage(messageContent);
-        } catch (Exception e) {
-            LogManager.getLogger(this.getClass()).error(e);
-        }
-
-    }
-
-    private void handleMessage(String topic, String messageContent) {
-
-        try {
-
-            if (messageContent.startsWith("{")) {
-                JSONDataEvent jsonDataEvent = new JSONDataEvent(messageContent);
-                bus.publish("JSONDataEvent", jsonDataEvent);
-                handleMessageMQTT(topic, messageContent);
-            }
-        } catch (Exception e) {
-            LogManager.getLogger(this.getClass()).error(e);
-        }
-
-    }
-
-    private void sendHueInterfaceMessage(String messageContent) {
-        HueEmulatorMessage hueMessage;
-        try {
-            System.out.println("hue: " + messageContent);
-            hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
-
-            bus.publish("HueEmulatorMessage", hueMessage);
-        } catch (JsonProcessingException e) {
-            LogManager.getLogger(this.getClass()).error(e);
-        }
-    }
-    
-    private void sendDashButtonMessage(String messageContent) {
-    	 
-        try {
-            System.out.println("dash: " + messageContent);
-            DashButtonEvent dashButtonEvent = mapper.readValue(messageContent, DashButtonEvent.class);
-
-            bus.publish("DashButtonEvent", dashButtonEvent);
-        } catch (JsonProcessingException e) {
-            LogManager.getLogger(this.getClass()).error(e);
-        }
-    }
-
-    private void sendNetworkScanResult(String messageContent) {
-        NetworkScanResult networkScanResult;
-        try {
-            networkScanResult = mapper.readValue(messageContent, NetworkScanResult.class);
-
-            bus.publish("NetworkScanResult", networkScanResult);
-        } catch (JsonProcessingException e) {
-            LogManager.getLogger(this.getClass()).error(e);
-        }
-    }
+public class ReactiveMQTTReceiverClient implements MqttCallback {
+	@Inject
+	EventBus bus;
+
+	@ConfigProperty(name = "mqtt.host")
+	String host;
+
+	@ConfigProperty(name = "mqtt.port")
+	int port;
+
+	@Inject
+	ManagedExecutor executor;
+
+	private ObjectMapper mapper = new ObjectMapper();
+
+	private MqttClient client;
+
+	private MemoryPersistence memoryPersistence = new MemoryPersistence();
+
+	void startup(@Observes StartupEvent event) {
+		initClient();
+
+	}
+
+	private void initClient() {
+		try {
+			System.out.println("Connecting MQTT");
+			UUID uuid = UUID.randomUUID();
+			String randomUUIDString = uuid.toString();
+
+			client = new MqttClient("tcp://" + host + ":" + port, "HomeAutomation/" + randomUUIDString,
+					memoryPersistence);
+
+			client.setCallback(this);
+
+			MqttConnectOptions connOpt = new MqttConnectOptions();
+			connOpt.setAutomaticReconnect(true);
+			connOpt.setCleanSession(false);
+			connOpt.setKeepAliveInterval(10);
+			connOpt.setConnectionTimeout(5);
+			connOpt.setMaxInflight(10);
+			connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
+
+			client.connect(connOpt);
+
+			client.subscribe("networkServices/#");
+			System.out.println("Connected to MQTT");
+		} catch (MqttException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void connectionLost(Throwable cause) {
+
+		try {
+			client.close();
+			client.disconnect();
+		} catch (MqttException e1) {
+			LogManager.getLogger(this.getClass()).error("force close failed.", e1);
+		}
+		LogManager.getLogger(this.getClass()).info("trying reconnect to MQTT broker");
+		initClient();
+	}
+
+	@Override
+	public void messageArrived(String topic, MqttMessage message) throws Exception {
+
+		String messageContent = new String(message.getPayload());
+
+		Runnable runThread = () -> {
+			// Process the received message
+
+			LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+			System.out.println("Topic: " + topic + " " + messageContent);
+
+			if (topic.startsWith("wled/")) {
+				handleMessageMQTT(topic, messageContent);
+			}
+
+			if (topic.startsWith("zigbee2mqtt/")) {
+				handleMessageMQTT(topic, messageContent);
+			}
+
+			if (topic.startsWith("shellies/")) {
+				handleMessageMQTT(topic, messageContent);
+			}
+			if (topic.startsWith("tasmota/")) {
+				handleMessageMQTT(topic, messageContent);
+			}
+
+			if (topic.startsWith("esp/")) {
+				handleMessageMQTT(topic, messageContent);
+			}
+
+			if (topic.startsWith("ebusd/")) {
+				handleMessageEBUS(topic, messageContent);
+			}
+
+			if (topic.startsWith("dhcpEvent/")) {
+				LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+				// System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+
+				sendDashButtonMessage(messageContent);
+			}
+
+			if (topic.startsWith("hueinterface/")) {
+				LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+				// System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+
+				handleMessageHUE(topic, messageContent);
+			}
+
+			if (topic.startsWith("networkServices/")) {
+				LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+				// System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
+				if (topic.equals("networkServices/scanResult")) {
+					sendNetworkScanResult(messageContent);
+				}
+			}
+
+			if (topic.startsWith("/fhem/")) {
+				LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+				handleMessageFHEM(topic, messageContent);
+			}
+
+			if (topic.startsWith("/sensordata/")) {
+				LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+				handleMessage(topic, messageContent);
+			}
+
+		};
+		executor.runAsync(runThread);
+
+	}
+
+	@Override
+	public void deliveryComplete(IMqttDeliveryToken token) {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void handleMessageMQTT(String topic, String messageContent) {
+
+		try {
+
+			MQTTTopicEvent mqttTopicEvent = new MQTTTopicEvent(topic, messageContent);
+			bus.publish("MQTTTopicEvent", mqttTopicEvent);
+
+		} catch (Exception e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		}
+
+	}
+
+	private void handleMessageFHEM(String topic, String messageContent) {
+		try {
+			FHEMDataEvent fhemDataEvent = new FHEMDataEvent(topic, messageContent);
+			bus.publish("FHEMDataEvent", fhemDataEvent);
+
+			handleMessageMQTT(topic, messageContent);
+
+		} catch (Exception e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		}
+
+	}
+
+	private void handleMessageEBUS(String topic, String messageContent) {
+		try {
+			EBusMessageEvent ebusMessageEvent = new EBusMessageEvent(topic, messageContent);
+			bus.publish("EBusMessageEvent", ebusMessageEvent);
+
+			handleMessageMQTT(topic, messageContent);
+		} catch (Exception e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		}
+
+	}
+
+	private void handleMessageHUE(String topic, String messageContent) {
+		try {
+			sendHueInterfaceMessage(messageContent);
+		} catch (Exception e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		}
+
+	}
+
+	private void handleMessage(String topic, String messageContent) {
+
+		try {
+
+			if (messageContent.startsWith("{")) {
+				JSONDataEvent jsonDataEvent = new JSONDataEvent(messageContent);
+				bus.publish("JSONDataEvent", jsonDataEvent);
+				handleMessageMQTT(topic, messageContent);
+			}
+		} catch (Exception e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		}
+
+	}
+
+	private void sendHueInterfaceMessage(String messageContent) {
+		HueEmulatorMessage hueMessage;
+		try {
+			System.out.println("hue: " + messageContent);
+			hueMessage = mapper.readValue(messageContent, HueEmulatorMessage.class);
+
+			bus.publish("HueEmulatorMessage", hueMessage);
+		} catch (JsonProcessingException e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		}
+	}
+
+	private void sendDashButtonMessage(String messageContent) {
+
+		try {
+			System.out.println("dash: " + messageContent);
+			DashButtonEvent dashButtonEvent = mapper.readValue(messageContent, DashButtonEvent.class);
+
+			bus.publish("DashButtonEvent", dashButtonEvent);
+		} catch (JsonProcessingException e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		}
+	}
+
+	private void sendNetworkScanResult(String messageContent) {
+		NetworkScanResult networkScanResult;
+		try {
+			networkScanResult = mapper.readValue(messageContent, NetworkScanResult.class);
+
+			bus.publish("NetworkScanResult", networkScanResult);
+		} catch (JsonProcessingException e) {
+			LogManager.getLogger(this.getClass()).error(e);
+		}
+	}
 }

@@ -4,16 +4,17 @@ import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
 
-import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
-import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 
-import cm.homeautomation.configuration.ConfigurationService;
-import io.quarkus.runtime.Startup;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
@@ -23,40 +24,47 @@ import io.vertx.core.eventbus.EventBus;
  * @author christoph
  *
  */
-@Startup
 @ApplicationScoped
-@Transactional(value = TxType.REQUIRES_NEW)
 public class MQTTSender {
 
-	private Mqtt3AsyncClient publishClient = null;
+	private MqttClient publishClient = null;
+
+	@ConfigProperty(name = "mqtt.host")
+	String host;
+
+	@ConfigProperty(name = "mqtt.port")
+	int port;
 
 	@Inject
 	EventBus bus;
 
-	@Inject
-	ConfigurationService configurationService;
+	public MQTTSender() {
+	}
 
 	private void initClient() {
+		try {
+			if (publishClient == null) {
 
-		if (publishClient == null) {
+				UUID uuid = UUID.randomUUID();
+				String randomUUIDString = uuid.toString();
 
-			String host = configurationService.getConfigurationProperty("mqtt", "host");
-			int port = Integer.parseInt(configurationService.getConfigurationProperty("mqtt", "port"));
+				publishClient = new MqttClient("tcp://" + host + ":" + port, "HomeAutomation/" + randomUUIDString);
 
-			publishClient = MqttClient.builder().useMqttVersion3().identifier(UUID.randomUUID().toString())
-					.serverHost(host).serverPort(port).automaticReconnect().applyAutomaticReconnect().buildAsync();
+			}
 
-			publishClient.connect().whenComplete((connAck, throwable) -> {
-				if (throwable != null) {
-					// Handle connection failure
-				} else {
+			MqttConnectOptions connOpt = new MqttConnectOptions();
+			connOpt.setAutomaticReconnect(true);
+			connOpt.setCleanSession(false);
+			connOpt.setKeepAliveInterval(60);
+			connOpt.setConnectionTimeout(30);
+			connOpt.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
 
-				}
-			});
-		}
-
-		if (!publishClient.getState().isConnectedOrReconnect()) {
-			publishClient.connect();
+			if (!publishClient.isConnected()) {
+				publishClient.connect(connOpt);
+			}
+		} catch (MqttException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}
@@ -76,15 +84,37 @@ public class MQTTSender {
 
 	}
 
+	public void doSendSyncMQTTMessage(String topic, Object obj) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+
+			String payload = mapper.writeValueAsString(obj);
+
+			bus.publish("MQTTSendEvent", new MQTTSendEvent(topic, payload));
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+
+	}
+
 	@ConsumeEvent(value = "MQTTSendEvent", blocking = true)
 	public void send(MQTTSendEvent mqttSendEvent) {
-		String topic = mqttSendEvent.getTopic();
-		String messagePayload = mqttSendEvent.getPayload();
+		try {
+			String topic = mqttSendEvent.getTopic();
+			String messagePayload = mqttSendEvent.getPayload();
 
-		initClient();
-		System.out.println("sending " + topic + " - " + messagePayload);
-		Mqtt3Publish publishMessage = Mqtt3Publish.builder().topic(topic).qos(MqttQos.AT_LEAST_ONCE)
-				.payload(messagePayload.getBytes()).build();
-		publishClient.publish(publishMessage);
+			initClient();
+			MqttMessage message = new MqttMessage();
+			message.setQos(1);
+			message.setPayload(messagePayload.getBytes());
+
+			publishClient.publish(topic, message);
+		} catch (MqttPersistenceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MqttException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
