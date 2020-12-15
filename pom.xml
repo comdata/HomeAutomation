@@ -168,11 +168,11 @@
 			<groupId>org.apache.camel.quarkus</groupId>
 			<artifactId>camel-quarkus-paho</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.purej</groupId>
-			<artifactId>purej-vminspect</artifactId>
-			<version>1.6.1</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.purej</groupId> -->
+<!-- 			<artifactId>purej-vminspect</artifactId> -->
+<!-- 			<version>1.6.1</version> -->
+<!-- 		</dependency> -->
 
 		<dependency>
 			<groupId>io.quarkus</groupId>
