@@ -1,9 +1,13 @@
 package cm.homeautomation.entities;
 
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -78,19 +82,22 @@ public class Light {
 
 	@Column(name = "COLOR")
 	private String color;
+	
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "LIGHTSUPPORTEDTEMPERATURES", joinColumns=@JoinColumn(name="LIGHTTEMP_ID") )
+	@Column(name="lightTempValues")
+	private List<Integer> supportedlightTemperatures;
 
 	private String mqttPowerOnTopic;
 	private String mqttPowerOffTopic;
 	private String mqttPowerOnMessage;
 	private String mqttPowerOffMessage;
+	private String mqttLightTemperatureTopic;
+	private String mqttLightTemperatureMessage;
 
 	// Status
 	private boolean online;
 
-	@JsonIgnore
-	public String getDimUrl() {
-		return dimUrl;
-	}
 
 	@XmlTransient
 	@JsonIgnore

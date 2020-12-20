@@ -297,6 +297,25 @@ public class LightService extends BaseService {
 
 		return new GenericStatus(true);
 	}
+	
+	@GET
+	@Path("temp/{lightId}/{lightTemp}")
+	public GenericStatus setLightTemp(@PathParam(LIGHT_ID) final long lightId, @PathParam("lightTemp") final int lightTemp) {
+		
+		Light light = lightList.get(lightId);
+		
+		String mqttLightTemperatureTopic = light.getMqttLightTemperatureTopic();
+		
+		
+		if (mqttLightTemperatureTopic!=null && !"".equals(mqttLightTemperatureTopic)) {
+			String lightTempMired=Float.toString(1000000f/lightTemp);
+			
+			String messagePayload = light.getMqttLightTemperatureMessage().replace("{colorTemp}", lightTempMired);
+			mqttSender.sendMQTTMessage(mqttLightTemperatureTopic, messagePayload);
+		}
+		
+		return new GenericStatus(true);
+	}
 
 	private RGBLight findRGBLight(final long lightId) {
 		Light light = lightList.get(lightId);
