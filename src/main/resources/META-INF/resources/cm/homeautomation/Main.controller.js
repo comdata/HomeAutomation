@@ -1032,6 +1032,20 @@ sap.ui.define([
                 lightsList.setProperty("visible", false);
             }
 
+            var modelData=model.oData;
+
+
+            for (var a=0; a<modelData.length; a++) {
+                let lights=modelData[a];
+                for (var i=0; i<lights.supportedlightTemperatures.length;i++) {
+                	var colorTemperature=lights.supportedlightTemperatures[i];
+                    console.log(colorTemperature);
+                    
+                    lights.supportedlightTemperatures[i]={"label":colorTemperature, "value": colorTemperature};
+                }
+            }
+            model.setData(modelData);
+
             sap.ui.getCore().setModel(model, "lights");
         },
 
@@ -1139,6 +1153,17 @@ sap.ui.define([
             var lightId=( light.id==null) ? 0 : light.id;
             oModel.loadDataAsync("light/dim/" + lightId + "/"
                 + value, "", "GET", this.handleSwitchChanged, null, this);
+        },
+        handleLightTemperatureChanged: function (event) {
+        	console.log(event.getParameters().item);
+        	var lightsModel = sap.ui.getCore().getModel("lights");
+        	let value=event.getParameters().item.mProperties.key;
+        	let light = lightsModel.getProperty(event.getSource().oPropagatedProperties.oBindingContexts.lights.sPath);
+        	var lightId=( light.id==null) ? 0 : light.id;
+        	
+        	var oModel = new RESTService();
+        	oModel.loadDataAsync("light/temp/" + lightId + "/"
+                + value, "", "GET", null, null, this);
         },
 
         handleLightSwitchChange: function(event) {

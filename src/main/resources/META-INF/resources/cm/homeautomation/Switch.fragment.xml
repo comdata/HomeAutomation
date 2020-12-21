@@ -41,7 +41,8 @@
 						<items>
 							<InputListItem label="{windowBlinds>name}">
 
-								<Slider min="{windowBlinds>minimumValue}" max="{windowBlinds>maximumValue}"
+								<Slider min="{windowBlinds>minimumValue}"
+									max="{windowBlinds>maximumValue}"
 									value="{windowBlinds>currentValue}" width="100px"
 									change="handleBlindChange" />
 								<Label text="{windowBlinds>currentValue}"></Label>
@@ -65,10 +66,20 @@
 
 								<Switch state="{= ${lights>brightnessLevel}>0}"
 									change="handleLightSwitchChange" />
+
+								<SegmentedButton
+									items="{path: 'lights>supportedlightTemperatures'}" selectionChange="handleLightTemperatureChanged" >
+									<items>
+										<SegmentedButtonItem text="{lights>label}"
+											key="{lights>value}" />
+									</items>
+
+								</SegmentedButton>
 								<Slider min="{lights>minimumValue}"
 									max="{lights>maximumValue}" value="{lights>brightnessLevel}"
 									width="100px" change="handleLightChange"
 									visible="{= ${lights>@class} === 'DimmableLight' || ${lights>@class} === 'RGBLight'}" />
+
 								<Label text="{lights>brightnessLevel}"
 									visible="{= ${lights>@class} === 'DimmableLight' || ${lights>@class} === 'RGBLight'}"></Label>
 								<Button press="handleLightRGBButton"
@@ -114,7 +125,8 @@
 			<Panel expandable="true" expanded="true"
 				headerText="Grafana Data" expand="expandGrafana">
 				<content>
-					<html:iframe id="grafanaData" width="95%" height="400" frameborder="0"></html:iframe>
+					<html:iframe id="grafanaData" width="95%" height="400"
+						frameborder="0"></html:iframe>
 				</content>
 			</Panel>
 
