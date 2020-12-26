@@ -32,6 +32,7 @@ import cm.homeautomation.networkmonitor.NetworkScanResult;
 import cm.homeautomation.services.hueinterface.HueEmulatorMessage;
 import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
+import io.quarkus.scheduler.Scheduled;
 import io.vertx.core.eventbus.EventBus;
 
 @Startup
@@ -85,7 +86,6 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 			client.subscribe("#");
 			System.out.println("Connected to MQTT");
 		} catch (MqttException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -177,8 +177,7 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken token) {
-		// TODO Auto-generated method stub
-
+	
 	}
 
 	private void handleMessageMQTT(String topic, String messageContent) {
@@ -277,5 +276,14 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 		} catch (JsonProcessingException e) {
 			LogManager.getLogger(this.getClass()).error(e);
 		}
+	}
+	
+	@Scheduled(every = "10s")
+	public void checkClientConnected() {
+		
+		if (!client.isConnected()) {
+			connectionLost(null);
+		}
+		
 	}
 }
