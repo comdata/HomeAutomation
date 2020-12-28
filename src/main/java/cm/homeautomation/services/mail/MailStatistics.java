@@ -13,10 +13,10 @@ import javax.mail.Store;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-import org.apache.logging.log4j.LogManager;
-
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
+import cm.homeautomation.services.scheduler.JobArguments;
+import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 import lombok.NonNull;
 
@@ -27,12 +27,9 @@ public class MailStatistics extends BaseService {
 	@Inject
 	EventBus bus;
 
-	private static MailStatistics instance;
-
 	private static List<MailData> mailDataList = new ArrayList<>();
 
 	public MailStatistics() {
-		instance = this;
 	}
 
 	@GET
@@ -56,13 +53,11 @@ public class MailStatistics extends BaseService {
 		return mailData;
 	}
 
-	public static void updateMailData(String[] args) {
-		instance.updateMailDataInternal(args);
-	}
+	@ConsumeEvent(value = "MailStatistics", blocking = true)
 
-	public void updateMailDataInternal(String[] args) {
+	public void updateMailDataInternal(JobArguments args) {
 
-		String account = args[0];
+		String account = args.getArgumentList().get(0);
 		MailData mailData = findOrCreateMailEntryInList(account);
 
 		Properties props = System.getProperties();
@@ -70,7 +65,7 @@ public class MailStatistics extends BaseService {
 		try {
 			Session session = Session.getDefaultInstance(props, null);
 			Store store = session.getStore("imaps");
-			store.connect("imap.gmail.com", account, args[1]);
+			store.connect("imap.gmail.com", account, args.getArgumentList().get(1));
 
 			Folder folder = store.getFolder("INBOX");
 			//LogManager.getLogger(MailStatistics.class).info("Account: " + account + ": " + folder.getNewMessageCount()
@@ -85,15 +80,5 @@ public class MailStatistics extends BaseService {
 
 	}
 
-	public static void main(String[] args) {
-		String[] myArgs = { "2", "1" };
-		updateMailData(myArgs);
-
-		List<MailData> mailboxStatus = new MailStatistics().getMailboxStatus();
-
-		for (MailData mailData : mailboxStatus) {
-			//LogManager.getLogger(MailStatistics.class).info(
-//					mailData.getAccount() + " - " + mailData.getNewMessages() + " - " + mailData.getUnreadMessages());
-		}
-	}
+	
 }
