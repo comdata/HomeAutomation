@@ -14,7 +14,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cm.homeautomation.eventbus.EventObject;
+import cm.homeautomation.services.scheduler.JobArguments;
 import io.quarkus.runtime.StartupEvent;
+import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 import nl.stil4m.transmission.api.TransmissionRpcClient;
 import nl.stil4m.transmission.api.domain.RemoveTorrentInfo;
@@ -30,26 +32,26 @@ public class TransmissionMonitor {
 
 	@Inject
 	EventBus bus;
-	private static TransmissionMonitor instance;
+	
+	void startup(@Observes StartupEvent event) {	}
 
-	void startup(@Observes StartupEvent event) {
-		instance = this;
-	}
 
-	public static void checkTorrents(String[] args) {
-		instance.checkTorrentsInternal(args);
-	}
-
-	public void checkTorrentsInternal(String[] args) {
+	@ConsumeEvent(value = "TransmissionMonitor", blocking = true)
+	public void cronSetStatus(JobArguments args) {
+		String user=args.getArgumentList().get(0);
+		String password=args.getArgumentList().get(1);
+		String host=args.getArgumentList().get(2);
+		String port=args.getArgumentList().get(3);
+		
 		try {
 			ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
 					false);
-			;
+			
 			objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
 			RpcConfiguration rpcConfiguration = new RpcConfiguration();
 			rpcConfiguration.setHost(URI
-					.create("http://" + args[0] + ":" + args[1] + "@" + args[2] + ":" + args[3] + "/transmission/rpc"));
+					.create("http://" + user + ":" + password + "@" + host + ":" + port + "/transmission/rpc"));
 
 			RpcClient client = new RpcClient(rpcConfiguration, objectMapper);
 
