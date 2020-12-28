@@ -20,8 +20,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.apache.logging.log4j.LogManager;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import cm.homeautomation.configuration.ConfigurationService;
@@ -111,10 +109,10 @@ public class ActorService extends BaseService {
 
 			String debugMessage = "Actor Switch Type: " + singleSwitch.getClass().getSimpleName();
 			System.out.println(debugMessage);
-			LogManager.getLogger(this.getClass()).debug(debugMessage);
+
 
 			if (singleSwitch instanceof MQTTSwitch) {
-				LogManager.getLogger(this.getClass()).debug("Switch is MQTTSwitch");
+				
 				MQTTSwitch singleMqttSwitch = (MQTTSwitch) singleSwitch;
 
 				String topic = null;
@@ -129,8 +127,7 @@ public class ActorService extends BaseService {
 					message = singleMqttSwitch.getMqttPowerOffMessage();
 				}
 
-				LogManager.getLogger(this.getClass()).debug("MQTT: " + topic + " - " + message);
-
+		
 				bus.publish("MQTTSendEvent", new MQTTSendEvent(topic, message));
 				
 				System.out.println("sent mqtt");
@@ -153,7 +150,7 @@ public class ActorService extends BaseService {
 			try {
 				InfraredService.getInstance().sendCommand(singleSwitch.getIrCommand().getId());
 			} catch (final JsonProcessingException e) {
-				LogManager.getLogger(this.getClass()).error(e);
+		
 			}
 		}
 	}
@@ -181,7 +178,7 @@ public class ActorService extends BaseService {
 		String switchSetUrl = singleSwitch.getSwitchSetUrl();
 		switchSetUrl = switchSetUrl.replace("{STATE}", (("0".equals(actorMessage.getStatus())) ? "off" : "on"));
 
-		LogManager.getLogger(this.getClass()).debug(switchSetUrl);
+		
 
 		HTTPHelper.performHTTPRequest(switchSetUrl);
 	}
