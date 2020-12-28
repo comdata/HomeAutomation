@@ -24,15 +24,10 @@ import javax.transaction.Transactional.TxType;
 import org.apache.logging.log4j.LogManager;
 import org.eclipse.microprofile.context.ManagedExecutor;
 
-import com.influxdb.client.InfluxDBClient;
-import com.influxdb.client.WriteApi;
-import com.influxdb.client.domain.WritePrecision;
-
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.PowerMeterPing;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.PowerMeterData;
-import cm.homeautomation.services.sensors.InfluxSensorData;
 import es.moki.ratelimitj.core.limiter.request.RequestLimitRule;
 import es.moki.ratelimitj.core.limiter.request.RequestRateLimiter;
 import es.moki.ratelimitj.inmemory.request.InMemorySlidingWindowRequestRateLimiter;
@@ -58,9 +53,6 @@ public class PowerMeterSensor {
 
 	@Inject
 	ConfigurationService configurationService;
-
-	@Inject
-	InfluxDBClient influxDBClient;
 
 	@Inject
 	ManagedExecutor executor;
@@ -141,20 +133,6 @@ public class PowerMeterSensor {
 		init();
 	}
 
-	public void saveToInflux(PowerMeterPing powerMeterPing) {
-
-		try (WriteApi writeApi = influxDBClient.getWriteApi()) {
-
-			InfluxSensorData influxSensorData = new InfluxSensorData();
-
-			influxSensorData.setValue(Integer.toString(powerMeterPing.getPowerCounter()));
-			influxSensorData.setSensorName("PowerMeterPing");
-
-			influxSensorData.setDateTime(powerMeterPing.getTimestamp().toInstant());
-
-			writeApi.writeMeasurement(WritePrecision.MS, influxSensorData);
-		}
-	}
 
 	/**
 	 * handle power meter data from the MQTT receiver
@@ -179,7 +157,7 @@ public class PowerMeterSensor {
 
 				em.persist(powerMeterPing);
 
-				saveToInflux(powerMeterPing);
+	
 
 			} catch (final Exception e) {
 				LogManager.getLogger(PowerMeterSensor.class).error("error persisting power data", e);
