@@ -5,7 +5,6 @@ import java.util.Date;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -17,7 +16,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.Switch;
