@@ -32,9 +32,9 @@ public class ZWaveNeighborUpdate {
 				final String[] devices = body.split(" ");
 
 				for (int i = 0; i < 5; i++) {
-//					LogManager.getLogger(this.getClass()).debug("pass: " + i);
+//					//LogManager.getLogger(this.getClass()).debug("pass: " + i);
 					for (final String device : devices) {
-//						LogManager.getLogger(this.getClass()).debug(device);
+//						//LogManager.getLogger(this.getClass()).debug(device);
 
 						if (!"ZWDongle_0".equals(device) && !"nodeList".equals(device) && !"=>".equals(device)
 								&& !device.contains("UNKNOWN")) {
@@ -46,9 +46,9 @@ public class ZWaveNeighborUpdate {
 					}
 					Thread.sleep(120000);
 				}
-//				LogManager.getLogger(this.getClass()).debug("done");
+//				//LogManager.getLogger(this.getClass()).debug("done");
 			} catch (final ParseException | InterruptedException | IOException e) {
-//				LogManager.getLogger(this.getClass()).error(e);
+//				//LogManager.getLogger(this.getClass()).error(e);
 			}
 		}
 
@@ -68,10 +68,10 @@ public class ZWaveNeighborUpdate {
 			try {
 				final HttpEntity entity = response.getEntity();
 				final String body = EntityUtils.toString(entity);
-//				LogManager.getLogger(this.getClass()).debug(device + ": " + body);
+//				//LogManager.getLogger(this.getClass()).debug(device + ": " + body);
 
 			} catch (ParseException | IOException e) {
-//				LogManager.getLogger(this.getClass()).error(e);
+//				//LogManager.getLogger(this.getClass()).error(e);
 			}
 
 		}

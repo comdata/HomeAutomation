@@ -49,7 +49,7 @@ public class PanasonicTVBinding {
             }
 
         } catch (TVNotReachableException e) {
-            LogManager.getLogger(this.getClass()).debug("TVNotReachableException", e);
+            //LogManager.getLogger(this.getClass()).debug("TVNotReachableException", e);
         }
 
         return alive;

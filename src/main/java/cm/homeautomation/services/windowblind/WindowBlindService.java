@@ -23,6 +23,7 @@ import cm.homeautomation.mqtt.client.MQTTSender;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.base.HTTPHelper;
+import cm.homeautomation.services.scheduler.JobArguments;
 import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
@@ -74,16 +75,13 @@ public class WindowBlindService extends BaseService {
 		instance.performCalibration(Long.valueOf(windowBlindId));
 	}
 
-	/**
-	 * call this method to set a specific dim value
-	 *
-	 * @param args
-	 */
-	public static synchronized void cronSetDim(String[] args) {
-		final String windowBlindId = args[0];
-		final String dimValue = args[1];
+	
+	@ConsumeEvent(value ="WindowBlindService", blocking=true) 
+	public void consume(JobArguments args) {	
+		final String windowBlindId = args.getArgumentList().get(0);
+		final String dimValue = args.getArgumentList().get(1);
 
-		instance.setDim(Long.valueOf(windowBlindId), dimValue);
+		setDim(Long.valueOf(windowBlindId), dimValue);
 	}
 
 	@GET

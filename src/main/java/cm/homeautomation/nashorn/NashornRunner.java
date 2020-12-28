@@ -53,7 +53,7 @@ public class NashornRunner {
 
 	@ConsumeEvent(value = "EventObject", blocking = true)
 	public void handleEvent(final EventObject event) {
-		Logger logger = LogManager.getLogger(this.getClass());
+//		Logger logger = //LogManager.getLogger(this.getClass());
 		if (engine != null) {
 
 			final List<ScriptingEntity> resultList = em
@@ -73,16 +73,16 @@ public class NashornRunner {
 
 						invocable.invokeFunction("eventFunction", event);
 					} catch (final ScriptException e) {
-						logger.error("ScriptException", e);
+//						logger.error("ScriptException", e);
 					} catch (final NoSuchMethodException e) {
-						logger.error("NoSuchMethodException", e);
+//						logger.error("NoSuchMethodException", e);
 					}
 				}
 
 			}
 
 		} else {
-			logger.debug("nashorn engine not enabled");
+//			logger.debug("nashorn engine not enabled");
 		}
 	}
 

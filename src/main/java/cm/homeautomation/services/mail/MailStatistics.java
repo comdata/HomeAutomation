@@ -73,14 +73,14 @@ public class MailStatistics extends BaseService {
 			store.connect("imap.gmail.com", account, args[1]);
 
 			Folder folder = store.getFolder("INBOX");
-			LogManager.getLogger(MailStatistics.class).info("Account: " + account + ": " + folder.getNewMessageCount()
-					+ " - " + folder.getUnreadMessageCount());
+			//LogManager.getLogger(MailStatistics.class).info("Account: " + account + ": " + folder.getNewMessageCount()
+//					+ " - " + folder.getUnreadMessageCount());
 			mailData.setNewMessages(folder.getNewMessageCount());
 			mailData.setUnreadMessages(folder.getUnreadMessageCount());
 			EventObject eventObject = new EventObject(mailData);
 			bus.publish("EventObject", eventObject);
 		} catch (MessagingException e) {
-			LogManager.getLogger(MailStatistics.class).error(e);
+			//LogManager.getLogger(MailStatistics.class).error(e);
 		}
 
 	}
@@ -92,8 +92,8 @@ public class MailStatistics extends BaseService {
 		List<MailData> mailboxStatus = new MailStatistics().getMailboxStatus();
 
 		for (MailData mailData : mailboxStatus) {
-			LogManager.getLogger(MailStatistics.class).info(
-					mailData.getAccount() + " - " + mailData.getNewMessages() + " - " + mailData.getUnreadMessages());
+			//LogManager.getLogger(MailStatistics.class).info(
+//					mailData.getAccount() + " - " + mailData.getNewMessages() + " - " + mailData.getUnreadMessages());
 		}
 	}
 }

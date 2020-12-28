@@ -28,7 +28,7 @@ public class LEDService extends BaseService {
 
 			httpClient.execute(getMethod);
 		} catch (IOException e) {
-//			LogManager.getLogger(this.getClass()).error("IO Exception while calling LED service.", e);
+//			//LogManager.getLogger(this.getClass()).error("IO Exception while calling LED service.", e);
 		}
 	}
 }

@@ -59,14 +59,14 @@ public class TransmissionMonitor {
 
 			Long downloadSpeed = rpcClient.getSessionStats().getDownloadSpeed();
 			Long uploadSpeed = rpcClient.getSessionStats().getUploadSpeed();
-			LogManager.getLogger(TransmissionMonitor.class).info("Download speed: " + downloadSpeed);
-			LogManager.getLogger(TransmissionMonitor.class).info("Upload speed: " + uploadSpeed);
+			//LogManager.getLogger(TransmissionMonitor.class).info("Download speed: " + downloadSpeed);
+			//LogManager.getLogger(TransmissionMonitor.class).info("Upload speed: " + uploadSpeed);
 			int numberOfTorrents = result.getTorrents().size();
 			int numberOfDoneTorrents = 0;
 			List<TorrentInfo> torrents = result.getTorrents();
 			for (TorrentInfo torrentInfo : torrents) {
 				double percentDone = torrentInfo.getPercentDone().doubleValue();
-				LogManager.getLogger(TransmissionMonitor.class).info("Percent done: " + percentDone);
+				//LogManager.getLogger(TransmissionMonitor.class).info("Percent done: " + percentDone);
 				if (percentDone == 1) {
 					numberOfDoneTorrents++;
 					torrentInfo.getId();
@@ -78,8 +78,8 @@ public class TransmissionMonitor {
 
 				}
 			}
-			LogManager.getLogger(TransmissionMonitor.class).info("Done torrents: " + numberOfDoneTorrents);
-			LogManager.getLogger(TransmissionMonitor.class).info("Running torrents: " + numberOfTorrents);
+			//LogManager.getLogger(TransmissionMonitor.class).info("Done torrents: " + numberOfDoneTorrents);
+			//LogManager.getLogger(TransmissionMonitor.class).info("Running torrents: " + numberOfTorrents);
 
 			TransmissionStatusData torrentData = new TransmissionStatusData();
 			torrentData.setUploadSpeed(uploadSpeed);
@@ -89,7 +89,7 @@ public class TransmissionMonitor {
 			EventObject eventObject = new EventObject(torrentData);
 			bus.publish("EventObject", eventObject);
 		} catch (RpcException | Exception e) {
-			LogManager.getLogger(TransmissionMonitor.class).error(e);
+			//LogManager.getLogger(TransmissionMonitor.class).error(e);
 		}
 	}
 }

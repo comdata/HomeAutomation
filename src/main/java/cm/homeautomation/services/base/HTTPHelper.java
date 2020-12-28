@@ -31,7 +31,7 @@ public class HTTPHelper {
 
 		final Runnable httpRequestThread = () -> {
 			try {
-//				LogManager.getLogger(HTTPHelper.class).debug("perform http call: " + url);
+//				//LogManager.getLogger(HTTPHelper.class).debug("perform http call: " + url);
 
 				final HttpGet getMethod = new HttpGet(url);
 				final HttpClientBuilder clientBuilder = HttpClientBuilder.create();
@@ -50,10 +50,10 @@ public class HTTPHelper {
 					callback.handleResponse(httpResponse);
 				}
 
-//				LogManager.getLogger(HTTPHelper.class).debug("http called done: " + httpResponse.getStatusLine());
+//				//LogManager.getLogger(HTTPHelper.class).debug("http called done: " + httpResponse.getStatusLine());
 
 			} catch (final IOException e) {
-//				LogManager.getLogger(HTTPHelper.class).error("calling URL: " + url + " failed", e);
+//				//LogManager.getLogger(HTTPHelper.class).error("calling URL: " + url + " failed", e);
 			}
 		};
 		new Thread(httpRequestThread).start();

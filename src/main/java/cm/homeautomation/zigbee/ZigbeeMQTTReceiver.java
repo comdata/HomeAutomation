@@ -119,7 +119,7 @@ public class ZigbeeMQTTReceiver {
 
 				// System.out.println("ZIGBEE2: " + topic + " " + message);
 
-				LogManager.getLogger(this.getClass()).debug("Got Zigbee message: " + message);
+				//LogManager.getLogger(this.getClass()).debug("Got Zigbee message: " + message);
 
 				if (topic.equals(zigbeeMqttTopic + "/bridge/config/devices")) {
 					handleDeviceMessage(message);
@@ -225,7 +225,7 @@ public class ZigbeeMQTTReceiver {
 					}
 				}
 			} catch (JsonProcessingException e) {
-				LogManager.getLogger(this.getClass()).error(e);
+				//LogManager.getLogger(this.getClass()).error(e);
 			}
 
 		}
@@ -353,12 +353,12 @@ public class ZigbeeMQTTReceiver {
 	private void recordBatteryLevel(ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
 		if ("Battery".equals(zigbeeDevice.getPowerSource())) {
 			System.out.println("battery level start");
-			LogManager.getLogger(this.getClass()).debug("Device is battery powered");
+			//LogManager.getLogger(this.getClass()).debug("Device is battery powered");
 			JsonNode batteryNode = messageObject.get("battery");
 
 			if (batteryNode != null) {
 				int batteryLevel = batteryNode.asInt();
-				LogManager.getLogger(this.getClass()).debug("Device is battery powered - level: " + batteryLevel);
+				//LogManager.getLogger(this.getClass()).debug("Device is battery powered - level: " + batteryLevel);
 
 				recordBatteryLevelForDevice(zigbeeDevice, batteryLevel);
 			}
@@ -372,7 +372,7 @@ public class ZigbeeMQTTReceiver {
 
 		if (linkQualityNode != null) {
 			int linkQuality = linkQualityNode.asInt();
-			LogManager.getLogger(this.getClass()).debug("recording link quality " + linkQuality);
+			//LogManager.getLogger(this.getClass()).debug("recording link quality " + linkQuality);
 
 			recordLinkQualityForDevice(zigbeeDevice, linkQuality);
 		}
@@ -548,7 +548,7 @@ public class ZigbeeMQTTReceiver {
 				sensors.saveSensorData(saveRequest);
 			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException e) {
 				e.printStackTrace();
-				LogManager.getLogger(this.getClass()).error(e);
+				//LogManager.getLogger(this.getClass()).error(e);
 			}
 
 		}
@@ -655,7 +655,7 @@ public class ZigbeeMQTTReceiver {
 
 		if (illuminanceNode != null) {
 			int illuminanceLevel = illuminanceNode.asInt();
-			LogManager.getLogger(this.getClass()).debug("illuminance level: " + illuminanceLevel);
+			//LogManager.getLogger(this.getClass()).debug("illuminance level: " + illuminanceLevel);
 
 			recordIlluminanceLevelForDevice(zigbeeDevice, illuminanceLevel);
 		}
@@ -766,7 +766,7 @@ public class ZigbeeMQTTReceiver {
 
 				em.merge(existingRemote);
 
-				LogManager.getLogger(this.getClass()).debug("remote control: " + message);
+				//LogManager.getLogger(this.getClass()).debug("remote control: " + message);
 
 			}
 
@@ -903,7 +903,7 @@ public class ZigbeeMQTTReceiver {
 			}
 
 		} catch (JsonProcessingException e) {
-			LogManager.getLogger(this.getClass()).error("error parsing zigbee device message " + message, e);
+			//LogManager.getLogger(this.getClass()).error("error parsing zigbee device message " + message, e);
 		}
 
 	}

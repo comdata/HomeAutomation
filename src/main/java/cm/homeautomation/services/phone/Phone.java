@@ -11,14 +11,10 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-
-import org.apache.logging.log4j.LogManager;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.PhoneCallEvent;
@@ -62,8 +58,8 @@ public class Phone extends BaseService {
 	public GenericStatus setStatus(@PathParam("event") String event, @PathParam("mode") String mode,
 			@PathParam("internalNumber") String internalNumber, @PathParam("externalNumber") String externalNumber) {
 
-		LogManager.getLogger(this.getClass()).info(
-				"Phone call: " + mode + " internalNumber: " + internalNumber + " external number: " + externalNumber);
+		//LogManager.getLogger(this.getClass()).info(
+//				"Phone call: " + mode + " internalNumber: " + internalNumber + " external number: " + externalNumber);
 
 		PhoneCallEvent phoneCallEvent = new PhoneCallEvent(event, mode, internalNumber, externalNumber);
 
@@ -100,22 +96,22 @@ public class Phone extends BaseService {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				LogManager.getLogger(Phone.class).info("Thread interrupted.");
+				//LogManager.getLogger(Phone.class).info("Thread interrupted.");
 			}
 		}
 	}
 
 	private void getCall(String host, int portNum) {
 
-		LogManager.getLogger(this.getClass()).info("Host " + host + "; port " + portNum);
+		//LogManager.getLogger(this.getClass()).info("Host " + host + "; port " + portNum);
 		try (Socket s = new Socket(host, portNum)) {
 			new Pipe(s.getInputStream(), System.out).start();
 			new Pipe(System.in, s.getOutputStream()).start();
 		} catch (IOException e) {
-			LogManager.getLogger(this.getClass()).info(e);
+			//LogManager.getLogger(this.getClass()).info(e);
 			return;
 		}
-		LogManager.getLogger(this.getClass()).info("Connected OK");
+		//LogManager.getLogger(this.getClass()).info("Connected OK");
 	}
 
 	/**

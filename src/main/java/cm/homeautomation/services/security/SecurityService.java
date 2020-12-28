@@ -67,7 +67,7 @@ public class SecurityService extends BaseService {
 
 			final SecurityZone securityZone = securityZoneMember.getSecurityZone();
 
-//			LogManager.getLogger(this.getClass())
+//			//LogManager.getLogger(this.getClass())
 //					.debug("Security Zone: " + securityZone.getName() + " state: " + securityZone.isState());
 
 			securityZoneMember.setViolated((windowStateData.getState() == 1) ? true : false);

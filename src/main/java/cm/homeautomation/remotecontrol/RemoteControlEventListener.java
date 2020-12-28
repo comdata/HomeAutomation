@@ -55,7 +55,7 @@ public class RemoteControlEventListener {
 		String name = event.getName();
 		String technicalId = event.getTechnicalId();
 
-		LogManager.getLogger(this.getClass()).debug("got remote event: " + name + "/" + technicalId);
+		//LogManager.getLogger(this.getClass()).debug("got remote event: " + name + "/" + technicalId);
 
 		List<RemoteControl> remoteList = em
 				.createQuery("select rc from RemoteControl rc where rc.technicalId=:technicalId", RemoteControl.class)
@@ -70,13 +70,11 @@ public class RemoteControlEventListener {
 					for (RemoteControlGroup remoteControlGroup : remoteControlGroups) {
 						List<RemoteControlGroupMember> members = remoteControlGroup.getMembers();
 
-						LogManager.getLogger(this.getClass())
-								.debug("found remote group: " + remoteControlGroup.getName());
+						//LogManager.getLogger(this.getClass()).debug("found remote group: " + remoteControlGroup.getName());
 
 						for (RemoteControlGroupMember remoteControlGroupMember : members) {
 
-							LogManager.getLogger(this.getClass())
-									.debug("found remote member: " + remoteControl.getName());
+							//LogManager.getLogger(this.getClass()).debug("found remote member: " + remoteControl.getName());
 							switch (remoteControlGroupMember.getType()) {
 							case LIGHT:
 								LightService.getInstance().dimLight(remoteControlGroupMember.getExternalId(),
@@ -109,7 +107,7 @@ public class RemoteControlEventListener {
 
 		System.out.println("RC " + name + " " + technicalId);
 
-		// LogManager.getLogger(this.getClass()).error("got remote event: " + name + "/"
+		// //LogManager.getLogger(this.getClass()).error("got remote event: " + name + "/"
 		// + technicalId);
 
 		List<RemoteControl> remoteList = em
@@ -125,11 +123,11 @@ public class RemoteControlEventListener {
 					for (RemoteControlGroup remoteControlGroup : remoteControlGroups) {
 						List<RemoteControlGroupMember> members = remoteControlGroup.getMembers();
 
-						// LogManager.getLogger(this.getClass())
+						// //LogManager.getLogger(this.getClass())
 						// .debug("found remote group: " + remoteControlGroup.getName());
 
 						for (RemoteControlGroupMember remoteControlGroupMember : members) {
-//                            LogManager.getLogger(this.getClass())
+//                            //LogManager.getLogger(this.getClass())
 //                                    .debug("found remote member: " + remoteControl.getName());
 
 							switch (remoteControlGroupMember.getType()) {

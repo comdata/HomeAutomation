@@ -58,8 +58,8 @@ public class TVService extends BaseService {
 	public void internalGetCurrentStatus(final String[] args) {
 		final boolean aliveStatus = getInstance().getAliveStatus();
 
-		LogManager.getLogger(TVService.class).debug("TVService got arguments: {}", Arrays.toString(args));
-		LogManager.getLogger(TVService.class).debug("TV status: {}", aliveStatus);
+		//LogManager.getLogger(TVService.class).debug("TVService got arguments: {}", Arrays.toString(args));
+		//LogManager.getLogger(TVService.class).debug("TV status: {}", aliveStatus);
 
 		@SuppressWarnings("unchecked")
 		final List<Switch> resultList = (em
@@ -110,7 +110,7 @@ public class TVService extends BaseService {
 
 			final PhoneCallEvent callEvent = (PhoneCallEvent) eventData;
 
-			LogManager.getLogger(this.getClass()).debug("Tv IP: %s", tvIp);
+			//LogManager.getLogger(this.getClass()).debug("Tv IP: %s", tvIp);
 			final String event = callEvent.getEvent();
 
 			muteOrUnmuteTV(event);
@@ -124,9 +124,9 @@ public class TVService extends BaseService {
 				setMuted(true);
 				tvBinding.sendCommand(tvIp, "MUTE");
 
-				LogManager.getLogger(this.getClass()).info("muting TV");
+				//LogManager.getLogger(this.getClass()).info("muting TV");
 			} catch (final TVNotReachableException e) {
-				LogManager.getLogger(this.getClass()).error(e);
+				//LogManager.getLogger(this.getClass()).error(e);
 			}
 		}
 
@@ -135,18 +135,18 @@ public class TVService extends BaseService {
 				setMuted(true);
 				tvBinding.sendCommand(tvIp, "MUTE");
 
-				LogManager.getLogger(this.getClass()).info("muting TV");
+				//LogManager.getLogger(this.getClass()).info("muting TV");
 			} catch (final TVNotReachableException e) {
-				LogManager.getLogger(this.getClass()).error(e);
+				//LogManager.getLogger(this.getClass()).error(e);
 			}
 		}
 
 		if ("disconnect".equals(event) && isMuted()) {
 			try {
 				tvBinding.sendCommand(tvIp, "MUTE");
-				LogManager.getLogger(this.getClass()).info("unmuting TV");
+				//LogManager.getLogger(this.getClass()).info("unmuting TV");
 			} catch (final TVNotReachableException e) {
-				LogManager.getLogger(this.getClass()).error(e);
+				//LogManager.getLogger(this.getClass()).error(e);
 			}
 		}
 	}
@@ -169,7 +169,7 @@ public class TVService extends BaseService {
 			final TVCommandEvent tvCommandEvent = new TVCommandEvent(tvIp, command);
 			bus.publish("EventObject", new EventObject(tvCommandEvent));
 		} catch (final TVNotReachableException e) {
-			LogManager.getLogger(this.getClass()).error(e);
+			//LogManager.getLogger(this.getClass()).error(e);
 		}
 
 		return new GenericStatus(true);

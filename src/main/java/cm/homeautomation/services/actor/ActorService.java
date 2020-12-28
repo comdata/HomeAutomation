@@ -35,6 +35,7 @@ import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.HTTPHelper;
 import cm.homeautomation.services.ir.InfraredService;
 import cm.homeautomation.services.light.LightService;
+import cm.homeautomation.services.scheduler.JobArguments;
 import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
@@ -110,9 +111,8 @@ public class ActorService extends BaseService {
 			String debugMessage = "Actor Switch Type: " + singleSwitch.getClass().getSimpleName();
 			System.out.println(debugMessage);
 
-
 			if (singleSwitch instanceof MQTTSwitch) {
-				
+
 				MQTTSwitch singleMqttSwitch = (MQTTSwitch) singleSwitch;
 
 				String topic = null;
@@ -127,9 +127,8 @@ public class ActorService extends BaseService {
 					message = singleMqttSwitch.getMqttPowerOffMessage();
 				}
 
-		
 				bus.publish("MQTTSendEvent", new MQTTSendEvent(topic, message));
-				
+
 				System.out.println("sent mqtt");
 
 			} else {
@@ -150,7 +149,7 @@ public class ActorService extends BaseService {
 			try {
 				InfraredService.getInstance().sendCommand(singleSwitch.getIrCommand().getId());
 			} catch (final JsonProcessingException e) {
-		
+
 			}
 		}
 	}
@@ -178,13 +177,11 @@ public class ActorService extends BaseService {
 		String switchSetUrl = singleSwitch.getSwitchSetUrl();
 		switchSetUrl = switchSetUrl.replace("{STATE}", (("0".equals(actorMessage.getStatus())) ? "off" : "on"));
 
-		
-
 		HTTPHelper.performHTTPRequest(switchSetUrl);
 	}
 
 	public ActorService() {
-		instance=this;
+		instance = this;
 	}
 
 	@Scheduled(every = "120s")
@@ -227,6 +224,15 @@ public class ActorService extends BaseService {
 		final String status = args[1];
 
 		ActorService.getInstance().pressSwitch(switchId, status);
+	}
+
+	@ConsumeEvent(value = "ActorService", blocking = true)
+	public void consume(JobArguments arguments) {
+		List<String> args=arguments.getArgumentList(); 
+		final String switchId = args.get(0);
+		final String status = args.get(1);
+
+		pressSwitch(switchId, status);
 	}
 
 	/**

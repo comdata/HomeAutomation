@@ -16,7 +16,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import org.apache.commons.collections4.map.HashedMap;
-import org.apache.log4j.LogManager;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
@@ -55,7 +54,7 @@ public class SchedulerService extends BaseService {
 			System.out.println("Scheduler initialized");
 		} catch (SchedulerException e) {
 			e.printStackTrace();
-			LogManager.getLogger(this.getClass()).error(e);
+			//LogManager.getLogger(this.getClass()).error(e);
 		}
 	}
 
@@ -99,7 +98,7 @@ public class SchedulerService extends BaseService {
 						jobMap.put(taskId, jobKey);
 					}
 				} catch (SchedulerException e) {
-					LogManager.getLogger(this.getClass()).error(e);
+					//LogManager.getLogger(this.getClass()).error(e);
 				}
 			}
 
@@ -117,7 +116,7 @@ public class SchedulerService extends BaseService {
 		try {
 			this.initialize();
 		} catch (SchedulerException e) {
-			LogManager.getLogger(this.getClass()).error(e);
+			//LogManager.getLogger(this.getClass()).error(e);
 		}
 
 		SchedulerResponse schedulerResponse = new SchedulerResponse();
@@ -194,7 +193,7 @@ public class SchedulerService extends BaseService {
 
 			}
 		} catch (IOException e) {
-			LogManager.getLogger(this.getClass()).error(e);
+			//LogManager.getLogger(this.getClass()).error(e);
 		}
 
 	}

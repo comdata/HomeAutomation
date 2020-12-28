@@ -25,7 +25,7 @@ public class EventTranscoder implements Encoder.Text<EventObject>, Decoder.Text<
 		try {
 			return mapper.readValue(s, EventObject.class);
 		} catch (final IOException e) {
-//			LogManager.getLogger(this.getClass()).error("decoding failed: " + s, e);
+//			//LogManager.getLogger(this.getClass()).error("decoding failed: " + s, e);
 		}
 		return null;
 	}
@@ -40,10 +40,10 @@ public class EventTranscoder implements Encoder.Text<EventObject>, Decoder.Text<
 
 		try {
 			final String writeValueAsString = mapper.writeValueAsString(object);
-			LogManager.getLogger(this.getClass()).trace("encoded as: " + writeValueAsString);
+			//LogManager.getLogger(this.getClass()).trace("encoded as: " + writeValueAsString);
 			return writeValueAsString;
 		} catch (final JsonProcessingException e) {
-			LogManager.getLogger(this.getClass()).error("encoding failed.", e);
+			//LogManager.getLogger(this.getClass()).error("encoding failed.", e);
 		}
 		return null;
 	}

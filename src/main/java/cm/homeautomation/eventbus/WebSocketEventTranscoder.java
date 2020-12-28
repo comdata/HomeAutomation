@@ -38,7 +38,7 @@ public class WebSocketEventTranscoder implements Encoder.Text<WebSocketEvent>, D
 		try {
 			return mapper.readValue(s, WebSocketEvent.class);
 		} catch (IOException e) {
-			LogManager.getLogger(this.getClass()).error("decoding failed: "+s, e);
+			//LogManager.getLogger(this.getClass()).error("decoding failed: "+s, e);
 		}
 		return null;
 	}
@@ -54,7 +54,7 @@ public class WebSocketEventTranscoder implements Encoder.Text<WebSocketEvent>, D
 		try {
 			return mapper.writeValueAsString(object);
 		} catch (JsonProcessingException e) {
-			LogManager.getLogger(this.getClass()).error("encoding failed.", e);
+			//LogManager.getLogger(this.getClass()).error("encoding failed.", e);
 		}
 		return null;
 	}

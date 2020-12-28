@@ -1,12 +1,17 @@
 package cm.homeautomation.mqtt.client;
 
+
+import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.apache.log4j.LogManager;
 
+import cm.homeautomation.services.scheduler.JobArguments;
 import io.quarkus.runtime.StartupEvent;
+import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
 @ApplicationScoped
@@ -29,12 +34,21 @@ public class MQTTPubClient {
 		bus.publish("MQTTSendEvent", event);
 	}
 
+	@ConsumeEvent(value ="MQTTPubClient", blocking=true) 
+	public void consume(JobArguments args) {	
+		String topic = args.getArgumentList().get(0);
+		String content = "";
+		System.out.println("Topic: " + topic + " " + content);
+		//LogManager.getLogger(MQTTPubClient.class).debug("Topic: " + topic + " " + content);
+		publish(new MQTTSendEvent(topic, content));
+	}
+	
 	public static void publish(String[] args) {
 
 		String topic = args[0];
 		String content = "";
 
-		LogManager.getLogger(MQTTPubClient.class).debug("Topic: " + topic + " " + content);
+		//LogManager.getLogger(MQTTPubClient.class).debug("Topic: " + topic + " " + content);
 
 		instance.publish(new MQTTSendEvent(topic, content));
 

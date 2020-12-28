@@ -145,7 +145,7 @@ public class DashButtonEventListener {
 
 				System.out.println(message);
 
-				LogManager.getLogger(this.getClass()).info(message, switchId, newStatus);
+				
 
 				bus.publish("ActorPressSwitchEvent", new ActorPressSwitchEvent(switchId, newStatus));
 			}
@@ -158,7 +158,7 @@ public class DashButtonEventListener {
 
 				nashornRunner.run(jsCode);
 			} catch (final ScriptException e) {
-				LogManager.getLogger(this.getClass()).error("error running code: {}", jsCode, e);
+				
 			}
 
 		}

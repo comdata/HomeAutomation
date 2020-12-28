@@ -23,6 +23,8 @@ import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
+import cm.homeautomation.services.scheduler.JobArguments;
+import io.quarkus.vertx.ConsumeEvent;
 
 @Path("thermostat/")
 public class ThermostatService extends BaseService {
@@ -35,9 +37,10 @@ public class ThermostatService extends BaseService {
 
 	private static ThermostatService instance = null;
 
-	public static void cronSetStatus(final String[] args) {
-		final Long id = Long.valueOf(args[0]);
-		final String value = args[1];
+	@ConsumeEvent(value = "WindowBlindService", blocking = true)
+	public void cronSetStatus(JobArguments args) {
+		final Long id = Long.valueOf(args.getArgumentList().get(0));
+		final String value = args.getArgumentList().get(1);
 		getInstance().setValue(id, value);
 	}
 
@@ -72,7 +75,7 @@ public class ThermostatService extends BaseService {
 			singleSwitch.setLatestStatus(value);
 
 		} catch (final IOException e) {
-			LogManager.getLogger(this.getClass()).error(e);
+			// LogManager.getLogger(this.getClass()).error(e);
 		}
 	}
 
@@ -94,7 +97,7 @@ public class ThermostatService extends BaseService {
 
 		value = value.replaceAll("[\n|\r|\t]", "_");
 
-		LogManager.getLogger(this.getClass()).info("Set {} to value: {}", id, value);
+		// LogManager.getLogger(this.getClass()).info("Set {} to value: {}", id, value);
 		return new GenericStatus(true);
 	}
 

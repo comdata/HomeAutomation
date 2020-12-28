@@ -44,7 +44,7 @@ public class OverviewWebSocket {
 
 			OverviewEndPointConfiguration.setOverviewEndpoint(this);
 		} catch (final InstantiationException e) {
-			LogManager.getLogger(this.getClass()).error("Overview Websocket initialization failed", e);
+			//LogManager.getLogger(this.getClass()).error("Overview Websocket initialization failed", e);
 		}
 
 	}
@@ -52,24 +52,24 @@ public class OverviewWebSocket {
 	@ConsumeEvent(value = "SensorData", blocking = true)
 	public void handleSensorDataChanged(final SensorData sensorData) {
 
-		LogManager.getLogger(this.getClass()).info("Overview got event");
+		//LogManager.getLogger(this.getClass()).info("Overview got event");
 
 		if (overviewService != null && sensorData != null) {
 			final OverviewTile overviewTileForRoom = overviewService.updateOverviewTile(sensorData);
 
 			if (sensorData.getSensor() != null && sensorData.getSensor().getRoom() != null) {
-				LogManager.getLogger(this.getClass())
-						.info("Got eventbus for room: " + sensorData.getSensor().getRoom().getRoomName());
+				//LogManager.getLogger(this.getClass())
+//						.info("Got eventbus for room: " + sensorData.getSensor().getRoom().getRoomName());
 
 				try {
 
 					overviewEndPointConfiguration = new OverviewEndPointConfiguration();
 					overviewEndpoint = overviewEndPointConfiguration.getEndpointInstance(OverviewWebSocket.class);
-					LogManager.getLogger(this.getClass()).info("Sending tile: " + overviewTileForRoom.getRoomName()
-							+ " - " + overviewTileForRoom.getNumber());
+					//LogManager.getLogger(this.getClass()).info("Sending tile: " + overviewTileForRoom.getRoomName()
+//							+ " - " + overviewTileForRoom.getNumber());
 					overviewEndpoint.sendTile(overviewTileForRoom);
 				} catch (final InstantiationException e) {
-					LogManager.getLogger(this.getClass()).error("Sending eventbus updates failed", e);
+					//LogManager.getLogger(this.getClass()).error("Sending eventbus updates failed", e);
 				}
 			}
 		} else {
@@ -132,8 +132,8 @@ public class OverviewWebSocket {
 			if (session.isOpen()) {
 
 				try {
-					LogManager.getLogger(this.getClass()).info(
-							"Sending to " + session.getId() + " - " + tile.getRoomName() + " - " + tile.getNumber());
+					//LogManager.getLogger(this.getClass()).info(
+//							"Sending to " + session.getId() + " - " + tile.getRoomName() + " - " + tile.getNumber());
 
 					if (session.isOpen()) {
 
@@ -142,7 +142,7 @@ public class OverviewWebSocket {
 						userSessions.remove(key);
 					}
 				} catch (final Exception e) {
-					LogManager.getLogger(this.getClass()).error("remove of key failed: " + key, e); //
+					//LogManager.getLogger(this.getClass()).error("remove of key failed: " + key, e); //
 				}
 			}
 		}
@@ -165,8 +165,8 @@ public class OverviewWebSocket {
 							session.getBasicRemote().flushBatch();
 
 						} catch (IllegalStateException | IOException | EncodeException e) {
-							LogManager.getLogger(this.getClass())
-									.error("Sending failed" + session.getId() + " key: " + key, e); //
+							//LogManager.getLogger(this.getClass())
+//									.error("Sending failed" + session.getId() + " key: " + key, e); //
 							userSessions.remove(key);
 						}
 					} else {

@@ -96,7 +96,7 @@ public class CameraService extends BaseService {
 					try {
 						output.write(imageData);
 					} catch (Exception e) {
-						LogManager.getLogger(this.getClass()).error("Write camera output stream failed.", e);
+						//LogManager.getLogger(this.getClass()).error("Write camera output stream failed.", e);
 					}
 				}
 			};
@@ -194,7 +194,7 @@ public class CameraService extends BaseService {
 			camera.setImageSnapshot(cameraSnapshot);
 			em.merge(camera);
 		} catch (IOException | RuntimeException e) {
-			LogManager.getLogger(CameraService.class).error("loading the 'no image' image failed.", e);
+			//LogManager.getLogger(CameraService.class).error("loading the 'no image' image failed.", e);
 		}
 	}
 

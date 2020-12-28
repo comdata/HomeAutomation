@@ -105,7 +105,7 @@ public class WindowStateService extends BaseService {
 
 		synchronized (this) {
 
-//			LogManager.getLogger(this.getClass()).debug("window: " + windowId + " state: ---" + state + "---");
+//			//LogManager.getLogger(this.getClass()).debug("window: " + windowId + " state: ---" + state + "---");
 
 			final List<Window> resultList = em.createQuery("select w from Window w where w.id=:id", Window.class)
 					.setParameter("id", windowId).getResultList();
@@ -154,7 +154,7 @@ public class WindowStateService extends BaseService {
 			try {
 				sensors.saveSensorData(sensorDataSaveRequest);
 			} catch (SensorDataLimitViolationException | SecurityException | IllegalStateException e) {
-//				LogManager.getLogger(this.getClass()).error("window: " + windowId + " state: ---" + state + "---", e);
+//				//LogManager.getLogger(this.getClass()).error("window: " + windowId + " state: ---" + state + "---", e);
 			}
 		}
 	}

@@ -1,53 +1,50 @@
 package cm.homeautomation.services.scheduler;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+import io.vertx.core.eventbus.EventBus;
+
 @ApplicationScoped
 public class SingleJobClass implements Job {
+
+	@Inject
+	EventBus bus;
 
 	public SingleJobClass() {
 		super();
 	}
+	
+	
 
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 
-		try {
-			String clazz = (String) context.getJobDetail().getJobDataMap().get("clazz");
+		String clazz = (String) context.getJobDetail().getJobDataMap().get("clazz");
+		System.out.println("clazz: "+clazz);
+		String[] clazzParts = clazz.split("\\.");
+		System.out.println(clazzParts.length);
+		String shortClazz = clazzParts[clazzParts.length-1];
+		List<String> argumentList = (List<String>) context.getJobDetail().getJobDataMap().get("arguments");
 
-			String method = (String) context.getJobDetail().getJobDataMap().get("method");
-			Object object = context.getJobDetail().getJobDataMap().get("arguments");
+		JobArguments jobArguments = new JobArguments(argumentList);
+		
+		System.out.println(argumentList);
 
-			if (object instanceof List) {
-
-				List<?> argumentList = (List<?>) object;
-
-				String[] arguments = (argumentList != null) ? argumentList.toArray(new String[0]) : new String[0];
-
-				Method specificMethod = Class.forName(clazz).getMethod(method, String[].class);
-
-				if (specificMethod != null) {
-//                System.out.println(
-//                        "Invoking method Task called. " + clazz + "." + method + " arguments: " + argumentString);
-
-					final Object[] args = new Object[1];
-					args[0] = arguments;
-
-					specificMethod.invoke(null, args);
-				}
-			}
-		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException | IllegalArgumentException
-				| IllegalAccessException | InvocationTargetException e) {
-	
+		for (String object2 : argumentList) {
+			System.out.println(object2);
 		}
+
+		String[] arguments = argumentList.toArray(new String[0]);
+		System.out.println(arguments);
+
+		bus.publish(shortClazz, jobArguments);
 
 	}
 

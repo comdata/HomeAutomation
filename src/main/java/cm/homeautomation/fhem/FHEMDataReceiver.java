@@ -40,7 +40,7 @@ public class FHEMDataReceiver {
 	}
 
 	public void receiveFHEMData(String topic, String messageContent) {
-//		LogManager.getLogger(FHEMDataReceiver.class).debug("FHEM message for topic: {} message: {}", topic,  messageContent);
+//		//LogManager.getLogger(FHEMDataReceiver.class).debug("FHEM message for topic: {} message: {}", topic,  messageContent);
 
 		if (topic != null) {
 			String[] topicParts = topic.split("/");
@@ -60,7 +60,7 @@ public class FHEMDataReceiver {
 						handleDeviceSpecific(topic, messageContent, device, fhemDevice, deviceType);
 					}
 				} else {
-//					LogManager.getLogger(FHEMDataReceiver.class).error("FHEM Device not found for device: {}", device);
+//					//LogManager.getLogger(FHEMDataReceiver.class).error("FHEM Device not found for device: {}", device);
 					createNewFHEMDevices(device);
 				}
 
@@ -80,7 +80,7 @@ public class FHEMDataReceiver {
 				FHEMWindowDataReceiver.receive(topic, messageContent, fhemDevice);
 				break;
 			case SWITCH:
-				LogManager.getLogger(FHEMDataReceiver.class).error("Add implementation for device: " + device);
+				//LogManager.getLogger(FHEMDataReceiver.class).error("Add implementation for device: " + device);
 				break;
 			case WINDOWBLIND:
 				FHEMWindowBlindDataReceiver.receive(topic, messageContent, fhemDevice);
@@ -90,13 +90,13 @@ public class FHEMDataReceiver {
 				break;
 
 			default:
-//				LogManager.getLogger(FHEMDataReceiver.class).error(
+//				//LogManager.getLogger(FHEMDataReceiver.class).error(
 //						"Device type: " + deviceType + " for device: " + device + " not mapped.");
 				break;
 			}
 
 		} else {
-//			LogManager.getLogger(FHEMDataReceiver.class).debug("Device type for device: " + device);
+//			//LogManager.getLogger(FHEMDataReceiver.class).debug("Device type for device: " + device);
 		}
 	}
 

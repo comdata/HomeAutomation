@@ -93,8 +93,8 @@ public class PowerMeterSensor {
 				final Timestamp minTimestamp = (Timestamp) resultElement[2];
 				final Timestamp maxTimestamp = (Timestamp) resultElement[3];
 
-				LogManager.getLogger(PowerMeterSensor.class).error("Min Timestamp: {} max timestamp: {} counter: {}",
-						minTimestamp, maxTimestamp, powerCounter);
+				//LogManager.getLogger(PowerMeterSensor.class).error("Min Timestamp: {} max timestamp: {} counter: {}",
+//						minTimestamp, maxTimestamp, powerCounter);
 
 				em.createQuery(
 						"delete from PowerMeterPing p where p.timestamp>=:minTimestamp and p.timestamp<=:maxTimestamp")
@@ -105,8 +105,8 @@ public class PowerMeterSensor {
 			}
 
 		} else {
-			LogManager.getLogger(PowerMeterSensor.class)
-					.error("arguments not specified correctly - expecting number of entries for first method call");
+			//LogManager.getLogger(PowerMeterSensor.class)
+//					.error("arguments not specified correctly - expecting number of entries for first method call");
 		}
 	}
 
@@ -160,7 +160,7 @@ public class PowerMeterSensor {
 	
 
 			} catch (final Exception e) {
-				LogManager.getLogger(PowerMeterSensor.class).error("error persisting power data", e);
+				//LogManager.getLogger(PowerMeterSensor.class).error("error persisting power data", e);
 			}
 
 			final boolean parseBoolean = Boolean
@@ -174,7 +174,7 @@ public class PowerMeterSensor {
 							try {
 								sendNewData();
 							} catch (final Exception e) {
-								LogManager.getLogger(this.getClass()).error("Failed sending new data", e);
+								//LogManager.getLogger(this.getClass()).error("Failed sending new data", e);
 							}
 						}
 					};
