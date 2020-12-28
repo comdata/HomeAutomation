@@ -1,0 +1,318 @@
+{
+	"commit": "6b32f30",
+	"config": {
+		"advanced": {
+			"adapter_concurrent": null,
+			"availability_blacklist": [],
+			"availability_blocklist": [],
+			"availability_passlist": [],
+			"availability_timeout": 0,
+			"availability_whitelist": [],
+			"cache_state": true,
+			"cache_state_persistent": true,
+			"cache_state_send_on_startup": true,
+			"channel": 11,
+			"elapsed": false,
+			"ext_pan_id": [
+				221,
+				221,
+				221,
+				221,
+				221,
+				221,
+				221,
+				221
+			],
+			"homeassistant_discovery_topic": "homeassistant",
+			"homeassistant_legacy_triggers": true,
+			"homeassistant_status_topic": "hass/status",
+			"last_seen": "ISO_8601",
+			"legacy_api": true,
+			"log_directory": "/app/data/log/%TIMESTAMP%",
+			"log_file": "log.txt",
+			"log_level": "info",
+			"log_output": [
+				"console",
+				"file"
+			],
+			"log_rotation": true,
+			"log_syslog": {
+				
+			},
+			"pan_id": 6754,
+			"report": false,
+			"soft_reset_timeout": 0,
+			"timestamp_format": "YYYY-MM-DD HH:mm:ss"
+		},
+		"ban": [],
+		"blocklist": [],
+		"device_options": {
+			
+		},
+		"devices": {
+			"0x000b57fffe521310": {
+				"friendly_name": "Fernbedienung Arbeitszimmer"
+			},
+			"0x000b57fffe8a45d1": {
+				"friendly_name": "Stehlampe Lennard 3"
+			},
+			"0x000b57fffe8b8be8": {
+				"friendly_name": "SD2"
+			},
+			"0x000b57fffe8cd8b9": {
+				"friendly_name": "Stehlampe Lennard 2"
+			},
+			"0x000b57fffe8cf5ac": {
+				"friendly_name": "Ballon Lea"
+			},
+			"0x000b57fffe8e13f3": {
+				"friendly_name": "Bad 2"
+			},
+			"0x000b57fffe9655b4": {
+				"friendly_name": "Stehlampe Lennard 1"
+			},
+			"0x000b57fffe9700d6": {
+				"friendly_name": "Bewegungsmelder Flur EG"
+			},
+			"0x000b57fffe9a3df6": {
+				"friendly_name": "Schreibtisch"
+			},
+			"0x000b57fffe9d2e5d": {
+				"friendly_name": "Bad 1"
+			},
+			"0x000b57fffe9defc5": {
+				"friendly_name": "Fernbedienung Lennard"
+			},
+			"0x000b57fffe9f3e75": {
+				"friendly_name": "Haus Lennard"
+			},
+			"0x000b57fffea4c8e9": {
+				"friendly_name": "SD1"
+			},
+			"0x000b57fffea7f927": {
+				"friendly_name": "Deckenleuchte Lennard"
+			},
+			"0x000b57fffeb283c9": {
+				"friendly_name": "Deckenleuchte Arbeitszimmer"
+			},
+			"0x000b57fffebee945": {
+				"friendly_name": "SD4"
+			},
+			"0x000b57fffebeee14": {
+				"friendly_name": "SD3"
+			},
+			"0x000b57fffedbe667": {
+				"friendly_name": "Fernbedienung Schlafzimmer"
+			},
+			"0x000b57fffee2cb16": {
+				"friendly_name": "Bad 6"
+			},
+			"0x000b57fffeebd704": {
+				"friendly_name": "Bad 5"
+			},
+			"0x000b57fffeec640e": {
+				"friendly_name": "Bad 3"
+			},
+			"0x000b57fffeec6a8b": {
+				"friendly_name": "Bad 4"
+			},
+			"0x000d6ffffe1bc5b2": {
+				"friendly_name": "Fernbedienung Wohnzimmer"
+			},
+			"0x000d6ffffe2ad5cd": {
+				"friendly_name": "RGB Arbeitszimmer Steckdose"
+			},
+			"0x000d6ffffe2ade65": {
+				"friendly_name": "Beamer"
+			},
+			"0x000d6ffffe9a9f95": {
+				"friendly_name": "Lautsprecher"
+			},
+			"0x000d6ffffe9aa4f1": {
+				"friendly_name": "Fernseher Lennard"
+			},
+			"0x000d6ffffe9c22b6": {
+				"friendly_name": "Spiegel"
+			},
+			"0x000d6ffffe9c601e": {
+				"friendly_name": "Drucker"
+			},
+			"0x000d6ffffe9f3582": {
+				"friendly_name": "PS4"
+			},
+			"0x000d6ffffea03c07": {
+				"friendly_name": "Repeater EG"
+			},
+			"0x000d6ffffea5c76d": {
+				"friendly_name": "Stehlampe"
+			},
+			"0x000d6ffffeb2c4d1": {
+				"friendly_name": "FB Arbeitszimmer"
+			},
+			"0x00158d00038c0f82": {
+				"friendly_name": "0x00158d00038c0f82"
+			},
+			"0x00158d00038c0fe8": {
+				"friendly_name": "Flur Keller links oben"
+			},
+			"0x00158d000451907f": {
+				"friendly_name": "Bewegungsmelder Wohnzimmer"
+			},
+			"0x00158d00047ea551": {
+				"friendly_name": "Wasser Küche"
+			},
+			"0x001788011025893c": {
+				"friendly_name": "0x001788011025893c"
+			},
+			"0x00178801105c2f4e": {
+				"friendly_name": "Stehlampe Schlafzimmer"
+			},
+			"0x14b457fffefaefc2": {
+				"friendly_name": "0x14b457fffefaefc2"
+			},
+			"0x14b457fffefaeffa": {
+				"friendly_name": "0x14b457fffefaeffa"
+			},
+			"0x588e81fffe6000eb": {
+				"friendly_name": "0x588e81fffe6000eb"
+			},
+			"0x588e81fffe6bc268": {
+				"friendly_name": "0x588e81fffe6bc268"
+			},
+			"0x588e81fffebcc097": {
+				"friendly_name": "0x588e81fffebcc097"
+			},
+			"0x680ae2fffe32e4a6": {
+				"friendly_name": "Bewegungsmelder Flur OG"
+			},
+			"0x680ae2fffe3cf2e4": {
+				"friendly_name": "Dimmer Treppenhaus"
+			},
+			"0x680ae2fffe3f0573": {
+				"friendly_name": "0x680ae2fffe3f0573"
+			},
+			"0x680ae2fffe6fd2d5": {
+				"friendly_name": "Rollo Treppenhaus"
+			},
+			"0x680ae2fffef8187a": {
+				"friendly_name": "Schreibtisch Mandy"
+			},
+			"0x7cb03eaa00b0b89e": {
+				"friendly_name": "Plug 01"
+			},
+			"0x7cb03eaa00b0cd53": {
+				"friendly_name": "Plug 02"
+			},
+			"0xd0cf5efffe159a45": {
+				"friendly_name": "Couch 5"
+			},
+			"0xd0cf5efffe162327": {
+				"friendly_name": "Couch 4"
+			},
+			"0xd0cf5efffe22aafe": {
+				"friendly_name": "Couch 3"
+			},
+			"0xd0cf5efffe2bcb0e": {
+				"friendly_name": "Couch 2"
+			},
+			"0xd0cf5efffe2d37fb": {
+				"friendly_name": "Couch 1"
+			},
+			"0xec1bbdfffe85e485": {
+				"friendly_name": "Arbeitsleuchte"
+			},
+			"0xec1bbdfffea85228": {
+				"friendly_name": "Bewegungsmelder Arbeitszimmer"
+			}
+		},
+		"experimental": {
+			"new_api": true,
+			"output": "json"
+		},
+		"external_converters": [],
+		"frontend": {
+			"port": 8080
+		},
+		"groups": {
+			"1": {
+				"devices": [
+					"0xd0cf5efffe2bcb0e",
+					"0xd0cf5efffe159a45",
+					"0xd0cf5efffe2d37fb",
+					"0xd0cf5efffe22aafe",
+					"0xd0cf5efffe162327"
+				],
+				"friendly_name": "Couchlampe",
+				"optimistic": true,
+				"retain": false,
+				"transition": 2
+			},
+			"2": {
+				"devices": [
+					"0xd0cf5efffe2bcb0e",
+					"0xd0cf5efffe159a45",
+					"0xd0cf5efffe2d37fb",
+					"0xd0cf5efffe22aafe",
+					"0xd0cf5efffe162327"
+				],
+				"friendly_name": "Couchlampe",
+				"optimistic": true,
+				"retain": false,
+				"transition": 2
+			}
+		},
+		"homeassistant": true,
+		"map_options": {
+			"graphviz": {
+				"colors": {
+					"fill": {
+						"coordinator": "#e04e5d",
+						"enddevice": "#fff8ce",
+						"router": "#4ea3e0"
+					},
+					"font": {
+						"coordinator": "#ffffff",
+						"enddevice": "#000000",
+						"router": "#ffffff"
+					},
+					"line": {
+						"active": "#009900",
+						"inactive": "#994444"
+					}
+				}
+			}
+		},
+		"mqtt": {
+			"base_topic": "zigbee2mqtt",
+			"discovery": true,
+			"include_device_information": false,
+			"server": "mqtt://nas"
+		},
+		"passlist": [],
+		"permit_join": true,
+		"serial": {
+			"disable_led": false,
+			"port": "/dev/ttyACM0"
+		},
+		"whitelist": []
+	},
+	"coordinator": {
+		"meta": {
+			"maintrel": 3,
+			"majorrel": 2,
+			"minorrel": 6,
+			"product": 0,
+			"revision": 20190608,
+			"transportrev": 2
+		},
+		"type": "zStack12"
+	},
+	"log_level": "info",
+	"network": {
+		"channel": 11,
+		"extended_pan_id": "0xdddddddddddddddd",
+		"pan_id": 6754
+	},
+	"permit_join": true,
+	"version": "1.16.1"
+}

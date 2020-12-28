@@ -25,14 +25,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.hibernate.Hibernate;
-
-import com.influxdb.client.InfluxDBClient;
-import com.influxdb.client.WriteApi;
-import com.influxdb.client.domain.WritePrecision;
 
 import cm.homeautomation.configuration.ConfigurationService;
-import cm.homeautomation.db.InfluxDBService;
 import cm.homeautomation.device.DeviceService;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
@@ -61,9 +55,6 @@ public class Sensors extends BaseService {
 	EventBus bus;
 
 	@Inject
-	InfluxDBService influxDBService;
-
-	@Inject
 	EntityManager em;
 
 	@Inject
@@ -72,8 +63,6 @@ public class Sensors extends BaseService {
 	@Inject
 	DeviceService deviceService;
 
-	@Inject
-	InfluxDBClient influxDBClient;
 
 	class DataLoadThread extends Thread {
 		private SensorDatas sensorDatas;
@@ -553,7 +542,7 @@ public class Sensors extends BaseService {
 //                LogManager.getLogger(this.getClass()).debug("merging data");
 				existingSensorData.setValidThru(new Date());
 				em.merge(existingSensorData);
-				saveToInflux(existingSensorData);
+				
 //                LogManager.getLogger(this.getClass()).debug("Committing data: " + existingSensorData.getValue());
 			} else {
 				if ((existingSensorData != null) && (requestSensorData.getDateTime() != null)) {
@@ -565,7 +554,7 @@ public class Sensors extends BaseService {
 				sensorData = requestSensorData;
 				sensorData.setSensor(sensor);
 				em.persist(sensorData);
-				saveToInflux(sensorData);
+				
 				sensorDataMap.put(sensorId, sensorData);
 
 				bus.publish("EventObject", new EventObject(sensorData));
@@ -575,31 +564,6 @@ public class Sensors extends BaseService {
 //            LogManager.getLogger(this.getClass()).error("sensor is null");
 		}
 
-	}
-
-	public void saveToInflux(SensorData inSensorData) {
-
-		try (WriteApi writeApi = influxDBClient.getWriteApi()) {
-
-			SensorData sensorData = Hibernate.unproxy(inSensorData, SensorData.class);
-			
-			InfluxSensorData influxSensorData = new InfluxSensorData();
-
-			if (sensorData.getSensor() != null && sensorData.getSensor().getRoom() != null) {
-				influxSensorData.room = sensorData.getSensor().getRoom().getRoomName();
-				influxSensorData.roomId = sensorData.getSensor().getRoom().getId();
-			}
-
-			System.out.println("influx date time: "+sensorData.getDateTime());
-			
-			influxSensorData.value = sensorData.getValue();
-			influxSensorData.sensorName = sensorData.getSensor().getSensorName();
-			influxSensorData.sensorId = sensorData.getSensor().getId();
-			influxSensorData.dateTime = ((Date)sensorData.getDateTime().clone()).toInstant();
-
-			writeApi.writeMeasurement(WritePrecision.MS, influxSensorData);
-			System.out.println("Wrote to influx "+influxSensorData.sensorName+" "+influxSensorData.value);
-		}
 	}
 
 	private boolean saveSensorDataWithTime(final Long sensorId, final String value, final Date timestamp)
