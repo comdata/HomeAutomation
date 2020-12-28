@@ -1,5 +1,7 @@
 package cm.homeautomation.services.scheduler;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -18,7 +20,7 @@ public class SingleJobClass implements Job {
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 
-//		try {
+		try {
 			String clazz = (String) context.getJobDetail().getJobDataMap().get("clazz");
 
 			String method = (String) context.getJobDetail().getJobDataMap().get("method");
@@ -30,22 +32,22 @@ public class SingleJobClass implements Job {
 
 				String[] arguments = (argumentList != null) ? argumentList.toArray(new String[0]) : new String[0];
 
-//				Method specificMethod = Class.forName(clazz).getMethod(method, String[].class);
-//
-//				if (specificMethod != null) {
-////                System.out.println(
-////                        "Invoking method Task called. " + clazz + "." + method + " arguments: " + argumentString);
-//
-//					final Object[] args = new Object[1];
-//					args[0] = arguments;
-//
-//					specificMethod.invoke(null, args);
-//				}
+				Method specificMethod = Class.forName(clazz).getMethod(method, String[].class);
+
+				if (specificMethod != null) {
+//                System.out.println(
+//                        "Invoking method Task called. " + clazz + "." + method + " arguments: " + argumentString);
+
+					final Object[] args = new Object[1];
+					args[0] = arguments;
+
+					specificMethod.invoke(null, args);
+				}
 			}
-//		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException | IllegalArgumentException
-//				| IllegalAccessException | InvocationTargetException e) {
-//			LogManager.getLogger(this.getClass()).error(e);
-//		}
+		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException | IllegalArgumentException
+				| IllegalAccessException | InvocationTargetException e) {
+	
+		}
 
 	}
 
