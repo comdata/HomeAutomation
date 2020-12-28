@@ -29,14 +29,15 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.LogManager;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.Camera;
 import cm.homeautomation.entities.CameraImageHistory;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
+import cm.homeautomation.services.scheduler.JobArguments;
 import io.quarkus.runtime.Startup;
+import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
 @ApplicationScoped
@@ -46,22 +47,19 @@ public class CameraService extends BaseService {
 
 	@Inject
 	EventBus bus;
-	private static CameraService instance;
-	
+
 	@Inject
 	EntityManager em;
-	
+
 	@Inject
 	ConfigurationService configurationService;
 
 	public CameraService() {
-		instance = this;
 	}
 
 	@Path("getAll")
 	@GET
 	public List<Camera> getAll() {
-		
 
 		@SuppressWarnings("unchecked")
 		List<Camera> resultList = em.createQuery("select c from Camera c where c.enabled=true").getResultList();
@@ -81,7 +79,6 @@ public class CameraService extends BaseService {
 	@Produces("image/jpeg")
 	@GET
 	public Response getSnapshot(@PathParam("id") Long id) {
-	
 
 		List<Camera> resultList = em.createQuery("select c from Camera c where c.id=:id", Camera.class)
 				.setParameter("id", id).getResultList();
@@ -96,7 +93,8 @@ public class CameraService extends BaseService {
 					try {
 						output.write(imageData);
 					} catch (Exception e) {
-						//LogManager.getLogger(this.getClass()).error("Write camera output stream failed.", e);
+						// LogManager.getLogger(this.getClass()).error("Write camera output stream
+						// failed.", e);
 					}
 				}
 			};
@@ -107,38 +105,37 @@ public class CameraService extends BaseService {
 		return Response.serverError().build();
 	}
 
-	public void prepareCameraImage(String[] args) {
-		
-		List<Camera> resultList = em.createQuery("select c from Camera c where c.id=:id", Camera.class)
-				.setParameter("id", Long.parseLong(args[0])).getResultList();
-		
-		try {
-		
-		if (resultList != null && !resultList.isEmpty()) {
+	@ConsumeEvent(value = "CameraService", blocking = true)
+	public void prepareCameraImage(JobArguments args) {
+		String id = args.getArgumentList().get(0);
 
-			for (Camera camera : resultList) {
-				if (camera.isEnabled()) {
-					singleCameraUpdateInternal(args, em, camera);
+		String x = args.getArgumentList().get(1);
+		String y = args.getArgumentList().get(2);
+
+		List<Camera> resultList = em.createQuery("select c from Camera c where c.id=:id", Camera.class)
+				.setParameter("id", Long.parseLong(id)).getResultList();
+
+		try {
+
+			if (resultList != null && !resultList.isEmpty()) {
+
+				for (Camera camera : resultList) {
+					if (camera.isEnabled()) {
+						singleCameraUpdateInternal(x, y, camera);
+					}
 				}
 			}
-		}
-		cleanOldImages();
+			cleanOldImages();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	@SuppressWarnings("unused")
-	private static void singleCameraUpdate(String[] args, EntityManager em, Camera camera) {
-		instance.singleCameraUpdateInternal(args, em, camera);
-	}
-
-	
-	private void singleCameraUpdateInternal(String[] args, EntityManager em, Camera camera) {
+	public void singleCameraUpdateInternal(String x, String y, Camera camera) {
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream();) {
 
 			final BufferedImage image = resize(new URL(camera.getIcon()),
-					new Dimension(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
+					new Dimension(Integer.parseInt(x), Integer.parseInt(y)));
 			ImageIO.write(image, "jpg", bos);
 			byte[] cameraSnapshot = bos.toByteArray();
 			camera.setImageSnapshot(cameraSnapshot);
@@ -167,34 +164,31 @@ public class CameraService extends BaseService {
 
 			bus.publish("EventObject", event);
 		} catch (Exception e) {
-			loadNoImage(args, em, camera);
+			loadNoImage(x, y, camera);
 		} finally {
 		}
 	}
 
-	
 	private void cleanOldImages() {
-		
 
 		em.createQuery("delete from CameraImageHistory c where c.dateTaken<=:deleteDate")
 				.setParameter("deleteDate", new Date((new Date()).getTime() - (3 * 86400 * 1000))).executeUpdate();
 
-	
 	}
 
-	
-	private  void loadNoImage(String[] args, EntityManager em, Camera camera) {
+	private void loadNoImage(String x, String y, Camera camera) {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			final BufferedImage image = resize(new File("resource/noimage.png").toURI().toURL(),
-					new Dimension(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
+					new Dimension(Integer.parseInt(x), Integer.parseInt(y)));
 			ImageIO.write(image, "jpg", bos);
 			byte[] cameraSnapshot = bos.toByteArray();
 
 			camera.setImageSnapshot(cameraSnapshot);
 			em.merge(camera);
 		} catch (IOException | RuntimeException e) {
-			//LogManager.getLogger(CameraService.class).error("loading the 'no image' image failed.", e);
+			// LogManager.getLogger(CameraService.class).error("loading the 'no image' image
+			// failed.", e);
 		}
 	}
 
@@ -204,8 +198,6 @@ public class CameraService extends BaseService {
 		StreamingOutput streamingOutput = new StreamingOutput() {
 			@Override
 			public void write(OutputStream output) throws IOException, WebApplicationException {
-
-				
 
 				Camera camera = em.find(Camera.class, id);
 
