@@ -37,11 +37,11 @@ public class ThermostatService extends BaseService {
 
 	private static ThermostatService instance = null;
 
-	@ConsumeEvent(value = "WindowBlindService", blocking = true)
+	@ConsumeEvent(value = "ThermostatService", blocking = true)
 	public void cronSetStatus(JobArguments args) {
 		final Long id = Long.valueOf(args.getArgumentList().get(0));
 		final String value = args.getArgumentList().get(1);
-		getInstance().setValue(id, value);
+		setValue(id, value);
 	}
 
 	public static ThermostatService getInstance() {
