@@ -25,14 +25,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.hibernate.Hibernate;
-
-import com.influxdb.client.InfluxDBClient;
-import com.influxdb.client.WriteApi;
-import com.influxdb.client.domain.WritePrecision;
 
 import cm.homeautomation.configuration.ConfigurationService;
-import cm.homeautomation.db.InfluxDBService;
 import cm.homeautomation.device.DeviceService;
 import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
@@ -61,9 +55,6 @@ public class Sensors extends BaseService {
 	EventBus bus;
 
 	@Inject
-	InfluxDBService influxDBService;
-
-	@Inject
 	EntityManager em;
 
 	@Inject
@@ -72,8 +63,6 @@ public class Sensors extends BaseService {
 	@Inject
 	DeviceService deviceService;
 
-	@Inject
-	InfluxDBClient influxDBClient;
 
 	class DataLoadThread extends Thread {
 		private SensorDatas sensorDatas;
@@ -159,7 +148,7 @@ public class Sensors extends BaseService {
 			try {
 				latch.await();
 			} catch (final InterruptedException e) {
-//                LogManager.getLogger(this.getClass()).error(e);
+//                //LogManager.getLogger(this.getClass()).error(e);
 			}
 		}
 		return sensorDatas;
@@ -310,7 +299,7 @@ public class Sensors extends BaseService {
 	public void registerRFEvent(final RFEvent event) throws SensorDataLimitViolationException {
 
 		final String code = Integer.toString(event.getCode());
-//        LogManager.getLogger(this.getClass()).info("RF Event: " + code);
+//        //LogManager.getLogger(this.getClass()).info("RF Event: " + code);
 
 		try {
 			final Switch sw = em
@@ -356,7 +345,7 @@ public class Sensors extends BaseService {
 
 			}
 		} catch (final NoResultException e) {
-//            LogManager.getLogger(this.getClass()).error(e);
+//            //LogManager.getLogger(this.getClass()).error(e);
 		}
 
 	}
@@ -366,7 +355,7 @@ public class Sensors extends BaseService {
 	public GenericStatus save(final SensorDataRoomSaveRequest request) throws SensorDataLimitViolationException {
 
 		if (request == null) {
-//            LogManager.getLogger(this.getClass()).info("got null request");
+//            //LogManager.getLogger(this.getClass()).info("got null request");
 			return new GenericStatus(false);
 		}
 
@@ -382,7 +371,7 @@ public class Sensors extends BaseService {
 			}
 		}
 
-//        LogManager.getLogger(this.getClass()).info("Found roomId" + roomID);
+//        //LogManager.getLogger(this.getClass()).info("Found roomId" + roomID);
 
 		final List<Sensor> sensorList = em
 				.createQuery("select s from Sensor s where s.room=(select r from Room r where r.id=:roomId)",
@@ -407,18 +396,18 @@ public class Sensors extends BaseService {
 			}
 
 		} else {
-//            LogManager.getLogger(this.getClass()).info("found no sensors for room " + roomID);
+//            //LogManager.getLogger(this.getClass()).info("found no sensors for room " + roomID);
 		}
 	}
 
 	private void saveSingleSensorData(final SensorDataRoomSaveRequest request, final Sensor sensor)
 			throws SensorDataLimitViolationException {
 		if ("TEMPERATURE".equals(sensor.getSensorType())) {
-//            LogManager.getLogger(this.getClass()).info("Saving temperature to sensor: " + sensor.getId());
+//            //LogManager.getLogger(this.getClass()).info("Saving temperature to sensor: " + sensor.getId());
 			saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getTemperature()),
 					request.getTimestamp());
 		} else if ("HUMIDITY".equals(sensor.getSensorType())) {
-//            LogManager.getLogger(this.getClass()).info("Saving humidity to sensor: " + sensor.getId());
+//            //LogManager.getLogger(this.getClass()).info("Saving humidity to sensor: " + sensor.getId());
 			saveSensorDataWithTime(sensor.getId(), Float.toString(request.getData().getHumidity()),
 					request.getTimestamp());
 		} else if ("PRESSURE".equals(sensor.getSensorType())) {
@@ -446,9 +435,9 @@ public class Sensors extends BaseService {
 			Long sensorId = request.getSensorId();
 			if (sensorsList.containsKey(sensorId)) {
 				sensor = sensorsList.get(sensorId);
-//                LogManager.getLogger(this.getClass()).debug("got sensor from cache");
+//                //LogManager.getLogger(this.getClass()).debug("got sensor from cache");
 			} else {
-//                LogManager.getLogger(this.getClass()).debug("looking for sensorId: " + sensorId);
+//                //LogManager.getLogger(this.getClass()).debug("looking for sensorId: " + sensorId);
 
 				sensor = em.createQuery("select s from Sensor s where s.id=:sensorId", Sensor.class)
 						.setParameter("sensorId", sensorId).getSingleResult();
@@ -466,7 +455,7 @@ public class Sensors extends BaseService {
 			if (sensors != null && !sensors.isEmpty()) {
 				sensor = sensors.get(0);
 			} else {
-//                LogManager.getLogger(this.getClass())
+//                //LogManager.getLogger(this.getClass())
 //                        .debug("found no sensor for technical type: " + sensorTechnicalType);
 
 				sensor = new Sensor();
@@ -492,7 +481,7 @@ public class Sensors extends BaseService {
 		}
 
 		if (sensor != null) {
-//            LogManager.getLogger(this.getClass()).debug("found a sensor. id: " + sensor.getId());
+//            //LogManager.getLogger(this.getClass()).debug("found a sensor. id: " + sensor.getId());
 
 			final SensorData sensorData;
 			Long sensorId = sensor.getId();
@@ -526,7 +515,7 @@ public class Sensors extends BaseService {
 				if (sensor.getMinValue() != null) {
 					double minValue = Double.parseDouble(sensor.getMinValue());
 					if (valueAsDouble < minValue) {
-//                        LogManager.getLogger(this.getClass())
+//                        //LogManager.getLogger(this.getClass())
 //                                .debug("Sensor ID: " + sensor.getId() + " Name: " + sensor.getSensorName() + " Value: "
 //                                        + valueAsDouble + " less than minimum: " + minValue);
 						throw new SensorDataLimitViolationException();
@@ -537,7 +526,7 @@ public class Sensors extends BaseService {
 				if (sensor.getMaxValue() != null) {
 					double maxValue = Double.parseDouble(sensor.getMaxValue());
 					if (valueAsDouble > maxValue) {
-//                        LogManager.getLogger(this.getClass())
+//                        //LogManager.getLogger(this.getClass())
 //                                .debug("Sensor ID: " + sensor.getId() + " Name: " + sensor.getSensorName() + " Value: "
 //                                        + valueAsDouble + " more than maxmum: " + maxValue);
 						throw new SensorDataLimitViolationException();
@@ -550,56 +539,31 @@ public class Sensors extends BaseService {
 			final boolean mergeExisting = mergeExistingData(existingSensorData, requestSensorData, isNumeric);
 
 			if (mergeExisting && existingSensorData != null) {
-//                LogManager.getLogger(this.getClass()).debug("merging data");
+//                //LogManager.getLogger(this.getClass()).debug("merging data");
 				existingSensorData.setValidThru(new Date());
 				em.merge(existingSensorData);
-				saveToInflux(existingSensorData);
-//                LogManager.getLogger(this.getClass()).debug("Committing data: " + existingSensorData.getValue());
+				
+//                //LogManager.getLogger(this.getClass()).debug("Committing data: " + existingSensorData.getValue());
 			} else {
 				if ((existingSensorData != null) && (requestSensorData.getDateTime() != null)) {
 					existingSensorData.setValidThru(new Date(requestSensorData.getDateTime().getTime() - 1000));
 					em.merge(existingSensorData);
 				}
 
-//                LogManager.getLogger(this.getClass()).debug("saving new data point");
+//                //LogManager.getLogger(this.getClass()).debug("saving new data point");
 				sensorData = requestSensorData;
 				sensorData.setSensor(sensor);
 				em.persist(sensorData);
-				saveToInflux(sensorData);
+				
 				sensorDataMap.put(sensorId, sensorData);
 
 				bus.publish("EventObject", new EventObject(sensorData));
-//                LogManager.getLogger(this.getClass()).debug("Committing data: " + sensorData.getValue());
+//                //LogManager.getLogger(this.getClass()).debug("Committing data: " + sensorData.getValue());
 			}
 		} else {
-//            LogManager.getLogger(this.getClass()).error("sensor is null");
+//            //LogManager.getLogger(this.getClass()).error("sensor is null");
 		}
 
-	}
-
-	public void saveToInflux(SensorData inSensorData) {
-
-		try (WriteApi writeApi = influxDBClient.getWriteApi()) {
-
-			SensorData sensorData = Hibernate.unproxy(inSensorData, SensorData.class);
-			
-			InfluxSensorData influxSensorData = new InfluxSensorData();
-
-			if (sensorData.getSensor() != null && sensorData.getSensor().getRoom() != null) {
-				influxSensorData.room = sensorData.getSensor().getRoom().getRoomName();
-				influxSensorData.roomId = sensorData.getSensor().getRoom().getId();
-			}
-
-			System.out.println("influx date time: "+sensorData.getDateTime());
-			
-			influxSensorData.value = sensorData.getValue();
-			influxSensorData.sensorName = sensorData.getSensor().getSensorName();
-			influxSensorData.sensorId = sensorData.getSensor().getId();
-			influxSensorData.dateTime = ((Date)sensorData.getDateTime().clone()).toInstant();
-
-			writeApi.writeMeasurement(WritePrecision.MS, influxSensorData);
-			System.out.println("Wrote to influx "+influxSensorData.sensorName+" "+influxSensorData.value);
-		}
 	}
 
 	private boolean saveSensorDataWithTime(final Long sensorId, final String value, final Date timestamp)

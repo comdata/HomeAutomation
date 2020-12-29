@@ -11,6 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class DashButtonEvent {
 
-	private String mac;
-	private short secs;
+	String mac;
+	short secs;
 }

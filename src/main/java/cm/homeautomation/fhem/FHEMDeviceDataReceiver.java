@@ -53,17 +53,17 @@ public class FHEMDeviceDataReceiver {
 				try {
 					Sensors.getInstance().saveSensorData(sensor.getId(), messageContent.split(" ")[0]);
 				} catch (SensorDataLimitViolationException e) {
-//					LogManager.getLogger(FHEMDeviceDataReceiver.class).error(
+//					//LogManager.getLogger(FHEMDeviceDataReceiver.class).error(
 //							"Message for device: {} topic: {} message: {} received. Value exceeds limit.", device,
 //							topicLastPart, messageContent);
 				}
 			} else {
-//				LogManager.getLogger(FHEMDeviceDataReceiver.class).error(
+//				//LogManager.getLogger(FHEMDeviceDataReceiver.class).error(
 //						"Message for device: {} topic: {} message: {} received. No Sensor attached.", device,
 //						topicLastPart, messageContent);
 			}
 		} else {
-//			LogManager.getLogger(FHEMDeviceDataReceiver.class)
+//			//LogManager.getLogger(FHEMDeviceDataReceiver.class)
 //					.debug("referenced id is null for FHEM device: " + fhemDevice.getId());
 		}
 

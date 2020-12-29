@@ -24,15 +24,10 @@ import javax.transaction.Transactional.TxType;
 import org.apache.logging.log4j.LogManager;
 import org.eclipse.microprofile.context.ManagedExecutor;
 
-import com.influxdb.client.InfluxDBClient;
-import com.influxdb.client.WriteApi;
-import com.influxdb.client.domain.WritePrecision;
-
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.PowerMeterPing;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.sensors.PowerMeterData;
-import cm.homeautomation.services.sensors.InfluxSensorData;
 import es.moki.ratelimitj.core.limiter.request.RequestLimitRule;
 import es.moki.ratelimitj.core.limiter.request.RequestRateLimiter;
 import es.moki.ratelimitj.inmemory.request.InMemorySlidingWindowRequestRateLimiter;
@@ -58,9 +53,6 @@ public class PowerMeterSensor {
 
 	@Inject
 	ConfigurationService configurationService;
-
-	@Inject
-	InfluxDBClient influxDBClient;
 
 	@Inject
 	ManagedExecutor executor;
@@ -101,8 +93,8 @@ public class PowerMeterSensor {
 				final Timestamp minTimestamp = (Timestamp) resultElement[2];
 				final Timestamp maxTimestamp = (Timestamp) resultElement[3];
 
-				LogManager.getLogger(PowerMeterSensor.class).error("Min Timestamp: {} max timestamp: {} counter: {}",
-						minTimestamp, maxTimestamp, powerCounter);
+				//LogManager.getLogger(PowerMeterSensor.class).error("Min Timestamp: {} max timestamp: {} counter: {}",
+//						minTimestamp, maxTimestamp, powerCounter);
 
 				em.createQuery(
 						"delete from PowerMeterPing p where p.timestamp>=:minTimestamp and p.timestamp<=:maxTimestamp")
@@ -113,8 +105,8 @@ public class PowerMeterSensor {
 			}
 
 		} else {
-			LogManager.getLogger(PowerMeterSensor.class)
-					.error("arguments not specified correctly - expecting number of entries for first method call");
+			//LogManager.getLogger(PowerMeterSensor.class)
+//					.error("arguments not specified correctly - expecting number of entries for first method call");
 		}
 	}
 
@@ -141,20 +133,6 @@ public class PowerMeterSensor {
 		init();
 	}
 
-	public void saveToInflux(PowerMeterPing powerMeterPing) {
-
-		try (WriteApi writeApi = influxDBClient.getWriteApi()) {
-
-			InfluxSensorData influxSensorData = new InfluxSensorData();
-
-			influxSensorData.setValue(Integer.toString(powerMeterPing.getPowerCounter()));
-			influxSensorData.setSensorName("PowerMeterPing");
-
-			influxSensorData.setDateTime(powerMeterPing.getTimestamp().toInstant());
-
-			writeApi.writeMeasurement(WritePrecision.MS, influxSensorData);
-		}
-	}
 
 	/**
 	 * handle power meter data from the MQTT receiver
@@ -179,10 +157,10 @@ public class PowerMeterSensor {
 
 				em.persist(powerMeterPing);
 
-				saveToInflux(powerMeterPing);
+	
 
 			} catch (final Exception e) {
-				LogManager.getLogger(PowerMeterSensor.class).error("error persisting power data", e);
+				//LogManager.getLogger(PowerMeterSensor.class).error("error persisting power data", e);
 			}
 
 			final boolean parseBoolean = Boolean
@@ -196,7 +174,7 @@ public class PowerMeterSensor {
 							try {
 								sendNewData();
 							} catch (final Exception e) {
-								LogManager.getLogger(this.getClass()).error("Failed sending new data", e);
+								//LogManager.getLogger(this.getClass()).error("Failed sending new data", e);
 							}
 						}
 					};

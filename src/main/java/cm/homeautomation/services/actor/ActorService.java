@@ -20,8 +20,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.apache.logging.log4j.LogManager;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import cm.homeautomation.configuration.ConfigurationService;
@@ -37,6 +35,7 @@ import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.HTTPHelper;
 import cm.homeautomation.services.ir.InfraredService;
 import cm.homeautomation.services.light.LightService;
+import cm.homeautomation.services.scheduler.JobArguments;
 import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.scheduler.Scheduled;
@@ -70,6 +69,9 @@ public class ActorService extends BaseService {
 
 	@Inject
 	ConfigurationService configurationService;
+	
+	@Inject
+	HTTPHelper httpHelper;
 
 	public void performSwitch(String targetStatus, String switchId) throws RollbackException, HeuristicMixedException,
 			HeuristicRollbackException, SystemException, NotSupportedException {
@@ -111,10 +113,9 @@ public class ActorService extends BaseService {
 
 			String debugMessage = "Actor Switch Type: " + singleSwitch.getClass().getSimpleName();
 			System.out.println(debugMessage);
-			LogManager.getLogger(this.getClass()).debug(debugMessage);
 
 			if (singleSwitch instanceof MQTTSwitch) {
-				LogManager.getLogger(this.getClass()).debug("Switch is MQTTSwitch");
+
 				MQTTSwitch singleMqttSwitch = (MQTTSwitch) singleSwitch;
 
 				String topic = null;
@@ -129,10 +130,8 @@ public class ActorService extends BaseService {
 					message = singleMqttSwitch.getMqttPowerOffMessage();
 				}
 
-				LogManager.getLogger(this.getClass()).debug("MQTT: " + topic + " - " + message);
-
 				bus.publish("MQTTSendEvent", new MQTTSendEvent(topic, message));
-				
+
 				System.out.println("sent mqtt");
 
 			} else {
@@ -153,7 +152,7 @@ public class ActorService extends BaseService {
 			try {
 				InfraredService.getInstance().sendCommand(singleSwitch.getIrCommand().getId());
 			} catch (final JsonProcessingException e) {
-				LogManager.getLogger(this.getClass()).error(e);
+
 			}
 		}
 	}
@@ -181,13 +180,11 @@ public class ActorService extends BaseService {
 		String switchSetUrl = singleSwitch.getSwitchSetUrl();
 		switchSetUrl = switchSetUrl.replace("{STATE}", (("0".equals(actorMessage.getStatus())) ? "off" : "on"));
 
-		LogManager.getLogger(this.getClass()).debug(switchSetUrl);
-
-		HTTPHelper.performHTTPRequest(switchSetUrl);
+		httpHelper.performHTTPRequest(switchSetUrl);
 	}
 
 	public ActorService() {
-		instance=this;
+		instance = this;
 	}
 
 	@Scheduled(every = "120s")
@@ -230,6 +227,15 @@ public class ActorService extends BaseService {
 		final String status = args[1];
 
 		ActorService.getInstance().pressSwitch(switchId, status);
+	}
+
+	@ConsumeEvent(value = "ActorService", blocking = true)
+	public void consume(JobArguments arguments) {
+		List<String> args=arguments.getArgumentList(); 
+		final String switchId = args.get(0);
+		final String status = args.get(1);
+
+		pressSwitch(switchId, status);
 	}
 
 	/**

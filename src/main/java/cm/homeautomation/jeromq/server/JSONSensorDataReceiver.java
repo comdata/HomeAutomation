@@ -69,7 +69,7 @@ public class JSONSensorDataReceiver {
 				messageContent = split[0];
 			}
 
-			LogManager.getLogger(JSONSensorDataReceiver.class).info(MESSAGE_FOR_DESERIALIZATION_S, messageContent);
+			//LogManager.getLogger(JSONSensorDataReceiver.class).info(MESSAGE_FOR_DESERIALIZATION_S, messageContent);
 
 			JSONSensorDataBase sensorData = mapper.readValue(messageContent, JSONSensorDataBase.class);
 
@@ -90,17 +90,17 @@ public class JSONSensorDataReceiver {
 			} else {
 				for (Class<?> clazz : classList) {
 					if (clazz.isInstance(sensorData)) {
-						LogManager.getLogger(JSONSensorDataReceiver.class).debug("Casting to: {}",
-								clazz.getSimpleName());
+						//LogManager.getLogger(JSONSensorDataReceiver.class).debug("Casting to: {}",
+//								clazz.getSimpleName());
 
 						bus.publish("SensorData", clazz.cast(sensorData));
 					}
 				}
 			}
 		} catch (IOException e) {
-			LogManager.getLogger(JSONSensorDataReceiver.class).error(RECEIVED_IO_EXCEPTION, e);
+			//LogManager.getLogger(JSONSensorDataReceiver.class).error(RECEIVED_IO_EXCEPTION, e);
 		} catch (SensorDataLimitViolationException e) {
-			LogManager.getLogger(JSONSensorDataReceiver.class).error(RECEIVED_SENSOR_DATA_LIMIT_VIOLATION_EXCEPTION, e);
+			//LogManager.getLogger(JSONSensorDataReceiver.class).error(RECEIVED_SENSOR_DATA_LIMIT_VIOLATION_EXCEPTION, e);
 		}
 	}
 

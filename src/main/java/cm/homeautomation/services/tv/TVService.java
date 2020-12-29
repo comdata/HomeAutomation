@@ -1,6 +1,5 @@
 package cm.homeautomation.services.tv;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -13,14 +12,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.apache.logging.log4j.LogManager;
-
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.PhoneCallEvent;
 import cm.homeautomation.entities.Switch;
 import cm.homeautomation.eventbus.EventObject;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
+import cm.homeautomation.services.scheduler.JobArguments;
 import cm.homeautomation.tv.panasonic.PanasonicTVBinding;
 import cm.homeautomation.tv.panasonic.TVNotReachableException;
 import io.quarkus.vertx.ConsumeEvent;
@@ -37,7 +35,6 @@ import io.vertx.core.eventbus.EventBus;
 @Transactional(value = TxType.REQUIRES_NEW)
 public class TVService extends BaseService {
 
-	private static TVService instance;
 	private static boolean muted = false;
 
 	@Inject
@@ -49,17 +46,13 @@ public class TVService extends BaseService {
 	@Inject
 	EventBus bus;
 
-	public static void getCurrentStatus(final String[] args) {
-		instance.internalGetCurrentStatus(args);
+	@ConsumeEvent(value = "TVService", blocking = true)
 
-	}
+	public void getCurrentStatus(final JobArguments args) {
+		final boolean aliveStatus = getAliveStatus();
 
-	
-	public void internalGetCurrentStatus(final String[] args) {
-		final boolean aliveStatus = getInstance().getAliveStatus();
-
-		LogManager.getLogger(TVService.class).debug("TVService got arguments: {}", Arrays.toString(args));
-		LogManager.getLogger(TVService.class).debug("TV status: {}", aliveStatus);
+		//LogManager.getLogger(TVService.class).debug("TVService got arguments: {}", Arrays.toString(args));
+		//LogManager.getLogger(TVService.class).debug("TV status: {}", aliveStatus);
 
 		@SuppressWarnings("unchecked")
 		final List<Switch> resultList = (em
@@ -78,12 +71,7 @@ public class TVService extends BaseService {
 		}
 	}
 
-	public static TVService getInstance() {
-		if (instance == null) {
-			instance = new TVService();
-		}
-		return instance;
-	}
+
 
 	private final PanasonicTVBinding tvBinding;
 
@@ -92,7 +80,6 @@ public class TVService extends BaseService {
 	public TVService() {
 		tvBinding = new PanasonicTVBinding();
 		tvIp = configurationService.getConfigurationProperty("tv", "tvIp");
-		TVService.setInstance(this);
 	}
 
 	@GET
@@ -110,7 +97,7 @@ public class TVService extends BaseService {
 
 			final PhoneCallEvent callEvent = (PhoneCallEvent) eventData;
 
-			LogManager.getLogger(this.getClass()).debug("Tv IP: %s", tvIp);
+			//LogManager.getLogger(this.getClass()).debug("Tv IP: %s", tvIp);
 			final String event = callEvent.getEvent();
 
 			muteOrUnmuteTV(event);
@@ -124,9 +111,9 @@ public class TVService extends BaseService {
 				setMuted(true);
 				tvBinding.sendCommand(tvIp, "MUTE");
 
-				LogManager.getLogger(this.getClass()).info("muting TV");
+				//LogManager.getLogger(this.getClass()).info("muting TV");
 			} catch (final TVNotReachableException e) {
-				LogManager.getLogger(this.getClass()).error(e);
+				//LogManager.getLogger(this.getClass()).error(e);
 			}
 		}
 
@@ -135,18 +122,18 @@ public class TVService extends BaseService {
 				setMuted(true);
 				tvBinding.sendCommand(tvIp, "MUTE");
 
-				LogManager.getLogger(this.getClass()).info("muting TV");
+				//LogManager.getLogger(this.getClass()).info("muting TV");
 			} catch (final TVNotReachableException e) {
-				LogManager.getLogger(this.getClass()).error(e);
+				//LogManager.getLogger(this.getClass()).error(e);
 			}
 		}
 
 		if ("disconnect".equals(event) && isMuted()) {
 			try {
 				tvBinding.sendCommand(tvIp, "MUTE");
-				LogManager.getLogger(this.getClass()).info("unmuting TV");
+				//LogManager.getLogger(this.getClass()).info("unmuting TV");
 			} catch (final TVNotReachableException e) {
-				LogManager.getLogger(this.getClass()).error(e);
+				//LogManager.getLogger(this.getClass()).error(e);
 			}
 		}
 	}
@@ -169,14 +156,10 @@ public class TVService extends BaseService {
 			final TVCommandEvent tvCommandEvent = new TVCommandEvent(tvIp, command);
 			bus.publish("EventObject", new EventObject(tvCommandEvent));
 		} catch (final TVNotReachableException e) {
-			LogManager.getLogger(this.getClass()).error(e);
+			//LogManager.getLogger(this.getClass()).error(e);
 		}
 
 		return new GenericStatus(true);
-	}
-
-	public static void setInstance(TVService instance) {
-		TVService.instance = instance;
 	}
 
 	public static boolean isMuted() {

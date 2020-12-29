@@ -18,14 +18,12 @@ import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
@@ -40,7 +38,6 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.SingleClientConnManager;
-import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -53,6 +50,8 @@ import cm.homeautomation.entities.PackageHistory;
 import cm.homeautomation.entities.PackageHistoryPK;
 import cm.homeautomation.entities.PackagePK;
 import cm.homeautomation.services.base.BaseService;
+import cm.homeautomation.services.scheduler.JobArguments;
+import io.quarkus.vertx.ConsumeEvent;
 
 @Path("packages")
 @ApplicationScoped
@@ -64,10 +63,7 @@ public class PackageTracking extends BaseService {
 	@Inject
 	ConfigurationService configurationService;
 
-	static PackageTracking instance;
-
 	public PackageTracking() {
-		instance = this;
 	}
 
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
@@ -381,13 +377,11 @@ public class PackageTracking extends BaseService {
 		return null;
 	}
 
-	public static void updateTrackingInformation(String[] args)
-			throws ClientProtocolException, IOException, NoSuchAlgorithmException, KeyManagementException {
-		instance.internalUpdateTrackingInformation(args);
-	}
-
 	
-	public void internalUpdateTrackingInformation(String[] args)
+
+	@ConsumeEvent(value = "PackageTracking", blocking = true)
+
+	public void internalUpdateTrackingInformation(JobArguments args)
 			throws ClientProtocolException, IOException, NoSuchAlgorithmException, KeyManagementException {
 
 		SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
@@ -396,18 +390,18 @@ public class PackageTracking extends BaseService {
 		sslContext.init(null, new TrustManager[] { new X509TrustManager() {
 			@Override
 			public X509Certificate[] getAcceptedIssuers() {
-				LogManager.getLogger(this.getClass()).info("getAcceptedIssuers =============");
+				//LogManager.getLogger(this.getClass()).info("getAcceptedIssuers =============");
 				return null;
 			}
 
 			@Override
 			public void checkClientTrusted(X509Certificate[] certs, String authType) {
-				LogManager.getLogger(this.getClass()).info("checkClientTrusted =============");
+				//LogManager.getLogger(this.getClass()).info("checkClientTrusted =============");
 			}
 
 			@Override
 			public void checkServerTrusted(X509Certificate[] certs, String authType) {
-				LogManager.getLogger(this.getClass()).info("checkServerTrusted =============");
+				//LogManager.getLogger(this.getClass()).info("checkServerTrusted =============");
 			}
 		} }, new SecureRandom());
 
@@ -427,7 +421,7 @@ public class PackageTracking extends BaseService {
 
 		HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
 
-		String cookie = args[0];
+		String cookie = args.getArgumentList().get(0);
 
 		HttpGet request = new HttpGet(url);
 
@@ -437,7 +431,7 @@ public class PackageTracking extends BaseService {
 		request.addHeader("Cookie", cookie);
 		HttpResponse response = client.execute(request);
 
-		LogManager.getLogger(PackageHistory.class).info("Response Code : " + response.getStatusLine().getStatusCode());
+		//LogManager.getLogger(PackageHistory.class).info("Response Code : " + response.getStatusLine().getStatusCode());
 
 		BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 
@@ -479,7 +473,7 @@ public class PackageTracking extends BaseService {
 
 					JsonNode singleShipment = jsonNode.get(i);
 
-					LogManager.getLogger(PackageHistory.class).info(singleShipment);
+					//LogManager.getLogger(PackageHistory.class).info(singleShipment);
 
 					String trackingNumber = singleShipment.get(0).asText();
 					String packageName = singleShipment.get(1).asText();
@@ -487,10 +481,10 @@ public class PackageTracking extends BaseService {
 					boolean delivered = singleShipment.get(3).asText().equals("no");
 
 					JsonNode steps = singleShipment.get(4);
-					LogManager.getLogger(PackageHistory.class).info("Steps:" + steps.get(0));
+					//LogManager.getLogger(PackageHistory.class).info("Steps:" + steps.get(0));
 					String dateAdded = singleShipment.get(6).asText();
 					String dateChanged = singleShipment.get(7).asText();
-					LogManager.getLogger(PackageHistory.class).info("Status: " + singleShipment.get(8).asText());
+					//LogManager.getLogger(PackageHistory.class).info("Status: " + singleShipment.get(8).asText());
 
 					String carrierFullname = CARRIER_MAP.get(carrier);
 
@@ -520,9 +514,9 @@ public class PackageTracking extends BaseService {
 							historyEntry.setLocationText(step.get(3).asText());
 							trackedPackage.getPackageHistory().add(historyEntry);
 							hashCodes.add(id);
-							LogManager.getLogger(PackageHistory.class).info("adding history event");
+							//LogManager.getLogger(PackageHistory.class).info("adding history event");
 						} else {
-							LogManager.getLogger(PackageHistory.class).info("duplicate found");
+							//LogManager.getLogger(PackageHistory.class).info("duplicate found");
 						}
 					}
 
@@ -530,8 +524,8 @@ public class PackageTracking extends BaseService {
 
 					trackedPackages.add(trackedPackage);
 
-					LogManager.getLogger(PackageHistory.class).info("Tracking No:" + trackingNumber + " Delivered: "
-							+ delivered + " sCarrier: " + carrierFullname + " Name: " + packageName);
+					//LogManager.getLogger(PackageHistory.class).info("Tracking No:" + trackingNumber + " Delivered: "
+//							+ delivered + " sCarrier: " + carrierFullname + " Name: " + packageName);
 				}
 
 			}
@@ -542,8 +536,8 @@ public class PackageTracking extends BaseService {
 		for (Package openPackage : allOpenPackages) {
 
 			if (!isPackageTracked(openPackage, trackedPackages)) {
-				LogManager.getLogger(PackageHistory.class)
-						.info("Package deleted: " + openPackage.getId().getTrackingNumber());
+				//LogManager.getLogger(PackageHistory.class)
+//						.info("Package deleted: " + openPackage.getId().getTrackingNumber());
 				openPackage.setDelivered(true);
 				em.merge(openPackage);
 			}
@@ -583,7 +577,7 @@ public class PackageTracking extends BaseService {
 			if (phList != null && !phList.isEmpty()) {
 				singlePackage.setPackageHistory(phList);
 
-				LogManager.getLogger(this.getClass()).info("steps: " + singlePackage.getPackageHistory().size());
+				//LogManager.getLogger(this.getClass()).info("steps: " + singlePackage.getPackageHistory().size());
 			}
 			singlePackage.setCarrierName(createCarrierMap.get(singlePackage.getId().getCarrier()));
 
@@ -608,7 +602,7 @@ public class PackageTracking extends BaseService {
 		for (PackageHistory packageHistory : packageHistories) {
 			PackageHistory mergedPackageHistory = mergePackageHistory(em, packageHistory);
 			em.merge(mergedPackageHistory);
-			LogManager.getLogger(PackageHistory.class).info("persisting history");
+			//LogManager.getLogger(PackageHistory.class).info("persisting history");
 			mergedPackageHistories.add(mergedPackageHistory);
 
 		}
@@ -621,7 +615,7 @@ public class PackageTracking extends BaseService {
 		} else {
 			Package existingPackage = results.get(0);
 
-			LogManager.getLogger(PackageHistory.class).info("performing package merge");
+			//LogManager.getLogger(PackageHistory.class).info("performing package merge");
 
 			existingPackage.setDateModified(trackedPackage.getDateModified());
 			existingPackage.setDelivered(trackedPackage.isDelivered());
@@ -640,10 +634,10 @@ public class PackageTracking extends BaseService {
 		if (results == null || results.isEmpty()) {
 
 			em.persist(packageHistory);
-			LogManager.getLogger(PackageHistory.class).info("added new history");
+			//LogManager.getLogger(PackageHistory.class).info("added new history");
 			return packageHistory;
 		} else {
-			LogManager.getLogger(PackageHistory.class).info("found existing history");
+			//LogManager.getLogger(PackageHistory.class).info("found existing history");
 			return results.get(0);
 		}
 

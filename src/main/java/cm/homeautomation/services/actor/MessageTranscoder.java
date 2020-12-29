@@ -32,7 +32,7 @@ public class MessageTranscoder implements Encoder.Text<SwitchEvent>, Decoder.Tex
 		try {
 			return mapper.readValue(s, SwitchEvent.class);
 		} catch (IOException e) {
-			LogManager.getLogger(this.getClass()).error("IO Exception when converting to SwitchEvent class", e);
+			//LogManager.getLogger(this.getClass()).error("IO Exception when converting to SwitchEvent class", e);
 		}
 		return null;
 	}
@@ -48,7 +48,7 @@ public class MessageTranscoder implements Encoder.Text<SwitchEvent>, Decoder.Tex
 		try {
 			return mapper.writeValueAsString(object);
 		} catch (JsonProcessingException e) {
-			LogManager.getLogger(this.getClass()).error("Exception when converting from SwitchEvent class", e);
+			//LogManager.getLogger(this.getClass()).error("Exception when converting from SwitchEvent class", e);
 		}
 		return null;
 	}

@@ -8,12 +8,7 @@ import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
-import com.influxdb.client.InfluxDBClient;
-import com.influxdb.client.WriteApi;
-import com.influxdb.client.domain.WritePrecision;
-
 import cm.homeautomation.configuration.ConfigurationService;
-import cm.homeautomation.db.InfluxDBService;
 import cm.homeautomation.entities.MotionDetection;
 import cm.homeautomation.services.base.BaseService;
 import io.quarkus.runtime.Startup;
@@ -24,17 +19,12 @@ import io.quarkus.vertx.ConsumeEvent;
 @ApplicationScoped
 public class MotionDetectionService extends BaseService {
 
-	@Inject
-	InfluxDBService influxDBService;
 
 	@Inject
 	EntityManager em;
 
 	@Inject
 	ConfigurationService configurationService;
-	
-	@Inject
-	InfluxDBClient influxDBClient;
 
 	@ConsumeEvent(value = "MotionEvent", blocking = true)
 	public void registerMotionEvent(final MotionEvent motionEvent) {
@@ -83,18 +73,6 @@ public class MotionDetectionService extends BaseService {
 	public void saveToInflux(MotionEvent motionEvent) {
 		
 
-		try (WriteApi writeApi = influxDBClient.getWriteApi()) {
-
-			InfluxMotionEvent influxMotionEvent = new InfluxMotionEvent();
-
-			influxMotionEvent.setState(motionEvent.isState());
-			influxMotionEvent.setRoomId(motionEvent.getRoom().getId());
-			influxMotionEvent.setExternalId(motionEvent.getMac());
-			influxMotionEvent.setDateTime(motionEvent.getTimestamp().toInstant());
-			System.out.println("Writing to influx MotionEvent");
-			writeApi.writeMeasurement(WritePrecision.MS, influxMotionEvent);
-			System.out.println("Writing to influx MotionEvent - done");
-		}
 	}
 
 }

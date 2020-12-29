@@ -70,7 +70,7 @@ public class ActorEndpoint {
 
 			if (session.isOpen()) {
 				try {
-					LogManager.getLogger(this.getClass()).info("Actor Sending to {}", session.getId());
+					//LogManager.getLogger(this.getClass()).info("Actor Sending to {}", session.getId());
 					session.getAsyncRemote().sendObject(switchEvent);
 				} catch (IllegalStateException e) {
 					userSessions.remove(key);

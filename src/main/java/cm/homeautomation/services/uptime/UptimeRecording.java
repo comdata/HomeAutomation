@@ -8,7 +8,9 @@ import javax.transaction.Transactional;
 
 import cm.homeautomation.configuration.ConfigurationService;
 import cm.homeautomation.entities.UptimePing;
+import cm.homeautomation.services.scheduler.JobArguments;
 import io.quarkus.runtime.Startup;
+import io.quarkus.vertx.ConsumeEvent;
 
 @Startup
 public class UptimeRecording {
@@ -19,18 +21,11 @@ public class UptimeRecording {
 	@Inject
 	ConfigurationService configurationService;
 
-	private static UptimeRecording instance;
 
-	public UptimeRecording() {
-		instance = this;
-	}
 
-	public static void recordUptime(String[] args) {
-		instance.internalRecordUptime(args);
-	}
+	@ConsumeEvent(value = "UptimeRecording", blocking = true)
 
-	
-	public void internalRecordUptime(String[] args) {
+	public void recordUptime(JobArguments args) {
 
 		UptimePing uptimePing = new UptimePing();
 		uptimePing.setTimestamp(new Date());

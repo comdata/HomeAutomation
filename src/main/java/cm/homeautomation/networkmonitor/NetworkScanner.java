@@ -7,7 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cm.homeautomation.mqtt.client.MQTTSendEvent;
+import cm.homeautomation.services.scheduler.JobArguments;
 import io.quarkus.runtime.Startup;
+import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
 
 @Startup
@@ -37,17 +39,9 @@ public class NetworkScanner {
 	 * 
 	 * @param args
 	 */
-	public static void scanNetwork(String[] args) {
-		try {
-			instance.scanNetworkInternal(args);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public void scanNetworkInternal(String[] args) throws JsonProcessingException {
-		String subnet = args[0];
+	@ConsumeEvent(value = "NetworkScanner", blocking = true)
+	public void scanNetworkInternal(JobArguments args) throws JsonProcessingException {
+		String subnet = args.getArgumentList().get(0);
 		
 		NetworkScanEvent networkScanEvent = new NetworkScanEvent(subnet);
 		

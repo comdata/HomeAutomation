@@ -71,7 +71,7 @@ public final class HttpProxyServlet extends HttpServlet {
 
 					query.append(String.format("&%s=%s", name, value));
 				} catch (UnsupportedEncodingException e) {
-					LogManager.getLogger(this.getClass()).error("unsupported encoding " + name + " - " + value, e);
+					//LogManager.getLogger(this.getClass()).error("unsupported encoding " + name + " - " + value, e);
 				}
 			}
 		}
@@ -89,9 +89,9 @@ public final class HttpProxyServlet extends HttpServlet {
 
 			write(httpResponse.getEntity().getContent(), response.getOutputStream());
 		} catch (IOException e) {
-			LogManager.getLogger(this.getClass()).error("IO Exception while writing response", e);
+			//LogManager.getLogger(this.getClass()).error("IO Exception while writing response", e);
 		} catch (UnsupportedOperationException e) {
-			LogManager.getLogger(this.getClass()).error("UnsupportedOperationException while writing response", e);
+			//LogManager.getLogger(this.getClass()).error("UnsupportedOperationException while writing response", e);
 		}
 	}
 
@@ -114,9 +114,9 @@ public final class HttpProxyServlet extends HttpServlet {
 			HttpResponse httpResponse = proxy.execute(proxyMethod);
 			write(httpResponse.getEntity().getContent(), response.getOutputStream());
 		} catch (IOException e) {
-			LogManager.getLogger(this.getClass()).error("IO Exception while writing response", e);
+			//LogManager.getLogger(this.getClass()).error("IO Exception while writing response", e);
 		} catch (UnsupportedOperationException e) {
-			LogManager.getLogger(this.getClass()).error("UnsupportedOperationException while writing response", e);
+			//LogManager.getLogger(this.getClass()).error("UnsupportedOperationException while writing response", e);
 		}
 		proxyMethod.releaseConnection();
 	}

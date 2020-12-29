@@ -2,14 +2,16 @@ package cm.homeautomation.services.base;
 
 import java.io.IOException;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.HttpClientBuilder;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+import org.eclipse.microprofile.context.ManagedExecutor;
+
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpHeaders;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestFactory;
+import com.google.api.client.http.javanet.NetHttpTransport;
 
 /**
  * http helper class with credentials
@@ -17,46 +19,35 @@ import org.apache.http.impl.client.HttpClientBuilder;
  * @author christoph
  *
  */
+@ApplicationScoped
 public class HTTPHelper {
 
-	public interface HTTPHelperCallback {
-		public void handleResponse(HttpResponse response);
-	}
+	@Inject
+	ManagedExecutor executor;
 
-	public static void performHTTPRequest(String url) {
-		performHTTPRequest(url, null);
-	}
-
-	public static void performHTTPRequest(String url, HTTPHelperCallback callback) {
+	public void performHTTPRequest(String url) {
 
 		final Runnable httpRequestThread = () -> {
 			try {
-//				LogManager.getLogger(HTTPHelper.class).debug("perform http call: " + url);
 
-				final HttpGet getMethod = new HttpGet(url);
-				final HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+				HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory();
+				HttpRequest request = requestFactory.buildGetRequest(new GenericUrl(url));
 
-				final String[] userPassword = url.split("@")[0].replace("http://", "").split(":");
-
-				final CredentialsProvider credsProvider = new BasicCredentialsProvider();
-				credsProvider.setCredentials(new AuthScope(getMethod.getURI().getHost(), getMethod.getURI().getPort()),
-						new UsernamePasswordCredentials(userPassword[0], userPassword[1]));
-				clientBuilder.setDefaultCredentialsProvider(credsProvider);
-				final HttpClient httpClient = clientBuilder.build();
-
-				final HttpResponse httpResponse = httpClient.execute(getMethod);
-
-				if (callback != null) {
-					callback.handleResponse(httpResponse);
+				if (url.contains("@") && url.contains(":")) {
+					final String[] userPassword = url.split("@")[0].replace("http://", "").split(":");
+					HttpHeaders headers = new HttpHeaders();
+					headers.setBasicAuthentication(userPassword[0], userPassword[1]);
+					request.setHeaders(headers);
 				}
-
-//				LogManager.getLogger(HTTPHelper.class).debug("http called done: " + httpResponse.getStatusLine());
+				String rawResponse = request.execute().parseAsString();
+				System.out.println("HTTP Response: " + rawResponse);
+//				//LogManager.getLogger(HTTPHelper.class).debug("http called done: " + httpResponse.getStatusLine());
 
 			} catch (final IOException e) {
-//				LogManager.getLogger(HTTPHelper.class).error("calling URL: " + url + " failed", e);
+//				//LogManager.getLogger(HTTPHelper.class).error("calling URL: " + url + " failed", e);
 			}
 		};
-		new Thread(httpRequestThread).start();
+		executor.runAsync(httpRequestThread);
 
 	}
 }

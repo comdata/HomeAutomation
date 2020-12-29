@@ -58,10 +58,10 @@ public class EventBusEndpoint {
 
 				sendObjectToAllSession(eventObject);
 			} else {
-//				LogManager.getLogger(this.getClass()).error("Encoding got an empty message");
+//				//LogManager.getLogger(this.getClass()).error("Encoding got an empty message");
 			}
 		//} catch (final EncodeException e) {
-//			LogManager.getLogger(this.getClass()).error("Encoding failed", e);
+//			//LogManager.getLogger(this.getClass()).error("Encoding failed", e);
 		//}
 	}
 
@@ -73,7 +73,7 @@ public class EventBusEndpoint {
 
 			sendObjectToAllSession(eventObject);
 		} catch (final EncodeException e) {
-			LogManager.getLogger(this.getClass()).error("Encoding failed", e);
+//			//LogManager.getLogger(this.getClass()).error("Encoding failed", e);
 		}
 	}
 
@@ -119,7 +119,7 @@ public class EventBusEndpoint {
 		try {
 			userSession.getBasicRemote().setBatchingAllowed(false);
 		} catch (final IOException e) {
-//			LogManager.getLogger(this.getClass()).error("Setting batching allowed to false failed.", e); //
+//			//LogManager.getLogger(this.getClass()).error("Setting batching allowed to false failed.", e); //
 		}
 		userSessions.put(clientId, userSession);
 	}
@@ -143,7 +143,7 @@ public class EventBusEndpoint {
 								basicRemote.flushBatch();
 							}
 						} catch (IllegalStateException | IOException | EncodeException | NullPointerException e) {
-//							LogManager.getLogger(this.getClass())
+//							//LogManager.getLogger(this.getClass())
 //									.error("Sending failed" + session.getId() + " key: " + key, e); //
 							userSessions.remove(key);
 						}
