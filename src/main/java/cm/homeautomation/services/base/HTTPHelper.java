@@ -3,9 +3,6 @@ package cm.homeautomation.services.base;
 import java.io.IOException;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
-import org.eclipse.microprofile.context.ManagedExecutor;
 
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpHeaders;
@@ -22,12 +19,9 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 @ApplicationScoped
 public class HTTPHelper {
 
-	@Inject
-	ManagedExecutor executor;
-
 	public void performHTTPRequest(String url) {
 
-		final Runnable httpRequestThread = () -> {
+		
 			try {
 
 				HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory();
@@ -44,10 +38,8 @@ public class HTTPHelper {
 //				//LogManager.getLogger(HTTPHelper.class).debug("http called done: " + httpResponse.getStatusLine());
 
 			} catch (final IOException e) {
-//				//LogManager.getLogger(HTTPHelper.class).error("calling URL: " + url + " failed", e);
+				e.printStackTrace();
 			}
-		};
-		executor.runAsync(httpRequestThread);
-
+		
 	}
 }
