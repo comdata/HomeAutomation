@@ -46,6 +46,9 @@ public class WindowBlindService extends BaseService {
 
 	@Inject
 	ConfigurationService configurationService;
+	
+	@Inject
+	HTTPHelper httpHelper;
 
 	private Map<Long, List<WindowBlind>> windowBlindList;
 	private Map<Long, WindowBlind> windowBlindMap;
@@ -56,7 +59,6 @@ public class WindowBlindService extends BaseService {
 
 	void startup(@Observes StartupEvent event) {
 		initWindowBlindList();
-		instance=this;
 
 	}
 
@@ -133,7 +135,7 @@ public class WindowBlindService extends BaseService {
 			final String calibrationUrl = windowBlind.getCalibrationUrl();
 
 			if ((calibrationUrl != null) && !("".equals(calibrationUrl))) {
-				HTTPHelper.performHTTPRequest(calibrationUrl);
+				httpHelper.performHTTPRequest(calibrationUrl);
 			}
 		}
 
@@ -180,7 +182,7 @@ public class WindowBlindService extends BaseService {
 
 				final String dimUrl1 = singleWindowBlind1.getDimUrl().replace(DIMVALUE, newValue);
 
-				HTTPHelper.performHTTPRequest(dimUrl1);
+				httpHelper.performHTTPRequest(dimUrl1);
 				singleWindowBlind1.setCurrentValue(Float.parseFloat(newValue));
 
 				em.merge(singleWindowBlind1);
@@ -205,7 +207,7 @@ public class WindowBlindService extends BaseService {
 
 					final String dimUrl1 = singleWindowBlind2.getDimUrl().replace(DIMVALUE, newValue);
 
-					HTTPHelper.performHTTPRequest(dimUrl1);
+					httpHelper.performHTTPRequest(dimUrl1);
 
 					singleWindowBlind2.setCurrentValue(Float.parseFloat(newValue));
 

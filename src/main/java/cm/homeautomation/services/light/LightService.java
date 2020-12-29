@@ -47,6 +47,9 @@ public class LightService extends BaseService {
 
 	@Inject
 	ConfigurationService configurationService;
+	
+	@Inject
+	HTTPHelper httpHelper;
 
 	private static final String ON = "on";
 	private static final String OFF = "off";
@@ -228,7 +231,7 @@ public class LightService extends BaseService {
 			dimUrl = dimUrl.replace(DIMVALUE_CONST, Integer.toString(dimValue));
 			dimUrl = dimUrl.replace("{STATE}", powerState);
 
-			HTTPHelper.performHTTPRequest(dimUrl);
+			httpHelper.performHTTPRequest(dimUrl);
 		}
 	}
 
@@ -290,7 +293,7 @@ public class LightService extends BaseService {
 				String colorUrl = rgbLight.getColorUrl();
 				if (colorUrl != null) {
 					colorUrl = colorUrl.replace("{HEXVALUE}", shortHex);
-					HTTPHelper.performHTTPRequest(colorUrl);
+					httpHelper.performHTTPRequest(colorUrl);
 				}
 			}
 		}

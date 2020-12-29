@@ -69,6 +69,9 @@ public class ActorService extends BaseService {
 
 	@Inject
 	ConfigurationService configurationService;
+	
+	@Inject
+	HTTPHelper httpHelper;
 
 	public void performSwitch(String targetStatus, String switchId) throws RollbackException, HeuristicMixedException,
 			HeuristicRollbackException, SystemException, NotSupportedException {
@@ -177,7 +180,7 @@ public class ActorService extends BaseService {
 		String switchSetUrl = singleSwitch.getSwitchSetUrl();
 		switchSetUrl = switchSetUrl.replace("{STATE}", (("0".equals(actorMessage.getStatus())) ? "off" : "on"));
 
-		HTTPHelper.performHTTPRequest(switchSetUrl);
+		httpHelper.performHTTPRequest(switchSetUrl);
 	}
 
 	public ActorService() {
