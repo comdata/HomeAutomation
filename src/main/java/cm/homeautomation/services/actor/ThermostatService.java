@@ -18,11 +18,14 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import cm.homeautomation.configuration.ConfigurationService;
+import cm.homeautomation.entities.MQTTSwitch;
 import cm.homeautomation.entities.Switch;
+import cm.homeautomation.mqtt.client.MQTTSendEvent;
 import cm.homeautomation.services.base.BaseService;
 import cm.homeautomation.services.base.GenericStatus;
 import cm.homeautomation.services.scheduler.JobArguments;
 import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.EventBus;
 
 @Path("thermostat/")
 public class ThermostatService extends BaseService {
@@ -32,27 +35,15 @@ public class ThermostatService extends BaseService {
 
 	@Inject
 	ConfigurationService configurationService;
-
-	private static ThermostatService instance = null;
+	
+	@Inject
+	EventBus bus;
 
 	@ConsumeEvent(value = "ThermostatService", blocking = true)
 	public void cronSetStatus(JobArguments args) {
 		final Long id = Long.valueOf(args.getArgumentList().get(0));
 		final String value = args.getArgumentList().get(1);
 		setValue(id, value);
-	}
-
-	public static ThermostatService getInstance() {
-
-		if (instance == null) {
-			instance = new ThermostatService();
-		}
-
-		return instance;
-	}
-
-	public ThermostatService() {
-		instance = this;
 	}
 
 	private void performHTTPSetPoint(final String value, final Switch singleSwitch, final String setURL) {
@@ -84,9 +75,22 @@ public class ThermostatService extends BaseService {
 		final Switch singleSwitch = em.createQuery("select s from Switch s where s.id=:id", Switch.class)
 				.setParameter("id", id).getSingleResult();
 
-		final String setURL = singleSwitch.getSwitchSetUrl().replace("{SETVALUE}", value);
+		if (singleSwitch.getSwitchSetUrl() != null) {
 
-		performHTTPSetPoint(value, singleSwitch, setURL);
+			final String setURL = singleSwitch.getSwitchSetUrl().replace("{SETVALUE}", value);
+
+			performHTTPSetPoint(value, singleSwitch, setURL);
+		}
+		
+		if (singleSwitch instanceof MQTTSwitch) {
+			MQTTSwitch mqttSwitch=(MQTTSwitch)singleSwitch;
+			
+			if (mqttSwitch.getMqttPowerOnMessage()!=null) {
+				String content=mqttSwitch.getMqttPowerOnMessage().replace("{SETVALUE}", value);
+				bus.publish("MQTTSendEvent", new MQTTSendEvent(mqttSwitch.getMqttPowerOnTopic(), content));
+			}
+			
+		}
 
 		singleSwitch.setLatestStatus(value);
 		singleSwitch.setLatestStatusFrom(new Date());
