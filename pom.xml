@@ -42,6 +42,15 @@
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/com.oracle.substratevm/svm -->
+<!-- https://mvnrepository.com/artifact/org.graalvm.nativeimage/svm -->
+<dependency>
+    <groupId>org.graalvm.nativeimage</groupId>
+    <artifactId>svm</artifactId>
+    <version>20.3.0</version>
+    <scope>provided</scope>
+</dependency>
+
 		<dependency>
 			<groupId>de.a9d3.testing</groupId>
 			<artifactId>base-test</artifactId>
@@ -163,11 +172,11 @@
 			<groupId>org.apache.camel.quarkus</groupId>
 			<artifactId>camel-quarkus-paho</artifactId>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.purej</groupId> -->
-<!-- 			<artifactId>purej-vminspect</artifactId> -->
-<!-- 			<version>1.6.1</version> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>com.purej</groupId> -->
+		<!-- <artifactId>purej-vminspect</artifactId> -->
+		<!-- <version>1.6.1</version> -->
+		<!-- </dependency> -->
 
 		<dependency>
 			<groupId>io.quarkus</groupId>
