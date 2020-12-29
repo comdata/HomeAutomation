@@ -43,13 +43,13 @@
 	</dependencyManagement>
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/com.oracle.substratevm/svm -->
-<!-- https://mvnrepository.com/artifact/org.graalvm.nativeimage/svm -->
-<dependency>
-    <groupId>org.graalvm.nativeimage</groupId>
-    <artifactId>svm</artifactId>
-    <version>20.3.0</version>
-    <scope>provided</scope>
-</dependency>
+		<!-- https://mvnrepository.com/artifact/org.graalvm.nativeimage/svm -->
+		<dependency>
+			<groupId>org.graalvm.nativeimage</groupId>
+			<artifactId>svm</artifactId>
+			<version>20.3.0</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>de.a9d3.testing</groupId>
@@ -194,7 +194,11 @@
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-undertow</artifactId>
 		</dependency>
-
+<dependency>
+    <groupId>com.google.http-client</groupId>
+    <artifactId>google-http-client</artifactId>
+    <version>1.38.0</version>
+</dependency>
 		<!-- Hibernate ORM specific dependencies -->
 		<dependency>
 			<groupId>io.quarkus</groupId>
