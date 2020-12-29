@@ -2,6 +2,8 @@ package cm.homeautomation.services.base;
 
 import java.io.IOException;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -17,6 +19,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
  * @author christoph
  *
  */
+@ApplicationScoped
 public class HTTPHelper {
 
 //	public static void performHTTPRequest(String url) {
