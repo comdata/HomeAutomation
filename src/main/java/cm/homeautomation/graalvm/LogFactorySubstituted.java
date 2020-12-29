@@ -10,10 +10,9 @@ import com.oracle.svm.core.annotate.TargetClass;
 @SuppressWarnings("unused")
 @TargetClass(LogFactory.class)
 final class LogFactorySubstituted {
- @Substitute
- protected static LogFactory newFactory(final String factoryClass,
-                                        final ClassLoader classLoader,
-                                        final ClassLoader contextClassLoader) {
-     return new LogFactoryImpl();
- }
+	@Substitute
+	protected static LogFactory newFactory(final String factoryClass, final ClassLoader classLoader,
+			final ClassLoader contextClassLoader) {
+		return new LogFactoryImpl();
+	}
 }
