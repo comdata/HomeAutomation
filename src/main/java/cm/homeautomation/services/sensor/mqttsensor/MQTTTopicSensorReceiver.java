@@ -8,8 +8,6 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
 
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jboss.logging.Logger;
@@ -19,16 +17,15 @@ import cm.homeautomation.entities.Sensor;
 import cm.homeautomation.entities.SensorData;
 import cm.homeautomation.mqtt.topicrecorder.MQTTTopicEvent;
 import cm.homeautomation.sensors.SensorDataSaveRequest;
-import cm.homeautomation.services.sensors.SensorDataLimitViolationException;
 import cm.homeautomation.services.sensors.Sensors;
 import io.quarkus.runtime.Startup;
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.EventBus;
+import lombok.NonNull;
 
 @ApplicationScoped
 @Startup
-@Transactional(value = TxType.REQUIRES_NEW)
 public class MQTTTopicSensorReceiver {
 
 	@Inject
@@ -52,31 +49,32 @@ public class MQTTTopicSensorReceiver {
 	@ConsumeEvent(value = "MQTTTopicEvent", blocking = true)
 	public void receiveMQTTTopic(MQTTTopicEvent topicEvent) {
 
-		Runnable runner = () -> {
-			LOG.debug("got topic: " + topicEvent.getTopic() + " -  message: " + topicEvent.getMessage());
+		@NonNull
+		String topic = topicEvent.getTopic();
+		LOG.debug("got topic: " + topic + " -  message: " + topicEvent.getMessage());
 
-			String technicalType = "mqtt://" + topicEvent.getTopic();
+		String technicalType = "mqtt://" + topic;
 
-			LOG.debug("looking for technicaltype: " + technicalType);
+		LOG.debug("looking for technicaltype: " + technicalType);
+		System.out.println("topic: " + topic + " technicaltype: " + technicalType);
+		Sensor sensor = sensorTechnicalTypeMap.get(technicalType);
 
-			Sensor sensor = sensorTechnicalTypeMap.get(technicalType);
-			if (sensor != null) {
-				LOG.debug("got sensors: " + sensor.getId() + " name:" + sensor.getSensorName());
+		if (sensor != null) {
+			System.out.println(sensor.getSensorName());
+			LOG.debug("got sensors: " + sensor.getId() + " name:" + sensor.getSensorName());
 
-				final SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
-				sensorDataSaveRequest.setSensorId(sensor.getId());
-				final SensorData sensorData = new SensorData();
-				sensorData.setValue(topicEvent.getMessage());
-				sensorData.setDateTime(new Date());
-				sensorDataSaveRequest.setSensorData(sensorData);
+			final SensorDataSaveRequest sensorDataSaveRequest = new SensorDataSaveRequest();
+			sensorDataSaveRequest.setSensorId(sensor.getId());
+			final SensorData sensorData = new SensorData();
+			sensorData.setValue(topicEvent.getMessage());
+			sensorData.setDateTime(new Date());
+			sensorDataSaveRequest.setSensorData(sensorData);
 
-				//bus.publish("SensorDataSaveRequest", sensorDataSaveRequest);
-			} else {
-				LOG.debug("list is empty for technicaltype: " + technicalType);
+			bus.publish("SensorDataSaveRequest", sensorDataSaveRequest);
+		} else {
+			LOG.debug("list is empty for technicaltype: " + technicalType);
 
-			}
-		};
-		executor.runAsync(runner);
+		}
 
 	}
 

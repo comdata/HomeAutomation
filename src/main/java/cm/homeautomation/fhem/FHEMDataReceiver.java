@@ -7,8 +7,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-import org.apache.logging.log4j.LogManager;
-
 import cm.homeautomation.entities.FHEMDevice;
 import cm.homeautomation.entities.FHEMDevice.FHEMDeviceType;
 import io.quarkus.vertx.ConsumeEvent;

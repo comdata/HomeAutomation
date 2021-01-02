@@ -18,10 +18,10 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.jboss.logging.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 
 import cm.homeautomation.dashbutton.DashButtonEvent;
 import cm.homeautomation.ebus.EBusMessageEvent;
@@ -39,6 +39,9 @@ import io.vertx.core.eventbus.EventBus;
 @ApplicationScoped
 @Transactional(value = TxType.REQUIRES_NEW)
 public class ReactiveMQTTReceiverClient implements MqttCallback {
+	
+    private static final Logger LOG = Logger.getLogger(ReactiveMQTTReceiverClient.class);
+
 	@Inject
 	EventBus bus;
 
@@ -97,9 +100,9 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 			client.close();
 			client.disconnect();
 		} catch (MqttException e1) {
-			//LogManager.getLogger(this.getClass()).error("force close failed.", e1);
+			LOG.error("force close failed.", e1);
 		}
-		//LogManager.getLogger(this.getClass()).info("trying reconnect to MQTT broker");
+		LOG.info("trying reconnect to MQTT broker");
 		initClient();
 	}
 
@@ -111,7 +114,7 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 		Runnable runThread = () -> {
 			// Process the received message
 
-			//LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+			LOG.debug("Topic: " + topic + " " + messageContent);
 			System.out.println("Topic: " + topic + " " + messageContent);
 
 			if (topic.startsWith("wled")) {
@@ -139,21 +142,21 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 			}
 
 			if (topic.startsWith("dhcpEvent")) {
-				//LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+				LOG.debug("Topic: " + topic + " " + messageContent);
 				// System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
 
 				sendDashButtonMessage(messageContent);
 			}
 
 			if (topic.startsWith("hueinterface")) {
-				//LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+				LOG.debug("Topic: " + topic + " " + messageContent);
 				// System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
 				System.out.println("hue");
 				handleMessageHUE(topic, messageContent);
 			}
 
 			if (topic.startsWith("networkServices")) {
-				//LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+				LOG.debug("Topic: " + topic + " " + messageContent);
 				// System.out.println("MQTT INBOUND: " + topic + " " + messageContent);
 				if (topic.equals("networkServices/scanResult")) {
 					sendNetworkScanResult(messageContent);
@@ -161,12 +164,12 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 			}
 
 			if (topic.startsWith("/fhem")) {
-				//LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+				LOG.debug("Topic: " + topic + " " + messageContent);
 				handleMessageFHEM(topic, messageContent);
 			}
 
 			if (topic.startsWith("/sensordata")) {
-				//LogManager.getLogger(this.getClass()).debug("Topic: " + topic + " " + messageContent);
+				LOG.debug("Topic: " + topic + " " + messageContent);
 				handleMessage(topic, messageContent);
 			}
 
@@ -188,7 +191,7 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 			bus.publish("MQTTTopicEvent", mqttTopicEvent);
 
 		} catch (Exception e) {
-			//LogManager.getLogger(this.getClass()).error(e);
+			LogManager.getLogger(this.getClass()).error(e);
 		}
 
 	}
@@ -201,7 +204,7 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 			handleMessageMQTT(topic, messageContent);
 
 		} catch (Exception e) {
-			//LogManager.getLogger(this.getClass()).error(e);
+			LOG.error(e);
 		}
 
 	}
@@ -213,7 +216,7 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 
 			handleMessageMQTT(topic, messageContent);
 		} catch (Exception e) {
-			//LogManager.getLogger(this.getClass()).error(e);
+			LOG.error(e);
 		}
 
 	}
@@ -222,7 +225,7 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 		try {
 			sendHueInterfaceMessage(messageContent);
 		} catch (Exception e) {
-			//LogManager.getLogger(this.getClass()).error(e);
+			LOG.error(e);
 			e.printStackTrace();
 		}
 
@@ -238,7 +241,7 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 				handleMessageMQTT(topic, messageContent);
 			}
 		} catch (Exception e) {
-			//LogManager.getLogger(this.getClass()).error(e);
+			LOG.error(e);
 		}
 
 	}
@@ -251,7 +254,7 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 
 			bus.publish("HueEmulatorMessage", hueMessage);
 		} catch (JsonProcessingException e) {
-			//LogManager.getLogger(this.getClass()).error(e);
+			LOG.error(e);
 		}
 	}
 
@@ -263,7 +266,7 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 
 			bus.publish("DashButtonEvent", dashButtonEvent);
 		} catch (JsonProcessingException e) {
-			//LogManager.getLogger(this.getClass()).error(e);
+			LOG.error(e);
 		}
 	}
 
@@ -274,7 +277,7 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 
 			bus.publish("NetworkScanResult", networkScanResult);
 		} catch (JsonProcessingException e) {
-			//LogManager.getLogger(this.getClass()).error(e);
+			LOG.error(e);
 		}
 	}
 	
