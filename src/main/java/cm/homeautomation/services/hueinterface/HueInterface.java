@@ -35,7 +35,7 @@ import io.vertx.core.eventbus.EventBus;
 @Startup
 @ApplicationScoped
 @Path("hueInterface")
-@Transactional(value = TxType.REQUIRES_NEW)
+@Transactional(value = TxType.REQUIRED)
 public class HueInterface extends BaseService {
 
 	@Inject
@@ -62,16 +62,17 @@ public class HueInterface extends BaseService {
 	public GenericStatus handleMessage(HueEmulatorMessage message) {
 
 		String lightId = message.getLightId();
-
+		System.out.println("Light id: "+lightId);
 		if (lightId != null) {
 
 			List<HueDevice> hueDeviceList = findHueDeviceByLightId(lightId);
 
 			if (hueDeviceList == null || hueDeviceList.isEmpty()) {
-
+				
 				List<HueDevice> hueDeviceNameList = findHueDeviceByName(message);
 				
 				if (hueDeviceNameList != null && !hueDeviceNameList.isEmpty()) {
+					System.out.println("updating light id");
 					updateLightId(message, hueDeviceNameList);
 
 					handleMessage(message);
@@ -84,6 +85,7 @@ public class HueInterface extends BaseService {
 					}
 				}
 			} else {
+				System.out.println("found device and using it");
 				internalHandleMessage(message, lightId, hueDeviceList);
 			}
 
@@ -113,6 +115,8 @@ public class HueInterface extends BaseService {
 
 		hueDevice.setLightId(message.getLightId());
 		em.merge(hueDevice);
+		em.flush();
+		System.out.println("merged light id to: "+hueDevice.getName());
 	}
 
 	private HueDevice createMissingDevice(HueEmulatorMessage message) {
