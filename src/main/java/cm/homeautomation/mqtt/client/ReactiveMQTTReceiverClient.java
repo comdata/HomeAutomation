@@ -136,6 +136,10 @@ public class ReactiveMQTTReceiverClient implements MqttCallback {
 			if (topic.startsWith("esp")) {
 				handleMessageMQTT(topic, messageContent);
 			}
+			
+			if (topic.startsWith("zwave/")) {
+				handleMessageMQTT(topic, messageContent);
+			}
 
 			if (topic.startsWith("ebusd")) {
 				handleMessageEBUS(topic, messageContent);
