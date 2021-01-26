@@ -289,7 +289,7 @@ public class ZigbeeMQTTReceiver {
 
 	private void handleOpenCloseRemote(String message, ZigBeeDevice zigbeeDevice, JsonNode messageObject) {
 
-		String click = messageObject.get("click").asText();
+		String click = messageObject.get("action").asText();
 
 		String ieeeAddr = zigbeeDevice.getIeeeAddr();
 		ZigBeeTradfriRemoteControl existingRemote = getOrCreateRemote(zigbeeDevice, em, ieeeAddr);
