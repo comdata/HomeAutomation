@@ -19,8 +19,8 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
 		<quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
-		<quarkus.platform.version>1.10.5.Final</quarkus.platform.version>
-		<quarkus-plugin.version>1.10.5.Final</quarkus-plugin.version> <!--${quarkus.platform.version} -->
+		<quarkus.platform.version>1.11.0.Final</quarkus.platform.version>
+		<quarkus-plugin.version>1.11.0.Final</quarkus-plugin.version> <!--${quarkus.platform.version} -->
 		<ratelimitj-inmemory.version>0.7.0-RC1</ratelimitj-inmemory.version>
 		<ratelimitj-inmemory-core.version>0.7.0-RC3</ratelimitj-inmemory-core.version>
 		<surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
