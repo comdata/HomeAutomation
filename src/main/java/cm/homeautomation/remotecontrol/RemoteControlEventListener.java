@@ -9,7 +9,6 @@ import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
-import org.apache.log4j.LogManager;
 import org.eclipse.microprofile.context.ManagedExecutor;
 
 import cm.homeautomation.configuration.ConfigurationService;
@@ -22,8 +21,8 @@ import cm.homeautomation.services.actor.ActorService;
 import cm.homeautomation.services.light.LightService;
 import cm.homeautomation.services.light.LightStates;
 import cm.homeautomation.services.networkmonitor.NetworkWakeupEvent;
+import cm.homeautomation.services.windowblind.WindowBlindDimChange;
 import cm.homeautomation.services.windowblind.WindowBlindDimMessageSimple;
-import cm.homeautomation.services.windowblind.WindowBlindService;
 import cm.homeautomation.services.windowblind.WindowBlindService.DimDirection;
 import cm.homeautomation.zigbee.RemoteControlBrightnessChangeEvent;
 import io.quarkus.runtime.Startup;
@@ -49,6 +48,9 @@ public class RemoteControlEventListener {
 
 	@Inject
 	ManagedExecutor executor;
+	
+	@Inject
+	LightService lightService;
 
 	@ConsumeEvent(value = "RemoteControlBrightnessChangeEvent", blocking = true)
 	public void subscribe(RemoteControlBrightnessChangeEvent event) {
@@ -77,7 +79,7 @@ public class RemoteControlEventListener {
 							//LogManager.getLogger(this.getClass()).debug("found remote member: " + remoteControl.getName());
 							switch (remoteControlGroupMember.getType()) {
 							case LIGHT:
-								LightService.getInstance().dimLight(remoteControlGroupMember.getExternalId(),
+								lightService.dimLight(remoteControlGroupMember.getExternalId(),
 										event.getBrightness());
 								break;
 							case SWITCH:
@@ -132,7 +134,7 @@ public class RemoteControlEventListener {
 
 							switch (remoteControlGroupMember.getType()) {
 							case LIGHT:
-								LightService.getInstance().setLightState(remoteControlGroupMember.getExternalId(),
+								lightService.setLightState(remoteControlGroupMember.getExternalId(),
 										(event.isPoweredOnState() ? LightStates.ON : LightStates.OFF), false);
 								break;
 							case SWITCH:
@@ -146,15 +148,16 @@ public class RemoteControlEventListener {
 								case ON_OFF:
 
 									DimDirection dimDirection;
-									if (event.getClick().equals("open")) {
+									if ("open".equals(event.getClick())) {
 										dimDirection = DimDirection.UP;
 									} else {
 										dimDirection = DimDirection.DOWN;
 									}
 
-									new WindowBlindService().dim(dimDirection,
+									WindowBlindDimChange windowBlindDimChangeMessage=new WindowBlindDimChange(dimDirection,
 											remoteControlGroupMember.getExternalId());
-
+									bus.publish("WindowBlindDimChange", windowBlindDimChangeMessage);
+									
 									break;
 
 								case REMOTE:

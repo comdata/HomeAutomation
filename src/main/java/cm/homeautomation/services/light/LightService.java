@@ -57,9 +57,7 @@ public class LightService extends BaseService {
 	private static final String ZIGBEE = "ZIGBEE";
 	private static final String LIGHT_ID = "lightId";
 	private static final String MQTT = "MQTT";
-
-	private static LightService instance;
-
+	
 	private Map<Long, List<Light>> lightRoomList;
 
 	private Map<Long, Light> lightList;
@@ -67,20 +65,8 @@ public class LightService extends BaseService {
 
 	private Map<Long, Room> rooms;
 
-	public static LightService getInstance() {
-		if (instance == null) {
-			instance = new LightService();
-		}
-		return instance;
-	}
-
-	public static void setInstance(final LightService instance) {
-		LightService.instance = instance;
-	}
-
 	public LightService() {
 		initLightList();
-		setInstance(this);
 	}
 
 	@GET

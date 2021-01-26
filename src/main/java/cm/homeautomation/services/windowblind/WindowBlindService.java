@@ -245,6 +245,14 @@ public class WindowBlindService extends BaseService {
 		setPosition(event.getWindowBlindId(), event.getPosition());
 	}
 
+	@ConsumeEvent(value = "WindowBlindDimChange", blocking = true)
+	public void dimByEvent(WindowBlindDimChange event) {
+		DimDirection dimDirection=event.getDirection();
+		long externalId=event.getExternalId();
+		dim(dimDirection, externalId);
+	}
+	
+	
 	public void dim(DimDirection dimDirection, long externalId) {
 		final WindowBlind singleWindowBlind = windowBlindMap.get(externalId);
 
